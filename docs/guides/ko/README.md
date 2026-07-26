@@ -6,12 +6,14 @@
 
 1. [첫 앱 만들기 Quickstart](quickstart.md): private app을 만들고 Command, WAM, 메시지 전송까지 실행합니다.
 2. [핵심 개념](concepts.md): Function, Extension, WAM, 인증, token의 경계를 이해합니다.
-3. [앱 개발 전체 가이드](app-development.md): 앱을 설계하고 보호하며 배포·운영하는 방법을 확인합니다.
-4. [Function 등록](functions.md): standalone typed app Function을 정의합니다.
-5. [Extension 전체 가이드와 16개 TypeScript/Go 상세 문서](extensions.md): 필요한 기능과 구현 계약을 선택합니다.
-6. 언어별 API는 [TypeScript 레퍼런스](../../reference/typescript/README.md) 또는
+3. [Function 등록](functions.md): wire contract와 standalone typed app Function을 정의합니다.
+4. [Command 가이드](extensions/command.md): metadata, action, autocomplete를 구현합니다.
+5. [WAM 가이드](wam.md): React UI, host authorization, app/native Function 호출을 구현합니다.
+6. [앱 개발 전체 가이드](app-development.md): 앱을 설계하고 보호하며 배포·운영하는 방법을 확인합니다.
+7. [Extension 전체 가이드와 16개 TypeScript/Go 상세 문서](extensions.md): 필요한 기능과 구현 계약을 선택합니다.
+8. 언어별 API는 [TypeScript 레퍼런스](../../reference/typescript/README.md) 또는
    [Go 레퍼런스](../../reference/go/README.md)에서 확인합니다.
-7. 구현 중에는 완성된 [TypeScript 앱 튜토리얼](https://github.com/channel-io/app-tutorial-ts) 또는
+9. 구현 중에는 완성된 [TypeScript 앱 튜토리얼](https://github.com/channel-io/app-tutorial-ts) 또는
    [Go 앱 튜토리얼](https://github.com/channel-io/app-tutorial)을 함께 봅니다.
 
 ## 선택 기준

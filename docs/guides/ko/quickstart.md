@@ -235,11 +235,14 @@ Signing Key, access/refresh token, provider credential을 issue나 log에 붙이
 
 ## 다음 문서는 이 순서로 확인하세요
 
-1. [핵심 개념](concepts.md)에서 Function, Extension, WAM, 인증, token의 경계를 이해합니다.
-2. [앱 개발 전체 가이드](app-development.md)에서 설계, 보안, 배포, 운영 방법을 확인합니다.
-3. [Function 등록](functions.md)에서 standalone typed app Function을 정의합니다.
-4. [Extension 전체 가이드](extensions.md)에서 필요한 기능을 선택하고 상세 recipe를 따릅니다.
-5. 언어별 API는 [TypeScript 레퍼런스 맵](../../reference/typescript/README.md) 또는
+1. 현재 문서인 첫 앱 Quickstart를 완료합니다.
+2. [핵심 개념](concepts.md)에서 Function, Extension, WAM, 인증, token의 경계를 이해합니다.
+3. [Function 등록](functions.md)에서 wire contract와 standalone typed app Function을 확인합니다.
+4. [Command 가이드](extensions/command.md)에서 metadata, action, autocomplete를 구현합니다.
+5. [WAM 가이드](wam.md)에서 React UI, host authorization, Function 호출을 구현합니다.
+6. [앱 개발 전체 가이드](app-development.md)에서 설계, 보안, 배포, 운영 방법을 확인합니다.
+7. [Extension 전체 가이드](extensions.md)에서 필요한 기능을 선택하고 상세 recipe를 따릅니다.
+8. 언어별 API는 [TypeScript 레퍼런스 맵](../../reference/typescript/README.md) 또는
    [Go 레퍼런스](../../reference/go/README.md)에서 확인합니다.
-6. 구현 중에는 완성된 [TypeScript 튜토리얼](https://github.com/channel-io/app-tutorial-ts) 또는
+9. 구현 중에는 완성된 [TypeScript 튜토리얼](https://github.com/channel-io/app-tutorial-ts) 또는
    [Go 튜토리얼](https://github.com/channel-io/app-tutorial)을 함께 봅니다.

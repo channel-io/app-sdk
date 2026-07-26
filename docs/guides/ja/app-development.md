@@ -24,6 +24,7 @@ Extension や WAM から参照できる typed RPC です。WAM は Channel 内�
 - idempotency、retry、timeout、provider rate limit
 
 [Concepts](./concepts.md)、[Functions](./functions.md)、
+[Command ガイド](./extensions/command.md)、[WAM ガイド](./wam.md)、
 [Extension guide](./extensions.md) も確認してください。
 
 ## 2. Trust zone を分離する
@@ -99,7 +100,9 @@ Release 前に rollback、secret rotation、token cache、permission change、fr
 
 ## 次の文書
 
+- [Command ガイド](./extensions/command.md)
+- [WAM ガイド](./wam.md)
+- [Extension recipes](./extensions.md)
 - [TypeScript reference map](../../reference/typescript/README.md)
 - [Go reference map](../../reference/go/README.md)
 - [Cross-language protocol](../../reference/protocol.md)
-- [Extension recipes](./extensions.md)

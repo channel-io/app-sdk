@@ -235,11 +235,14 @@ Secret, Signing Key, access/refresh tokens, or provider credentials into an issu
 
 ## Continue in this order
 
-1. Learn the Function, Extension, WAM, authentication, and token boundaries in [Concepts](concepts.md).
-2. Design, secure, deploy, and operate the app with the [complete app development guide](app-development.md).
-3. Define standalone typed app Functions with [Function registration](functions.md).
-4. Choose a capability and follow its recipe in the [Extension guide](extensions.md).
-5. Use the [TypeScript reference map](../../reference/typescript/README.md) or
+1. Complete this first-app Quickstart.
+2. Learn the Function, Extension, WAM, authentication, and token boundaries in [Concepts](concepts.md).
+3. Read the wire contract and define standalone typed app Functions with [Function registration](functions.md).
+4. Implement metadata, actions, and autocomplete with the [Command guide](extensions/command.md).
+5. Build the React UI, host authorization, and Function calls with the [WAM guide](wam.md).
+6. Design, secure, deploy, and operate the app with the [complete app development guide](app-development.md).
+7. Choose a capability and follow its recipe in the [Extension guide](extensions.md).
+8. Use the [TypeScript reference map](../../reference/typescript/README.md) or
    [Go reference](../../reference/go/README.md) for language-specific APIs.
-6. Keep the [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) or
+9. Keep the [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) or
    [Go tutorial](https://github.com/channel-io/app-tutorial) open as a complete implementation.

@@ -71,6 +71,27 @@ await api.writeGroupMessage({
 Prefer a typed proxy method when one exists. Use `callNativeFunctionWithToken()` only for a public
 Native Function already represented by your app's reviewed contract.
 
+## Calling App Functions
+
+`callAppFunction()` invokes a registered Function provided by another app or by your own app through
+AppStore. It is not a Channel Native Function call. Pass the target app ID, exact Function method,
+params, the current Function context, an access token with the required scope, and an optional system
+version.
+
+```ts
+const result = await nativeClient.callAppFunction<Input, Output>(
+  targetAppId,
+  "orders.get",
+  { orderId: "order-1" },
+  ctx,
+  channelToken.accessToken,
+);
+```
+
+The target app and installed Channel relationship still requires business authorization. Do not
+forward an untrusted WAM target, caller, or resource identifier without validating it in the server
+Function.
+
 ## Contract source
 
 The public SDK exports are the source of truth for supported TypeScript calls. Check

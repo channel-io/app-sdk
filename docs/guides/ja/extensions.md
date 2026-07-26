@@ -18,6 +18,9 @@ TypeScript は通常 `@Extension` と `@Func` を使います。Go は
 認証、WAM、信頼性、test を説明し、正確な TypeScript schema と
 [Go Extension reference](../../reference/go/EXTENSIONS.md) へ案内します。
 
+最初に [Function 登録](functions.md)で共通 wire contract を確認し、UI を開く Extension には
+[WAM ガイド](wam.md)も適用してください。
+
 ## Config
 
 `config` は API key、`client_credentials`、shop identifier、scope ごとの設定に使います。
@@ -43,7 +46,7 @@ connection は AppStore が管理し、provider token は `ctx.authToken` に注
 返す、action を実行する、または WAM を開けます。Command discovery と action handler を別々に
 test してください。
 
-[Command 詳細](extensions/command.md) ·
+[Command 詳細](extensions/command.md) · [WAM ガイド](wam.md) ·
 [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) ·
 [Go tutorial](https://github.com/channel-io/app-tutorial)
 

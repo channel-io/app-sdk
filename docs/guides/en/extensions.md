@@ -18,6 +18,9 @@ TypeScript apps normally use `@Extension` and `@Func`. Go apps should prefer the
 reliability, and testing, then links the exact TypeScript schemas and
 [Go Extension reference](../../reference/go/EXTENSIONS.md).
 
+Read [Function registration](functions.md) for the shared wire contract and apply the
+[WAM guide](wam.md) to any Extension that opens UI.
+
 ## Config
 
 Use `config` for API keys, `client_credentials`, shop identifiers, and other scoped settings.
@@ -42,7 +45,7 @@ injects the connected provider token as `ctx.authToken`. Do not use this Extensi
 exact full name of a standalone or Extension Function. Use a command to return text, perform an
 action, or open a WAM. Test command discovery separately from the referenced action handler.
 
-[Command recipe](extensions/command.md) ·
+[Command recipe](extensions/command.md) · [WAM guide](wam.md) ·
 [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) ·
 [Go tutorial](https://github.com/channel-io/app-tutorial)
 

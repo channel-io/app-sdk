@@ -14,6 +14,7 @@ Official TypeScript and Go SDKs, developer guides, and runnable examples for bui
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | Build and run a first app       | [First-app Quickstart](docs/guides/en/quickstart.md)                                                                                 |
 | Understand Channel app concepts | [Guide index](docs/guides/en/README.md) and [Concepts](docs/guides/en/concepts.md)                                                   |
+| Build a Command or WAM          | [Command guide](docs/guides/en/extensions/command.md) and [WAM guide](docs/guides/en/wam.md)                                         |
 | Build with TypeScript           | [TypeScript reference](docs/reference/typescript/README.md) and [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) |
 | Build with Go                   | [Go SDK reference](docs/reference/go/README.md) and [Go tutorial](https://github.com/channel-io/app-tutorial)                        |
 | Use a coding agent              | [Build Channel App skill](skills/build-channel-app/SKILL.md)                                                                         |
@@ -33,19 +34,26 @@ to customize or ship the app:
 2. **Learn Function, Extension, WAM, and authentication boundaries:**
    [Korean](docs/guides/ko/concepts.md), [English](docs/guides/en/concepts.md), or
    [Japanese](docs/guides/ja/concepts.md)
-3. **Design, secure, deploy, and operate the app:**
+3. **Define typed app Functions and understand the wire contract:** [Korean](docs/guides/ko/functions.md),
+   [English](docs/guides/en/functions.md), or [Japanese](docs/guides/ja/functions.md)
+4. **Implement Command metadata, actions, and autocomplete:**
+   [Korean](docs/guides/ko/extensions/command.md),
+   [English](docs/guides/en/extensions/command.md), or
+   [Japanese](docs/guides/ja/extensions/command.md)
+5. **Build the WAM React UI and host-authorized calls:**
+   [Korean](docs/guides/ko/wam.md), [English](docs/guides/en/wam.md), or
+   [Japanese](docs/guides/ja/wam.md)
+6. **Design, secure, deploy, and operate the app:**
    [Korean](docs/guides/ko/app-development.md),
    [English](docs/guides/en/app-development.md), or
    [Japanese](docs/guides/ja/app-development.md)
-4. **Define typed app Functions:** [Korean](docs/guides/ko/functions.md),
-   [English](docs/guides/en/functions.md), or [Japanese](docs/guides/ja/functions.md)
-5. **Choose an Extension family and follow its recipe:**
+7. **Choose an Extension family and follow its recipe:**
    [Korean](docs/guides/ko/extensions.md), [English](docs/guides/en/extensions.md), or
    [Japanese](docs/guides/ja/extensions.md)
-6. **Use the language-specific API reference:**
+8. **Use the language-specific API reference:**
    [TypeScript reference](docs/reference/typescript/README.md), or
    [Go reference](docs/reference/go/README.md)
-7. **Keep a complete implementation open while coding:**
+9. **Keep a complete implementation open while coding:**
    [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) or
    [Go tutorial](https://github.com/channel-io/app-tutorial)
 
@@ -146,6 +154,8 @@ Gitleaks. Report suspected vulnerabilities privately as described in [SECURITY.m
   [native Functions](docs/reference/go/NATIVE.md), and
   [WAM integration](docs/reference/go/WAM.md)
 - Shared wire contract: [cross-language protocol](docs/reference/protocol.md)
+- Localized WAM guides: [Korean](docs/guides/ko/wam.md), [English](docs/guides/en/wam.md),
+  and [Japanese](docs/guides/ja/wam.md)
 
 ## License
 
