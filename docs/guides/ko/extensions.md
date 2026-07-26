@@ -18,6 +18,9 @@ TypeScript는 일반적으로 `@Extension`과 `@Func`를 사용합니다. Go는
 인증, WAM, 신뢰성, 테스트를 함께 설명하고 정확한 TypeScript schema와
 [Go Extension 레퍼런스](../../reference/go/EXTENSIONS.md)를 연결합니다.
 
+먼저 [Function 등록](functions.md)에서 공통 wire contract를 확인하고, UI를 여는 Extension은
+[WAM 가이드](wam.md)를 함께 적용하세요.
+
 ## Config
 
 `config`는 API key, `client_credentials`, shop identifier, scope별 설정에 사용합니다.
@@ -42,7 +45,7 @@ TypeScript는 일반적으로 `@Extension`과 `@Func`를 사용합니다. Go는
 또는 Extension Function의 정확한 전체 이름을 참조해야 합니다. Command는 text를 반환하거나
 동작을 수행하거나 WAM을 열 수 있습니다. Command discovery와 action handler를 각각 테스트하세요.
 
-[Command 상세](extensions/command.md) ·
+[Command 상세](extensions/command.md) · [WAM 가이드](wam.md) ·
 [TypeScript 튜토리얼](https://github.com/channel-io/app-tutorial-ts) ·
 [Go 튜토리얼](https://github.com/channel-io/app-tutorial)
 

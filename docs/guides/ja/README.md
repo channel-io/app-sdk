@@ -6,12 +6,14 @@
 
 1. [最初のアプリ Quickstart](quickstart.md): private app を作成し、Command、WAM、message flow を実行します。
 2. [基本概念](concepts.md): Function、Extension、WAM、authentication、token の境界を理解します。
-3. [アプリ開発完全ガイド](app-development.md): app の設計、security、deployment、operation を確認します。
-4. [Function 登録](functions.md): standalone typed app Function を定義します。
-5. [Extension 完全ガイドと 16 の TypeScript/Go recipe](extensions.md): 必要な capability と implementation contract を選択します。
-6. 言語別 API は [TypeScript reference](../../reference/typescript/README.md) または
+3. [Function 登録](functions.md): wire contract と standalone typed app Function を確認します。
+4. [Command ガイド](extensions/command.md): metadata、action、autocomplete を実装します。
+5. [WAM ガイド](wam.md): React UI、host authorization、app/native Function call を実装します。
+6. [アプリ開発完全ガイド](app-development.md): app の設計、security、deployment、operation を確認します。
+7. [Extension 完全ガイドと 16 の TypeScript/Go recipe](extensions.md): 必要な capability と implementation contract を選択します。
+8. 言語別 API は [TypeScript reference](../../reference/typescript/README.md) または
    [Go reference](../../reference/go/README.md) で確認します。
-7. 実装中は完全な [TypeScript app tutorial](https://github.com/channel-io/app-tutorial-ts) または
+9. 実装中は完全な [TypeScript app tutorial](https://github.com/channel-io/app-tutorial-ts) または
    [Go app tutorial](https://github.com/channel-io/app-tutorial) を参照します。
 
 ## SDK の選び方

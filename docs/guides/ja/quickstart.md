@@ -234,11 +234,14 @@ Secret、Signing Key、access/refresh token、provider credential を issue や 
 
 ## 次のドキュメントはこの順序で確認してください
 
-1. [基本概念](concepts.md) で Function、Extension、WAM、authentication、token の境界を理解します。
-2. [アプリ開発完全ガイド](app-development.md) で design、security、deployment、operation を確認します。
-3. [Function 登録](functions.md) で standalone typed app Function を定義します。
-4. [Extension 完全ガイド](extensions.md) で必要な capability を選択し、詳細 recipe に従います。
-5. 言語別 API は [TypeScript reference map](../../reference/typescript/README.md) または
+1. 現在の最初の app Quickstart を完了します。
+2. [基本概念](concepts.md) で Function、Extension、WAM、authentication、token の境界を理解します。
+3. [Function 登録](functions.md) で wire contract と standalone typed app Function を確認します。
+4. [Command ガイド](extensions/command.md) で metadata、action、autocomplete を実装します。
+5. [WAM ガイド](wam.md) で React UI、host authorization、Function call を実装します。
+6. [アプリ開発完全ガイド](app-development.md) で design、security、deployment、operation を確認します。
+7. [Extension 完全ガイド](extensions.md) で必要な capability を選択し、詳細 recipe に従います。
+8. 言語別 API は [TypeScript reference map](../../reference/typescript/README.md) または
    [Go reference](../../reference/go/README.md) で確認します。
-6. 実装中は完全な [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) または
+9. 実装中は完全な [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) または
    [Go tutorial](https://github.com/channel-io/app-tutorial) を参照します。

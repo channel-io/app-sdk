@@ -23,7 +23,8 @@ Before coding, write down:
 - whether a WAM is necessary;
 - idempotency, retry, timeout, and provider rate-limit behavior.
 
-See [Concepts](./concepts.md), [Functions](./functions.md), and the
+See [Concepts](./concepts.md), [Functions](./functions.md), the
+[Command guide](./extensions/command.md), the [WAM guide](./wam.md), and the
 [Extension decision guide](./extensions.md).
 
 ## 2. Separate trust zones
@@ -99,7 +100,9 @@ installed app after a fresh process start.
 
 ## Next references
 
+- [Command guide](./extensions/command.md)
+- [WAM guide](./wam.md)
+- [Extension recipes](./extensions.md)
 - [TypeScript reference map](../../reference/typescript/README.md)
 - [Go reference map](../../reference/go/README.md)
 - [Cross-language protocol](../../reference/protocol.md)
-- [Extension recipes](./extensions.md)

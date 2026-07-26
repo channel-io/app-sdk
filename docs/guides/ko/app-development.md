@@ -23,6 +23,7 @@ React UI이며, 비즈니스 규칙과 권한이 필요한 provider 호출은 �
 - 멱등성, 재시도, timeout, provider rate limit 정책
 
 [핵심 개념](./concepts.md), [Function 가이드](./functions.md),
+[Command 가이드](./extensions/command.md), [WAM 가이드](./wam.md),
 [Extension 선택 가이드](./extensions.md)를 함께 확인하세요.
 
 ## 2. 신뢰 영역 분리
@@ -99,7 +100,9 @@ token refresh 오류, provider throttling, Function latency 상승에 alert를 �
 
 ## 다음 문서
 
+- [Command 가이드](./extensions/command.md)
+- [WAM 가이드](./wam.md)
+- [Extension recipe](./extensions.md)
 - [TypeScript 레퍼런스 맵](../../reference/typescript/README.md)
 - [Go 레퍼런스 맵](../../reference/go/README.md)
 - [공통 protocol](../../reference/protocol.md)
-- [Extension recipe](./extensions.md)

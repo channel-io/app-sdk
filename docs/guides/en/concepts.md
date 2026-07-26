@@ -86,6 +86,9 @@ Serve the built SPA from `${WAM_ENDPOINT}/${name}` and wrap the React root in `W
 - `useNativeFunction`: call a Channel native function allowed for the current surface and manager/user authorization
 - `useWamSize`, `useWamClose`: control WAM size and closing
 
+Read the [WAM guide](wam.md) for the complete React setup, runtime data, Function call, resize, and
+close flow.
+
 A WAM must not store or issue the App Secret, Signing Key, app token, or channel token. `wamArgs` is client-readable too, so never place secrets, access tokens, or raw customer data in it. For work performed as the app or bot, call the app server with `useCallFunction` and let the server use a channel token. Use `useNativeFunction` only for work performed by the current manager or user.
 
 ## Authentication, Signatures, and Tokens
@@ -108,6 +111,27 @@ Incoming Function authentication and outgoing native authentication are separate
 1. **Incoming request**: verify the HMAC-SHA256 `x-signature` over the exact raw request body with the hex-encoded Signing Key. Use `SignatureGuard` with NestJS `rawBody: true` in TypeScript, or `server.WithSignature` in Go. Never disable verification in production.
 2. **Outgoing server request**: `TokenManager` uses the App Secret to issue and cache an app or channel token. It refreshes before expiry and deduplicates concurrent issue/refresh work. Do not call `issueToken` for every request.
 3. **Outgoing WAM request**: the WAM SDK calls its host bridge. The Channel runtime decides manager/user authorization; the app server's `TokenManager` does not mint it.
+
+### Token issuance details
+
+Use `TokenManager` instead of repeatedly calling the low-level issuance APIs. Use the following
+contract when diagnosing the transport or intentionally managing tokens yourself.
+
+- `issueToken` and `refreshToken` share a limit of **10 calls per 30 minutes per app**. Cache the
+  access/refresh token pair instead of issuing a token for every request.
+- Omitting `channelId` from `issueToken` creates an app token for app-scoped operations such as
+  Extension registration.
+- Supplying the `channelId` of an installed Channel creates a channel token for server-side
+  operations in that Channel. The operation still requires installation and the selected permission.
+- The important result fields are `accessToken`, `refreshToken`, and `expiresIn` in seconds. Send
+  the current access token in the `x-access-token` header for Native Function requests.
+- Channel permissions restrict operations performed by the server with a channel token.
+  Manager/User permissions and authorization are enforced by the WAM host from the current user and
+  surface.
+
+Read the [TypeScript authentication and token reference](../../reference/typescript/AUTH-AND-TOKENS.md)
+and [Go authentication and token reference](../../reference/go/AUTH-AND-TOKENS.md) for exact APIs
+and custom cache storage.
 
 The default token cache is in memory and suitable for one process. For multiple replicas, implement the SDK cache interface with shared storage such as Redis or a database so replicas share token pairs. In-flight deduplication is process-local; add storage-side locking if strict cross-replica refresh coordination is required. Never log access tokens, refresh tokens, provider tokens, or credentials.
 
@@ -134,4 +158,8 @@ Register endpoint roots in the developer portal, without a system version or WAM
 
 `proto/` is the shared wire-contract source for TypeScript and Go. App developers normally use each language SDK's decorators, builders, schemas, and types instead of generated proto code. When documentation or an example disagrees with a public export, follow the public export and schema implementation.
 
-For the implementation sequence, continue with the [complete app development guide](app-development.md). For runnable code, see the [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) and [Go tutorial](https://github.com/channel-io/app-tutorial).
+Continue with [Function registration](functions.md), the [Command guide](extensions/command.md), the
+[WAM guide](wam.md), the [complete app development guide](app-development.md), and the
+[Extension guide](extensions.md). For runnable code, see the
+[TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) and
+[Go tutorial](https://github.com/channel-io/app-tutorial).

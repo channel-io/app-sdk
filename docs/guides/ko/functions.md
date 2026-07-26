@@ -1,25 +1,89 @@
-# 함수 등록
+# Function 등록
 
-Function 요청의 `method`가 Function의 전체 이름입니다. 앱 고유 Function은 `orders.get`처럼
-standalone으로 등록합니다. 표준 Extension 안에서는 `@Extension({ name: "command" })`와
-`metadata.getCommands` 같은 relative name을 조합해 `extension.command.metadata.getCommands`를
-만듭니다. 자세한 구분은 [핵심 개념](concepts.md)을 참고하세요.
+Function은 Channel 또는 다른 앱이 앱 서버에 요청하는 typed RPC입니다. 요청의 `method`가 Function의
+전체 이름이고 `params`가 입력입니다. 앱 고유 Function은 `orders.get`처럼 standalone으로 등록하고,
+표준 Extension Function은 Extension 이름과 relative name으로 전체 이름을 만듭니다.
+
+## Wire contract
+
+수신 요청은 다음 JSON-RPC-like envelope를 사용합니다.
+
+```json
+{
+  "method": "orders.get",
+  "params": { "orderId": "order-1" },
+  "context": {
+    "caller": { "type": "manager", "id": "manager-id" },
+    "channel": { "id": "channel-id" }
+  },
+  "systemVersion": "v1"
+}
+```
+
+- `method`: discovery에 공개된 정확한 전체 Function 이름
+- `params`: schema로 검증할 입력
+- `context`: caller, Channel, language, auth/config처럼 호출 surface가 제공하는 문맥
+- `systemVersion`: Extension 계약 version이 필요한 경우 사용
+
+공개 JSON field는 TypeScript와 Go 모두 camelCase를 사용합니다. `context`는 raw body 기반
+`x-signature` 검증이 성공한 요청에서만 신뢰하세요.
+
+성공은 `result`, 예상 가능한 실패는 구조화된 `error`를 반환합니다.
+
+```json
+{ "result": { "id": "order-1" } }
+```
+
+```json
+{
+  "error": {
+    "code": 2,
+    "type": "invalidParams",
+    "message": "orderId is required"
+  }
+}
+```
+
+대표 code는 처리할 수 없는 입력 `1`, bad request `2`, not found `3`, unauthorized `4`, method not
+found `-32601`, internal error `-32603`입니다. `type`은 programmatic handling에 쓸 수 있게 안정적으로
+유지하고, error에 credential이나 고객 데이터를 넣지 마세요. 전체 envelope는
+[공통 protocol](../../reference/protocol.md)을 기준으로 합니다.
+
+## 수신 처리와 discovery
+
+Developer portal에는 Function root를 등록하고 AppStore는 system version이 붙은 route를 호출합니다.
+
+```text
+Function Endpoint: https://app.example.com/functions
+실제 요청:        PUT https://app.example.com/functions/v1
+```
+
+SDK가 route, dispatch, schema validation, error envelope와
+`extension.core.function.getFunctions` discovery를 처리합니다. Raw JSON-RPC router나 수동 discovery
+응답을 만들지 마세요. TypeScript는 `SignatureGuard`와 `rawBody: true`, Go는
+`server.WithSignature`로 정확한 request bytes의 HMAC-SHA256 signature를 검증합니다.
 
 ## TypeScript
 
-TypeScript 앱은 decorator API를 사용하세요.
+TypeScript 앱은 decorator API와 Zod schema를 사용합니다.
 
 ```ts
 @Func("orders.get")
 @InputSchema(z.object({ orderId: z.string() }))
+@OutputSchema(z.object({ id: z.string() }))
 async getOrder(@Ctx() ctx: Context, @Input() input: { orderId: string }) {
   return this.service.getOrder(ctx.channel.id, input.orderId);
 }
 ```
 
+`@Extension({ name: "command" })`이 있는 provider에서 `@Func("metadata.getCommands")`를 등록하면
+전체 이름은 `extension.command.metadata.getCommands`가 됩니다. Standalone Function provider에는
+가짜 `@Extension`을 붙이지 마세요. 모든 decorated class를 NestJS module의 `providers`에 추가해야
+discovery됩니다.
+
 ## Go
 
-Go는 decorator 대신 builder와 generic handler를 사용합니다.
+Go는 builder와 generic handler를 사용합니다.
 
 ```go
 type GetOrderInput struct {
@@ -39,36 +103,53 @@ appsdk.MustRegister(
 )
 ```
 
-`appsdk.Register`와 `appsdk.MustRegister`는 Go struct에서 입출력 schema를
-생성하고, 입력 타입이 `Validate() error`를 구현하면 자동으로 호출합니다.
-명시적인 schema가 필요하면 `appsdk.InputSchema` 또는 `appsdk.OutputSchema`를
+`appsdk.Register`와 `appsdk.MustRegister`는 Go struct에서 schema를 만들고, 입력이
+`Validate() error`를 구현하면 자동으로 호출합니다. 명시적인 계약에는 `appsdk.InputSchema`,
+`appsdk.OutputSchema`, proto helper를 사용하세요.
+
+## Native Function과 App Function 호출
+
+Native Function은 반대 방향으로 앱이 Channel 기능을 호출합니다. App token이나 channel token을
+`TokenManager`에서 얻고 typed proxy/client를 우선 사용하세요. 지원 목록은 고정된 문서 표가 아니라
+현재 SDK의 TypeScript `NativeFunctionTypeMap`과 Go `native.Client` export가 기준입니다.
+
+다른 앱 또는 자신의 등록된 Function을 AppStore를 통해 호출할 때는 SDK의 app-function client를
 사용합니다.
 
-## 확장 빌더
-
-공통 확장은 전용 builder를 사용할 수 있습니다. Config 기반 인증 앱은 `extension/config`로
-설정 schema와 validation Function 이름을 관리합니다.
+```ts
+const result = await nativeClient.callAppFunction<Input, Output>(
+  targetAppId,
+  "orders.get",
+  { orderId: "order-1" },
+  ctx,
+  channelToken.accessToken,
+);
+```
 
 ```go
-app.Use(config.Extension().
-  GetConfigSchema(handler.GetConfigSchema).
-  ValidateStoredConfig(handler.ValidateStoredConfig),
+result, err := client.CallAppFunction(
+  ctx,
+  channelToken.AccessToken,
+  targetAppID,
+  "orders.get",
+  map[string]any{"orderId": "order-1"},
+  fnCtx,
+  "",
 )
 ```
 
-WMS 앱은 `extension/wms` builder와 SDK Function 이름 상수, DTO를 함께 사용합니다.
+Access token이 있다고 business authorization이 생기는 것은 아닙니다. Target app, 설치 Channel,
+caller와 요청 대상의 관계를 handler에서 다시 검증하세요. 자세한 내용은
+[TypeScript Native Function 레퍼런스](../../reference/typescript/NATIVE.md)와
+[Go Native Function 레퍼런스](../../reference/go/NATIVE.md)를 확인하세요.
 
-서버 사이드 주요 extension은 전용 builder 패키지를 제공합니다:
-`extension/config`, `extension/oauth`, `extension/calendar`,
-`extension/command`, `extension/widget`, `extension/customtab`,
-`extension/hook`, `extension/polling`, `extension/store`,
-`extension/messaging`, `extension/alftask`, `extension/wms`.
+## Extension builder
 
-커스텀 extension은 generic builder를 사용할 수 있습니다.
+표준 Extension은 SDK schema와 Function 이름을 제공하는 전용 helper를 우선 사용합니다. Go에는
+`extension/config`, `extension/oauth`, `extension/calendar`, `extension/command`,
+`extension/widget`, `extension/customtab`, `extension/hook`, `extension/polling`,
+`extension/store`, `extension/messaging`, `extension/alftask`, `extension/wms` 등이 있습니다.
+SDK helper가 없는 standalone Function만 generic registration으로 격리하세요.
 
-```go
-app.Use(extension.New("custom").
-  ExtensionFunc("metadata.getThing", appsdk.Input[extension.Empty](), appsdk.Output[Thing](), appsdk.Handle(extension.Static(thing))).
-  Func("custom.execute", appsdk.Input[Input](), appsdk.Output[Output](), appsdk.Handle(execute)),
-)
-```
+다음으로 [Command 가이드](extensions/command.md), [WAM 가이드](wam.md),
+[앱 개발 가이드](app-development.md), [Extension 전체 가이드](extensions.md)를 확인하세요.

@@ -4,16 +4,16 @@ Go apps use the same trust model as TypeScript apps. Keep inbound request authen
 
 ## Credential Map
 
-| Value                        | Represents                                                  | Where it belongs                                                                 |
-| ---------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| App ID                       | Public identity of the app                                  | Server and WAM may use it                                                        |
-| App Secret                   | Long-lived credential used to issue app/channel token pairs | Server secret manager only                                                       |
-| Signing Key                  | HMAC key for Function requests from AppStore                | Server secret manager only                                                       |
-| App access/refresh token     | App-scoped native operations such as Extension registration | Server token cache                                                               |
-| Channel access/refresh token | Server-side operations in one installed Channel             | Per-channel server token cache                                                   |
-| Manager/User authorization   | Current user acting through a Channel client                | Managed by the WAM host runtime                                                  |
-| Provider OAuth token         | Connected external provider                                 | Injected into `appsdk.Context.AuthToken` when needed                             |
-| Config credential            | API keys, `client_credentials`, and per-shop secrets        | Stored by AppStore and injected through `Context.Config`                         |
+| Value                        | Represents                                                  | Where it belongs                                         |
+| ---------------------------- | ----------------------------------------------------------- | -------------------------------------------------------- |
+| App ID                       | Public identity of the app                                  | Server and WAM may use it                                |
+| App Secret                   | Long-lived credential used to issue app/channel token pairs | Server secret manager only                               |
+| Signing Key                  | HMAC key for Function requests from AppStore                | Server secret manager only                               |
+| App access/refresh token     | App-scoped native operations such as Extension registration | Server token cache                                       |
+| Channel access/refresh token | Server-side operations in one installed Channel             | Per-channel server token cache                           |
+| Manager/User authorization   | Current user acting through a Channel client                | Managed by the WAM host runtime                          |
+| Provider OAuth token         | Connected external provider                                 | Injected into `appsdk.Context.AuthToken` when needed     |
+| Config credential            | API keys, `client_credentials`, and per-shop secrets        | Stored by AppStore and injected through `Context.Config` |
 
 ## Incoming Function Requests
 
@@ -59,7 +59,7 @@ The manager:
 - deduplicates concurrent issue/refresh work in one process;
 - supports invalidation and a custom `native.TokenCache`.
 
-`IssueToken` and `RefreshToken` share a limited rate limit. Do not issue a token for every Function request. Direct calls to `native.Client.IssueToken` do not provide caching or refresh management.
+`IssueToken` and `RefreshToken` share a rate limit of 10 calls per 30 minutes per app. Do not issue a token for every Function request. Calling `IssueToken` without a Channel ID creates an app token; providing the ID of an installed Channel creates a channel token for permitted server-side operations in that Channel. Both calls return an access/refresh token pair and `ExpiresIn` in seconds. Direct calls to `native.Client.IssueToken` do not provide caching or refresh management.
 
 ## Multiple Replicas
 
