@@ -159,7 +159,7 @@ Register endpoint roots in the developer portal, without a system version or WAM
 `proto/` is the shared wire-contract source for TypeScript and Go. App developers normally use each language SDK's decorators, builders, schemas, and types instead of generated proto code. When documentation or an example disagrees with a public export, follow the public export and schema implementation.
 
 Continue with [Function registration](functions.md), the [Command guide](extensions/command.md), the
-[WAM guide](wam.md), the [complete app development guide](app-development.md), and the
-[Extension guide](extensions.md). For runnable code, see the
+[WAM guide](wam.md), the [Extension guide](extensions.md), and finally the
+[production readiness guide](app-development.md). For runnable code, see the
 [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) and
 [Go tutorial](https://github.com/channel-io/app-tutorial).

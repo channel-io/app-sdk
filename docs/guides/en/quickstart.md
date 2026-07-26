@@ -240,8 +240,8 @@ Secret, Signing Key, access/refresh tokens, or provider credentials into an issu
 3. Read the wire contract and define standalone typed app Functions with [Function registration](functions.md).
 4. Implement metadata, actions, and autocomplete with the [Command guide](extensions/command.md).
 5. Build the React UI, host authorization, and Function calls with the [WAM guide](wam.md).
-6. Design, secure, deploy, and operate the app with the [complete app development guide](app-development.md).
-7. Choose a capability and follow its recipe in the [Extension guide](extensions.md).
+6. Understand registration, choose a capability, and follow its recipe in the [Extension guide](extensions.md).
+7. Before launch, verify security, reliability, operations, deployment, and rollback with the [production readiness guide](app-development.md).
 8. Use the [TypeScript reference map](../../reference/typescript/README.md) or
    [Go reference](../../reference/go/README.md) for language-specific APIs.
 9. Keep the [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) or

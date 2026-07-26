@@ -11,8 +11,8 @@ If you are building or reviewing a Channel.io app, start from the files below in
 4. [docs/guides/en/functions.md](./docs/guides/en/functions.md)
 5. [docs/guides/en/extensions/command.md](./docs/guides/en/extensions/command.md)
 6. [docs/guides/en/wam.md](./docs/guides/en/wam.md)
-7. [docs/guides/en/app-development.md](./docs/guides/en/app-development.md)
-8. [docs/guides/en/extensions.md](./docs/guides/en/extensions.md)
+7. [docs/guides/en/extensions.md](./docs/guides/en/extensions.md)
+8. [docs/guides/en/app-development.md](./docs/guides/en/app-development.md)
 9. Language reference:
    - TypeScript: [docs/reference/typescript/README.md](./docs/reference/typescript/README.md)
    - Go: [docs/reference/go/README.md](./docs/reference/go/README.md)

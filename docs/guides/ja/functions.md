@@ -152,4 +152,4 @@ SDK schema と Function name を提供する標準 Extension helper を優先し
 SDK helper がない standalone Function だけを generic registration に分離してください。
 
 次に [Command ガイド](extensions/command.md)、[WAM ガイド](wam.md)、
-[app 開発ガイド](app-development.md)、[Extension 完全ガイド](extensions.md)を確認してください。
+[Extension 完全ガイド](extensions.md)、[本番運用準備ガイド](app-development.md)を確認してください。

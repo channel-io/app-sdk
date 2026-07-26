@@ -158,6 +158,6 @@ Developer portal には system version や WAM name を付ける前の root を�
 `proto/` は TypeScript と Go が共有する wire contract の source です。App developer は通常、generated proto code ではなく各言語 SDK の decorator、builder、schema、type を使います。Document や example と public export が一致しない場合は、public export と schema implementation を優先してください。
 
 次に [Function 登録](functions.md)、[Command ガイド](extensions/command.md)、[WAM ガイド](wam.md)、
-[app 開発完全ガイド](app-development.md)、[Extension 完全ガイド](extensions.md)を確認してください。
+[Extension 完全ガイド](extensions.md)、最後に [本番運用準備ガイド](app-development.md)を確認してください。
 実行可能な code は [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) と
 [Go tutorial](https://github.com/channel-io/app-tutorial)を参照してください。

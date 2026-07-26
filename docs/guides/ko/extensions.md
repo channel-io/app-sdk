@@ -1,15 +1,195 @@
 # Extension 전체 가이드
 
-Extension은 typed app Function을 Channel의 표준 기능에 연결합니다. Handler를 작성하기 전에
-공식 Extension을 선택하고 SDK schema와 function name을 재사용하세요. 앱 고유 비즈니스 동작은
-standalone Function으로 둡니다. Extension 등록과 실제 실행은 별개이므로 `registerExtension`
-성공만으로 metadata discovery와 handler 동작이 확인된 것은 아닙니다.
+## Extension이란 무엇인가
+
+Extension은 typed app Function을 Channel의 표준 기능에 연결하는 이름과 버전이 있는 계약입니다.
+앱이 공식 Function 이름과 schema를 구현하면 Channel 화면은 command, widget, custom tab, hook,
+OAuth 등 해당 기능을 discovery하고 호출할 수 있습니다.
+
+Extension은 보통 두 종류의 Function으로 구성됩니다.
+
+| Function 종류           | 역할                                              | 예시                                     |
+| ----------------------- | ------------------------------------------------- | ---------------------------------------- |
+| Metadata 또는 discovery | 기능을 설명하고 runtime Function을 가리킴         | `extension.command.metadata.getCommands` |
+| Runtime 또는 action     | 사용자에게 보이는 작업이나 background 작업을 실행 | `extension.command.command.execute`      |
+
+Metadata는 `orders.sync` 같은 standalone app Function을 참조할 수도 있습니다. 앱 고유 비즈니스
+동작은 standalone으로 두고 표준 계약만 Extension namespace를 사용하세요. Extension 내부의 relative
+name은 `extension.{extensionName}.{relativeName}` 전체 이름이 됩니다.
+
+등록은 앱 코드를 업로드하거나 배포하는 작업이 아닙니다. 앱 단위
+`(extensionName, systemVersion)` 계약을 AppStore에 알려 설정된 Function Endpoint에서 schema를
+discovery할 수 있게 합니다. 또한 개별 Channel에 앱을 설치하거나 기능을 활성화하는 작업도 아닙니다.
+Channel 설치, permission 승인, 기능 활성화는 별도 단계입니다.
+
+## 구현부터 discovery까지
+
+```text
+SDK decorator 또는 builder
+  → Function schema와 Extension 등록 대상
+  → HTTPS 서버가 listening 시작
+  → SDK가 cache된 app token 획득
+  → registerExtension(appId, extensionName, systemVersion)
+  → AppStore가 getFunctions와 metadata Function 호출
+  → 설치된 Channel 화면이 runtime Function 호출
+```
+
+SDK가 제공하는 Extension family, Function 이름, schema를 사용하세요. Metadata가 action Function을
+가리킨다고 그 Function이 자동으로 생기지는 않습니다. Metadata Function과 참조되는 모든 runtime
+Function을 앱 서버에 함께 등록해야 합니다.
+
+## TypeScript 구현과 자동 등록
+
+`@Extension`으로 family와 system version을 선언하고 `@Func`에 relative name을 지정한 뒤 decorated
+class를 NestJS provider로 등록합니다. `ChannelAppModule`이 provider를 discovery하고 HTTP listener가
+준비된 뒤 권장 등록 흐름을 실행합니다.
+
+```ts
+import { Module } from "@nestjs/common";
+import { z } from "zod";
+import {
+  ChannelAppModule,
+  CommandResultSchema,
+  Extension,
+  Func,
+  GetCommandsOutputSchema,
+  InputSchema,
+  OutputSchema,
+} from "@channel.io/app-sdk-server";
+
+@Extension({ name: "command", systemVersion: "v1" })
+class CommandExtension {
+  @Func("metadata.getCommands")
+  @InputSchema(z.object({}))
+  @OutputSchema(GetCommandsOutputSchema)
+  getCommands() {
+    return {
+      commands: [
+        {
+          name: "hello",
+          scope: "desk",
+          actionFunctionName: "extension.command.command.open",
+          alfMode: "disable",
+          enabledByDefault: true,
+        },
+      ],
+    };
+  }
+
+  @Func("command.open")
+  @InputSchema(z.object({}).passthrough())
+  @OutputSchema(CommandResultSchema)
+  open() {
+    return { type: "text", attributes: { message: "Hello" } };
+  }
+}
+
+@Module({
+  imports: [
+    ChannelAppModule.forRoot({
+      appId: process.env.APP_ID!,
+      appSecret: process.env.APP_SECRET!,
+      signingKey: process.env.SIGNING_KEY!,
+      autoRegister: true,
+    }),
+  ],
+  providers: [CommandExtension],
+})
+export class AppModule {}
+```
+
+Class가 `providers`에서 빠지면 discovery할 수 없습니다. `autoRegister`가 false여도 구현된 Function은
+SDK가 dispatch하지만 해당 Extension 등록 대상을 AppStore에 게시하지는 않습니다.
+
+## Go 구현과 자동 등록
+
+Typed `extension/{family}` builder와 `app.Use`를 사용합니다. Builder가 Function schema와 Extension
+등록 대상을 함께 선언합니다. `server.WithAutoRegister()`는 서버가 discovery 요청에 응답할 수 있게
+된 뒤 등록을 시작합니다.
+
+```go
+app := appsdk.New(appsdk.Options{
+  AppID:     os.Getenv("APP_ID"),
+  AppSecret: os.Getenv("APP_SECRET"),
+})
+
+if err := app.Use(command.Extension().
+  GetCommands(command.StaticCommands(&command.Config{
+    Name:               "meeting",
+    Scope:              command.ScopeDesk,
+    ActionFunctionName: "commands.meeting.execute",
+    AlfMode:            command.AlfModeDisable,
+  })).
+  Execute("commands.meeting.execute", executeMeeting),
+); err != nil {
+  log.Fatal(err)
+}
+
+if err := server.Run(
+  app,
+  server.WithSignature(os.Getenv("SIGNING_KEY")),
+  server.WithAutoRegister(),
+); err != nil {
+  log.Fatal(err)
+}
+```
+
+배포 정책에 별도 retry나 관측이 필요하면 `server.WithAutoRegisterRetry`와
+`server.WithAutoRegisterResult`를 사용합니다. 기존 Gin 서버는 `server/gin`의 같은 옵션을 사용합니다.
+
+## `registerExtension`이 하는 일
+
+권장 자동 등록 흐름은 다음과 같습니다.
+
+1. Function 서버가 listening할 때까지 기다립니다.
+2. `TokenManager`를 통해 cache된 **app token** 하나를 얻습니다.
+3. Discovery된 각 Extension name과 system version으로 `registerExtension`을 호출합니다.
+4. 일시적인 실패를 제한된 exponential backoff로 재시도합니다.
+5. AppStore가 versioned Function Endpoint에서 schema와 metadata를 discovery하게 합니다.
+
+요청 field는 camelCase인 `appId`, `extensionName`, `systemVersion`입니다. `v1` 같은
+`systemVersion`은 Channel Extension 계약 버전이며 앱 release version이 아닙니다.
+
+Custom bootstrap이나 배포 시스템이 등록을 제어할 때만 native Function을 직접 호출합니다.
+
+| SDK        | 직접 호출                                                                                        |
+| ---------- | ------------------------------------------------------------------------------------------------ |
+| TypeScript | `nativeClient.registerExtension(appId, extensionName, systemVersion, appToken.accessToken)`      |
+| Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
+
+Function 요청마다 새 token을 발급하거나 등록하지 마세요. Standalone Function만 있는 앱은 SDK의
+`core:v1` fallback을 사용합니다. ALF task, Notebook, Messaging 같은 고급 family는 generic Extension
+등록 뒤 secondary sync 또는 product 설정이 필요할 수 있으므로 해당 family 문서를 따르세요.
+
+## 등록 lifecycle과 검증
+
+- AppStore가 등록 직후 discovery를 호출할 수 있으므로 Function Endpoint를 먼저 배포합니다.
+- 일반 startup에서는 자동 등록을 켜고 custom 무한 loop 대신 SDK의 제한된 retry를 사용합니다.
+- 여러 replica를 배포하면 shared token storage를 사용합니다. 중복된 idempotent 등록 요청은
+  허용되지만 각 replica가 cache 없이 별도 token 발급 loop를 실행해서는 안 됩니다.
+- Extension schema, metadata, Function 이름, permission, Function Endpoint가 바뀌면 다시
+  등록합니다. 단순 앱 release 때문에 `systemVersion`을 바꾸지 마세요.
+- 기능을 의도적으로 제거할 때만 `unregisterExtension`을 사용합니다. 배포 rollback은 마지막으로
+  호환되는 서버와 schema를 복원해야 합니다.
+
+다음 경계를 각각 검증하세요.
+
+1. Startup log에 예상 Extension name, system version, 등록 성공이 표시됩니다.
+2. `getFunctions` discovery에 모든 metadata와 참조된 runtime Function이 포함됩니다.
+3. 설치와 활성화 뒤 의도한 Channel 화면에 metadata가 표시됩니다.
+4. Test Channel에서 실제 runtime 호출 하나가 성공합니다.
+5. 잘못된 입력·signature, permission 누락, 일시적인 등록 실패가 설계대로 거부되거나 재시도됩니다.
+
+`registerExtension` 성공은 등록 요청이 수락되었다는 것만 증명합니다. Discovery, metadata validation,
+Channel 설치·활성화, runtime handler가 동작한다는 뜻은 아닙니다.
+
+## Extension family 선택
 
 모든 Extension은 다음 순서로 구현합니다.
 
 1. Function이 실제로 사용하는 최소 permission만 활성화합니다.
 2. SDK schema로 metadata Function과 metadata가 참조하는 Function을 구현합니다.
-3. App token으로 Extension을 한 번 등록합니다.
+3. App token을 사용하는 SDK 자동 등록을 적용합니다.
 4. Discovery, 정상 호출, 잘못된 입력, 권한 누락, retry를 테스트합니다.
 5. App Secret, Signing Key, app/channel token, provider credential을 WAM에 넣지 않습니다.
 
@@ -171,3 +351,6 @@ log에 남기지 않습니다.
 - Provider credential은 Config/OAuth에서 주입하고 client에 반환하지 않습니다.
 - Mutation은 idempotent하거나 안전하게 retry할 수 있고 permission failure가 명확합니다.
 - 설치된 test app에서 discovery와 실제 호출을 한 번 이상 통과합니다.
+
+구현 검증이 끝나면 [프로덕션 준비 가이드](app-development.md)를 최종 보안, 신뢰성, 배포, 운영,
+rollback gate로 사용하세요.

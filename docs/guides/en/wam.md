@@ -112,7 +112,8 @@ then call `close()`. Do not close the WAM before the user can see a failed actio
 - Verify initial size, dynamic resizing, and normal close behavior.
 - Check bundles, source maps, logs, and `wamArgs` for credentials.
 
-Read the [Command guide](extensions/command.md) for opening a WAM from a command and the
-[app development guide](app-development.md) for design and operations. Use the
+Read the [Command guide](extensions/command.md) for opening a WAM from a command, the
+[Extension guide](extensions.md) for registration, and the
+[production readiness guide](app-development.md) before launch. Use the
 [TypeScript WAM reference](../../reference/typescript/WAM.md) for exact hook APIs and the
 [Go WAM reference](../../reference/go/WAM.md) for server integration.

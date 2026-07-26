@@ -152,4 +152,4 @@ caller와 요청 대상의 관계를 handler에서 다시 검증하세요. 자�
 SDK helper가 없는 standalone Function만 generic registration으로 격리하세요.
 
 다음으로 [Command 가이드](extensions/command.md), [WAM 가이드](wam.md),
-[앱 개발 가이드](app-development.md), [Extension 전체 가이드](extensions.md)를 확인하세요.
+[Extension 전체 가이드](extensions.md), [프로덕션 준비 가이드](app-development.md)를 확인하세요.
