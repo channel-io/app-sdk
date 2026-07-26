@@ -153,4 +153,4 @@ packages include `extension/config`, `extension/oauth`, `extension/calendar`,
 `extension/wms`. Isolate generic registration to standalone Functions without an SDK helper.
 
 Continue with the [Command guide](extensions/command.md), [WAM guide](wam.md),
-[app development guide](app-development.md), and [Extension guide](extensions.md).
+[Extension guide](extensions.md), and [production readiness guide](app-development.md).

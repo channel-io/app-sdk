@@ -16,8 +16,8 @@ required_text=(
   'functions.md'
   'extensions/command.md'
   'wam.md'
-  'app-development.md'
   'extensions.md'
+  'app-development.md'
   '../../reference/typescript/README.md'
   '../../reference/go/README.md'
 )
@@ -70,8 +70,8 @@ for locale in "${locales[@]}"; do
     functions.md
     extensions/command.md
     wam.md
-    app-development.md
     extensions.md
+    app-development.md
   )
   for index_number in "${!ordered_guides[@]}"; do
     number=$((index_number + 1))
@@ -114,6 +114,20 @@ for locale in "${locales[@]}"; do
   for expected in WamProvider useCallFunction useNativeFunction useWamSize useWamClose; do
     if ! grep -Fq "$expected" "docs/guides/${locale}/wam.md"; then
       printf 'Missing preserved WAM guidance in %s: %s\n' "docs/guides/${locale}/wam.md" "$expected" >&2
+      failed=1
+    fi
+  done
+
+  for expected in 'registerExtension(appId, extensionName, systemVersion)' ChannelAppModule.forRoot '@Extension' 'server.WithAutoRegister()' app.Use getFunctions systemVersion unregisterExtension core:v1 'app token'; do
+    if ! grep -Fq "$expected" "docs/guides/${locale}/extensions.md"; then
+      printf 'Missing Extension registration guidance in %s: %s\n' "docs/guides/${locale}/extensions.md" "$expected" >&2
+      failed=1
+    fi
+  done
+
+  for expected in rollback 'secret rotation' 'token cache' 'registration race' 'provider throttling' x-signature idempotency getFunctions; do
+    if ! grep -Fq "$expected" "docs/guides/${locale}/app-development.md"; then
+      printf 'Missing production-readiness guidance in %s: %s\n' "docs/guides/${locale}/app-development.md" "$expected" >&2
       failed=1
     fi
   done

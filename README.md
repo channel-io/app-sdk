@@ -43,13 +43,13 @@ to customize or ship the app:
 5. **Build the WAM React UI and host-authorized calls:**
    [Korean](docs/guides/ko/wam.md), [English](docs/guides/en/wam.md), or
    [Japanese](docs/guides/ja/wam.md)
-6. **Design, secure, deploy, and operate the app:**
+6. **Choose an Extension family, implement it, and understand registration:**
+   [Korean](docs/guides/ko/extensions.md), [English](docs/guides/en/extensions.md), or
+   [Japanese](docs/guides/ja/extensions.md)
+7. **Prepare the working app for a safe production release:**
    [Korean](docs/guides/ko/app-development.md),
    [English](docs/guides/en/app-development.md), or
    [Japanese](docs/guides/ja/app-development.md)
-7. **Choose an Extension family and follow its recipe:**
-   [Korean](docs/guides/ko/extensions.md), [English](docs/guides/en/extensions.md), or
-   [Japanese](docs/guides/ja/extensions.md)
 8. **Use the language-specific API reference:**
    [TypeScript reference](docs/reference/typescript/README.md), or
    [Go reference](docs/reference/go/README.md)

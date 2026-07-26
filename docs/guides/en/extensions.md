@@ -1,15 +1,202 @@
 # Extension Guide
 
-An Extension connects typed app Functions to a standard Channel capability. Choose an official
-Extension before writing handlers, reuse the SDK schemas and names, and keep app-specific business
-Functions standalone. Registration and runtime execution are separate: a successful
-`registerExtension` call does not prove that metadata discovery or handlers work.
+## What an Extension is
+
+An Extension is a named, versioned contract that connects typed app Functions to a standard
+Channel capability. Channel surfaces know how to discover and invoke a command, widget, custom tab,
+hook, OAuth flow, or other capability because the app implements that Extension's official Function
+names and schemas.
+
+An Extension normally contains two kinds of Functions:
+
+| Function kind         | Purpose                                                  | Example                                  |
+| --------------------- | -------------------------------------------------------- | ---------------------------------------- |
+| Metadata or discovery | Describes the capability and points to runtime Functions | `extension.command.metadata.getCommands` |
+| Runtime or action     | Performs the user-visible or background operation        | `extension.command.command.execute`      |
+
+Metadata may reference a standalone app Function such as `orders.sync`. Keep app-specific business
+operations standalone, and use the Extension namespace only for the standard contract. Inside an
+Extension, a relative name becomes `extension.{extensionName}.{relativeName}`.
+
+Registration does not upload or deploy app code. It announces the app-level
+`(extensionName, systemVersion)` contract so AppStore can call the configured Function Endpoint and
+discover schemas. It also does not install or enable the app in an individual Channel; installation,
+permission grants, and capability activation are separate steps.
+
+## From implementation to discovery
+
+```text
+SDK decorator or builder
+  → Function schemas and Extension registration target
+  → HTTPS server starts listening
+  → SDK obtains a cached app token
+  → registerExtension(appId, extensionName, systemVersion)
+  → AppStore calls getFunctions and metadata Functions
+  → installed Channel surfaces invoke runtime Functions
+```
+
+Use the SDK-owned Extension family, Function names, and schemas. A metadata response that points to
+an action Function does not create that Function automatically; both the metadata Function and every
+referenced runtime Function must be registered in the app server.
+
+## TypeScript implementation and auto-registration
+
+Use `@Extension` for the family and system version, `@Func` for relative names, and register the
+decorated class as a NestJS provider. `ChannelAppModule` discovers the provider and performs the
+recommended registration flow after the HTTP listener is ready.
+
+```ts
+import { Module } from "@nestjs/common";
+import { z } from "zod";
+import {
+  ChannelAppModule,
+  CommandResultSchema,
+  Extension,
+  Func,
+  GetCommandsOutputSchema,
+  InputSchema,
+  OutputSchema,
+} from "@channel.io/app-sdk-server";
+
+@Extension({ name: "command", systemVersion: "v1" })
+class CommandExtension {
+  @Func("metadata.getCommands")
+  @InputSchema(z.object({}))
+  @OutputSchema(GetCommandsOutputSchema)
+  getCommands() {
+    return {
+      commands: [
+        {
+          name: "hello",
+          scope: "desk",
+          actionFunctionName: "extension.command.command.open",
+          alfMode: "disable",
+          enabledByDefault: true,
+        },
+      ],
+    };
+  }
+
+  @Func("command.open")
+  @InputSchema(z.object({}).passthrough())
+  @OutputSchema(CommandResultSchema)
+  open() {
+    return { type: "text", attributes: { message: "Hello" } };
+  }
+}
+
+@Module({
+  imports: [
+    ChannelAppModule.forRoot({
+      appId: process.env.APP_ID!,
+      appSecret: process.env.APP_SECRET!,
+      signingKey: process.env.SIGNING_KEY!,
+      autoRegister: true,
+    }),
+  ],
+  providers: [CommandExtension],
+})
+export class AppModule {}
+```
+
+If the class is missing from `providers`, discovery cannot see it. If `autoRegister` is false, the
+SDK still dispatches implemented Functions, but it does not publish their Extension target to
+AppStore.
+
+## Go implementation and auto-registration
+
+Use the typed `extension/{family}` builder with `app.Use`. The builder declares both the Function
+schemas and the Extension target. `server.WithAutoRegister()` starts registration after the server
+can answer discovery requests.
+
+```go
+app := appsdk.New(appsdk.Options{
+  AppID:     os.Getenv("APP_ID"),
+  AppSecret: os.Getenv("APP_SECRET"),
+})
+
+if err := app.Use(command.Extension().
+  GetCommands(command.StaticCommands(&command.Config{
+    Name:               "meeting",
+    Scope:              command.ScopeDesk,
+    ActionFunctionName: "commands.meeting.execute",
+    AlfMode:            command.AlfModeDisable,
+  })).
+  Execute("commands.meeting.execute", executeMeeting),
+); err != nil {
+  log.Fatal(err)
+}
+
+if err := server.Run(
+  app,
+  server.WithSignature(os.Getenv("SIGNING_KEY")),
+  server.WithAutoRegister(),
+); err != nil {
+  log.Fatal(err)
+}
+```
+
+Use `server.WithAutoRegisterRetry` and `server.WithAutoRegisterResult` when deployment policy needs
+custom retry or observability. Existing Gin servers use the equivalent options from `server/gin`.
+
+## What `registerExtension` does
+
+The recommended auto-registration flow:
+
+1. waits until the Function server is listening;
+2. gets one cached **app token** through `TokenManager`;
+3. calls `registerExtension` for every discovered Extension name and system version;
+4. retries transient failures with bounded exponential backoff;
+5. lets AppStore call the versioned Function Endpoint for schema and metadata discovery.
+
+The request fields are camelCase: `appId`, `extensionName`, and `systemVersion`. `systemVersion` such
+as `v1` is the Channel Extension contract version, not the release version of your app.
+
+Only custom bootstraps or deployment-controlled registration normally call the native Function
+directly:
+
+| SDK        | Explicit call                                                                                    |
+| ---------- | ------------------------------------------------------------------------------------------------ |
+| TypeScript | `nativeClient.registerExtension(appId, extensionName, systemVersion, appToken.accessToken)`      |
+| Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
+
+Do not issue a new token or register on every Function request. Apps with only standalone Functions
+use the SDK's `core:v1` fallback. Advanced families such as ALF task, Notebook, and Messaging may
+require a secondary sync or coordinated product setup after generic Extension registration; follow
+their family recipe.
+
+## Registration lifecycle and verification
+
+- Deploy the Function Endpoint before registration because AppStore may call discovery immediately.
+- Keep auto-registration enabled on normal startup and use its bounded retry instead of a custom
+  infinite loop.
+- In a multi-replica deployment, use shared token storage. Duplicate idempotent registration calls
+  are acceptable, but every replica must not issue its own uncached token loop.
+- Re-register after changing Extension schemas, metadata, Function names, permissions, or the
+  Function Endpoint. Do not change `systemVersion` merely for an app release.
+- Use `unregisterExtension` only when intentionally removing a capability; deployment rollback alone
+  should restore the last compatible server and schemas.
+
+Verify these boundaries separately:
+
+1. startup logs show the expected Extension name, system version, and successful registration;
+2. `getFunctions` discovery contains every metadata and referenced runtime Function;
+3. metadata appears on the intended Channel surface after installation and activation;
+4. one real runtime call succeeds in a test Channel;
+5. invalid input, invalid signature, missing permission, and transient registration failure are
+   rejected or retried as designed.
+
+A successful `registerExtension` response proves only that the registration request was accepted.
+It does not prove that discovery, metadata validation, Channel installation, activation, or runtime
+handlers work.
+
+## Choose an Extension family
 
 For every Extension:
 
 1. enable only the permissions used by its Functions;
 2. implement metadata and referenced Functions with SDK schemas;
-3. register the Extension once with an app token;
+3. use SDK auto-registration with an app token;
 4. test discovery, valid calls, invalid input, missing authorization, and retries;
 5. keep App Secret, Signing Key, app/channel tokens, and provider credentials out of WAM code.
 
@@ -172,3 +359,6 @@ avoid logging raw mail content.
 - Provider credentials are injected from Config/OAuth and never returned to the client.
 - Mutations are idempotent or safely retryable and have explicit permission-failure behavior.
 - Discovery and at least one real invocation pass in an installed test app.
+
+After implementation passes, use the [production readiness guide](app-development.md) as the final
+security, reliability, deployment, operations, and rollback gate.

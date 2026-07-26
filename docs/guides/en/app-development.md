@@ -1,108 +1,134 @@
-# App Development Guide
+# Production Readiness Guide
 
-This guide covers the decisions that remain after the [first-app Quickstart](./quickstart.md):
-architecture, security, deployment, and operations. Exact SDK APIs live in the
-[TypeScript reference](../../reference/typescript/README.md) and
-[Go reference](../../reference/go/README.md). Use the
-[TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) or
-[Go tutorial](https://github.com/channel-io/app-tutorial) for complete runnable code.
+Use this guide after the app works end to end in an installed test Channel. It is not required to
+finish the first-app Quickstart. Its purpose is to turn a working Function, Extension, and optional
+WAM into a release that can be deployed, rolled back, observed, and operated safely.
 
-## 1. Design the capability boundary
+Complete the [Concepts](concepts.md), [Extension guide](extensions.md), and the relevant family
+recipes first. Exact APIs remain in the [TypeScript reference](../../reference/typescript/README.md)
+and [Go reference](../../reference/go/README.md).
 
-Start from a user task, then choose the smallest Extension family that exposes it. An Extension
-publishes a versioned capability and its metadata/runtime Functions. Standalone Functions are typed
-RPCs that can be referenced by Extensions or WAMs. A WAM is optional React UI hosted inside
-Channel; keep business rules and privileged provider calls on the server.
+## How to use this guide
 
-Before coding, write down:
+Treat each section as a release gate. Record the owner, evidence, and rollback decision for every
+item that applies to the app.
 
-- the user action and supported Channel surfaces;
-- the Extension family and required Functions;
-- input/output schemas and stable error types;
-- app-scoped versus channel-scoped Native Function permissions;
-- whether a WAM is necessary;
-- idempotency, retry, timeout, and provider rate-limit behavior.
+| Gate        | Evidence before release                                                   |
+| ----------- | ------------------------------------------------------------------------- |
+| Contract    | Function schemas, Extension discovery, and permissions reviewed           |
+| Security    | Signature, credential, authorization, and secret rotation tests pass      |
+| Reliability | Retry, idempotency, timeout, token cache, and provider limits are bounded |
+| Operations  | Safe logs, metrics, alerts, runbook, and rollback are ready               |
+| Runtime     | Server and WAM builds pass in an installed private app                    |
 
-See [Concepts](./concepts.md), [Functions](./functions.md), the
-[Command guide](./extensions/command.md), the [WAM guide](./wam.md), and the
-[Extension decision guide](./extensions.md).
+## 1. Freeze the public contract
 
-## 2. Separate trust zones
+- Review every public Function name, input/output schema, stable error type, Extension metadata ID,
+  and `systemVersion` before release.
+- Confirm `getFunctions` discovery contains every metadata Function and referenced runtime Function.
+- Exercise one real call for each released capability; registration success alone is not evidence of
+  runtime behavior.
+- Deploy the compatible Function Endpoint before registration or schema changes because AppStore may
+  call discovery immediately.
+- Treat permission additions as a product rollout. Verify how existing installations receive or
+  approve the new permission before depending on it.
 
-Use three explicit zones:
+Keep provider-specific operations standalone when they are not part of a standard Extension
+contract. Follow the [Function registration guide](functions.md) and
+[Extension guide](extensions.md) instead of maintaining a second contract description here.
 
-1. **Channel host:** authenticates the current manager and supplies WAM context.
-2. **WAM:** renders validated host data and requests narrow app/native actions.
-3. **App server:** verifies signed Function requests, stores credentials, obtains scoped tokens,
-   calls providers and Channel operations, and enforces business authorization.
+## 2. Close security and data-handling gaps
 
-Never put App Secret, Signing Key, refresh tokens, or provider credentials in the WAM. Treat WAM
-arguments as untrusted input. If the WAM needs to reference a privileged target, issue a short-lived
-server-signed target and re-check channel/caller identity when it returns.
+- Require App ID, App Secret, and Signing Key at process startup; fail closed when any required value
+  is missing.
+- Verify every inbound Function request with `x-signature` over the exact raw body. Never disable
+  verification in a deployed environment.
+- Keep App Secret, Signing Key, refresh token, provider credentials, and server access tokens out of
+  WAM bundles, source maps, logs, analytics, and `wamArgs`.
+- Validate Function input and WAM host data. A valid token or signature does not replace business
+  authorization for the requested Channel, user, manager, or provider resource.
+- Document secret rotation order, overlap period, revocation, and verification. Test secret rotation
+  before an incident requires it.
+- Define log retention, redaction, and deletion policies for customer and provider data.
 
-## 3. Authentication and permissions
+## 3. Bound failure and concurrency
 
-Verify every inbound Function request against its raw body and Signing Key. Use the SDK signature
-middleware/guard rather than hand-written HMAC code. Keep signature bypasses limited to explicit
-local tests.
+- Set client, server, and provider timeouts. Do not allow a Function request to wait indefinitely.
+- Retry only transient failures with bounded exponential backoff and jitter. Respect provider
+  throttling and `Retry-After` when available.
+- Give mutations an idempotency key or durable deduplication record. Test duplicate Function, hook,
+  polling, and webhook delivery.
+- Use shared token cache storage for multiple replicas. Verify refresh locking and fallback token
+  issue behavior without exceeding the app token rate limit.
+- Make Extension auto-registration idempotent and bounded. Multiple replicas may race at startup, so
+  share token state and ensure a registration race cannot create an unbounded retry storm.
+- Separate liveness from readiness. A process should not receive traffic until required schema,
+  migration, credential, and provider checks have completed.
+- Bound queues, batch sizes, cursor progress, WAM payload size, and provider response size.
 
-Use `TokenManager` for token caching and refresh:
+## 4. Test the release candidate
 
-- app token: Extension registration and app-owned operations;
-- channel token: server-side operations in one installed Channel;
-- host-authorized native call: actions performed by the current manager from a WAM.
+Verify four layers:
 
-Request only the permissions needed by the selected flow. A valid token does not replace
-authorization checks. Read the language-specific authentication and Native Function references.
+1. schema, serialization, and pure business rules;
+2. signature rejection, token scope, permission denial, and structured Function errors;
+3. Function discovery, Extension metadata, server/WAM build, and endpoint routing;
+4. installed private-app flows in a test Channel, including success, denial, retry, duplicate
+   delivery, provider outage, and recovery.
 
-## 4. Build one vertical slice
+Use the same artifact and configuration shape that production will run. Test TypeScript and Go
+server behavior against the same public contract when the app supports both implementations. A Go
+server can serve the same React WAM package used by a TypeScript server.
 
-Implement one user-visible path end to end before adding more families:
+## 5. Add safe observability
 
-1. shared schema;
-2. Function handler and Extension metadata;
-3. signature verification and auto-registration;
-4. WAM only if needed;
-5. one typed Native Function or provider call;
-6. unit tests plus an installed-app test.
+Record only fields needed to operate the app:
 
-TypeScript apps normally use NestJS decorators and Zod. Go apps use builders, structs, and typed
-handlers. A Go server can serve the same React WAM packages as a TypeScript server.
+- operation or full Function name;
+- request/correlation ID;
+- app deployment version and Extension system version;
+- latency, outcome, stable error type, retry count, and provider status category.
 
-## 5. Endpoints and deployment
+Do not log message bodies, tokens, credentials, raw Function input, customer records, provider
+payloads, or signed request bodies. Sanitize errors before they reach logs or traces.
 
-Expose HTTPS roots, not individual Function or WAM names:
+Alert on sustained signature failures, Extension registration failure, token refresh errors,
+provider throttling, queue lag, Function latency/error-rate increases, and repeated rollback
+conditions. Link each alert to an owner and runbook rather than alerting on every individual failure.
 
-| Setting           | Example root                           |
-| ----------------- | -------------------------------------- |
-| Function Endpoint | `https://app.example.com/functions`    |
-| WAM Endpoint      | `https://app.example.com/resource/wam` |
+## 6. Deploy and roll back safely
 
-Keep Function and WAM routing under stable roots. Configure health checks separately. Run schema
-and migration work before accepting traffic, and make Extension auto-registration safe to retry.
-For multiple instances, use shared token storage and ensure registration does not create races.
+- Make database and schema migrations backward compatible with both the previous and next app
+  versions. Separate destructive cleanup into a later release.
+- Roll out the server before metadata that points to new Functions. Publish WAM assets with immutable
+  filenames or verified cache invalidation.
+- Use a canary or bounded test installation when the provider, permission set, or Extension contract
+  changes materially.
+- Define rollback triggers such as elevated Function errors, discovery failure, authorization
+  regression, provider saturation, or data-integrity risk.
+- Keep the previous server/WAM artifact, configuration, migration position, and permission behavior
+  available for rollback. Confirm that registration and discovery return to the compatible contract
+  after rollback.
+- Run post-deploy smoke tests from an installed Channel and watch the agreed metrics for the release
+  window.
 
-## 6. Testing and release
+## 7. Final launch checklist
 
-Test at four levels:
+- [ ] Public Function and Extension contracts are reviewed and discovery is verified.
+- [ ] Signature, permission, business authorization, and secret rotation tests pass.
+- [ ] Token cache, registration race, idempotency, timeout, retry, and provider throttling are bounded.
+- [ ] Logs and traces contain no credentials or customer/provider payloads.
+- [ ] Alerts, dashboards, ownership, and incident runbooks exist.
+- [ ] Migration, deployment order, smoke tests, and rollback have been rehearsed.
+- [ ] The exact production artifact works in an installed private app.
 
-- schemas and pure business rules;
-- Function discovery, errors, signatures, and token scope;
-- server/WAM build and endpoint routing;
-- installed private app in a test Channel, including denied permissions and retries.
+## Reference map
 
-Log operation names, request IDs, latency, and stable error types. Do not log message bodies,
-tokens, credentials, or customer/provider data. Define alerts for signature failures, registration
-failures, token refresh errors, provider throttling, and elevated Function latency.
-
-Before release, verify rollback, secret rotation, token cache behavior, permission changes, and the
-installed app after a fresh process start.
-
-## Next references
-
-- [Command guide](./extensions/command.md)
-- [WAM guide](./wam.md)
-- [Extension recipes](./extensions.md)
-- [TypeScript reference map](../../reference/typescript/README.md)
-- [Go reference map](../../reference/go/README.md)
-- [Cross-language protocol](../../reference/protocol.md)
+- [Extension guide and family recipes](extensions.md)
+- [Function registration](functions.md)
+- [WAM guide](wam.md)
+- [TypeScript reference](../../reference/typescript/README.md)
+- [Go reference](../../reference/go/README.md)
+- [Common protocol](../../reference/protocol.md)
+- [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts)
+- [Go tutorial](https://github.com/channel-io/app-tutorial)

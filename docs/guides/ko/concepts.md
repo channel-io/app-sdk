@@ -157,6 +157,6 @@ Developer portal에는 version이나 WAM 이름이 붙기 전의 root를 등록�
 `proto/`는 TypeScript와 Go가 공유하는 wire contract의 원천입니다. 앱 개발자는 보통 generated proto code를 직접 다루지 않고 각 언어 SDK의 decorator, builder, schema와 타입을 사용합니다. 문서나 예제와 public export가 다르면 public export와 schema 구현을 우선하세요.
 
 다음으로 [Function 등록](functions.md), [Command 가이드](extensions/command.md), [WAM 가이드](wam.md),
-[앱 개발 전체 가이드](app-development.md), [Extension 전체 가이드](extensions.md)를 확인하세요. 실행
+[Extension 전체 가이드](extensions.md), 마지막으로 [프로덕션 준비 가이드](app-development.md)를 확인하세요. 실행
 가능한 코드는 [TypeScript 튜토리얼](https://github.com/channel-io/app-tutorial-ts)과
 [Go 튜토리얼](https://github.com/channel-io/app-tutorial)을 참고하세요.

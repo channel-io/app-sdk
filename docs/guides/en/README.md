@@ -9,8 +9,8 @@ These guides give Channel app developers one shared model for the TypeScript and
 3. [Function registration](functions.md): read the wire contract and define standalone typed app Functions.
 4. [Command guide](extensions/command.md): implement metadata, actions, and autocomplete.
 5. [WAM guide](wam.md): implement the React UI, host authorization, and app/native Function calls.
-6. [Complete app development guide](app-development.md): design, secure, deploy, and operate the app.
-7. [Extension guide and 16 TypeScript/Go family recipes](extensions.md): select a capability and implement its contract.
+6. [Extension guide and 16 TypeScript/Go family recipes](extensions.md): understand registration, select a capability, and implement its contract.
+7. [Production readiness guide](app-development.md): verify security, reliability, operations, deployment, and rollback before launch.
 8. Use the [TypeScript reference map](../../reference/typescript/README.md) or
    [Go reference](../../reference/go/README.md) for language-specific APIs.
 9. Keep the [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) or

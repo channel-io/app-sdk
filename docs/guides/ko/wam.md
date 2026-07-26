@@ -108,7 +108,8 @@ useEffect(() => setSize({ width: 480, height: 320 }), [setSize]);
 - 초기 크기, 동적 resize, 정상 close를 확인합니다.
 - bundle, source map, log, `wamArgs`에 credential이 없는지 검사합니다.
 
-Command에서 WAM을 여는 방법은 [Command 가이드](extensions/command.md), 전체 설계와 운영은
-[앱 개발 가이드](app-development.md)를 확인하세요. 정확한 hook API는
+Command에서 WAM을 여는 방법은 [Command 가이드](extensions/command.md), 등록은
+[Extension 전체 가이드](extensions.md), 출시 전 검증은 [프로덕션 준비 가이드](app-development.md)를
+확인하세요. 정확한 hook API는
 [TypeScript WAM 레퍼런스](../../reference/typescript/WAM.md), Go 서버 연결은
 [Go WAM 레퍼런스](../../reference/go/WAM.md)를 기준으로 합니다.

@@ -109,7 +109,8 @@ useEffect(() => setSize({ width: 480, height: 320 }), [setSize]);
 - 初期 size、dynamic resize、正常な close を確認します。
 - Bundle、source map、log、`wamArgs` に credential がないことを確認します。
 
-Command から WAM を開く方法は [Command ガイド](extensions/command.md)、全体設計と operation は
-[app 開発ガイド](app-development.md)を確認してください。正確な hook API は
+Command から WAM を開く方法は [Command ガイド](extensions/command.md)、registration は
+[Extension 完全ガイド](extensions.md)、launch 前の検証は [本番運用準備ガイド](app-development.md)を
+確認してください。正確な hook API は
 [TypeScript WAM reference](../../reference/typescript/WAM.md)、Go server integration は
 [Go WAM reference](../../reference/go/WAM.md)を基準にします。
