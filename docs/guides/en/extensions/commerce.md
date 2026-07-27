@@ -9,10 +9,10 @@ app := appsdk.New(appsdk.Options{AppID: appID})
 err := app.Use(commerce.Extension().
   GetAppConfigs(handler.GetAppConfigs).
   GetOrders(handler.GetOrders).
-  CancelRequestOrder(handler.CancelRequestOrder).
-  ReturnRequestOrder(handler.ReturnRequestOrder).
-  ReturnAcceptOrder(handler.ReturnAcceptOrder).
-  ExchangeRequestOrder(handler.ExchangeRequestOrder).
+  RequestCancelOrder(handler.RequestCancelOrder).
+  RequestReturnOrder(handler.RequestReturnOrder).
+  AcceptReturnOrder(handler.AcceptReturnOrder).
+  RequestExchangeOrder(handler.RequestExchangeOrder).
   GetExchangeableItems(handler.GetExchangeableItems).
   ChangeShippingAddress(handler.ChangeShippingAddress),
 )
@@ -22,10 +22,10 @@ Supported methods:
 
 - `extension.commerce.core.getAppConfigs`
 - `extension.commerce.order.getOrders`
-- `extension.commerce.order.cancelRequestOrder`
-- `extension.commerce.order.returnRequestOrder`
-- `extension.commerce.order.returnAcceptOrder`
-- `extension.commerce.order.exchangeRequestOrder`
+- `extension.commerce.order.requestCancelOrder`
+- `extension.commerce.order.requestReturnOrder`
+- `extension.commerce.order.acceptReturnOrder`
+- `extension.commerce.order.requestExchangeOrder`
 - `extension.commerce.order.getExchangeableItems`
 - `extension.commerce.order.changeShippingAddress`
 

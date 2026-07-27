@@ -1135,10 +1135,10 @@ message CommerceGetOrdersOutput {
 
 message CommerceAppCapabilities {
   OrderOperationOptions get_orders_options = 1;
-  OrderOperationOptions cancel_request_order_options = 2;
-  OrderOperationOptions return_request_order_options = 3;
-  OrderOperationOptions return_accept_order_options = 4;
-  OrderOperationOptions exchange_request_order_options = 5;
+  OrderOperationOptions request_cancel_order_options = 2;
+  OrderOperationOptions request_return_order_options = 3;
+  OrderOperationOptions accept_return_order_options = 4;
+  OrderOperationOptions request_exchange_order_options = 5;
   OrderOperationOptions change_shipping_address_options = 6;
 }
 
@@ -1178,7 +1178,7 @@ message CommerceReturnOrderInput {
   OrderDefectInfo defect_info = 10;
 }
 
-message CommerceReturnAcceptOrderInput {
+message CommerceAcceptReturnOrderInput {
   CommerceIdentifier identifier = 1;
   string order_id = 2;
   repeated OrderClaimItem return_items = 3;
@@ -1415,12 +1415,12 @@ message WmsOperationOptions {
 
 message WmsAppCapabilities {
   WmsOperationOptions get_orders_options = 1;
-  WmsOperationOptions cancel_request_order_options = 2;
-  WmsOperationOptions cancel_restore_order_options = 3;
-  WmsOperationOptions return_request_order_options = 4;
-  WmsOperationOptions return_restore_order_options = 5;
-  WmsOperationOptions exchange_request_order_options = 6;
-  WmsOperationOptions exchange_restore_order_options = 7;
+  WmsOperationOptions request_cancel_order_options = 2;
+  WmsOperationOptions restore_canceled_order_options = 3;
+  WmsOperationOptions request_return_order_options = 4;
+  WmsOperationOptions restore_returned_order_options = 5;
+  WmsOperationOptions request_exchange_order_options = 6;
+  WmsOperationOptions restore_exchanged_order_options = 7;
   WmsOperationOptions change_shipping_address_options = 8;
 }
 

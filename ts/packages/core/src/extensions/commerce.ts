@@ -13,7 +13,7 @@ import type {
   CommerceIdentifier as ProtoCommerceIdentifier,
   CommerceOrder as ProtoCommerceOrder,
   CommerceOrderItem as ProtoCommerceOrderItem,
-  CommerceReturnAcceptOrderInput as ProtoCommerceReturnAcceptOrderInput,
+  CommerceAcceptReturnOrderInput as ProtoCommerceAcceptReturnOrderInput,
   CommerceReturnOrderInput as ProtoCommerceReturnOrderInput,
 } from "../gen/channel/app/sdk/v1/extension.js";
 import {
@@ -102,10 +102,10 @@ export type CommerceGetOrdersOutput = ProtoBacked<
 
 export const CommerceAppCapabilitiesSchema = z.object({
   getOrdersOptions: OperationOptionsSchema.optional(),
-  cancelRequestOrderOptions: OperationOptionsSchema.optional(),
-  returnRequestOrderOptions: OperationOptionsSchema.optional(),
-  returnAcceptOrderOptions: OperationOptionsSchema.optional(),
-  exchangeRequestOrderOptions: OperationOptionsSchema.optional(),
+  requestCancelOrderOptions: OperationOptionsSchema.optional(),
+  requestReturnOrderOptions: OperationOptionsSchema.optional(),
+  acceptReturnOrderOptions: OperationOptionsSchema.optional(),
+  requestExchangeOrderOptions: OperationOptionsSchema.optional(),
   changeShippingAddressOptions: OperationOptionsSchema.optional(),
 });
 export type CommerceAppCapabilities = ProtoBacked<
@@ -161,7 +161,7 @@ export type CommerceReturnOrderInput = ProtoBacked<
   ProtoCommerceReturnOrderInput
 >;
 
-export const CommerceReturnAcceptOrderInputSchema = z.object({
+export const CommerceAcceptReturnOrderInputSchema = z.object({
   identifier: CommerceIdentifierSchema.optional(),
   orderId: z.string(),
   returnItems: z.array(OrderClaimItemSchema).optional(),
@@ -170,9 +170,9 @@ export const CommerceReturnAcceptOrderInputSchema = z.object({
   pickupCompleted: z.boolean().optional(),
   requestPickup: z.boolean().optional(),
 });
-export type CommerceReturnAcceptOrderInput = ProtoBacked<
-  z.infer<typeof CommerceReturnAcceptOrderInputSchema>,
-  ProtoCommerceReturnAcceptOrderInput
+export type CommerceAcceptReturnOrderInput = ProtoBacked<
+  z.infer<typeof CommerceAcceptReturnOrderInputSchema>,
+  ProtoCommerceAcceptReturnOrderInput
 >;
 
 export const CommerceExchangeOrderInputSchema = z.object({

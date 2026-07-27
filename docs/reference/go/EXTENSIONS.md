@@ -157,10 +157,10 @@ Use `extension/commerce` for new commerce order-management apps:
 app.Use(commerce.Extension().
   GetAppConfigs(handler.GetAppConfigs).
   GetOrders(handler.GetOrders).
-  CancelRequestOrder(handler.CancelRequestOrder).
-  ReturnRequestOrder(handler.ReturnRequestOrder).
-  ReturnAcceptOrder(handler.ReturnAcceptOrder).
-  ExchangeRequestOrder(handler.ExchangeRequestOrder).
+  RequestCancelOrder(handler.RequestCancelOrder).
+  RequestReturnOrder(handler.RequestReturnOrder).
+  AcceptReturnOrder(handler.AcceptReturnOrder).
+  RequestExchangeOrder(handler.RequestExchangeOrder).
   GetExchangeableItems(handler.GetExchangeableItems).
   ChangeShippingAddress(handler.ChangeShippingAddress))
 ```

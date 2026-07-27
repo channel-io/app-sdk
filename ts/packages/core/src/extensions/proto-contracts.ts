@@ -189,7 +189,7 @@ import type {
   CommerceActionResult as ProtoCommerceActionResult,
   CommerceCancelOrderInput as ProtoCommerceCancelOrderInput,
   CommerceReturnOrderInput as ProtoCommerceReturnOrderInput,
-  CommerceReturnAcceptOrderInput as ProtoCommerceReturnAcceptOrderInput,
+  CommerceAcceptReturnOrderInput as ProtoCommerceAcceptReturnOrderInput,
   CommerceExchangeOrderInput as ProtoCommerceExchangeOrderInput,
   CommerceGetExchangeableItemsInput as ProtoCommerceGetExchangeableItemsInput,
   CommerceGetExchangeableItemsOutput as ProtoCommerceGetExchangeableItemsOutput,
@@ -918,8 +918,8 @@ export type ExtensionProtoSchemaContracts = [
   >,
   Expect<
     SchemaOutputExtendsProto<
-      typeof CommerceSchemas.CommerceReturnAcceptOrderInputSchema,
-      ProtoCommerceReturnAcceptOrderInput
+      typeof CommerceSchemas.CommerceAcceptReturnOrderInputSchema,
+      ProtoCommerceAcceptReturnOrderInput
     >
   >,
   Expect<
