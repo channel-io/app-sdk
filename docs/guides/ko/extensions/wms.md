@@ -11,12 +11,12 @@ app := appsdk.New(appsdk.Options{AppID: appID})
 err := app.Use(wms.Extension().
   GetAppConfigs(handler.GetAppConfigs).
   OrderGetOrders(handler.OrderGetOrders).
-  OrderCancelRequestOrder(handler.OrderCancelRequestOrder).
-  OrderCancelRestoreOrder(handler.OrderCancelRestoreOrder).
-  OrderReturnRequestOrder(handler.OrderReturnRequestOrder).
-  OrderReturnRestoreOrder(handler.OrderReturnRestoreOrder).
-  OrderExchangeRequestOrder(handler.OrderExchangeRequestOrder).
-  OrderExchangeRestoreOrder(handler.OrderExchangeRestoreOrder).
+  OrderRequestCancelOrder(handler.OrderRequestCancelOrder).
+  OrderRestoreCanceledOrder(handler.OrderRestoreCanceledOrder).
+  OrderRequestReturnOrder(handler.OrderRequestReturnOrder).
+  OrderRestoreReturnedOrder(handler.OrderRestoreReturnedOrder).
+  OrderRequestExchangeOrder(handler.OrderRequestExchangeOrder).
+  OrderRestoreExchangedOrder(handler.OrderRestoreExchangedOrder).
   OrderChangeShippingAddress(handler.OrderChangeShippingAddress),
 )
 ```
@@ -25,12 +25,12 @@ err := app.Use(wms.Extension().
 
 - `extension.wms.core.getAppConfigs`
 - `extension.wms.order.getOrders`
-- `extension.wms.order.cancelRequestOrder`
-- `extension.wms.order.cancelRestoreOrder`
-- `extension.wms.order.returnRequestOrder`
-- `extension.wms.order.returnRestoreOrder`
-- `extension.wms.order.exchangeRequestOrder`
-- `extension.wms.order.exchangeRestoreOrder`
+- `extension.wms.order.requestCancelOrder`
+- `extension.wms.order.restoreCanceledOrder`
+- `extension.wms.order.requestReturnOrder`
+- `extension.wms.order.restoreReturnedOrder`
+- `extension.wms.order.requestExchangeOrder`
+- `extension.wms.order.restoreExchangedOrder`
 - `extension.wms.order.changeShippingAddress`
 
 ## TypeScript

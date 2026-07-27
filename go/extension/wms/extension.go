@@ -83,33 +83,33 @@ func (b *ExtensionBuilder) OrderGetOrders(handler appsdk.TypedHandlerFunc[OrderG
 	return b
 }
 
-func (b *ExtensionBuilder) OrderCancelRequestOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
-	b.base.Func(FunctionOrderCancelRequestOrder, schemaregistry.Append(FunctionOrderCancelRequestOrder, appsdk.HandleProto(handler))...)
+func (b *ExtensionBuilder) OrderRequestCancelOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionOrderRequestCancelOrder, schemaregistry.Append(FunctionOrderRequestCancelOrder, appsdk.HandleProto(handler))...)
 	return b
 }
 
-func (b *ExtensionBuilder) OrderCancelRestoreOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
-	b.base.Func(FunctionOrderCancelRestoreOrder, schemaregistry.Append(FunctionOrderCancelRestoreOrder, appsdk.HandleProto(handler))...)
+func (b *ExtensionBuilder) OrderRestoreCanceledOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionOrderRestoreCanceledOrder, schemaregistry.Append(FunctionOrderRestoreCanceledOrder, appsdk.HandleProto(handler))...)
 	return b
 }
 
-func (b *ExtensionBuilder) OrderReturnRequestOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
-	b.base.Func(FunctionOrderReturnRequestOrder, schemaregistry.Append(FunctionOrderReturnRequestOrder, appsdk.HandleProto(handler))...)
+func (b *ExtensionBuilder) OrderRequestReturnOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionOrderRequestReturnOrder, schemaregistry.Append(FunctionOrderRequestReturnOrder, appsdk.HandleProto(handler))...)
 	return b
 }
 
-func (b *ExtensionBuilder) OrderReturnRestoreOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
-	b.base.Func(FunctionOrderReturnRestoreOrder, schemaregistry.Append(FunctionOrderReturnRestoreOrder, appsdk.HandleProto(handler))...)
+func (b *ExtensionBuilder) OrderRestoreReturnedOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionOrderRestoreReturnedOrder, schemaregistry.Append(FunctionOrderRestoreReturnedOrder, appsdk.HandleProto(handler))...)
 	return b
 }
 
-func (b *ExtensionBuilder) OrderExchangeRequestOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
-	b.base.Func(FunctionOrderExchangeRequestOrder, schemaregistry.Append(FunctionOrderExchangeRequestOrder, appsdk.HandleProto(handler))...)
+func (b *ExtensionBuilder) OrderRequestExchangeOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionOrderRequestExchangeOrder, schemaregistry.Append(FunctionOrderRequestExchangeOrder, appsdk.HandleProto(handler))...)
 	return b
 }
 
-func (b *ExtensionBuilder) OrderExchangeRestoreOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
-	b.base.Func(FunctionOrderExchangeRestoreOrder, schemaregistry.Append(FunctionOrderExchangeRestoreOrder, appsdk.HandleProto(handler))...)
+func (b *ExtensionBuilder) OrderRestoreExchangedOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionOrderRestoreExchangedOrder, schemaregistry.Append(FunctionOrderRestoreExchangedOrder, appsdk.HandleProto(handler))...)
 	return b
 }
 

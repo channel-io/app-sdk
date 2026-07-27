@@ -24,12 +24,12 @@ func CanonicalFunctionSchemas() []appsdk.FunctionSchema {
 		FunctionRestoreExchangedOrder,
 		FunctionGetAppConfigs,
 		FunctionOrderGetOrders,
-		FunctionOrderCancelRequestOrder,
-		FunctionOrderCancelRestoreOrder,
-		FunctionOrderReturnRequestOrder,
-		FunctionOrderReturnRestoreOrder,
-		FunctionOrderExchangeRequestOrder,
-		FunctionOrderExchangeRestoreOrder,
+		FunctionOrderRequestCancelOrder,
+		FunctionOrderRestoreCanceledOrder,
+		FunctionOrderRequestReturnOrder,
+		FunctionOrderRestoreReturnedOrder,
+		FunctionOrderRequestExchangeOrder,
+		FunctionOrderRestoreExchangedOrder,
 		FunctionOrderChangeShippingAddress,
 	}
 

@@ -26,23 +26,23 @@ func (b *ExtensionBuilder) GetOrders(handler appsdk.TypedHandlerFunc[GetOrdersIn
 	return b
 }
 
-func (b *ExtensionBuilder) CancelRequestOrder(handler appsdk.TypedHandlerFunc[CancelOrderInput, ActionResult]) *ExtensionBuilder {
-	b.base.Func(FunctionCancelRequestOrder, schemaregistry.Append(FunctionCancelRequestOrder, appsdk.HandleProto(handler))...)
+func (b *ExtensionBuilder) RequestCancelOrder(handler appsdk.TypedHandlerFunc[CancelOrderInput, ActionResult]) *ExtensionBuilder {
+	b.base.Func(FunctionRequestCancelOrder, schemaregistry.Append(FunctionRequestCancelOrder, appsdk.HandleProto(handler))...)
 	return b
 }
 
-func (b *ExtensionBuilder) ReturnRequestOrder(handler appsdk.TypedHandlerFunc[ReturnOrderInput, ActionResult]) *ExtensionBuilder {
-	b.base.Func(FunctionReturnRequestOrder, schemaregistry.Append(FunctionReturnRequestOrder, appsdk.HandleProto(handler))...)
+func (b *ExtensionBuilder) RequestReturnOrder(handler appsdk.TypedHandlerFunc[ReturnOrderInput, ActionResult]) *ExtensionBuilder {
+	b.base.Func(FunctionRequestReturnOrder, schemaregistry.Append(FunctionRequestReturnOrder, appsdk.HandleProto(handler))...)
 	return b
 }
 
-func (b *ExtensionBuilder) ReturnAcceptOrder(handler appsdk.TypedHandlerFunc[ReturnAcceptOrderInput, ActionResult]) *ExtensionBuilder {
-	b.base.Func(FunctionReturnAcceptOrder, schemaregistry.Append(FunctionReturnAcceptOrder, appsdk.HandleProto(handler))...)
+func (b *ExtensionBuilder) AcceptReturnOrder(handler appsdk.TypedHandlerFunc[AcceptReturnOrderInput, ActionResult]) *ExtensionBuilder {
+	b.base.Func(FunctionAcceptReturnOrder, schemaregistry.Append(FunctionAcceptReturnOrder, appsdk.HandleProto(handler))...)
 	return b
 }
 
-func (b *ExtensionBuilder) ExchangeRequestOrder(handler appsdk.TypedHandlerFunc[ExchangeOrderInput, ActionResult]) *ExtensionBuilder {
-	b.base.Func(FunctionExchangeRequestOrder, schemaregistry.Append(FunctionExchangeRequestOrder, appsdk.HandleProto(handler))...)
+func (b *ExtensionBuilder) RequestExchangeOrder(handler appsdk.TypedHandlerFunc[ExchangeOrderInput, ActionResult]) *ExtensionBuilder {
+	b.base.Func(FunctionRequestExchangeOrder, schemaregistry.Append(FunctionRequestExchangeOrder, appsdk.HandleProto(handler))...)
 	return b
 }
 

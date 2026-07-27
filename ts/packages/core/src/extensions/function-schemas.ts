@@ -75,7 +75,7 @@ import {
   CommerceGetOrdersInputSchema,
   CommerceGetOrdersOutputSchema,
   CommerceResultSchema,
-  CommerceReturnAcceptOrderInputSchema,
+  CommerceAcceptReturnOrderInputSchema,
   CommerceReturnOrderInputSchema,
 } from "./commerce.js";
 import {
@@ -348,18 +348,13 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     output: CommerceGetAppConfigsOutputSchema,
   },
   {
-    name: "extension.commerce.order.cancelRequestOrder",
-    input: CommerceCancelOrderInputSchema,
+    name: "extension.commerce.order.acceptReturnOrder",
+    input: CommerceAcceptReturnOrderInputSchema,
     output: CommerceResultSchema,
   },
   {
     name: "extension.commerce.order.changeShippingAddress",
     input: CommerceChangeShippingAddressInputSchema,
-    output: CommerceResultSchema,
-  },
-  {
-    name: "extension.commerce.order.exchangeRequestOrder",
-    input: CommerceExchangeOrderInputSchema,
     output: CommerceResultSchema,
   },
   {
@@ -373,12 +368,17 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     output: CommerceGetOrdersOutputSchema,
   },
   {
-    name: "extension.commerce.order.returnAcceptOrder",
-    input: CommerceReturnAcceptOrderInputSchema,
+    name: "extension.commerce.order.requestCancelOrder",
+    input: CommerceCancelOrderInputSchema,
     output: CommerceResultSchema,
   },
   {
-    name: "extension.commerce.order.returnRequestOrder",
+    name: "extension.commerce.order.requestExchangeOrder",
+    input: CommerceExchangeOrderInputSchema,
+    output: CommerceResultSchema,
+  },
+  {
+    name: "extension.commerce.order.requestReturnOrder",
     input: CommerceReturnOrderInputSchema,
     output: CommerceResultSchema,
   },
@@ -613,28 +613,8 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     output: GetWmsSupportedCommercesOutputSchema,
   },
   {
-    name: "extension.wms.order.cancelRequestOrder",
-    input: WmsOrderActionInputSchema,
-    output: WmsOrderActionOutputSchema,
-  },
-  {
-    name: "extension.wms.order.cancelRestoreOrder",
-    input: WmsOrderActionInputSchema,
-    output: WmsOrderActionOutputSchema,
-  },
-  {
     name: "extension.wms.order.changeShippingAddress",
     input: WmsOrderChangeShippingAddressInputSchema,
-    output: WmsOrderActionOutputSchema,
-  },
-  {
-    name: "extension.wms.order.exchangeRequestOrder",
-    input: WmsOrderActionInputSchema,
-    output: WmsOrderActionOutputSchema,
-  },
-  {
-    name: "extension.wms.order.exchangeRestoreOrder",
-    input: WmsOrderActionInputSchema,
     output: WmsOrderActionOutputSchema,
   },
   {
@@ -643,12 +623,32 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     output: WmsOrderGetOrdersOutputSchema,
   },
   {
-    name: "extension.wms.order.returnRequestOrder",
+    name: "extension.wms.order.requestCancelOrder",
     input: WmsOrderActionInputSchema,
     output: WmsOrderActionOutputSchema,
   },
   {
-    name: "extension.wms.order.returnRestoreOrder",
+    name: "extension.wms.order.requestExchangeOrder",
+    input: WmsOrderActionInputSchema,
+    output: WmsOrderActionOutputSchema,
+  },
+  {
+    name: "extension.wms.order.requestReturnOrder",
+    input: WmsOrderActionInputSchema,
+    output: WmsOrderActionOutputSchema,
+  },
+  {
+    name: "extension.wms.order.restoreCanceledOrder",
+    input: WmsOrderActionInputSchema,
+    output: WmsOrderActionOutputSchema,
+  },
+  {
+    name: "extension.wms.order.restoreExchangedOrder",
+    input: WmsOrderActionInputSchema,
+    output: WmsOrderActionOutputSchema,
+  },
+  {
+    name: "extension.wms.order.restoreReturnedOrder",
     input: WmsOrderActionInputSchema,
     output: WmsOrderActionOutputSchema,
   },

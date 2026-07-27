@@ -52,13 +52,13 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 
 	use(t, app, commerce.Extension().
 		GetAppConfigs(zero[commerce.GetAppConfigsInput, commerce.GetAppConfigsOutput]()).
-		CancelRequestOrder(zero[commerce.CancelOrderInput, commerce.ActionResult]()).
+		AcceptReturnOrder(zero[commerce.AcceptReturnOrderInput, commerce.ActionResult]()).
 		ChangeShippingAddress(zero[commerce.ChangeShippingAddressInput, commerce.ActionResult]()).
-		ExchangeRequestOrder(zero[commerce.ExchangeOrderInput, commerce.ActionResult]()).
 		GetExchangeableItems(zero[commerce.GetExchangeableItemsInput, commerce.GetExchangeableItemsOutput]()).
 		GetOrders(zero[commerce.GetOrdersInput, commerce.GetOrdersOutput]()).
-		ReturnAcceptOrder(zero[commerce.ReturnAcceptOrderInput, commerce.ActionResult]()).
-		ReturnRequestOrder(zero[commerce.ReturnOrderInput, commerce.ActionResult]()))
+		RequestCancelOrder(zero[commerce.CancelOrderInput, commerce.ActionResult]()).
+		RequestExchangeOrder(zero[commerce.ExchangeOrderInput, commerce.ActionResult]()).
+		RequestReturnOrder(zero[commerce.ReturnOrderInput, commerce.ActionResult]()))
 
 	use(t, app, config.Extension().
 		GetConfigSchema(zero[config.GetConfigSchemaRequest, config.GetConfigSchemaResponse]()).
@@ -131,14 +131,14 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 		ExchangeOrder(zero[wms.ExchangeOrderRequest, wms.SuccessResponse]()).
 		RestoreExchangedOrder(zero[wms.RestoreOrderRequest, wms.SuccessResponse]()).
 		GetSupportedCommerces(zero[wms.GetSupportedCommercesRequest, wms.GetSupportedCommercesResponse]()).
-		OrderCancelRequestOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-		OrderCancelRestoreOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
 		OrderChangeShippingAddress(zero[wms.OrderChangeShippingAddressRequest, wms.OrderActionResponse]()).
-		OrderExchangeRequestOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-		OrderExchangeRestoreOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
 		OrderGetOrders(zero[wms.OrderGetOrdersRequest, wms.OrderGetOrdersResponse]()).
-		OrderReturnRequestOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-		OrderReturnRestoreOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+		OrderRequestCancelOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+		OrderRequestExchangeOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+		OrderRequestReturnOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+		OrderRestoreCanceledOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+		OrderRestoreExchangedOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+		OrderRestoreReturnedOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
 		RestoreReturnedOrder(zero[wms.RestoreOrderRequest, wms.SuccessResponse]()).
 		ReturnOrder(zero[wms.ReturnOrderRequest, wms.SuccessResponse]()))
 

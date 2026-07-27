@@ -191,7 +191,7 @@ import {
   CommerceResultSchema,
   CommerceCancelOrderInputSchema,
   CommerceReturnOrderInputSchema,
-  CommerceReturnAcceptOrderInputSchema,
+  CommerceAcceptReturnOrderInputSchema,
   CommerceExchangeOrderInputSchema,
   CommerceGetExchangeableItemsInputSchema,
   CommerceGetExchangeableItemsOutputSchema,
@@ -512,10 +512,10 @@ const contracts: Contract[] = [
     "CommerceReturnOrderInput"
   ),
   contract(
-    "CommerceReturnAcceptOrderInput",
-    CommerceReturnAcceptOrderInputSchema,
+    "CommerceAcceptReturnOrderInput",
+    CommerceAcceptReturnOrderInputSchema,
     "extension",
-    "CommerceReturnAcceptOrderInput"
+    "CommerceAcceptReturnOrderInput"
   ),
   contract(
     "CommerceExchangeOrderInput",

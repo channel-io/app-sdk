@@ -21,10 +21,10 @@ func newExtension() appsdk.Extension {
 	return commerce.Extension().
 		GetAppConfigs(zero[commerce.GetAppConfigsInput, commerce.GetAppConfigsOutput]()).
 		GetOrders(zero[commerce.GetOrdersInput, commerce.GetOrdersOutput]()).
-		CancelRequestOrder(zero[commerce.CancelOrderInput, commerce.ActionResult]()).
-		ReturnRequestOrder(zero[commerce.ReturnOrderInput, commerce.ActionResult]()).
-		ReturnAcceptOrder(zero[commerce.ReturnAcceptOrderInput, commerce.ActionResult]()).
-		ExchangeRequestOrder(zero[commerce.ExchangeOrderInput, commerce.ActionResult]()).
+		RequestCancelOrder(zero[commerce.CancelOrderInput, commerce.ActionResult]()).
+		RequestReturnOrder(zero[commerce.ReturnOrderInput, commerce.ActionResult]()).
+		AcceptReturnOrder(zero[commerce.AcceptReturnOrderInput, commerce.ActionResult]()).
+		RequestExchangeOrder(zero[commerce.ExchangeOrderInput, commerce.ActionResult]()).
 		GetExchangeableItems(zero[commerce.GetExchangeableItemsInput, commerce.GetExchangeableItemsOutput]()).
 		ChangeShippingAddress(zero[commerce.ChangeShippingAddressInput, commerce.ActionResult]())
 }
@@ -55,10 +55,10 @@ func TestSchemasMatchCanonicalRegistry(t *testing.T) {
 	names := []string{
 		commerce.FunctionGetAppConfigs,
 		commerce.FunctionGetOrders,
-		commerce.FunctionCancelRequestOrder,
-		commerce.FunctionReturnRequestOrder,
-		commerce.FunctionReturnAcceptOrder,
-		commerce.FunctionExchangeRequestOrder,
+		commerce.FunctionRequestCancelOrder,
+		commerce.FunctionRequestReturnOrder,
+		commerce.FunctionAcceptReturnOrder,
+		commerce.FunctionRequestExchangeOrder,
 		commerce.FunctionGetExchangeableItems,
 		commerce.FunctionChangeShippingAddress,
 	}

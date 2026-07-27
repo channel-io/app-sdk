@@ -1153,7 +1153,7 @@
               ],
               "additionalProperties": false
             },
-            "cancelRequestOrderOptions": {
+            "requestCancelOrderOptions": {
               "type": "object",
               "properties": {
                 "required": {
@@ -1232,7 +1232,7 @@
               ],
               "additionalProperties": false
             },
-            "returnRequestOrderOptions": {
+            "requestReturnOrderOptions": {
               "type": "object",
               "properties": {
                 "required": {
@@ -1311,7 +1311,7 @@
               ],
               "additionalProperties": false
             },
-            "returnAcceptOrderOptions": {
+            "acceptReturnOrderOptions": {
               "type": "object",
               "properties": {
                 "required": {
@@ -1390,7 +1390,7 @@
               ],
               "additionalProperties": false
             },
-            "exchangeRequestOrderOptions": {
+            "requestExchangeOrderOptions": {
               "type": "object",
               "properties": {
                 "required": {
@@ -1557,7 +1557,7 @@
     }
   },
   {
-    "name": "extension.commerce.order.cancelRequestOrder",
+    "name": "extension.commerce.order.acceptReturnOrder",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1585,7 +1585,7 @@
         "orderId": {
           "type": "string"
         },
-        "cancelItems": {
+        "returnItems": {
           "type": "array",
           "items": {
             "type": "object",
@@ -1631,6 +1631,12 @@
             "accountHolder"
           ],
           "additionalProperties": false
+        },
+        "pickupCompleted": {
+          "type": "boolean"
+        },
+        "requestPickup": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -1740,196 +1746,6 @@
       "required": [
         "orderId",
         "newAddress"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "type": "object",
-          "properties": {
-            "success": {
-              "type": "boolean"
-            },
-            "errorMessage": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "success"
-          ],
-          "additionalProperties": false
-        }
-      },
-      "required": [
-        "result"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    }
-  },
-  {
-    "name": "extension.commerce.order.exchangeRequestOrder",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "identifier": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "membership",
-                "phone",
-                "email"
-              ]
-            },
-            "value": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "type",
-            "value"
-          ],
-          "additionalProperties": false
-        },
-        "orderId": {
-          "type": "string"
-        },
-        "beforeExchangeItems": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "quantity": {
-                "type": "integer"
-              }
-            },
-            "additionalProperties": false
-          }
-        },
-        "afterExchangeItems": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "productId": {
-                "type": "string"
-              },
-              "variantId": {
-                "type": "string"
-              },
-              "quantity": {
-                "type": "integer"
-              }
-            },
-            "additionalProperties": false
-          }
-        },
-        "reason": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        "requestPickup": {
-          "type": "boolean"
-        },
-        "pickupAddress": {
-          "type": "object",
-          "properties": {
-            "firstName": {
-              "type": "string"
-            },
-            "lastName": {
-              "type": "string"
-            },
-            "phoneNumber": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "cellPhoneNumber": {
-              "type": "string"
-            },
-            "zipcode": {
-              "type": "string"
-            },
-            "address1": {
-              "type": "string"
-            },
-            "address2": {
-              "type": "string"
-            },
-            "shippingMessage": {
-              "type": "string"
-            },
-            "country": {
-              "type": "string"
-            },
-            "city": {
-              "type": "string"
-            },
-            "province": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        "refundBankAccount": {
-          "type": "object",
-          "properties": {
-            "bankName": {
-              "type": "string"
-            },
-            "accountNo": {
-              "type": "string"
-            },
-            "accountHolder": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "bankName",
-            "accountNo",
-            "accountHolder"
-          ],
-          "additionalProperties": false
-        },
-        "defectInfo": {
-          "type": "object",
-          "properties": {
-            "description": {
-              "type": "string"
-            },
-            "imageUrls": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "required": [
-            "description"
-          ],
-          "additionalProperties": false
-        }
-      },
-      "required": [
-        "orderId"
       ],
       "additionalProperties": false,
       "$schema": "http://json-schema.org/draft-07/schema#"
@@ -2427,7 +2243,7 @@
     }
   },
   {
-    "name": "extension.commerce.order.returnAcceptOrder",
+    "name": "extension.commerce.order.requestCancelOrder",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2455,7 +2271,7 @@
         "orderId": {
           "type": "string"
         },
-        "returnItems": {
+        "cancelItems": {
           "type": "array",
           "items": {
             "type": "object",
@@ -2501,12 +2317,6 @@
             "accountHolder"
           ],
           "additionalProperties": false
-        },
-        "pickupCompleted": {
-          "type": "boolean"
-        },
-        "requestPickup": {
-          "type": "boolean"
         }
       },
       "required": [
@@ -2542,7 +2352,197 @@
     }
   },
   {
-    "name": "extension.commerce.order.returnRequestOrder",
+    "name": "extension.commerce.order.requestExchangeOrder",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "membership",
+                "phone",
+                "email"
+              ]
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "orderId": {
+          "type": "string"
+        },
+        "beforeExchangeItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "quantity": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "afterExchangeItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productId": {
+                "type": "string"
+              },
+              "variantId": {
+                "type": "string"
+              },
+              "quantity": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "reason": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "requestPickup": {
+          "type": "boolean"
+        },
+        "pickupAddress": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "phoneNumber": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "cellPhoneNumber": {
+              "type": "string"
+            },
+            "zipcode": {
+              "type": "string"
+            },
+            "address1": {
+              "type": "string"
+            },
+            "address2": {
+              "type": "string"
+            },
+            "shippingMessage": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "province": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "refundBankAccount": {
+          "type": "object",
+          "properties": {
+            "bankName": {
+              "type": "string"
+            },
+            "accountNo": {
+              "type": "string"
+            },
+            "accountHolder": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "bankName",
+            "accountNo",
+            "accountHolder"
+          ],
+          "additionalProperties": false
+        },
+        "defectInfo": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "imageUrls": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "description"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "orderId"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "boolean"
+            },
+            "errorMessage": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "success"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  },
+  {
+    "name": "extension.commerce.order.requestReturnOrder",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -22912,7 +22912,7 @@
               },
               "additionalProperties": false
             },
-            "cancelRequestOrderOptions": {
+            "requestCancelOrderOptions": {
               "type": "object",
               "properties": {
                 "required": {
@@ -22987,7 +22987,7 @@
               },
               "additionalProperties": false
             },
-            "cancelRestoreOrderOptions": {
+            "restoreCanceledOrderOptions": {
               "type": "object",
               "properties": {
                 "required": {
@@ -23062,7 +23062,7 @@
               },
               "additionalProperties": false
             },
-            "returnRequestOrderOptions": {
+            "requestReturnOrderOptions": {
               "type": "object",
               "properties": {
                 "required": {
@@ -23137,7 +23137,7 @@
               },
               "additionalProperties": false
             },
-            "returnRestoreOrderOptions": {
+            "restoreReturnedOrderOptions": {
               "type": "object",
               "properties": {
                 "required": {
@@ -23212,7 +23212,7 @@
               },
               "additionalProperties": false
             },
-            "exchangeRequestOrderOptions": {
+            "requestExchangeOrderOptions": {
               "type": "object",
               "properties": {
                 "required": {
@@ -23287,7 +23287,7 @@
               },
               "additionalProperties": false
             },
-            "exchangeRestoreOrderOptions": {
+            "restoreExchangedOrderOptions": {
               "type": "object",
               "properties": {
                 "required": {
@@ -23966,148 +23966,6 @@
     }
   },
   {
-    "name": "extension.wms.order.cancelRequestOrder",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "identifier": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "membership",
-                "phone",
-                "email"
-              ]
-            },
-            "value": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "type",
-            "value"
-          ],
-          "additionalProperties": false
-        },
-        "orderIds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "reason": {
-          "type": "string"
-        },
-        "memo": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "orderIds"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "type": "object",
-          "properties": {
-            "success": {
-              "type": "boolean"
-            },
-            "errorMessage": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "success"
-          ],
-          "additionalProperties": false
-        }
-      },
-      "required": [
-        "result"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    }
-  },
-  {
-    "name": "extension.wms.order.cancelRestoreOrder",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "identifier": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "membership",
-                "phone",
-                "email"
-              ]
-            },
-            "value": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "type",
-            "value"
-          ],
-          "additionalProperties": false
-        },
-        "orderIds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "reason": {
-          "type": "string"
-        },
-        "memo": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "orderIds"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "type": "object",
-          "properties": {
-            "success": {
-              "type": "boolean"
-            },
-            "errorMessage": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "success"
-          ],
-          "additionalProperties": false
-        }
-      },
-      "required": [
-        "result"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    }
-  },
-  {
     "name": "extension.wms.order.changeShippingAddress",
     "inputSchema": {
       "type": "object",
@@ -24188,148 +24046,6 @@
       "required": [
         "orderId",
         "newAddress"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "type": "object",
-          "properties": {
-            "success": {
-              "type": "boolean"
-            },
-            "errorMessage": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "success"
-          ],
-          "additionalProperties": false
-        }
-      },
-      "required": [
-        "result"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    }
-  },
-  {
-    "name": "extension.wms.order.exchangeRequestOrder",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "identifier": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "membership",
-                "phone",
-                "email"
-              ]
-            },
-            "value": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "type",
-            "value"
-          ],
-          "additionalProperties": false
-        },
-        "orderIds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "reason": {
-          "type": "string"
-        },
-        "memo": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "orderIds"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "type": "object",
-          "properties": {
-            "success": {
-              "type": "boolean"
-            },
-            "errorMessage": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "success"
-          ],
-          "additionalProperties": false
-        }
-      },
-      "required": [
-        "result"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    }
-  },
-  {
-    "name": "extension.wms.order.exchangeRestoreOrder",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "identifier": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "membership",
-                "phone",
-                "email"
-              ]
-            },
-            "value": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "type",
-            "value"
-          ],
-          "additionalProperties": false
-        },
-        "orderIds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "reason": {
-          "type": "string"
-        },
-        "memo": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "orderIds"
       ],
       "additionalProperties": false,
       "$schema": "http://json-schema.org/draft-07/schema#"
@@ -24516,7 +24232,7 @@
     }
   },
   {
-    "name": "extension.wms.order.returnRequestOrder",
+    "name": "extension.wms.order.requestCancelOrder",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -24587,7 +24303,291 @@
     }
   },
   {
-    "name": "extension.wms.order.returnRestoreOrder",
+    "name": "extension.wms.order.requestExchangeOrder",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "membership",
+                "phone",
+                "email"
+              ]
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "orderIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reason": {
+          "type": "string"
+        },
+        "memo": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "orderIds"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "boolean"
+            },
+            "errorMessage": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "success"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  },
+  {
+    "name": "extension.wms.order.requestReturnOrder",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "membership",
+                "phone",
+                "email"
+              ]
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "orderIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reason": {
+          "type": "string"
+        },
+        "memo": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "orderIds"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "boolean"
+            },
+            "errorMessage": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "success"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  },
+  {
+    "name": "extension.wms.order.restoreCanceledOrder",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "membership",
+                "phone",
+                "email"
+              ]
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "orderIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reason": {
+          "type": "string"
+        },
+        "memo": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "orderIds"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "boolean"
+            },
+            "errorMessage": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "success"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  },
+  {
+    "name": "extension.wms.order.restoreExchangedOrder",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "membership",
+                "phone",
+                "email"
+              ]
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "orderIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reason": {
+          "type": "string"
+        },
+        "memo": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "orderIds"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "boolean"
+            },
+            "errorMessage": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "success"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  },
+  {
+    "name": "extension.wms.order.restoreReturnedOrder",
     "inputSchema": {
       "type": "object",
       "properties": {

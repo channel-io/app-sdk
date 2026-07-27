@@ -400,12 +400,12 @@ export type WmsOperationOptions = ProtoBacked<
 
 export const WmsAppCapabilitiesSchema = z.object({
   getOrdersOptions: WmsOperationOptionsSchema.optional(),
-  cancelRequestOrderOptions: WmsOperationOptionsSchema.optional(),
-  cancelRestoreOrderOptions: WmsOperationOptionsSchema.optional(),
-  returnRequestOrderOptions: WmsOperationOptionsSchema.optional(),
-  returnRestoreOrderOptions: WmsOperationOptionsSchema.optional(),
-  exchangeRequestOrderOptions: WmsOperationOptionsSchema.optional(),
-  exchangeRestoreOrderOptions: WmsOperationOptionsSchema.optional(),
+  requestCancelOrderOptions: WmsOperationOptionsSchema.optional(),
+  restoreCanceledOrderOptions: WmsOperationOptionsSchema.optional(),
+  requestReturnOrderOptions: WmsOperationOptionsSchema.optional(),
+  restoreReturnedOrderOptions: WmsOperationOptionsSchema.optional(),
+  requestExchangeOrderOptions: WmsOperationOptionsSchema.optional(),
+  restoreExchangedOrderOptions: WmsOperationOptionsSchema.optional(),
   changeShippingAddressOptions: WmsOperationOptionsSchema.optional(),
 });
 export type WmsAppCapabilities = ProtoBacked<

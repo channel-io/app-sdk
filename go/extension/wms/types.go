@@ -27,12 +27,12 @@ const (
 	// order group (전환용): getOrders는 WmsOrderV2, 액션은 result 래핑
 	FunctionGetAppConfigs              = "extension.wms.core.getAppConfigs"
 	FunctionOrderGetOrders             = "extension.wms.order.getOrders"
-	FunctionOrderCancelRequestOrder    = "extension.wms.order.cancelRequestOrder"
-	FunctionOrderCancelRestoreOrder    = "extension.wms.order.cancelRestoreOrder"
-	FunctionOrderReturnRequestOrder    = "extension.wms.order.returnRequestOrder"
-	FunctionOrderReturnRestoreOrder    = "extension.wms.order.returnRestoreOrder"
-	FunctionOrderExchangeRequestOrder  = "extension.wms.order.exchangeRequestOrder"
-	FunctionOrderExchangeRestoreOrder  = "extension.wms.order.exchangeRestoreOrder"
+	FunctionOrderRequestCancelOrder    = "extension.wms.order.requestCancelOrder"
+	FunctionOrderRestoreCanceledOrder  = "extension.wms.order.restoreCanceledOrder"
+	FunctionOrderRequestReturnOrder    = "extension.wms.order.requestReturnOrder"
+	FunctionOrderRestoreReturnedOrder  = "extension.wms.order.restoreReturnedOrder"
+	FunctionOrderRequestExchangeOrder  = "extension.wms.order.requestExchangeOrder"
+	FunctionOrderRestoreExchangedOrder = "extension.wms.order.restoreExchangedOrder"
 	FunctionOrderChangeShippingAddress = "extension.wms.order.changeShippingAddress"
 
 	CommerceTypeAppCafe24          = "appCafe24"
@@ -102,7 +102,7 @@ func ShopIDString(response *GetShopIDResponse) (string, bool) {
 }
 
 // OrderActionSucceeded builds a successful order-group action result
-// (cancelRequestOrder / changeShippingAddress / ...).
+// (requestCancelOrder / changeShippingAddress / ...).
 func OrderActionSucceeded() *OrderActionResponse {
 	return &OrderActionResponse{Result: &OrderActionResultBody{Success: true}}
 }
