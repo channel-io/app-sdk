@@ -1,6 +1,6 @@
 {
   "name": "@tutorial-example/wam",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,7 @@
     "lint": "eslint src/"
   },
   "dependencies": {
-    "@channel.io/app-sdk-wam": "^0.17.2",
+    "@channel.io/app-sdk-wam": "^0.18.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
