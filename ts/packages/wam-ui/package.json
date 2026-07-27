@@ -1,6 +1,6 @@
 {
   "name": "@channel.io/app-sdk-wam-ui",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "WAM-specific UI infrastructure and Bezier presets for Channel.io apps",
   "type": "module",
   "main": "./dist/index.js",

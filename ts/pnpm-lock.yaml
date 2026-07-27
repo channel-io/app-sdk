@@ -220,11 +220,11 @@ importers:
   examples/tutorial/apps/server:
     dependencies:
       '@channel.io/app-sdk-core':
-        specifier: ^0.17.2
-        version: 0.17.2
+        specifier: workspace:*
+        version: link:../../../../packages/core
       '@channel.io/app-sdk-server':
-        specifier: ^0.17.2
-        version: 0.17.2(@google-cloud/bigquery-storage@5.1.2(protobufjs@8.7.1))(@google-cloud/bigquery@8.3.1)(@nestjs/common@11.1.27(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.27)(apache-arrow@21.1.0)(pg-query-stream@4.16.0(pg@8.22.0))(pg@8.22.0)(reflect-metadata@0.2.2)
+        specifier: workspace:*
+        version: link:../../../../packages/server
       '@nestjs/common':
         specifier: 11.1.27
         version: 11.1.27(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -260,8 +260,8 @@ importers:
   examples/tutorial/apps/wam:
     dependencies:
       '@channel.io/app-sdk-wam':
-        specifier: ^0.17.2
-        version: 0.17.2(react@18.3.1)
+        specifier: workspace:*
+        version: link:../../../../packages/wam
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -643,37 +643,6 @@ packages:
 
   '@changesets/write@0.4.0':
     resolution: {integrity: sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q==}
-
-  '@channel.io/app-sdk-core@0.17.2':
-    resolution: {integrity: sha512-uD0cvXOcnOsPg19RJeWJCewmvu4de4heFc2qDwgLan5x+fPlnC2+1B07Obs0c1m3sOKF08E5j3Nv3Tue6PBSpQ==}
-
-  '@channel.io/app-sdk-server@0.17.2':
-    resolution: {integrity: sha512-mYxsJLn0AW6J7Gieuv9A0etixgL9lL9GHJJS0f84OzTGJB9vdW9VgrK8haO95FdqkOD6jQakprKNKdSAwmwUMw==}
-    peerDependencies:
-      '@google-cloud/bigquery': ^8.3.1
-      '@google-cloud/bigquery-storage': ^5.1.2
-      '@nestjs/common': '>=10.0.0'
-      '@nestjs/core': '>=10.0.0'
-      apache-arrow: ^21.1.0
-      pg: ^8.22.0
-      pg-query-stream: ^4.16.0
-      reflect-metadata: '>=0.1.0'
-    peerDependenciesMeta:
-      '@google-cloud/bigquery':
-        optional: true
-      '@google-cloud/bigquery-storage':
-        optional: true
-      apache-arrow:
-        optional: true
-      pg:
-        optional: true
-      pg-query-stream:
-        optional: true
-
-  '@channel.io/app-sdk-wam@0.17.2':
-    resolution: {integrity: sha512-9ur3FrpGBhXEX/TZkiSfpJUbD+XnwGfdrzA0WgzHCzBXZ0j6TGphQy6OJRwoPVkNubsiXRiROUliunyjI2m1/Q==}
-    peerDependencies:
-      react: '>=17.0.0'
 
   '@channel.io/bezier-icons@0.60.0':
     resolution: {integrity: sha512-qu4lNgVx8Ce9Y1LhqCkfLTz9rrOBZs1gwc20NAuep4OIN8luitH9OM3gV3Kmn/BJrAO2N0ZFgJwFNQh/fK0AqQ==}
@@ -5051,32 +5020,6 @@ snapshots:
       fs-extra: 7.0.1
       human-id: 4.2.0
       prettier: 2.8.8
-
-  '@channel.io/app-sdk-core@0.17.2':
-    dependencies:
-      zod: 3.25.76
-      zod-to-json-schema: 3.25.2(zod@3.25.76)
-
-  '@channel.io/app-sdk-server@0.17.2(@google-cloud/bigquery-storage@5.1.2(protobufjs@8.7.1))(@google-cloud/bigquery@8.3.1)(@nestjs/common@11.1.27(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.27)(apache-arrow@21.1.0)(pg-query-stream@4.16.0(pg@8.22.0))(pg@8.22.0)(reflect-metadata@0.2.2)':
-    dependencies:
-      '@channel.io/app-sdk-core': 0.17.2
-      '@grpc/grpc-js': 1.14.4
-      '@nestjs/common': 11.1.27(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/core': 11.1.27(@nestjs/common@11.1.27(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.27)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      protobufjs: 8.7.1
-      reflect-metadata: 0.2.2
-      zod: 3.25.76
-      zod-to-json-schema: 3.25.2(zod@3.25.76)
-    optionalDependencies:
-      '@google-cloud/bigquery': 8.3.1
-      '@google-cloud/bigquery-storage': 5.1.2(protobufjs@8.7.1)
-      apache-arrow: 21.1.0
-      pg: 8.22.0
-      pg-query-stream: 4.16.0(pg@8.22.0)
-
-  '@channel.io/app-sdk-wam@0.17.2(react@18.3.1)':
-    dependencies:
-      react: 18.3.1
 
   '@channel.io/bezier-icons@0.60.0(react@18.3.1)':
     optionalDependencies:
