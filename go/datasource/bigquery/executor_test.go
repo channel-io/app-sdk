@@ -6,6 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	cloudbigquery "cloud.google.com/go/bigquery"
+	grpcdatasource "github.com/channel-io/cht-app-sdk/go/datasource/grpc"
+	datasourcev1 "github.com/channel-io/cht-app-sdk/go/internal/gen/io/channel/datasource/v1"
 	bqapi "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/option"
 )
@@ -20,6 +23,39 @@ func TestNormalizeSourceConfigDefaultsProject(t *testing.T) {
 	}
 	if cfg.ProjectID != "project-1" {
 		t.Fatalf("project default mismatch: %s", cfg.ProjectID)
+	}
+}
+
+func TestClassifyUpstreamErrorMapsBytesBilledLimit(t *testing.T) {
+	upstream := cloudbigquery.Error{
+		Reason:  "bytesBilledLimitExceeded",
+		Message: "Query exceeded limit for bytes billed: 2147483648. 13774094336 or higher required.",
+	}
+
+	err := classifyUpstreamError(cloudbigquery.MultiError{&upstream})
+	detail, ok := grpcdatasource.QueryFailureDetail(err)
+	if !ok {
+		t.Fatalf("expected structured datasource error, got %T: %v", err, err)
+	}
+	if detail.GetCode() != datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_LIMIT_EXCEEDED {
+		t.Fatalf("unexpected code: %s", detail.GetCode())
+	}
+	if detail.GetRetryable() {
+		t.Fatal("bytes billed limit must not be retryable")
+	}
+	if detail.GetUpstream().GetEngine() != "bigquery" || detail.GetUpstream().GetCode() != upstream.Reason || detail.GetUpstream().GetMessage() != upstream.Message {
+		t.Fatalf("unexpected upstream detail: %+v", detail.GetUpstream())
+	}
+}
+
+func TestClassifyUpstreamErrorKeepsUnknownBigQueryFailureExternal(t *testing.T) {
+	err := classifyUpstreamError(cloudbigquery.Error{Reason: "newReason", Message: "upstream failed"})
+	detail, ok := grpcdatasource.QueryFailureDetail(err)
+	if !ok {
+		t.Fatalf("expected structured datasource error, got %T: %v", err, err)
+	}
+	if detail.GetCode() != datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_EXTERNAL_ERROR {
+		t.Fatalf("unexpected code: %s", detail.GetCode())
 	}
 }
 

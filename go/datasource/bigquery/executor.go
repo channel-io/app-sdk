@@ -15,9 +15,13 @@ import (
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/channel-io/cht-app-sdk/go/datasource"
 	grpcdatasource "github.com/channel-io/cht-app-sdk/go/datasource/grpc"
+	datasourcev1 "github.com/channel-io/cht-app-sdk/go/internal/gen/io/channel/datasource/v1"
 	"golang.org/x/oauth2/google"
 	bqapi "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Config struct {
@@ -137,14 +141,14 @@ func (e *Executor) ExecuteQuery(ctx context.Context, req grpcdatasource.QueryReq
 
 	job, err := query.Run(ctx)
 	if err != nil {
-		return err
+		return classifyUpstreamError(err)
 	}
 	status, err := job.Wait(ctx)
 	if err != nil {
-		return err
+		return classifyUpstreamError(err)
 	}
 	if err := status.Err(); err != nil {
-		return err
+		return classifyUpstreamError(err)
 	}
 
 	destination, err := e.queryDestinationTable(ctx, job.ProjectID(), job.ID(), job.Location())
@@ -185,7 +189,7 @@ func (e *Executor) queryDestinationTable(ctx context.Context, projectID string, 
 	}
 	rawJob, err := call.Do()
 	if err != nil {
-		return tableRef{}, err
+		return tableRef{}, classifyUpstreamError(err)
 	}
 	if rawJob.Configuration == nil || rawJob.Configuration.Query == nil || rawJob.Configuration.Query.DestinationTable == nil {
 		return tableRef{}, fmt.Errorf("bigquery query job destination table is missing")
@@ -211,7 +215,7 @@ func (e *Executor) readTable(ctx context.Context, table tableRef, sender grpcdat
 		MaxStreamCount: 1,
 	})
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, classifyUpstreamError(err)
 	}
 	if schema := session.GetArrowSchema(); schema != nil {
 		if err := sender.SendArrowSchema(schema.GetSerializedSchema()); err != nil {
@@ -223,12 +227,12 @@ func (e *Executor) readTable(ctx context.Context, table tableRef, sender grpcdat
 	for _, stream := range session.GetStreams() {
 		client, err := e.reader.ReadRows(ctx, &storagepb.ReadRowsRequest{ReadStream: stream.GetName()})
 		if err != nil {
-			return rowCount, session.GetEstimatedTotalBytesScanned(), err
+			return rowCount, session.GetEstimatedTotalBytesScanned(), classifyUpstreamError(err)
 		}
 		for {
 			resp, err := client.Recv()
 			if stderrors.Is(err, context.Canceled) || stderrors.Is(err, context.DeadlineExceeded) {
-				return rowCount, session.GetEstimatedTotalBytesScanned(), err
+				return rowCount, session.GetEstimatedTotalBytesScanned(), classifyUpstreamError(err)
 			}
 			if err != nil {
 				if stderrors.Is(err, io.EOF) {
@@ -250,6 +254,87 @@ func (e *Executor) readTable(ctx context.Context, table tableRef, sender grpcdat
 		}
 	}
 	return rowCount, session.GetEstimatedTotalBytesScanned(), nil
+}
+
+func classifyUpstreamError(err error) error {
+	if err == nil || stderrors.Is(err, context.Canceled) || stderrors.Is(err, context.DeadlineExceeded) {
+		return err
+	}
+	if _, ok := grpcdatasource.QueryFailureDetail(err); ok {
+		return err
+	}
+
+	reason, upstreamMessage := bigQueryErrorDetail(err)
+	code, retryable := classifyBigQueryReason(reason)
+	if upstreamMessage == "" {
+		upstreamMessage = err.Error()
+	}
+	return grpcdatasource.QueryFailure(
+		code,
+		err.Error(),
+		err,
+		grpcdatasource.Retryable(retryable),
+		grpcdatasource.Upstream("bigquery", reason, upstreamMessage),
+	)
+}
+
+func bigQueryErrorDetail(err error) (string, string) {
+	var valueErr cloudbigquery.Error
+	if stderrors.As(err, &valueErr) {
+		return valueErr.Reason, valueErr.Message
+	}
+	var pointerErr *cloudbigquery.Error
+	if stderrors.As(err, &pointerErr) && pointerErr != nil {
+		return pointerErr.Reason, pointerErr.Message
+	}
+	var multiErr cloudbigquery.MultiError
+	if stderrors.As(err, &multiErr) {
+		for _, nested := range multiErr {
+			if reason, message := bigQueryErrorDetail(nested); reason != "" || message != "" {
+				return reason, message
+			}
+		}
+	}
+	var apiErr *googleapi.Error
+	if stderrors.As(err, &apiErr) && apiErr != nil {
+		for _, item := range apiErr.Errors {
+			if item.Reason != "" || item.Message != "" {
+				return item.Reason, item.Message
+			}
+		}
+		return fmt.Sprintf("http_%d", apiErr.Code), apiErr.Message
+	}
+	if grpcStatus, ok := status.FromError(err); ok && grpcStatus.Code() != codes.Unknown {
+		return grpcStatus.Code().String(), grpcStatus.Message()
+	}
+	return "", err.Error()
+}
+
+func classifyBigQueryReason(reason string) (datasourcev1.DataSourceErrorCode, bool) {
+	switch reason {
+	case "bytesBilledLimitExceeded":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_LIMIT_EXCEEDED, false
+	case "accessDenied":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_PERMISSION_DENIED, false
+	case "invalidQuery":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_QUERY_INVALID, false
+	case "notFound":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_TABLE_NOT_FOUND, false
+	case "rateLimitExceeded":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_RESOURCE_EXHAUSTED, true
+	case "quotaExceeded", "resourcesExceeded":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_RESOURCE_EXHAUSTED, false
+	case codes.Unavailable.String():
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_UNAVAILABLE, true
+	case codes.ResourceExhausted.String():
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_RESOURCE_EXHAUSTED, true
+	case codes.DeadlineExceeded.String():
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_TIMEOUT, true
+	case "backendError", "internalError", "jobBackendError":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_EXTERNAL_ERROR, true
+	default:
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_EXTERNAL_ERROR, false
+	}
 }
 
 func normalizeSourceConfig(cfg SourceConfig, defaultProjectID string) (SourceConfig, error) {

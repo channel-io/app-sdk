@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	datasourcev1 "github.com/channel-io/cht-app-sdk/go/internal/gen/io/channel/datasource/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -96,6 +97,40 @@ func TestNewExecuteQueryHandlerMapsErrorRules(t *testing.T) {
 	}
 	if len(stream.chunks) != 1 || stream.chunks[0].GetError().GetCode().String() != "DATA_SOURCE_ERROR_CODE_INVALID_ARGUMENT" {
 		t.Fatalf("unexpected error chunks: %+v", stream.chunks)
+	}
+}
+
+func TestNewExecuteQueryHandlerPreservesStructuredQueryFailure(t *testing.T) {
+	handler := NewExecuteQueryHandler(
+		QueryExecutorFunc(func(context.Context, QueryRequest, QueryChunkSender) error {
+			return QueryFailure(
+				datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_LIMIT_EXCEEDED,
+				"query exceeded bytes billed limit",
+				errors.New("bigquery rejected query"),
+				Retryable(false),
+				Upstream("bigquery", "bytesBilledLimitExceeded", "query exceeded bytes billed limit"),
+			)
+		}),
+	)
+
+	stream := &managedCaptureStream{ctx: context.Background()}
+	err := handler(&ExecuteQueryRequest{
+		Session:  &SessionContext{ChannelId: "channel-1"},
+		SourceId: "bigquery",
+		Query:    "select * from orders",
+	}, stream)
+	if status.Code(err) != codes.ResourceExhausted {
+		t.Fatalf("expected ResourceExhausted, got %v: %v", status.Code(err), err)
+	}
+	if len(stream.chunks) != 1 {
+		t.Fatalf("expected one terminal error chunk, got %d", len(stream.chunks))
+	}
+	detail := stream.chunks[0].GetError()
+	if detail.GetCode() != datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_LIMIT_EXCEEDED || detail.GetRetryable() {
+		t.Fatalf("unexpected error detail: %+v", detail)
+	}
+	if detail.GetUpstream().GetEngine() != "bigquery" || detail.GetUpstream().GetCode() != "bytesBilledLimitExceeded" {
+		t.Fatalf("unexpected upstream detail: %+v", detail.GetUpstream())
 	}
 }
 

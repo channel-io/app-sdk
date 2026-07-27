@@ -144,6 +144,9 @@ func statusFromQueryError(err error, rules []ErrorStatusRule) error {
 	if err == nil {
 		return nil
 	}
+	if _, ok := QueryFailureDetail(err); ok {
+		return err
+	}
 	if stderrors.Is(err, context.Canceled) {
 		return status.Error(codes.Canceled, err.Error())
 	}
