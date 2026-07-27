@@ -2,6 +2,7 @@ package grpcdatasource
 
 import (
 	"context"
+	stderrors "errors"
 	"strings"
 
 	datasourcearrow "github.com/channel-io/app-sdk/go/datasource/arrow"
@@ -134,6 +135,31 @@ func ResultChunk(rowCount int64, limitExceeded bool, executionMS int64) *datasou
 
 type ErrorOption func(*datasourcev1.DataSourceError)
 
+type queryExecutionError struct {
+	detail *datasourcev1.DataSourceError
+	cause  error
+}
+
+func (e *queryExecutionError) Error() string {
+	if e == nil {
+		return ""
+	}
+	if e.detail != nil && e.detail.GetMessage() != "" {
+		return e.detail.GetMessage()
+	}
+	if e.cause != nil {
+		return e.cause.Error()
+	}
+	return "datasource query failed"
+}
+
+func (e *queryExecutionError) Unwrap() error {
+	if e == nil {
+		return nil
+	}
+	return e.cause
+}
+
 func Retryable(retryable bool) ErrorOption {
 	return func(err *datasourcev1.DataSourceError) {
 		err.Retryable = retryable
@@ -151,15 +177,39 @@ func Upstream(engine string, code string, message string) ErrorOption {
 }
 
 func ErrorChunk(code datasourcev1.DataSourceErrorCode, message string, opts ...ErrorOption) *datasourcev1.QueryChunk {
-	dataSourceError := &datasourcev1.DataSourceError{
-		Code:    code,
-		Message: message,
+	dataSourceError := newDataSourceError(code, message, opts...)
+	return errorDetailChunk(dataSourceError)
+}
+
+func QueryFailure(code datasourcev1.DataSourceErrorCode, message string, cause error, opts ...ErrorOption) error {
+	if message == "" && cause != nil {
+		message = cause.Error()
 	}
+	return &queryExecutionError{
+		detail: newDataSourceError(code, message, opts...),
+		cause:  cause,
+	}
+}
+
+func QueryFailureDetail(err error) (*datasourcev1.DataSourceError, bool) {
+	var queryErr *queryExecutionError
+	if !stderrors.As(err, &queryErr) || queryErr == nil || queryErr.detail == nil {
+		return nil, false
+	}
+	return queryErr.detail, true
+}
+
+func newDataSourceError(code datasourcev1.DataSourceErrorCode, message string, opts ...ErrorOption) *datasourcev1.DataSourceError {
+	dataSourceError := &datasourcev1.DataSourceError{Code: code, Message: message}
 	for _, opt := range opts {
 		if opt != nil {
 			opt(dataSourceError)
 		}
 	}
+	return dataSourceError
+}
+
+func errorDetailChunk(dataSourceError *datasourcev1.DataSourceError) *datasourcev1.QueryChunk {
 	return &datasourcev1.QueryChunk{
 		Payload: &datasourcev1.QueryChunk_Error{
 			Error: dataSourceError,
@@ -171,11 +221,47 @@ func SendErrorAndReturn(stream ExecuteQueryServer, err error) error {
 	if err == nil {
 		return nil
 	}
+	if detail, ok := QueryFailureDetail(err); ok {
+		if stream != nil {
+			_ = stream.Send(errorDetailChunk(detail))
+		}
+		return status.Error(grpcCodeFromDataSourceError(detail.GetCode()), detail.GetMessage())
+	}
 	chunk := ErrorChunk(ErrorCodeFromGRPC(err), statusMessage(err), Retryable(isRetryableGRPCError(err)))
 	if stream != nil {
 		_ = stream.Send(chunk)
 	}
 	return err
+}
+
+func grpcCodeFromDataSourceError(code datasourcev1.DataSourceErrorCode) codes.Code {
+	switch code {
+	case datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_UNAVAILABLE:
+		return codes.Unavailable
+	case datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_UNAUTHENTICATED,
+		datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_UPSTREAM_AUTH_FAILED:
+		return codes.Unauthenticated
+	case datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_PERMISSION_DENIED:
+		return codes.PermissionDenied
+	case datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_SOURCE_NOT_FOUND,
+		datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_TABLE_NOT_FOUND,
+		datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_COLUMN_NOT_FOUND:
+		return codes.NotFound
+	case datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_QUERY_INVALID,
+		datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_INVALID_ARGUMENT:
+		return codes.InvalidArgument
+	case datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_LIMIT_EXCEEDED,
+		datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_RESOURCE_EXHAUSTED:
+		return codes.ResourceExhausted
+	case datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_TIMEOUT:
+		return codes.DeadlineExceeded
+	case datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_CANCELLED:
+		return codes.Canceled
+	case datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_INTERNAL:
+		return codes.Internal
+	default:
+		return codes.Unknown
+	}
 }
 
 func ErrorCodeFromGRPC(err error) datasourcev1.DataSourceErrorCode {
