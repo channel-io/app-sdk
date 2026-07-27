@@ -54,6 +54,28 @@ describe("store extension schemas", () => {
     ).toThrow();
   });
 
+  it("accepts empty extension values that allow Developer GUI fallbacks", () => {
+    const emptyLocalizedContent = {
+      images: [],
+      intro: { helpsWith: "", recommendedFor: "   " },
+      faqs: [],
+    };
+
+    const parsed = StoreProfileMetadataSchema.parse({
+      relatedAppIds: [],
+      i18nMap: {
+        ko: emptyLocalizedContent,
+        ja: emptyLocalizedContent,
+        en: emptyLocalizedContent,
+      },
+    });
+
+    expect(parsed.relatedAppIds).toEqual([]);
+    expect(parsed.i18nMap.ko.images).toEqual([]);
+    expect(parsed.i18nMap.ja.intro.helpsWith).toBe("");
+    expect(parsed.i18nMap.en.intro.recommendedFor).toBe("   ");
+  });
+
   it("treats uploaded relative media keys as opaque values", () => {
     const key = "app-store/app-id/detail-image/screenshot.webp";
     const parsed = StoreProfileMetadataSchema.parse({

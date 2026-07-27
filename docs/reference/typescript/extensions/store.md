@@ -2,7 +2,7 @@
 
 Use the Store Extension to provide localized App Store introduction metadata without hardcoding app-specific copy in App Store.
 
-App Store calls the metadata function during registration or re-registration, validates the result, and persists it. App Store reads the stored effective profile for list and detail queries; it does not call the app function for every customer-facing read.
+App Store calls the metadata function during registration or re-registration, validates the result, and persists it as the `extension` source. App Store combines it with any Developer GUI fallback when serving list and detail queries; it does not call the app function for every customer-facing read.
 
 ## Required Function
 
@@ -38,7 +38,8 @@ type StoreProfileLocalizedContent = {
 - `images[].key` is the opaque relative key returned by the App Store media upload API. Do not assume a storage prefix or pass an external URL.
 - `images[].alt` is limited to 120 characters.
 - Intro and FAQ answers support the limited Markdown syntax validated by App Store.
-- Use empty arrays or empty strings when App Store Developer GUI should provide a fallback value.
+- The SDK output always represents the `extension` source. It never contains Developer GUI values or source wrappers.
+- Use empty arrays or whitespace-only/empty strings when App Store Developer GUI should provide a fallback value. App Store evaluates arrays per locale and intro strings per locale/field.
 
 ## TypeScript Implementation
 

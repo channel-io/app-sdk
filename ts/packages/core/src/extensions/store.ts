@@ -57,6 +57,10 @@ export type StoreProfileLocalizedContent = ProtoBacked<
   ProtoStoreProfileLocalizedContent
 >;
 
+/**
+ * Metadata supplied by the extension source. Empty localized arrays and intro strings intentionally
+ * leave those fields available for an App Store Developer GUI fallback.
+ */
 export const StoreProfileMetadataSchema = z
   .object({
     relatedAppIds: z.array(StoreNonEmptyStringSchema),

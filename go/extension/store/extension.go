@@ -43,6 +43,8 @@ func (b *ExtensionBuilder) Register(app *appsdk.App) error {
 	return b.base.Register(app)
 }
 
+// StaticProfile returns metadata for the extension source. Empty localized arrays and intro strings
+// intentionally leave those fields available for an App Store Developer GUI fallback.
 func StaticProfile(profile *Profile) appsdk.TypedHandlerFunc[GetStoreProfileRequest, GetStoreProfileResponse] {
 	return func(context.Context, appsdk.Context, *GetStoreProfileRequest) (*GetStoreProfileResponse, error) {
 		return profile, nil
