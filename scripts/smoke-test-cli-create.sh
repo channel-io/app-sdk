@@ -9,7 +9,7 @@ packs_dir="$temporary_dir/packs"
 mkdir -p "$packs_dir"
 
 for package_dir in core server wam wam-ui; do
-  corepack pnpm \
+  pnpm \
     --dir "$root_dir/ts/packages/$package_dir" \
     pack \
     --pack-destination "$packs_dir" >/dev/null
