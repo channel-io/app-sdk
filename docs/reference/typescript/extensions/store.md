@@ -17,11 +17,7 @@ The function returns the persisted metadata directly. Do not wrap it in a `profi
 ```typescript
 type StoreProfileMetadata = {
   relatedAppIds: string[];
-  i18nMap: {
-    ko: StoreProfileLocalizedContent;
-    ja: StoreProfileLocalizedContent;
-    en: StoreProfileLocalizedContent;
-  };
+  i18nMap: Record<string, StoreProfileLocalizedContent>;
 };
 
 type StoreProfileLocalizedContent = {
@@ -35,6 +31,7 @@ type StoreProfileLocalizedContent = {
 ```
 
 - `relatedAppIds` lists apps that work with this app.
+- `i18nMap` accepts every non-empty locale code exposed by Desk. Add only locales that have authored content; `ko`, `ja`, and `en` are not pre-created or required.
 - `images[].key` is the opaque relative key returned by the App Store media upload API. Do not assume a storage prefix or pass an external URL.
 - `images[].alt` is limited to 120 characters.
 - Intro and FAQ answers support the limited Markdown syntax validated by App Store.
@@ -73,8 +70,6 @@ export class MyStoreExtension implements StoreExtensionInterface {
       relatedAppIds: [],
       i18nMap: {
         ko: localizedContent,
-        ja: localizedContent,
-        en: localizedContent,
       },
     };
   }

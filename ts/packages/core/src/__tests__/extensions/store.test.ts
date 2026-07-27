@@ -45,13 +45,25 @@ describe("store extension schemas", () => {
     ).toThrow();
   });
 
-  it("requires all supported locales", () => {
-    expect(() =>
-      StoreProfileMetadataSchema.parse({
-        relatedAppIds: [],
-        i18nMap: { ko: localizedContent, en: localizedContent },
-      })
-    ).toThrow();
+  it("accepts only the locales supplied by the app, including arbitrary Desk locales", () => {
+    const parsed = StoreProfileMetadataSchema.parse({
+      relatedAppIds: [],
+      i18nMap: { fr: localizedContent, "zh-CN": localizedContent },
+    });
+
+    expect(Object.keys(parsed.i18nMap)).toEqual(["fr", "zh-CN"]);
+    expect(parsed.i18nMap.fr.intro.helpsWith).toContain("shipping");
+  });
+
+  it("rejects blank or whitespace-padded locale keys", () => {
+    for (const locale of ["", " fr", "fr "]) {
+      expect(() =>
+        StoreProfileMetadataSchema.parse({
+          relatedAppIds: [],
+          i18nMap: { [locale]: localizedContent },
+        })
+      ).toThrow();
+    }
   });
 
   it("accepts empty extension values that allow Developer GUI fallbacks", () => {
@@ -64,16 +76,14 @@ describe("store extension schemas", () => {
     const parsed = StoreProfileMetadataSchema.parse({
       relatedAppIds: [],
       i18nMap: {
-        ko: emptyLocalizedContent,
-        ja: emptyLocalizedContent,
-        en: emptyLocalizedContent,
+        fr: emptyLocalizedContent,
       },
     });
 
     expect(parsed.relatedAppIds).toEqual([]);
-    expect(parsed.i18nMap.ko.images).toEqual([]);
-    expect(parsed.i18nMap.ja.intro.helpsWith).toBe("");
-    expect(parsed.i18nMap.en.intro.recommendedFor).toBe("   ");
+    expect(parsed.i18nMap.fr.images).toEqual([]);
+    expect(parsed.i18nMap.fr.intro.helpsWith).toBe("");
+    expect(parsed.i18nMap.fr.intro.recommendedFor).toBe("   ");
   });
 
   it("treats uploaded relative media keys as opaque values", () => {

@@ -22326,215 +22326,73 @@
         },
         "i18nMap": {
           "type": "object",
-          "properties": {
-            "ko": {
-              "type": "object",
-              "properties": {
-                "images": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "alt": {
-                        "type": "string",
-                        "maxLength": 120
-                      }
-                    },
-                    "required": [
-                      "key"
-                    ],
-                    "additionalProperties": false
-                  }
-                },
-                "intro": {
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "images": {
+                "type": "array",
+                "items": {
                   "type": "object",
                   "properties": {
-                    "helpsWith": {
-                      "type": "string"
+                    "key": {
+                      "type": "string",
+                      "minLength": 1
                     },
-                    "recommendedFor": {
+                    "alt": {
+                      "type": "string",
+                      "maxLength": 120
+                    }
+                  },
+                  "required": [
+                    "key"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "intro": {
+                "type": "object",
+                "properties": {
+                  "helpsWith": {
+                    "type": "string"
+                  },
+                  "recommendedFor": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "helpsWith",
+                  "recommendedFor"
+                ],
+                "additionalProperties": false
+              },
+              "faqs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "question": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "answer": {
                       "type": "string"
                     }
                   },
                   "required": [
-                    "helpsWith",
-                    "recommendedFor"
+                    "question",
+                    "answer"
                   ],
                   "additionalProperties": false
-                },
-                "faqs": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "question": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "answer": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "question",
-                      "answer"
-                    ],
-                    "additionalProperties": false
-                  }
                 }
-              },
-              "required": [
-                "images",
-                "intro",
-                "faqs"
-              ],
-              "additionalProperties": false
+              }
             },
-            "ja": {
-              "type": "object",
-              "properties": {
-                "images": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "alt": {
-                        "type": "string",
-                        "maxLength": 120
-                      }
-                    },
-                    "required": [
-                      "key"
-                    ],
-                    "additionalProperties": false
-                  }
-                },
-                "intro": {
-                  "type": "object",
-                  "properties": {
-                    "helpsWith": {
-                      "type": "string"
-                    },
-                    "recommendedFor": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "helpsWith",
-                    "recommendedFor"
-                  ],
-                  "additionalProperties": false
-                },
-                "faqs": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "question": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "answer": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "question",
-                      "answer"
-                    ],
-                    "additionalProperties": false
-                  }
-                }
-              },
-              "required": [
-                "images",
-                "intro",
-                "faqs"
-              ],
-              "additionalProperties": false
-            },
-            "en": {
-              "type": "object",
-              "properties": {
-                "images": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "alt": {
-                        "type": "string",
-                        "maxLength": 120
-                      }
-                    },
-                    "required": [
-                      "key"
-                    ],
-                    "additionalProperties": false
-                  }
-                },
-                "intro": {
-                  "type": "object",
-                  "properties": {
-                    "helpsWith": {
-                      "type": "string"
-                    },
-                    "recommendedFor": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "helpsWith",
-                    "recommendedFor"
-                  ],
-                  "additionalProperties": false
-                },
-                "faqs": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "question": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "answer": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "question",
-                      "answer"
-                    ],
-                    "additionalProperties": false
-                  }
-                }
-              },
-              "required": [
-                "images",
-                "intro",
-                "faqs"
-              ],
-              "additionalProperties": false
-            }
-          },
-          "required": [
-            "ko",
-            "ja",
-            "en"
-          ],
-          "additionalProperties": false
+            "required": [
+              "images",
+              "intro",
+              "faqs"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
