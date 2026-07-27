@@ -26,7 +26,7 @@ describe("createApp", () => {
 
     expect(serverPackage.dependencies["@channel.io/app-sdk-server"]).toBe("9.8.7");
     expect(wamPackage.dependencies["@channel.io/app-sdk-wam"]).toBe("9.8.7");
-    expect(wamPackage.dependencies["@channel.io/app-sdk-wam-ui"]).toBe("0.4.0");
+    expect(wamPackage.dependencies["@channel.io/app-sdk-wam-ui"]).toBe("0.4.1");
     expect(wamPackage.dependencies["@channel.io/bezier-react"]).toBe("4.0.0-next.14");
     expect(main).toContain("rawBody: true");
     expect(module).toContain("SignatureGuard");
