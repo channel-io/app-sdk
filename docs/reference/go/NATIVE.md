@@ -26,6 +26,8 @@ The current Go client exposes typed methods for:
 - `RegisterAlfTasks` and `GetAlfTaskVersions`;
 - `RegisterAppNotebooks` and `GetAppNotebookVersions`;
 - app data-table creation, schema, lookup, and row ingestion;
+- raw and generic public Native Function calls through `CallNativeFunction` and `CallNative[T]`;
+- typed Channel operations through `CreateProxyAPI`, starting with `WriteGroupMessage`;
 - `CallAppFunction` for calling a registered app Function through AppStore.
 
 Check the exported `native.Client` methods for the exact current surface. Do not copy an undocumented method name into application code.
@@ -57,17 +59,29 @@ Use app tokens for app-owned registration and data operations. Server-side Chann
 
 It is not a generic Channel native-operation method. Do not use it to call arbitrary native method names.
 
-## Current Proxy Gap
+## Channel operations and generic calls
 
-The public Go client does not yet expose TypeScript's `createProxyApi` equivalent or a generic typed Channel-operation proxy. Before a server-side Channel operation:
+Use a channel-scoped token with the typed proxy:
 
-1. check [Go Feature Parity](../go-feature-parity.md);
-2. prefer an exported typed method if one exists;
-3. if the public contract is documented but no wrapper exists, isolate one method in a small transport adapter;
-4. test its URL, method name, token header, request, response, timeout, and error handling;
-5. remove the adapter when the SDK adds a public wrapper.
+```go
+token, err := tokens.GetChannelToken(ctx, channelID)
+if err != nil {
+  return err
+}
 
-Do not grow a second general-purpose native client inside an app.
+_, err = client.CreateProxyAPI(token.AccessToken).WriteGroupMessage(
+  ctx,
+  native.WriteGroupMessageParams{
+    ChannelID: channelID,
+    GroupID: groupID,
+    DTO: native.WriteMessageDTO{PlainText: "Hello", BotName: "ExampleBot"},
+  },
+)
+```
+
+Prefer a typed client or proxy method. If the SDK exposes no wrapper for a public Native Function,
+use `native.CallNative[T]` to retain typed decoding, or `client.CallNativeFunction` when the result
+must remain raw JSON. Do not build a second HTTP transport in the app.
 
 ## Errors And Logging
 
@@ -82,3 +96,5 @@ Use `native.WithHTTPClient` and a controlled test server to verify:
 - camelCase payload fields;
 - Function error and non-2xx handling;
 - context cancellation and timeouts.
+
+The shared wire envelope is summarized in the [cross-language protocol](../protocol.md).

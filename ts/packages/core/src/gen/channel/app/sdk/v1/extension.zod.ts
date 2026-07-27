@@ -1276,10 +1276,10 @@ export type CommerceGetOrdersOutputProto = z.infer<typeof CommerceGetOrdersOutpu
 
 export const CommerceAppCapabilitiesProtoSchema = z.object({
   getOrdersOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
-  cancelRequestOrderOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
-  returnRequestOrderOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
-  returnAcceptOrderOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
-  exchangeRequestOrderOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
+  requestCancelOrderOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
+  requestReturnOrderOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
+  acceptReturnOrderOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
+  requestExchangeOrderOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
   changeShippingAddressOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
 }) satisfies z.ZodType<pb.CommerceAppCapabilities>;
 export type CommerceAppCapabilitiesProto = z.infer<typeof CommerceAppCapabilitiesProtoSchema>;
@@ -1326,7 +1326,7 @@ export const CommerceReturnOrderInputProtoSchema = z.object({
 }) satisfies z.ZodType<pb.CommerceReturnOrderInput>;
 export type CommerceReturnOrderInputProto = z.infer<typeof CommerceReturnOrderInputProtoSchema>;
 
-export const CommerceReturnAcceptOrderInputProtoSchema = z.object({
+export const CommerceAcceptReturnOrderInputProtoSchema = z.object({
   identifier: z.lazy(() => CommerceIdentifierProtoSchema).optional(),
   orderId: z.string().optional(),
   returnItems: z.array(z.lazy(() => OrderClaimItemProtoSchema)).optional(),
@@ -1334,8 +1334,8 @@ export const CommerceReturnAcceptOrderInputProtoSchema = z.object({
   refundBankAccount: z.lazy(() => OrderBankAccountProtoSchema).optional(),
   pickupCompleted: z.boolean().optional(),
   requestPickup: z.boolean().optional(),
-}) satisfies z.ZodType<pb.CommerceReturnAcceptOrderInput>;
-export type CommerceReturnAcceptOrderInputProto = z.infer<typeof CommerceReturnAcceptOrderInputProtoSchema>;
+}) satisfies z.ZodType<pb.CommerceAcceptReturnOrderInput>;
+export type CommerceAcceptReturnOrderInputProto = z.infer<typeof CommerceAcceptReturnOrderInputProtoSchema>;
 
 export const CommerceExchangeOrderInputProtoSchema = z.object({
   identifier: z.lazy(() => CommerceIdentifierProtoSchema).optional(),
@@ -1594,12 +1594,12 @@ export type WmsOperationOptionsProto = z.infer<typeof WmsOperationOptionsProtoSc
 
 export const WmsAppCapabilitiesProtoSchema = z.object({
   getOrdersOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
-  cancelRequestOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
-  cancelRestoreOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
-  returnRequestOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
-  returnRestoreOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
-  exchangeRequestOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
-  exchangeRestoreOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
+  requestCancelOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
+  restoreCanceledOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
+  requestReturnOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
+  restoreReturnedOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
+  requestExchangeOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
+  restoreExchangedOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
   changeShippingAddressOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
 }) satisfies z.ZodType<pb.WmsAppCapabilities>;
 export type WmsAppCapabilitiesProto = z.infer<typeof WmsAppCapabilitiesProtoSchema>;

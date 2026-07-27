@@ -255,8 +255,16 @@ func (c *Client) CallAppFunction(ctx context.Context, accessToken, appID, method
 	return c.call(ctx, fmt.Sprintf("/general/v1/apps/%s/functions", appID), accessToken, req)
 }
 
-func callNative[T any](ctx context.Context, c *Client, accessToken, method string, params any) (*T, error) {
-	data, err := c.call(ctx, "/general/v1/native/functions", accessToken, functionRequest{Method: method, Params: params})
+// CallNativeFunction invokes a public AppStore Native Function and returns its raw JSON result.
+// Use a channel-scoped token for Channel operations and an app token for app-owned operations.
+func (c *Client) CallNativeFunction(ctx context.Context, accessToken, method string, params any) (json.RawMessage, error) {
+	return c.call(ctx, "/general/v1/native/functions", accessToken, functionRequest{Method: method, Params: params})
+}
+
+// CallNative invokes a public AppStore Native Function and decodes its result into T.
+// Prefer a typed Client or ProxyAPI method when one is available.
+func CallNative[T any](ctx context.Context, c *Client, accessToken, method string, params any) (*T, error) {
+	data, err := c.CallNativeFunction(ctx, accessToken, method, params)
 	if err != nil {
 		return nil, err
 	}
@@ -265,6 +273,10 @@ func callNative[T any](ctx context.Context, c *Client, accessToken, method strin
 		return nil, err
 	}
 	return &result, nil
+}
+
+func callNative[T any](ctx context.Context, c *Client, accessToken, method string, params any) (*T, error) {
+	return CallNative[T](ctx, c, accessToken, method, params)
 }
 
 func (c *Client) call(ctx context.Context, path, accessToken string, payload any) (json.RawMessage, error) {

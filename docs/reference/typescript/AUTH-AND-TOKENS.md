@@ -4,16 +4,16 @@ Channel app authentication has separate inbound, server-outbound, WAM, and exter
 
 ## Credential Map
 
-| Value                        | Represents                                                               | Where it belongs                                                             |
-| ---------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| App ID                       | Public identity of an app                                                | Server and WAM may use it                                                    |
-| App Secret                   | Long-lived credential used to issue app/channel token pairs              | Server secret manager only                                                   |
-| Signing Key                  | HMAC key for Function requests sent by AppStore                          | Server secret manager only                                                   |
-| App access/refresh token     | App-scoped native operations such as Extension registration              | Server token cache                                                           |
-| Channel access/refresh token | Server-side native operations in one installed Channel                   | Per-channel server token cache                                               |
-| Manager/User authorization   | Current user acting through a Channel client surface                     | Managed by the Channel WAM host; not issued by `TokenManager`                |
-| Provider OAuth token         | Connected external provider account                                      | Decrypted and injected into `ctx.authToken` when the Function needs it       |
-| Config credential            | API keys, `client_credentials`, per-shop credentials, and similar values | Stored by AppStore and injected through `ctx.config` or compatibility fields |
+| Value                        | Represents                                                               | Where it belongs                                                       |
+| ---------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| App ID                       | Public identity of an app                                                | Server and WAM may use it                                              |
+| App Secret                   | Long-lived credential used to issue app/channel token pairs              | Server secret manager only                                             |
+| Signing Key                  | HMAC key for Function requests sent by AppStore                          | Server secret manager only                                             |
+| App access/refresh token     | App-scoped native operations such as Extension registration              | Server token cache                                                     |
+| Channel access/refresh token | Server-side native operations in one installed Channel                   | Per-channel server token cache                                         |
+| Manager/User authorization   | Current user acting through a Channel client surface                     | Managed by the Channel WAM host; not issued by `TokenManager`          |
+| Provider OAuth token         | Connected external provider account                                      | Decrypted and injected into `ctx.authToken` when the Function needs it |
+| Config credential            | API keys, `client_credentials`, per-shop credentials, and similar values | Stored by AppStore and injected through `ctx.config`                   |
 
 Never put App Secret, Signing Key, access/refresh tokens, provider tokens, or config credentials in WAM bundles, `wamArgs`, source control, fixtures, logs, or error responses.
 
@@ -79,7 +79,7 @@ const api = nativeClient.createProxyApi(channelToken.accessToken);
 - deduplicates concurrent issue/refresh work in one process;
 - supports a custom `TokenCacheStorage`.
 
-`issueToken` and `refreshToken` share a limited native rate limit. Never issue a token for every Function call. The default cache is in memory and therefore process-local. Multiple replicas should use a shared cache implementation such as Redis or a database so token pairs are shared. In-flight deduplication is process-local; use storage-side locking if strict cross-replica refresh coordination is required.
+`issueToken` and `refreshToken` share a native rate limit of 10 calls per 30 minutes per app. Never issue a token for every Function call. Omitting `channelId` issues an app token; supplying the ID of an installed Channel issues a channel token for permitted server-side operations in that Channel. Both calls return an access/refresh token pair and `expiresIn` in seconds. The default cache is in memory and therefore process-local. Multiple replicas should use a shared cache implementation such as Redis or a database so token pairs are shared. In-flight deduplication is process-local; use storage-side locking if strict cross-replica refresh coordination is required.
 
 Direct repeated use of `NativeFunctionClient.issueToken()` does not cache for you. Use it only when you intentionally own persistence, expiry calculation, refresh, invalidation, and concurrency control.
 
@@ -108,7 +108,8 @@ Use `useCallFunction()` for business logic and work performed as the app or bot;
 Do not confuse external-service credentials with Channel App tokens.
 
 - **OAuth Authorization Code**: declare the OAuth Extension. After connection and token exchange, AppStore injects the decrypted provider token into `ctx.authToken` for the relevant Function call.
-- **Config/API key**: use the Config Extension for API keys, `client_credentials`, per-shop secrets, and non-redirect authentication. AppStore resolves values into `ctx.config`; compatibility flows may also populate `ctx.apiCredentials`.
+- **Config credential**: use the Config Extension for API keys, `client_credentials`, per-shop
+  secrets, and non-redirect authentication. AppStore resolves values into `ctx.config`.
 
 Read provider credentials only inside the server Function that needs them, minimize logging around outbound provider calls, and handle absent or revoked credentials explicitly.
 

@@ -47,10 +47,10 @@ Use `appsdk.Register` when startup should return an error and `appsdk.MustRegist
 - `Caller`, `Channel`, `User`, `UserChat`, and `Language`;
 - `AuthToken` for an external OAuth provider;
 - `Config` for Config Extension values;
-- `APICredentials` for compatibility with older API-key flows;
 - sandbox/session fields when that execution surface provides them.
 
-Optional fields are not guaranteed. Use `fnCtx.GetAuthToken()` when compatibility with the legacy OAuth field is required. Do not confuse this provider token with app/channel tokens from `native.TokenManager`.
+Optional fields are not guaranteed. Use `fnCtx.GetAuthToken()` to read the injected OAuth provider
+token. Do not confuse this provider token with app/channel tokens from `native.TokenManager`.
 
 ## Schemas
 

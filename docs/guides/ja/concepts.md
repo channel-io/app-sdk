@@ -61,7 +61,6 @@ Call surface に応じて `context` には次の値が含まれる場合があ�
 - `user`、`userChat`、`language`: その flow で提供される場合の user context
 - `authToken`: OAuth connection 用に AppStore が復号して注入した provider access token
 - `config`: config Extension で保存した現在 scope の設定と credential
-- `apiCredentials`: 旧 API key flow との互換用 credential
 
 Optional field が常に存在するとは考えず、Function の実行 surface に合わせて検証してください。`ctx.authToken` は Channel App の app/channel token ではなく、外部 OAuth provider の token です。
 
@@ -87,6 +86,9 @@ Build 済み SPA は `${WAM_ENDPOINT}/${name}` で serve し、React root を `W
 - `useNativeFunction`: 現在の surface と manager/user authorization で許可された Channel native function を呼ぶ
 - `useWamSize`、`useWamClose`: WAM の size と close を制御する
 
+React setup、runtime data、Function call、resize、close の完全な流れは [WAM ガイド](wam.md)を
+確認してください。
+
 WAM は `App Secret`、`Signing Key`、app token、channel token を保存・発行しません。`wamArgs` も client から読めるため、secret、access token、生の customer data を入れないでください。App または bot として行う処理は `useCallFunction` で app server に依頼し、server が channel token を使うようにします。現在の manager/user が行う処理だけを `useNativeFunction` で呼び出してください。
 
 ## Authentication、Signature、Token
@@ -109,6 +111,26 @@ WAM は `App Secret`、`Signing Key`、app token、channel token を保存・発
 1. **受信 request**: hex-encoded Signing Key を使い、受信した raw request body そのものに対する HMAC-SHA256 `x-signature` を検証します。TypeScript は `SignatureGuard` と NestJS `rawBody: true`、Go は `server.WithSignature` を使います。Production では検証を無効にしないでください。
 2. **Server からの送信 request**: `TokenManager` が App Secret で app token または channel token を発行して cache します。SDK は期限前に refresh し、同時の issue/refresh を deduplicate します。Request ごとに `issueToken` を呼ばないでください。
 3. **WAM からの送信 request**: WAM SDK が host bridge を呼びます。Manager/User authorization は Channel runtime が判断し、app server の `TokenManager` は発行しません。
+
+### Token 発行の詳細
+
+Low-level 発行 API を繰り返し呼ばず、`TokenManager` を使用してください。Transport の問題を調査する
+場合や token lifecycle を意図的に管理する場合は、次の contract を基準にします。
+
+- `issueToken` と `refreshToken` は app ごとに **30分あたり10回**の制限を共有します。Request
+  ごとに token を発行せず、access/refresh token pair を cache してください。
+- `issueToken` で `channelId` を省略すると、Extension registration など app-scoped operation 用の
+  app token が発行されます。
+- Install 済み Channel の `channelId` を指定すると、その Channel の server-side operation 用の
+  channel token が発行されます。App の install と選択した permission は引き続き必要です。
+- 主要な result field は `accessToken`、`refreshToken`、秒単位の `expiresIn` です。Native
+  Function request では現在の access token を `x-access-token` header に渡します。
+- Channel permission は server が channel token で実行する operation を制限します。
+  Manager/User permission と authorization は WAM host が現在の user と surface から適用します。
+
+正確な API と custom cache storage は
+[TypeScript authentication/token reference](../../reference/typescript/AUTH-AND-TOKENS.md)と
+[Go authentication/token reference](../../reference/go/AUTH-AND-TOKENS.md)を確認してください。
 
 Default token cache は単一 process 向けの in-memory storage です。複数 replica では SDK の cache interface を Redis や database などの shared storage で実装し、token pair を共有してください。In-flight deduplication は process-local なので、replica 間の refresh を厳密に調整する必要がある場合は storage-side lock も実装します。Access token、refresh token、provider token、credential を log に残さないでください。
 
@@ -135,4 +157,7 @@ Developer portal には system version や WAM name を付ける前の root を�
 
 `proto/` は TypeScript と Go が共有する wire contract の source です。App developer は通常、generated proto code ではなく各言語 SDK の decorator、builder、schema、type を使います。Document や example と public export が一致しない場合は、public export と schema implementation を優先してください。
 
-実装手順は [アプリ開発完全ガイド](app-development.md)、実行可能な code は [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) と [Go tutorial](https://github.com/channel-io/app-tutorial) を参照してください。
+次に [Function 登録](functions.md)、[Command ガイド](extensions/command.md)、[WAM ガイド](wam.md)、
+[Extension 完全ガイド](extensions.md)、最後に [本番運用準備ガイド](app-development.md)を確認してください。
+実行可能な code は [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) と
+[Go tutorial](https://github.com/channel-io/app-tutorial)を参照してください。

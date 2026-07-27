@@ -1,6 +1,6 @@
 {
   "name": "@channel.io/app-sdk",
-  "version": "0.17.2",
+  "version": "0.18.0",
   "description": "CLI and main entry for Channel.io App SDK",
   "type": "module",
   "main": "./dist/index.js",
@@ -32,6 +32,7 @@
     "@channel.io/app-sdk-core": "workspace:*",
     "@channel.io/app-sdk-server": "workspace:*",
     "@channel.io/app-sdk-wam": "workspace:*",
+    "@channel.io/app-sdk-wam-ui": "workspace:*",
     "commander": "^12.1.0",
     "picocolors": "^1.1.1",
     "prompts": "^2.4.2"

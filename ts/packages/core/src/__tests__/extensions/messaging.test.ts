@@ -3,6 +3,7 @@ import {
   InboxGetWritingTypesInputSchema,
   InboxGetWritingTypesOutputSchema,
   InboxOnMediumUserChatClosedInputSchema,
+  createMessagingExtension,
   MessagingFunctionNames,
   MessagingMessageOptionSchema,
   MessagingUserChatStateSchema,
@@ -10,6 +11,7 @@ import {
   OnMediumMessageCreatedInputSchema,
   PrebuiltBuildMediumTopicsOutputSchema,
 } from "../../extensions/index.js";
+import type { Context } from "../../types/context.js";
 
 describe("messaging extension schemas", () => {
   it("parses inbox message-created input with required fields and enums", () => {
@@ -147,5 +149,51 @@ describe("messaging extension schemas", () => {
     });
 
     expect(parsed.mediumProfile.mediumSenderId).toBe("sender-1");
+  });
+
+  it("builds schema-validated inbox and prebuilt function groups", async () => {
+    const extension = createMessagingExtension({
+      inbox: {
+        onMediumMessageCreated: (_ctx, input) => ({
+          sendResult: { sendState: input.message.id ?? "sent" },
+        }),
+        getWritingTypes: () => ({
+          writingTypeMap: { standard: { state: "available" } },
+        }),
+      },
+      prebuilt: {
+        getDefaultOptions: () => ({ defaultOptions: {} }),
+      },
+    });
+
+    expect(extension.name).toBe("messaging");
+    expect(extension.systemVersion).toBe("v1");
+    expect(Object.keys(extension.groups.inbox)).toEqual([
+      "onMediumMessageCreated",
+      "getWritingTypes",
+    ]);
+    expect(Object.keys(extension.groups.prebuilt)).toEqual(["getDefaultOptions"]);
+
+    const result = await extension.groups.inbox.onMediumMessageCreated.handler({} as Context, {
+      userChat: {
+        id: "user-chat-1",
+        channelId: "channel-1",
+        userId: "user-1",
+        mediumType: "app",
+        mediumTopicKey: "topic-1",
+      },
+      message: {
+        id: "message-1",
+        channelId: "channel-1",
+        chatType: "userChat",
+        chatId: "user-chat-1",
+        personType: "user",
+        personId: "user-1",
+        language: "en",
+        createdAt: "2026-07-23T00:00:00Z",
+      },
+    });
+
+    expect(result.sendResult.sendState).toBe("message-1");
   });
 });

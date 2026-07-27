@@ -1,45 +1,42 @@
-# CLI
+# TypeScript CLI
 
-The CLI is helpful for scaffolding, but it is not yet the best source of truth for extension contracts.
-Use [AGENT.md](../../../AGENT.md), the extension guides, and the example apps first.
+`@channel.io/app-sdk` includes a small project scaffolder. It is similar in purpose to an app
+starter generator: it writes a working baseline, while the SDK references remain the API contract.
 
-## Current Reality
+## Create
 
-- `create <app-name>` works and produces a usable starter
-- `--template` is accepted, but the generated starter is still effectively the same baseline app today
-- `add extension` exists, but some templates lag the current exported API surface
-- `add function` is not fully implemented yet
-
-## Safe Commands
-
-```bash
+```sh
 npx @channel.io/app-sdk create my-app
-npx @channel.io/app-sdk add extension config
-npx @channel.io/app-sdk add extension oauth
-npx @channel.io/app-sdk add extension apikey # legacy/deprecated for new apps
-npx @channel.io/app-sdk add extension calendar
-npx @channel.io/app-sdk add extension command
-npx @channel.io/app-sdk add extension widget
-npx @channel.io/app-sdk add extension customtab
-npx @channel.io/app-sdk add extension hook
-npx @channel.io/app-sdk add extension polling
-npx @channel.io/app-sdk add extension store
-npx @channel.io/app-sdk add extension alftask
+cd my-app
+corepack pnpm install
+cp apps/server/.env.example apps/server/.env
+corepack pnpm build
+corepack pnpm typecheck
 ```
 
-## What To Trust More Than The CLI
+The generated workspace contains:
 
-- [ts/examples/basic](../../../ts/examples/basic/README.md)
-- [ts/examples/calendar](../../../ts/examples/calendar/README.md)
-- [docs/reference/typescript/extensions/README.md](./extensions/README.md)
-- [docs/reference/typescript/WAM.md](./WAM.md)
-- [docs/reference/typescript/AUTH-AND-TOKENS.md](./AUTH-AND-TOKENS.md)
+```text
+apps/server/      NestJS SDK server, signature guard, auto-registration
+apps/wam/         React WAM using WAM SDK, WAM UI, and Bezier
+packages/shared/  Zod contracts shared by server and WAM
+```
 
-## Recommendation
+The generator uses the installed CLI's SDK version and pins the currently verified WAM UI and
+Bezier baseline. It requires App ID, App Secret, and Signing Key, enables raw-body capture for HMAC
+verification, and keeps credentials out of the WAM.
 
-If you are starting a serious app:
+There is one maintained starter. The CLI does not accept a template option.
 
-1. scaffold once with `create`
-2. copy patterns from the example apps
-3. wire extensions with `@channel.io/app-sdk-server`
-4. treat generated code as a convenience, not the contract
+## Other commands
+
+`add`, `dev`, `build`, and `generate` remain convenience commands for existing CLI workflows. Before
+using generated Extension snippets, compare them with the selected
+[Extension family reference](./extensions/README.md). For a first app, prefer `create` plus the
+[Quickstart](../../guides/en/quickstart.md).
+
+## Complete example
+
+The generated starter deliberately stays small. Use the
+[TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) for a complete command → WAM →
+server/native-call flow and the [TypeScript reference map](./README.md) for exact package APIs.

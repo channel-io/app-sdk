@@ -61,7 +61,6 @@ Input schema는 신뢰하지 않은 `params`의 형태를 제한하고, output s
 - `user`, `userChat`, `language`: 해당 흐름에 존재할 때만 제공되는 사용자 문맥
 - `authToken`: OAuth 연결에서 AppStore가 복호화해 주입한 provider access token
 - `config`: config extension으로 저장한 현재 scope의 설정과 credential
-- `apiCredentials`: 이전 API key 흐름과의 호환을 위한 credential
 
 Optional 값은 항상 존재한다고 가정하지 말고 Function의 실행 surface와 schema에 맞게 검사하세요. `ctx.authToken`은 Channel App app/channel token이 아니라 외부 OAuth provider의 token입니다.
 
@@ -87,6 +86,9 @@ WAM(Web App Module)은 Channel 클라이언트 안에서 열리는 앱의 웹 UI
 - `useNativeFunction`: 현재 Channel surface와 manager/user 권한으로 허용된 Channel native function 호출
 - `useWamSize`, `useWamClose`: WAM 크기와 닫기 제어
 
+React setup, runtime data, Function 호출, resize와 close의 전체 흐름은 [WAM 가이드](wam.md)를
+확인하세요.
+
 WAM은 `App Secret`, `Signing Key`, app token, channel token을 보관하거나 직접 발급하지 않습니다. `wamArgs`도 클라이언트에서 읽을 수 있으므로 secret, access token, 고객 원문을 넣지 마세요. Bot이나 서버 주체로 실행할 작업은 `useCallFunction`으로 앱 서버에 요청하고 서버가 channel token을 사용하게 합니다. 현재 manager/user 주체의 작업만 `useNativeFunction`으로 호출하세요.
 
 ## 인증, 서명, Token
@@ -109,6 +111,25 @@ WAM은 `App Secret`, `Signing Key`, app token, channel token을 보관하거나 
 1. **수신 요청**: raw request body와 hex-encoded Signing Key로 HMAC-SHA256 `x-signature`를 검증합니다. TypeScript는 `SignatureGuard`와 NestJS `rawBody: true`, Go는 `server.WithSignature`를 사용합니다. 운영 환경에서 검증을 끄지 마세요.
 2. **서버의 발신 요청**: `TokenManager`가 App Secret으로 app 또는 channel token을 발급하고 cache합니다. SDK는 만료 전에 refresh하고 동시에 들어온 발급/refresh를 합칩니다. 요청마다 `issueToken`을 호출하지 마세요.
 3. **WAM의 발신 요청**: WAM SDK가 host bridge를 호출합니다. Manager/User 권한은 Channel runtime이 결정하며 앱 서버의 `TokenManager`가 만들지 않습니다.
+
+### Token 발급 세부사항
+
+직접 발급 API를 반복 호출하지 말고 `TokenManager`를 사용하세요. Low-level transport를 이해하거나
+문제를 진단할 때는 다음 계약을 기준으로 합니다.
+
+- `issueToken`과 `refreshToken`은 app별 **30분당 10회**의 제한을 공유합니다. 요청마다 token을
+  발급하지 말고 access/refresh token pair를 cache하세요.
+- `issueToken`에서 `channelId`를 생략하면 Extension 등록 같은 app-scoped operation에 쓰는 app
+  token을 발급합니다.
+- 설치된 Channel의 `channelId`를 지정하면 해당 Channel에서 server-side operation을 실행할 channel
+  token을 발급합니다. App이 설치되지 않았거나 permission이 없으면 사용할 수 없습니다.
+- 발급 결과의 핵심 필드는 `accessToken`, `refreshToken`, 초 단위 `expiresIn`입니다. Native Function
+  요청에는 현재 `accessToken`을 `x-access-token` header로 전달합니다.
+- Channel permission은 server가 channel token으로 실행하는 operation을 제한합니다. Manager/User
+  permission과 authorization은 WAM host가 현재 사용자와 surface를 기준으로 적용합니다.
+
+정확한 API와 cache 확장 방법은 [TypeScript 인증·Token 레퍼런스](../../reference/typescript/AUTH-AND-TOKENS.md)와
+[Go 인증·Token 레퍼런스](../../reference/go/AUTH-AND-TOKENS.md)를 확인하세요.
 
 기본 token cache는 단일 프로세스용 in-memory 저장소입니다. 여러 replica에서는 SDK의 cache interface를 구현한 Redis나 database 같은 shared cache로 token pair를 공유하세요. In-flight deduplication은 프로세스 안에서만 동작하므로 replica 간 refresh를 엄격히 조정해야 하면 storage-side lock도 구현해야 합니다. Access token, refresh token, provider token과 credential을 log나 오류 응답에 남기지 마세요.
 
@@ -135,4 +156,7 @@ Developer portal에는 version이나 WAM 이름이 붙기 전의 root를 등록�
 
 `proto/`는 TypeScript와 Go가 공유하는 wire contract의 원천입니다. 앱 개발자는 보통 generated proto code를 직접 다루지 않고 각 언어 SDK의 decorator, builder, schema와 타입을 사용합니다. 문서나 예제와 public export가 다르면 public export와 schema 구현을 우선하세요.
 
-전체 구현 순서는 [앱 개발 전체 가이드](app-development.md), 실행 가능한 코드는 [TypeScript 튜토리얼](https://github.com/channel-io/app-tutorial-ts)과 [Go 튜토리얼](https://github.com/channel-io/app-tutorial)을 참고하세요.
+다음으로 [Function 등록](functions.md), [Command 가이드](extensions/command.md), [WAM 가이드](wam.md),
+[Extension 전체 가이드](extensions.md), 마지막으로 [프로덕션 준비 가이드](app-development.md)를 확인하세요. 실행
+가능한 코드는 [TypeScript 튜토리얼](https://github.com/channel-io/app-tutorial-ts)과
+[Go 튜토리얼](https://github.com/channel-io/app-tutorial)을 참고하세요.

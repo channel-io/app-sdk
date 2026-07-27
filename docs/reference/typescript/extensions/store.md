@@ -79,7 +79,3 @@ export class MyStoreExtension implements StoreExtensionInterface {
   }
 }
 ```
-
-## Migration From the Runtime Profile Contract
-
-The legacy `{ profile: StoreProfile }` response and flattened runtime presentation fields are not accepted by the persisted `store:v1` contract. Move related apps to `relatedAppIds`, localized copy to `intro` and `faqs`, and uploaded media references to `images[].key`.

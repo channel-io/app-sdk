@@ -24,7 +24,7 @@ The current verified baseline is:
 | Package                      | Version         |
 | ---------------------------- | --------------- |
 | `@channel.io/app-sdk-wam-ui` | `0.4.0`         |
-| `@channel.io/bezier-react`   | `4.0.0-next.13` |
+| `@channel.io/bezier-react`   | `4.0.0-next.14` |
 | `@channel.io/bezier-icons`   | `0.60.0`        |
 | `styled-components`          | `6.x`           |
 
@@ -59,13 +59,12 @@ export function App() {
 ```
 
 `WamThemeProvider` uses Bezier's root `AppProvider` because provider and stable token APIs remain
-at the root. UI components should use the `/beta` subpath. Do not use legacy root UI components or
-deprecated `useBetaTokens` APIs.
+at the root. Import UI components from the `/beta` subpath and use the current token APIs.
 
 ## WAM-specific exports
 
 - `WamThemeProvider`: detects light/dark appearance and installs Bezier providers
-- `HeightSynchronizer`: observes content and calls `window.ChannelIOWam.setSize()`
+- `HeightSynchronizer`: observes content and synchronizes height through the host bridge
 - `WamHeader`: standard back and close behavior
 - `LoadingPage`, `ErrorPage`, `EmptyState`: compact WAM state presets
 - `InlineBanner`: semantic preset over Bezier beta `Banner`
@@ -75,26 +74,14 @@ deprecated `useBetaTokens` APIs.
 
 `BottomSheet` requires an `ariaLabel` that describes the dialog.
 
-## General UI equivalents
+## General UI components
 
-Version 0.4 removed wrappers that duplicated redesigned Bezier components:
-
-| Previous WAM UI export | Bezier beta replacement          |
-| ---------------------- | -------------------------------- |
-| `FormSection`          | `Form`, `Settings`, or `Section` |
-| `FormRow`              | `FormField` or `SettingsField`   |
-| `InputRow`             | `TextInput` inside `FormField`   |
-| `SelectRow`            | `Select` inside `FormField`      |
-| `ToggleRow`            | `SettingsField` with `Switch`    |
-| `SearchInput`          | `Search`                         |
-
-Bezier beta buttons use `label`, `variant`, and `semantic` instead of `text`, `styleVariant`, and
-`colorVariant`.
+Import forms, settings, sections, fields, inputs, selects, switches, and search directly from
+`@channel.io/bezier-react/beta`. Bezier beta buttons use `label`, `variant`, and `semantic`.
 
 ## Complete examples
 
 - [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts)
 - [Go tutorial](https://github.com/channel-io/app-tutorial)
 
-See the [package README](../../../ts/packages/wam-ui/README.md) for the full API and migration
-examples.
+See the [package README](../../../ts/packages/wam-ui/README.md) for the full API and examples.

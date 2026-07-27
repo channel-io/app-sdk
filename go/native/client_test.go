@@ -242,6 +242,113 @@ func TestUpsertAppDataTableRows(t *testing.T) {
 	}
 }
 
+func TestCallNativeDecodesGenericResult(t *testing.T) {
+	httpClient := &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+		if r.Method != http.MethodPut || r.URL.Path != "/general/v1/native/functions" {
+			t.Fatalf("unexpected request: %s %s", r.Method, r.URL.Path)
+		}
+		if got := r.Header.Get("x-access-token"); got != "channel-token" {
+			t.Fatalf("unexpected token: %s", got)
+		}
+		var req struct {
+			Method string         `json:"method"`
+			Params map[string]any `json:"params"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			t.Fatal(err)
+		}
+		if req.Method != "publicMethod" || req.Params["channelId"] != "channel-1" {
+			t.Fatalf("unexpected payload: %+v", req)
+		}
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       io.NopCloser(strings.NewReader(`{"result":{"value":"ok"}}`)),
+			Header:     make(http.Header),
+			Request:    r,
+		}, nil
+	})}
+
+	client := native.NewClient(
+		native.WithBaseURL("https://app-store.test"),
+		native.WithHTTPClient(httpClient),
+	)
+	type result struct {
+		Value string `json:"value"`
+	}
+	got, err := native.CallNative[result](
+		context.Background(),
+		client,
+		"channel-token",
+		"publicMethod",
+		map[string]any{"channelId": "channel-1"},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Value != "ok" {
+		t.Fatalf("unexpected result: %+v", got)
+	}
+}
+
+func TestProxyAPIWriteGroupMessage(t *testing.T) {
+	httpClient := &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+		var req struct {
+			Method string `json:"method"`
+			Params struct {
+				ChannelID     string `json:"channelId"`
+				GroupID       string `json:"groupId"`
+				RootMessageID string `json:"rootMessageId"`
+				Broadcast     bool   `json:"broadcast"`
+				DTO           struct {
+					PlainText string `json:"plainText"`
+					BotName   string `json:"botName"`
+				} `json:"dto"`
+			} `json:"params"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			t.Fatal(err)
+		}
+		if req.Method != native.FunctionWriteGroupMessage {
+			t.Fatalf("unexpected method: %s", req.Method)
+		}
+		if req.Params.ChannelID != "channel-1" || req.Params.GroupID != "group-1" ||
+			req.Params.RootMessageID != "root-1" || !req.Params.Broadcast ||
+			req.Params.DTO.PlainText != "hello" || req.Params.DTO.BotName != "ExampleBot" {
+			t.Fatalf("unexpected params: %+v", req.Params)
+		}
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       io.NopCloser(strings.NewReader(`{"result":{"message":{"id":"message-1"}}}`)),
+			Header:     make(http.Header),
+			Request:    r,
+		}, nil
+	})}
+
+	client := native.NewClient(
+		native.WithBaseURL("https://app-store.test"),
+		native.WithHTTPClient(httpClient),
+	)
+	got, err := client.CreateProxyAPI("channel-token").WriteGroupMessage(
+		context.Background(),
+		native.WriteGroupMessageParams{
+			ChannelID:     "channel-1",
+			GroupID:       "group-1",
+			RootMessageID: "root-1",
+			Broadcast:     true,
+			DTO: native.WriteMessageDTO{
+				PlainText: "hello",
+				BotName:   "ExampleBot",
+			},
+		},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Message["id"] != "message-1" {
+		t.Fatalf("unexpected result: %+v", got)
+	}
+}
+
 type roundTripFunc func(*http.Request) (*http.Response, error)
 
 func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {

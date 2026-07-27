@@ -14,7 +14,7 @@ Verified release: `github.com/channel-io/app-sdk/go v0.14.0`, requiring Go 1.25.
 - [Native Functions](NATIVE.md): token, registration, data, and app-function clients
 - [WAM Integration](WAM.md): Go action results with the shared React WAM SDK
 - [Feature Parity](../go-feature-parity.md): current differences from the TypeScript SDK
-- [Detailed Extension Examples](../go-extensions.md): Order, WMS, DataSource, and schema extension patterns
+- [Extensions](./EXTENSIONS.md): builders, schemas, Messaging, WMS, DataSource, and advanced patterns
 
 ## TypeScript To Go Mapping
 

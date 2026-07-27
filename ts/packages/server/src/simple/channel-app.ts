@@ -175,7 +175,7 @@ export class ChannelApp {
 /**
  * Simple service for handling function calls
  *
- * @deprecated This legacy simple service is unused by the SDK and will be removed in the next minor release.
+ * @deprecated This simple service is unused by the SDK and will be removed in the next minor release.
  * Use `ChannelAppModule` with decorators instead.
  */
 @Injectable()

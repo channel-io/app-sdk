@@ -8,10 +8,10 @@ const (
 
 	FunctionGetAppConfigs         = "extension.commerce.core.getAppConfigs"
 	FunctionGetOrders             = "extension.commerce.order.getOrders"
-	FunctionCancelRequestOrder    = "extension.commerce.order.cancelRequestOrder"
-	FunctionReturnRequestOrder    = "extension.commerce.order.returnRequestOrder"
-	FunctionReturnAcceptOrder     = "extension.commerce.order.returnAcceptOrder"
-	FunctionExchangeRequestOrder  = "extension.commerce.order.exchangeRequestOrder"
+	FunctionRequestCancelOrder    = "extension.commerce.order.requestCancelOrder"
+	FunctionRequestReturnOrder    = "extension.commerce.order.requestReturnOrder"
+	FunctionAcceptReturnOrder     = "extension.commerce.order.acceptReturnOrder"
+	FunctionRequestExchangeOrder  = "extension.commerce.order.requestExchangeOrder"
 	FunctionGetExchangeableItems  = "extension.commerce.order.getExchangeableItems"
 	FunctionChangeShippingAddress = "extension.commerce.order.changeShippingAddress"
 )
@@ -28,7 +28,7 @@ type GetAppConfigsOutput = sdkv1.CommerceGetAppConfigsOutput
 type ActionResult = sdkv1.CommerceActionResult
 type CancelOrderInput = sdkv1.CommerceCancelOrderInput
 type ReturnOrderInput = sdkv1.CommerceReturnOrderInput
-type ReturnAcceptOrderInput = sdkv1.CommerceReturnAcceptOrderInput
+type AcceptReturnOrderInput = sdkv1.CommerceAcceptReturnOrderInput
 type ExchangeOrderInput = sdkv1.CommerceExchangeOrderInput
 type GetExchangeableItemsInput = sdkv1.CommerceGetExchangeableItemsInput
 type GetExchangeableItemsOutput = sdkv1.CommerceGetExchangeableItemsOutput

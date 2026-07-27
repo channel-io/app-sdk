@@ -51,6 +51,9 @@ import type {
   MessagingPrebuiltValidateEntityInput as ProtoPrebuiltValidateEntityInput,
   MessagingPrebuiltValidateEntityOutput as ProtoPrebuiltValidateEntityOutput,
 } from "../gen/channel/app/sdk/v1/extension.js";
+import type { Context } from "../types/context.js";
+import type { ExtensionDefinition } from "../types/extension.js";
+import type { FunctionDefinition } from "../types/function.js";
 
 type ProtoBacked<T, Proto> = T & Proto;
 
@@ -816,3 +819,209 @@ export type PrebuiltGetDefaultOptionsOutput = ProtoBacked<
   z.infer<typeof PrebuiltGetDefaultOptionsOutputSchema>,
   ProtoPrebuiltGetDefaultOptionsOutput
 >;
+
+export type MessagingHandler<TInput, TOutput> = (
+  ctx: Context,
+  input: TInput
+) => TOutput | Promise<TOutput>;
+
+export interface MessagingInboxProvider {
+  onMediumMessageCreated: MessagingHandler<
+    OnMediumMessageCreatedInput,
+    OnMediumMessageCreatedOutput
+  >;
+  onMediumUserChatClosed?: MessagingHandler<
+    InboxOnMediumUserChatClosedInput,
+    InboxOnMediumUserChatClosedOutput
+  >;
+  getWritingTypes?: MessagingHandler<InboxGetWritingTypesInput, InboxGetWritingTypesOutput>;
+  getCustomEditorWam?: MessagingHandler<
+    InboxGetCustomEditorWamInput,
+    InboxGetCustomEditorWamOutput
+  >;
+  getMediumTopicSelectorWam?: MessagingHandler<
+    InboxGetMediumTopicSelectorWamInput,
+    InboxGetMediumTopicSelectorWamOutput
+  >;
+  getMediumMessageErrorReason?: MessagingHandler<
+    InboxGetMediumMessageErrorReasonInput,
+    InboxGetMediumMessageErrorReasonOutput
+  >;
+}
+
+export interface MessagingPrebuiltProvider {
+  getWritingTypes?: MessagingHandler<PrebuiltGetWritingTypesInput, PrebuiltGetWritingTypesOutput>;
+  validateEntity?: MessagingHandler<PrebuiltValidateEntityInput, PrebuiltValidateEntityOutput>;
+  getCustomEditorWam?: MessagingHandler<
+    PrebuiltGetCustomEditorWamInput,
+    PrebuiltGetCustomEditorWamOutput
+  >;
+  getMediumTopicBuilderSelectorWam?: MessagingHandler<
+    PrebuiltGetMediumTopicBuilderSelectorWamInput,
+    PrebuiltGetMediumTopicBuilderSelectorWamOutput
+  >;
+  buildMediumTopics?: MessagingHandler<
+    PrebuiltBuildMediumTopicsInput,
+    PrebuiltBuildMediumTopicsOutput
+  >;
+  getDefaultOptions?: MessagingHandler<
+    PrebuiltGetDefaultOptionsInput,
+    PrebuiltGetDefaultOptionsOutput
+  >;
+}
+
+export type MessagingExtensionProvider =
+  | { inbox: MessagingInboxProvider; prebuilt?: MessagingPrebuiltProvider }
+  | { inbox?: MessagingInboxProvider; prebuilt: MessagingPrebuiltProvider };
+
+/**
+ * Build a schema-validated messaging v1 Extension definition.
+ *
+ * This helper registers Function metadata only. Product-specific messaging setup
+ * outside the Extension Function contract remains an AppStore configuration step.
+ */
+export function createMessagingExtension(
+  provider: MessagingExtensionProvider
+): ExtensionDefinition {
+  const inbox = provider.inbox;
+  const prebuilt = provider.prebuilt;
+
+  if (!inbox && !prebuilt) {
+    throw new Error("A messaging extension requires an inbox or prebuilt provider");
+  }
+
+  return {
+    name: "messaging",
+    systemVersion: "v1",
+    groups: {
+      ...(inbox
+        ? {
+            inbox: {
+              onMediumMessageCreated: messagingFunction(
+                OnMediumMessageCreatedInputSchema,
+                OnMediumMessageCreatedOutputSchema,
+                inbox.onMediumMessageCreated
+              ),
+              ...(inbox.onMediumUserChatClosed
+                ? {
+                    onMediumUserChatClosed: messagingFunction(
+                      InboxOnMediumUserChatClosedInputSchema,
+                      InboxOnMediumUserChatClosedOutputSchema,
+                      inbox.onMediumUserChatClosed
+                    ),
+                  }
+                : {}),
+              ...(inbox.getWritingTypes
+                ? {
+                    getWritingTypes: messagingFunction(
+                      InboxGetWritingTypesInputSchema,
+                      InboxGetWritingTypesOutputSchema,
+                      inbox.getWritingTypes
+                    ),
+                  }
+                : {}),
+              ...(inbox.getCustomEditorWam
+                ? {
+                    getCustomEditorWam: messagingFunction(
+                      InboxGetCustomEditorWamInputSchema,
+                      InboxGetCustomEditorWamOutputSchema,
+                      inbox.getCustomEditorWam
+                    ),
+                  }
+                : {}),
+              ...(inbox.getMediumTopicSelectorWam
+                ? {
+                    getMediumTopicSelectorWam: messagingFunction(
+                      InboxGetMediumTopicSelectorWamInputSchema,
+                      InboxGetMediumTopicSelectorWamOutputSchema,
+                      inbox.getMediumTopicSelectorWam
+                    ),
+                  }
+                : {}),
+              ...(inbox.getMediumMessageErrorReason
+                ? {
+                    getMediumMessageErrorReason: messagingFunction(
+                      InboxGetMediumMessageErrorReasonInputSchema,
+                      InboxGetMediumMessageErrorReasonOutputSchema,
+                      inbox.getMediumMessageErrorReason
+                    ),
+                  }
+                : {}),
+            },
+          }
+        : {}),
+      ...(prebuilt
+        ? {
+            prebuilt: {
+              ...(prebuilt.getWritingTypes
+                ? {
+                    getWritingTypes: messagingFunction(
+                      PrebuiltGetWritingTypesInputSchema,
+                      PrebuiltGetWritingTypesOutputSchema,
+                      prebuilt.getWritingTypes
+                    ),
+                  }
+                : {}),
+              ...(prebuilt.validateEntity
+                ? {
+                    validateEntity: messagingFunction(
+                      PrebuiltValidateEntityInputSchema,
+                      PrebuiltValidateEntityOutputSchema,
+                      prebuilt.validateEntity
+                    ),
+                  }
+                : {}),
+              ...(prebuilt.getCustomEditorWam
+                ? {
+                    getCustomEditorWam: messagingFunction(
+                      PrebuiltGetCustomEditorWamInputSchema,
+                      PrebuiltGetCustomEditorWamOutputSchema,
+                      prebuilt.getCustomEditorWam
+                    ),
+                  }
+                : {}),
+              ...(prebuilt.getMediumTopicBuilderSelectorWam
+                ? {
+                    getMediumTopicBuilderSelectorWam: messagingFunction(
+                      PrebuiltGetMediumTopicBuilderSelectorWamInputSchema,
+                      PrebuiltGetMediumTopicBuilderSelectorWamOutputSchema,
+                      prebuilt.getMediumTopicBuilderSelectorWam
+                    ),
+                  }
+                : {}),
+              ...(prebuilt.buildMediumTopics
+                ? {
+                    buildMediumTopics: messagingFunction(
+                      PrebuiltBuildMediumTopicsInputSchema,
+                      PrebuiltBuildMediumTopicsOutputSchema,
+                      prebuilt.buildMediumTopics
+                    ),
+                  }
+                : {}),
+              ...(prebuilt.getDefaultOptions
+                ? {
+                    getDefaultOptions: messagingFunction(
+                      PrebuiltGetDefaultOptionsInputSchema,
+                      PrebuiltGetDefaultOptionsOutputSchema,
+                      prebuilt.getDefaultOptions
+                    ),
+                  }
+                : {}),
+            },
+          }
+        : {}),
+    },
+  };
+}
+
+function messagingFunction<TInput, TOutput>(
+  input: z.ZodType<TInput>,
+  output: z.ZodType<TOutput>,
+  handler: MessagingHandler<TInput, TOutput>
+): FunctionDefinition<z.ZodType<TInput>, z.ZodType<TOutput>> {
+  return {
+    input,
+    output,
+    handler: async (ctx, value) => output.parse(await handler(ctx, input.parse(value))),
+  };
+}

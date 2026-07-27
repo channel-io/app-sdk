@@ -13,7 +13,6 @@
 | `native`        | AppStore client, app/channel token manager, cache interface, and auto-registration   |
 | `testkit`       | Function invocation and discovery helpers for tests                                  |
 | `datasource/*`  | DataSource metadata, gRPC query server, and optional query executors                 |
-| `compat/legacy` | Incremental migration from an existing handler stack                                 |
 
 ## Request Lifecycle
 

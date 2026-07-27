@@ -20,6 +20,7 @@ import {
   INPUT_SCHEMA_METADATA,
   OUTPUT_SCHEMA_METADATA,
   DESCRIPTION_METADATA,
+  Messaging,
 } from "../decorators/index.js";
 
 describe("Decorators", () => {
@@ -334,6 +335,29 @@ describe("Decorators", () => {
       // Parameter metadata
       const params = Reflect.getMetadata(PARAM_METADATA, CombinedExtension, "testFunction");
       expect(params).toHaveLength(2);
+    });
+  });
+
+  describe("Messaging decorators", () => {
+    it("sets the relative Function name and matching schemas together", () => {
+      class MessagingExtension {
+        @Messaging.inbox.onMediumMessageCreated()
+        handle() {}
+      }
+
+      expect(Reflect.getMetadata(FUNCTION_METADATA, MessagingExtension, "handle")).toMatchObject({
+        name: "inbox.onMediumMessageCreated",
+      });
+      expect(
+        Reflect.getMetadata(INPUT_SCHEMA_METADATA, MessagingExtension, "handle")
+      ).toBeDefined();
+      expect(
+        Reflect.getMetadata(OUTPUT_SCHEMA_METADATA, MessagingExtension, "handle")
+      ).toBeDefined();
+      expect(Reflect.getMetadata(PARAM_METADATA, MessagingExtension, "handle")).toEqual([
+        { index: 0, type: FunctionParamType.CTX },
+        { index: 1, type: FunctionParamType.INPUT },
+      ]);
     });
   });
 });

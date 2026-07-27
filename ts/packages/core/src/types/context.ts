@@ -64,7 +64,7 @@ export interface Context extends Omit<
   language?: string;
   /** OAuth token (decrypted, auto-injected when OAuth is configured) */
   authToken?: string;
-  /** Legacy OAuth token field accepted for compatibility. */
+  /** OAuth provider token alias accepted for compatibility. */
   legacyAuthToken?: string;
   /**
    * Decrypted API Key credentials.
@@ -76,7 +76,7 @@ export interface Context extends Omit<
   /**
    * Stored config values resolved by AppStore for the active scope.
    * This is the canonical config payload for the config extension and
-   * also the future-compatible source of truth for legacy API key setups.
+   * also the forward-compatible source of truth for Config-based credential setups.
    */
   config?: Record<string, unknown>;
   /** Sandbox mode flag (for LLM mock testing) */
@@ -111,7 +111,7 @@ export interface FunctionCallErrorResponse extends Omit<ProtoFunctionError, "cod
   message: string;
   /** Optional structured error data */
   data?: unknown;
-  /** Optional legacy error type */
+  /** Optional compatibility error type */
   type?: string;
 }
 

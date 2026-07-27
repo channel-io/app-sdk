@@ -10924,10 +10924,10 @@ func (x *CommerceGetOrdersOutput) GetNext() string {
 type CommerceAppCapabilities struct {
 	state                        protoimpl.MessageState `protogen:"open.v1"`
 	GetOrdersOptions             *OrderOperationOptions `protobuf:"bytes,1,opt,name=get_orders_options,json=getOrdersOptions,proto3" json:"get_orders_options,omitempty"`
-	CancelRequestOrderOptions    *OrderOperationOptions `protobuf:"bytes,2,opt,name=cancel_request_order_options,json=cancelRequestOrderOptions,proto3" json:"cancel_request_order_options,omitempty"`
-	ReturnRequestOrderOptions    *OrderOperationOptions `protobuf:"bytes,3,opt,name=return_request_order_options,json=returnRequestOrderOptions,proto3" json:"return_request_order_options,omitempty"`
-	ReturnAcceptOrderOptions     *OrderOperationOptions `protobuf:"bytes,4,opt,name=return_accept_order_options,json=returnAcceptOrderOptions,proto3" json:"return_accept_order_options,omitempty"`
-	ExchangeRequestOrderOptions  *OrderOperationOptions `protobuf:"bytes,5,opt,name=exchange_request_order_options,json=exchangeRequestOrderOptions,proto3" json:"exchange_request_order_options,omitempty"`
+	RequestCancelOrderOptions    *OrderOperationOptions `protobuf:"bytes,2,opt,name=request_cancel_order_options,json=requestCancelOrderOptions,proto3" json:"request_cancel_order_options,omitempty"`
+	RequestReturnOrderOptions    *OrderOperationOptions `protobuf:"bytes,3,opt,name=request_return_order_options,json=requestReturnOrderOptions,proto3" json:"request_return_order_options,omitempty"`
+	AcceptReturnOrderOptions     *OrderOperationOptions `protobuf:"bytes,4,opt,name=accept_return_order_options,json=acceptReturnOrderOptions,proto3" json:"accept_return_order_options,omitempty"`
+	RequestExchangeOrderOptions  *OrderOperationOptions `protobuf:"bytes,5,opt,name=request_exchange_order_options,json=requestExchangeOrderOptions,proto3" json:"request_exchange_order_options,omitempty"`
 	ChangeShippingAddressOptions *OrderOperationOptions `protobuf:"bytes,6,opt,name=change_shipping_address_options,json=changeShippingAddressOptions,proto3" json:"change_shipping_address_options,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
@@ -10970,30 +10970,30 @@ func (x *CommerceAppCapabilities) GetGetOrdersOptions() *OrderOperationOptions {
 	return nil
 }
 
-func (x *CommerceAppCapabilities) GetCancelRequestOrderOptions() *OrderOperationOptions {
+func (x *CommerceAppCapabilities) GetRequestCancelOrderOptions() *OrderOperationOptions {
 	if x != nil {
-		return x.CancelRequestOrderOptions
+		return x.RequestCancelOrderOptions
 	}
 	return nil
 }
 
-func (x *CommerceAppCapabilities) GetReturnRequestOrderOptions() *OrderOperationOptions {
+func (x *CommerceAppCapabilities) GetRequestReturnOrderOptions() *OrderOperationOptions {
 	if x != nil {
-		return x.ReturnRequestOrderOptions
+		return x.RequestReturnOrderOptions
 	}
 	return nil
 }
 
-func (x *CommerceAppCapabilities) GetReturnAcceptOrderOptions() *OrderOperationOptions {
+func (x *CommerceAppCapabilities) GetAcceptReturnOrderOptions() *OrderOperationOptions {
 	if x != nil {
-		return x.ReturnAcceptOrderOptions
+		return x.AcceptReturnOrderOptions
 	}
 	return nil
 }
 
-func (x *CommerceAppCapabilities) GetExchangeRequestOrderOptions() *OrderOperationOptions {
+func (x *CommerceAppCapabilities) GetRequestExchangeOrderOptions() *OrderOperationOptions {
 	if x != nil {
-		return x.ExchangeRequestOrderOptions
+		return x.RequestExchangeOrderOptions
 	}
 	return nil
 }
@@ -11373,7 +11373,7 @@ func (x *CommerceReturnOrderInput) GetDefectInfo() *OrderDefectInfo {
 	return nil
 }
 
-type CommerceReturnAcceptOrderInput struct {
+type CommerceAcceptReturnOrderInput struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	Identifier        *CommerceIdentifier    `protobuf:"bytes,1,opt,name=identifier,proto3" json:"identifier,omitempty"`
 	OrderId           string                 `protobuf:"bytes,2,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
@@ -11386,20 +11386,20 @@ type CommerceReturnAcceptOrderInput struct {
 	sizeCache         protoimpl.SizeCache
 }
 
-func (x *CommerceReturnAcceptOrderInput) Reset() {
-	*x = CommerceReturnAcceptOrderInput{}
+func (x *CommerceAcceptReturnOrderInput) Reset() {
+	*x = CommerceAcceptReturnOrderInput{}
 	mi := &file_channel_app_sdk_v1_extension_proto_msgTypes[161]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CommerceReturnAcceptOrderInput) String() string {
+func (x *CommerceAcceptReturnOrderInput) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CommerceReturnAcceptOrderInput) ProtoMessage() {}
+func (*CommerceAcceptReturnOrderInput) ProtoMessage() {}
 
-func (x *CommerceReturnAcceptOrderInput) ProtoReflect() protoreflect.Message {
+func (x *CommerceAcceptReturnOrderInput) ProtoReflect() protoreflect.Message {
 	mi := &file_channel_app_sdk_v1_extension_proto_msgTypes[161]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -11411,54 +11411,54 @@ func (x *CommerceReturnAcceptOrderInput) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CommerceReturnAcceptOrderInput.ProtoReflect.Descriptor instead.
-func (*CommerceReturnAcceptOrderInput) Descriptor() ([]byte, []int) {
+// Deprecated: Use CommerceAcceptReturnOrderInput.ProtoReflect.Descriptor instead.
+func (*CommerceAcceptReturnOrderInput) Descriptor() ([]byte, []int) {
 	return file_channel_app_sdk_v1_extension_proto_rawDescGZIP(), []int{161}
 }
 
-func (x *CommerceReturnAcceptOrderInput) GetIdentifier() *CommerceIdentifier {
+func (x *CommerceAcceptReturnOrderInput) GetIdentifier() *CommerceIdentifier {
 	if x != nil {
 		return x.Identifier
 	}
 	return nil
 }
 
-func (x *CommerceReturnAcceptOrderInput) GetOrderId() string {
+func (x *CommerceAcceptReturnOrderInput) GetOrderId() string {
 	if x != nil {
 		return x.OrderId
 	}
 	return ""
 }
 
-func (x *CommerceReturnAcceptOrderInput) GetReturnItems() []*OrderClaimItem {
+func (x *CommerceAcceptReturnOrderInput) GetReturnItems() []*OrderClaimItem {
 	if x != nil {
 		return x.ReturnItems
 	}
 	return nil
 }
 
-func (x *CommerceReturnAcceptOrderInput) GetReason() *OrderClaimReason {
+func (x *CommerceAcceptReturnOrderInput) GetReason() *OrderClaimReason {
 	if x != nil {
 		return x.Reason
 	}
 	return nil
 }
 
-func (x *CommerceReturnAcceptOrderInput) GetRefundBankAccount() *OrderBankAccount {
+func (x *CommerceAcceptReturnOrderInput) GetRefundBankAccount() *OrderBankAccount {
 	if x != nil {
 		return x.RefundBankAccount
 	}
 	return nil
 }
 
-func (x *CommerceReturnAcceptOrderInput) GetPickupCompleted() bool {
+func (x *CommerceAcceptReturnOrderInput) GetPickupCompleted() bool {
 	if x != nil {
 		return x.PickupCompleted
 	}
 	return false
 }
 
-func (x *CommerceReturnAcceptOrderInput) GetRequestPickup() bool {
+func (x *CommerceAcceptReturnOrderInput) GetRequestPickup() bool {
 	if x != nil {
 		return x.RequestPickup
 	}
@@ -13648,12 +13648,12 @@ func (x *WmsOperationOptions) GetFieldConfigs() map[string]*WmsFieldConfig {
 type WmsAppCapabilities struct {
 	state                        protoimpl.MessageState `protogen:"open.v1"`
 	GetOrdersOptions             *WmsOperationOptions   `protobuf:"bytes,1,opt,name=get_orders_options,json=getOrdersOptions,proto3" json:"get_orders_options,omitempty"`
-	CancelRequestOrderOptions    *WmsOperationOptions   `protobuf:"bytes,2,opt,name=cancel_request_order_options,json=cancelRequestOrderOptions,proto3" json:"cancel_request_order_options,omitempty"`
-	CancelRestoreOrderOptions    *WmsOperationOptions   `protobuf:"bytes,3,opt,name=cancel_restore_order_options,json=cancelRestoreOrderOptions,proto3" json:"cancel_restore_order_options,omitempty"`
-	ReturnRequestOrderOptions    *WmsOperationOptions   `protobuf:"bytes,4,opt,name=return_request_order_options,json=returnRequestOrderOptions,proto3" json:"return_request_order_options,omitempty"`
-	ReturnRestoreOrderOptions    *WmsOperationOptions   `protobuf:"bytes,5,opt,name=return_restore_order_options,json=returnRestoreOrderOptions,proto3" json:"return_restore_order_options,omitempty"`
-	ExchangeRequestOrderOptions  *WmsOperationOptions   `protobuf:"bytes,6,opt,name=exchange_request_order_options,json=exchangeRequestOrderOptions,proto3" json:"exchange_request_order_options,omitempty"`
-	ExchangeRestoreOrderOptions  *WmsOperationOptions   `protobuf:"bytes,7,opt,name=exchange_restore_order_options,json=exchangeRestoreOrderOptions,proto3" json:"exchange_restore_order_options,omitempty"`
+	RequestCancelOrderOptions    *WmsOperationOptions   `protobuf:"bytes,2,opt,name=request_cancel_order_options,json=requestCancelOrderOptions,proto3" json:"request_cancel_order_options,omitempty"`
+	RestoreCanceledOrderOptions  *WmsOperationOptions   `protobuf:"bytes,3,opt,name=restore_canceled_order_options,json=restoreCanceledOrderOptions,proto3" json:"restore_canceled_order_options,omitempty"`
+	RequestReturnOrderOptions    *WmsOperationOptions   `protobuf:"bytes,4,opt,name=request_return_order_options,json=requestReturnOrderOptions,proto3" json:"request_return_order_options,omitempty"`
+	RestoreReturnedOrderOptions  *WmsOperationOptions   `protobuf:"bytes,5,opt,name=restore_returned_order_options,json=restoreReturnedOrderOptions,proto3" json:"restore_returned_order_options,omitempty"`
+	RequestExchangeOrderOptions  *WmsOperationOptions   `protobuf:"bytes,6,opt,name=request_exchange_order_options,json=requestExchangeOrderOptions,proto3" json:"request_exchange_order_options,omitempty"`
+	RestoreExchangedOrderOptions *WmsOperationOptions   `protobuf:"bytes,7,opt,name=restore_exchanged_order_options,json=restoreExchangedOrderOptions,proto3" json:"restore_exchanged_order_options,omitempty"`
 	ChangeShippingAddressOptions *WmsOperationOptions   `protobuf:"bytes,8,opt,name=change_shipping_address_options,json=changeShippingAddressOptions,proto3" json:"change_shipping_address_options,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
@@ -13696,44 +13696,44 @@ func (x *WmsAppCapabilities) GetGetOrdersOptions() *WmsOperationOptions {
 	return nil
 }
 
-func (x *WmsAppCapabilities) GetCancelRequestOrderOptions() *WmsOperationOptions {
+func (x *WmsAppCapabilities) GetRequestCancelOrderOptions() *WmsOperationOptions {
 	if x != nil {
-		return x.CancelRequestOrderOptions
+		return x.RequestCancelOrderOptions
 	}
 	return nil
 }
 
-func (x *WmsAppCapabilities) GetCancelRestoreOrderOptions() *WmsOperationOptions {
+func (x *WmsAppCapabilities) GetRestoreCanceledOrderOptions() *WmsOperationOptions {
 	if x != nil {
-		return x.CancelRestoreOrderOptions
+		return x.RestoreCanceledOrderOptions
 	}
 	return nil
 }
 
-func (x *WmsAppCapabilities) GetReturnRequestOrderOptions() *WmsOperationOptions {
+func (x *WmsAppCapabilities) GetRequestReturnOrderOptions() *WmsOperationOptions {
 	if x != nil {
-		return x.ReturnRequestOrderOptions
+		return x.RequestReturnOrderOptions
 	}
 	return nil
 }
 
-func (x *WmsAppCapabilities) GetReturnRestoreOrderOptions() *WmsOperationOptions {
+func (x *WmsAppCapabilities) GetRestoreReturnedOrderOptions() *WmsOperationOptions {
 	if x != nil {
-		return x.ReturnRestoreOrderOptions
+		return x.RestoreReturnedOrderOptions
 	}
 	return nil
 }
 
-func (x *WmsAppCapabilities) GetExchangeRequestOrderOptions() *WmsOperationOptions {
+func (x *WmsAppCapabilities) GetRequestExchangeOrderOptions() *WmsOperationOptions {
 	if x != nil {
-		return x.ExchangeRequestOrderOptions
+		return x.RequestExchangeOrderOptions
 	}
 	return nil
 }
 
-func (x *WmsAppCapabilities) GetExchangeRestoreOrderOptions() *WmsOperationOptions {
+func (x *WmsAppCapabilities) GetRestoreExchangedOrderOptions() *WmsOperationOptions {
 	if x != nil {
-		return x.ExchangeRestoreOrderOptions
+		return x.RestoreExchangedOrderOptions
 	}
 	return nil
 }
@@ -16413,10 +16413,10 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x04next\x18\x02 \x01(\tR\x04next\"\x96\x05\n" +
 	"\x17CommerceAppCapabilities\x12W\n" +
 	"\x12get_orders_options\x18\x01 \x01(\v2).channel.app.sdk.v1.OrderOperationOptionsR\x10getOrdersOptions\x12j\n" +
-	"\x1ccancel_request_order_options\x18\x02 \x01(\v2).channel.app.sdk.v1.OrderOperationOptionsR\x19cancelRequestOrderOptions\x12j\n" +
-	"\x1creturn_request_order_options\x18\x03 \x01(\v2).channel.app.sdk.v1.OrderOperationOptionsR\x19returnRequestOrderOptions\x12h\n" +
-	"\x1breturn_accept_order_options\x18\x04 \x01(\v2).channel.app.sdk.v1.OrderOperationOptionsR\x18returnAcceptOrderOptions\x12n\n" +
-	"\x1eexchange_request_order_options\x18\x05 \x01(\v2).channel.app.sdk.v1.OrderOperationOptionsR\x1bexchangeRequestOrderOptions\x12p\n" +
+	"\x1crequest_cancel_order_options\x18\x02 \x01(\v2).channel.app.sdk.v1.OrderOperationOptionsR\x19requestCancelOrderOptions\x12j\n" +
+	"\x1crequest_return_order_options\x18\x03 \x01(\v2).channel.app.sdk.v1.OrderOperationOptionsR\x19requestReturnOrderOptions\x12h\n" +
+	"\x1baccept_return_order_options\x18\x04 \x01(\v2).channel.app.sdk.v1.OrderOperationOptionsR\x18acceptReturnOrderOptions\x12n\n" +
+	"\x1erequest_exchange_order_options\x18\x05 \x01(\v2).channel.app.sdk.v1.OrderOperationOptionsR\x1brequestExchangeOrderOptions\x12p\n" +
 	"\x1fchange_shipping_address_options\x18\x06 \x01(\v2).channel.app.sdk.v1.OrderOperationOptionsR\x1cchangeShippingAddressOptions\"\x1c\n" +
 	"\x1aCommerceGetAppConfigsInput\"u\n" +
 	"\x1bCommerceGetAppConfigsOutput\x12V\n" +
@@ -16449,7 +16449,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\vdefect_info\x18\n" +
 	" \x01(\v2#.channel.app.sdk.v1.OrderDefectInfoR\n" +
 	"defectInfo\"\xb0\x03\n" +
-	"\x1eCommerceReturnAcceptOrderInput\x12F\n" +
+	"\x1eCommerceAcceptReturnOrderInput\x12F\n" +
 	"\n" +
 	"identifier\x18\x01 \x01(\v2&.channel.app.sdk.v1.CommerceIdentifierR\n" +
 	"identifier\x12\x19\n" +
@@ -16647,15 +16647,15 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\rfield_configs\x18\x03 \x03(\v29.channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntryR\ffieldConfigs\x1ac\n" +
 	"\x11FieldConfigsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x128\n" +
-	"\x05value\x18\x02 \x01(\v2\".channel.app.sdk.v1.WmsFieldConfigR\x05value:\x028\x01\"\xdf\x06\n" +
+	"\x05value\x18\x02 \x01(\v2\".channel.app.sdk.v1.WmsFieldConfigR\x05value:\x028\x01\"\xe9\x06\n" +
 	"\x12WmsAppCapabilities\x12U\n" +
 	"\x12get_orders_options\x18\x01 \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x10getOrdersOptions\x12h\n" +
-	"\x1ccancel_request_order_options\x18\x02 \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x19cancelRequestOrderOptions\x12h\n" +
-	"\x1ccancel_restore_order_options\x18\x03 \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x19cancelRestoreOrderOptions\x12h\n" +
-	"\x1creturn_request_order_options\x18\x04 \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x19returnRequestOrderOptions\x12h\n" +
-	"\x1creturn_restore_order_options\x18\x05 \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x19returnRestoreOrderOptions\x12l\n" +
-	"\x1eexchange_request_order_options\x18\x06 \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x1bexchangeRequestOrderOptions\x12l\n" +
-	"\x1eexchange_restore_order_options\x18\a \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x1bexchangeRestoreOrderOptions\x12n\n" +
+	"\x1crequest_cancel_order_options\x18\x02 \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x19requestCancelOrderOptions\x12l\n" +
+	"\x1erestore_canceled_order_options\x18\x03 \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x1brestoreCanceledOrderOptions\x12h\n" +
+	"\x1crequest_return_order_options\x18\x04 \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x19requestReturnOrderOptions\x12l\n" +
+	"\x1erestore_returned_order_options\x18\x05 \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x1brestoreReturnedOrderOptions\x12l\n" +
+	"\x1erequest_exchange_order_options\x18\x06 \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x1brequestExchangeOrderOptions\x12n\n" +
+	"\x1frestore_exchanged_order_options\x18\a \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x1crestoreExchangedOrderOptions\x12n\n" +
 	"\x1fchange_shipping_address_options\x18\b \x01(\v2'.channel.app.sdk.v1.WmsOperationOptionsR\x1cchangeShippingAddressOptions\"\x17\n" +
 	"\x15WmsGetAppConfigsInput\"k\n" +
 	"\x16WmsGetAppConfigsOutput\x12Q\n" +
@@ -16940,7 +16940,7 @@ var file_channel_app_sdk_v1_extension_proto_goTypes = []any{
 	(*CommerceActionResult)(nil),                                   // 158: channel.app.sdk.v1.CommerceActionResult
 	(*CommerceCancelOrderInput)(nil),                               // 159: channel.app.sdk.v1.CommerceCancelOrderInput
 	(*CommerceReturnOrderInput)(nil),                               // 160: channel.app.sdk.v1.CommerceReturnOrderInput
-	(*CommerceReturnAcceptOrderInput)(nil),                         // 161: channel.app.sdk.v1.CommerceReturnAcceptOrderInput
+	(*CommerceAcceptReturnOrderInput)(nil),                         // 161: channel.app.sdk.v1.CommerceAcceptReturnOrderInput
 	(*CommerceExchangeOrderInput)(nil),                             // 162: channel.app.sdk.v1.CommerceExchangeOrderInput
 	(*CommerceGetExchangeableItemsInput)(nil),                      // 163: channel.app.sdk.v1.CommerceGetExchangeableItemsInput
 	(*CommerceGetExchangeableItemsOutput)(nil),                     // 164: channel.app.sdk.v1.CommerceGetExchangeableItemsOutput
@@ -17201,10 +17201,10 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	251, // 158: channel.app.sdk.v1.CommerceGetOrdersInput.search_filter:type_name -> google.protobuf.Value
 	151, // 159: channel.app.sdk.v1.CommerceGetOrdersOutput.orders:type_name -> channel.app.sdk.v1.CommerceOrder
 	134, // 160: channel.app.sdk.v1.CommerceAppCapabilities.get_orders_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	134, // 161: channel.app.sdk.v1.CommerceAppCapabilities.cancel_request_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	134, // 162: channel.app.sdk.v1.CommerceAppCapabilities.return_request_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	134, // 163: channel.app.sdk.v1.CommerceAppCapabilities.return_accept_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	134, // 164: channel.app.sdk.v1.CommerceAppCapabilities.exchange_request_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	134, // 161: channel.app.sdk.v1.CommerceAppCapabilities.request_cancel_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	134, // 162: channel.app.sdk.v1.CommerceAppCapabilities.request_return_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	134, // 163: channel.app.sdk.v1.CommerceAppCapabilities.accept_return_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	134, // 164: channel.app.sdk.v1.CommerceAppCapabilities.request_exchange_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
 	134, // 165: channel.app.sdk.v1.CommerceAppCapabilities.change_shipping_address_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
 	154, // 166: channel.app.sdk.v1.CommerceGetAppConfigsOutput.app_capabilities:type_name -> channel.app.sdk.v1.CommerceAppCapabilities
 	157, // 167: channel.app.sdk.v1.CommerceActionResult.result:type_name -> channel.app.sdk.v1.CommerceResultBody
@@ -17218,10 +17218,10 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	122, // 175: channel.app.sdk.v1.CommerceReturnOrderInput.pickup_address:type_name -> channel.app.sdk.v1.OrderAddress
 	123, // 176: channel.app.sdk.v1.CommerceReturnOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
 	124, // 177: channel.app.sdk.v1.CommerceReturnOrderInput.defect_info:type_name -> channel.app.sdk.v1.OrderDefectInfo
-	149, // 178: channel.app.sdk.v1.CommerceReturnAcceptOrderInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
-	140, // 179: channel.app.sdk.v1.CommerceReturnAcceptOrderInput.return_items:type_name -> channel.app.sdk.v1.OrderClaimItem
-	125, // 180: channel.app.sdk.v1.CommerceReturnAcceptOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
-	123, // 181: channel.app.sdk.v1.CommerceReturnAcceptOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
+	149, // 178: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
+	140, // 179: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.return_items:type_name -> channel.app.sdk.v1.OrderClaimItem
+	125, // 180: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
+	123, // 181: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
 	149, // 182: channel.app.sdk.v1.CommerceExchangeOrderInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
 	140, // 183: channel.app.sdk.v1.CommerceExchangeOrderInput.before_exchange_items:type_name -> channel.app.sdk.v1.OrderClaimItem
 	143, // 184: channel.app.sdk.v1.CommerceExchangeOrderInput.after_exchange_items:type_name -> channel.app.sdk.v1.OrderExchangeItem
@@ -17253,12 +17253,12 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	132, // 210: channel.app.sdk.v1.WmsFieldConfig.allowed_values:type_name -> channel.app.sdk.v1.OrderAllowedValue
 	249, // 211: channel.app.sdk.v1.WmsOperationOptions.field_configs:type_name -> channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntry
 	194, // 212: channel.app.sdk.v1.WmsAppCapabilities.get_orders_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	194, // 213: channel.app.sdk.v1.WmsAppCapabilities.cancel_request_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	194, // 214: channel.app.sdk.v1.WmsAppCapabilities.cancel_restore_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	194, // 215: channel.app.sdk.v1.WmsAppCapabilities.return_request_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	194, // 216: channel.app.sdk.v1.WmsAppCapabilities.return_restore_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	194, // 217: channel.app.sdk.v1.WmsAppCapabilities.exchange_request_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	194, // 218: channel.app.sdk.v1.WmsAppCapabilities.exchange_restore_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	194, // 213: channel.app.sdk.v1.WmsAppCapabilities.request_cancel_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	194, // 214: channel.app.sdk.v1.WmsAppCapabilities.restore_canceled_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	194, // 215: channel.app.sdk.v1.WmsAppCapabilities.request_return_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	194, // 216: channel.app.sdk.v1.WmsAppCapabilities.restore_returned_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	194, // 217: channel.app.sdk.v1.WmsAppCapabilities.request_exchange_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	194, // 218: channel.app.sdk.v1.WmsAppCapabilities.restore_exchanged_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
 	194, // 219: channel.app.sdk.v1.WmsAppCapabilities.change_shipping_address_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
 	195, // 220: channel.app.sdk.v1.WmsGetAppConfigsOutput.app_capabilities:type_name -> channel.app.sdk.v1.WmsAppCapabilities
 	252, // 221: channel.app.sdk.v1.MessagingOnMediumMessageCreatedInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat

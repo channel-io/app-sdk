@@ -87,10 +87,10 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 		functions: []string{
 			commerce.FunctionGetAppConfigs,
 			commerce.FunctionGetOrders,
-			commerce.FunctionCancelRequestOrder,
-			commerce.FunctionReturnRequestOrder,
-			commerce.FunctionReturnAcceptOrder,
-			commerce.FunctionExchangeRequestOrder,
+			commerce.FunctionRequestCancelOrder,
+			commerce.FunctionRequestReturnOrder,
+			commerce.FunctionAcceptReturnOrder,
+			commerce.FunctionRequestExchangeOrder,
 			commerce.FunctionGetExchangeableItems,
 			commerce.FunctionChangeShippingAddress,
 		},
@@ -98,10 +98,10 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 			return commerce.Extension().
 				GetAppConfigs(smokeZero[commerce.GetAppConfigsInput, commerce.GetAppConfigsOutput]()).
 				GetOrders(smokeZero[commerce.GetOrdersInput, commerce.GetOrdersOutput]()).
-				CancelRequestOrder(smokeZero[commerce.CancelOrderInput, commerce.ActionResult]()).
-				ReturnRequestOrder(smokeZero[commerce.ReturnOrderInput, commerce.ActionResult]()).
-				ReturnAcceptOrder(smokeZero[commerce.ReturnAcceptOrderInput, commerce.ActionResult]()).
-				ExchangeRequestOrder(smokeZero[commerce.ExchangeOrderInput, commerce.ActionResult]()).
+				RequestCancelOrder(smokeZero[commerce.CancelOrderInput, commerce.ActionResult]()).
+				RequestReturnOrder(smokeZero[commerce.ReturnOrderInput, commerce.ActionResult]()).
+				AcceptReturnOrder(smokeZero[commerce.AcceptReturnOrderInput, commerce.ActionResult]()).
+				RequestExchangeOrder(smokeZero[commerce.ExchangeOrderInput, commerce.ActionResult]()).
 				GetExchangeableItems(smokeZero[commerce.GetExchangeableItemsInput, commerce.GetExchangeableItemsOutput]()).
 				ChangeShippingAddress(smokeZero[commerce.ChangeShippingAddressInput, commerce.ActionResult]())
 		},
@@ -318,12 +318,12 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 			wms.FunctionReturnOrder,
 			wms.FunctionGetAppConfigs,
 			wms.FunctionOrderGetOrders,
-			wms.FunctionOrderCancelRequestOrder,
-			wms.FunctionOrderCancelRestoreOrder,
-			wms.FunctionOrderReturnRequestOrder,
-			wms.FunctionOrderReturnRestoreOrder,
-			wms.FunctionOrderExchangeRequestOrder,
-			wms.FunctionOrderExchangeRestoreOrder,
+			wms.FunctionOrderRequestCancelOrder,
+			wms.FunctionOrderRestoreCanceledOrder,
+			wms.FunctionOrderRequestReturnOrder,
+			wms.FunctionOrderRestoreReturnedOrder,
+			wms.FunctionOrderRequestExchangeOrder,
+			wms.FunctionOrderRestoreExchangedOrder,
 			wms.FunctionOrderChangeShippingAddress,
 		},
 		build: func() appsdk.Extension {
@@ -341,12 +341,12 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 				ReturnOrder(smokeZero[wms.ReturnOrderRequest, wms.SuccessResponse]()).
 				GetAppConfigs(smokeZero[wms.GetAppConfigsRequest, wms.GetAppConfigsResponse]()).
 				OrderGetOrders(smokeZero[wms.OrderGetOrdersRequest, wms.OrderGetOrdersResponse]()).
-				OrderCancelRequestOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-				OrderCancelRestoreOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-				OrderReturnRequestOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-				OrderReturnRestoreOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-				OrderExchangeRequestOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-				OrderExchangeRestoreOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+				OrderRequestCancelOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+				OrderRestoreCanceledOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+				OrderRequestReturnOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+				OrderRestoreReturnedOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+				OrderRequestExchangeOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+				OrderRestoreExchangedOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
 				OrderChangeShippingAddress(smokeZero[wms.OrderChangeShippingAddressRequest, wms.OrderActionResponse]())
 		},
 	},

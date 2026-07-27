@@ -16,7 +16,6 @@ Check registries before pinning versions. Values verified on 2026-07-22:
 2. Extension schemas and interfaces.
 3. SDK reference and locale guides.
 4. Current TypeScript and Go tutorial repositories.
-5. Older developers.channel.io App articles for product context and wire-level background.
 
 ## Current defaults
 
@@ -57,6 +56,11 @@ Check registries before pinning versions. Values verified on 2026-07-22:
 
 ## Feature choice
 
-- TypeScript: use `ChannelAppModule`, decorators or the simple API, `TokenManager`, `NativeFunctionClient`, and WAM hooks.
+- TypeScript: use `ChannelAppModule`, decorators, `TokenManager`, `NativeFunctionClient`, and WAM hooks.
 - Go: use `appsdk.App`, extension builders, `server` or `server/gin`, and `native.TokenManager`.
 - Check `docs/reference/go-feature-parity.md` before using a TypeScript native convenience API in Go.
+- Prefer a named TypeScript family schema. When a family has no named Function-level schema export,
+  resolve the full canonical Function name from `extensionFunctionSchemaDefinitions` and pass its
+  Zod `input`/`output` to the decorators; do not hand-wave discovery schemas.
+- Messaging uses `messaging:v1`; use the TypeScript `Messaging` decorators or Go messaging builder
+  and complete any additional product setup explicitly in AppStore.

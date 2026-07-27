@@ -23,4 +23,4 @@ Add `autoRegister: true` to `ChannelAppModule` when connecting the example to Ap
 - [command extension](apps/server/src/extensions/command.extension.ts)
 - [WAM app](apps/wam/src/App.tsx)
 
-AppStore discovers command definitions through the metadata function; new apps do not call `registerCommands`.
+AppStore discovers command definitions through the Extension metadata Function.

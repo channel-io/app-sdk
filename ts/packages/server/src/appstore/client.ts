@@ -16,7 +16,7 @@ const DEFAULT_APPSTORE_URL = "https://app-store.channel.io";
 /**
  * AppStore API client for extension registration
  *
- * @deprecated This legacy client is unused by the SDK and will be removed in the next minor release.
+ * @deprecated This client is unused by the SDK and will be removed in the next minor release.
  * Use `NativeFunctionClient` and `TokenManager` instead.
  *
  * @example

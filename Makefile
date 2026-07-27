@@ -33,6 +33,7 @@ help:
 	@printf "  make build            Build all SDKs\n"
 	@printf "  make test             Test all SDKs\n"
 	@printf "  make lint             Lint all SDKs and proto contracts\n"
+	@printf "  make docs-check       Check localized Extension recipe parity\n"
 	@printf "  make format           Format TypeScript docs/code and Go code\n"
 	@printf "  make format-check     Check TypeScript and Go formatting\n"
 	@printf "  make install-proto-tools Install buf and protoc-gen-go if missing\n"
@@ -67,12 +68,13 @@ test: test-ts test-go
 
 test-ts: build-ts
 	cd $(TS_DIR) && $(PNPM) test
+	./scripts/smoke-test-cli-create.sh
 
 test-go:
 	cd $(GO_DIR) && $(GO) test $(GO_TEST_FLAGS) ./...
 
 .PHONY: lint lint-ts lint-go
-lint: lint-ts lint-go proto-lint proto-ssot-check
+lint: lint-ts lint-go proto-lint proto-ssot-check docs-check
 
 lint-ts:
 	cd $(TS_DIR) && $(PNPM) lint
@@ -124,6 +126,11 @@ proto-check: proto-generate
 
 proto-ssot-check:
 	$(NODE) scripts/check-proto-ssot.mjs
+
+.PHONY: docs-check
+docs-check:
+	./scripts/check-extension-guides.sh
+	./scripts/check-first-app-guides.sh
 
 .PHONY: verify
 verify: lint format-check proto-check build test

@@ -2,24 +2,27 @@
 
 このガイドは、Channel アプリ開発者が TypeScript SDK と Go SDK を同じ考え方で使えるようにまとめたものです。
 
-## ドキュメント
+## 推奨ドキュメント順序
 
-- [基本概念](concepts.md)
-- [クイックスタート](quickstart.md)
-- [アプリ開発完全ガイド](app-development.md)
-- [旧 Web ドキュメントとの差分](legacy-documentation-notes.md)
-- [Function 登録](functions.md)
-- [Extension 完全ガイド](extensions.md)
-- [部分移行](partial-migration.md)
-- [WMS 拡張](extensions/wms.md)
-- [Order 拡張（レガシー）](extensions/order.md)
-- [Commerce 拡張](extensions/commerce.md)
+1. [最初のアプリ Quickstart](quickstart.md): private app を作成し、Command、WAM、message flow を実行します。
+2. [基本概念](concepts.md): Function、Extension、WAM、authentication、token の境界を理解します。
+3. [Function 登録](functions.md): wire contract と standalone typed app Function を確認します。
+4. [Command ガイド](extensions/command.md): metadata、action、autocomplete を実装します。
+5. [WAM ガイド](wam.md): React UI、host authorization、app/native Function call を実装します。
+6. [Extension 完全ガイドと 16 の TypeScript/Go recipe](extensions.md): Extension registration を理解し、必要な capability と implementation contract を選択します。
+7. [本番運用準備ガイド](app-development.md): launch 前に security、reliability、operation、deployment、rollback を検証します。
+8. 言語別 API は [TypeScript reference](../../reference/typescript/README.md) または
+   [Go reference](../../reference/go/README.md) で確認します。
+9. 実装中は完全な [TypeScript app tutorial](https://github.com/channel-io/app-tutorial-ts) または
+   [Go app tutorial](https://github.com/channel-io/app-tutorial) を参照します。
 
 ## SDK の選び方
 
-NestJS、Zod、WAM React 開発には TypeScript SDK が向いています。既存の Go サービスに typed function、native client、extension helper を段階的に入れる場合は Go SDK が向いています。
+NestJS、Zod、WAM React 開発には TypeScript SDK が向いています。Go サービスで typed
+function、native client、extension helper を使う場合は Go SDK が向いています。
 
-Web 記事、チュートリアル、SDK 例が一致しない場合は、公開 SDK export、SDK reference、最新 tutorial の順で確認してください。
+現在の contract は guide と public SDK export が定義し、tutorial はその contract の完全な
+runnable implementation を提供します。
 
 ## 実行可能な例
 
@@ -28,5 +31,5 @@ Web 記事、チュートリアル、SDK 例が一致しない場合は、公開
 
 ## 言語別リファレンス
 
-- [TypeScript architecture](../../reference/typescript/ARCHITECTURE.md)、[authentication と token](../../reference/typescript/AUTH-AND-TOKENS.md)、[Extension](../../reference/typescript/EXTENSIONS.md)、[WAM](../../reference/typescript/WAM.md)
+- [TypeScript reference map](../../reference/typescript/README.md)
 - [Go reference](../../reference/go/README.md): Function、server、authentication と token、Extension、native Function、WAM integration

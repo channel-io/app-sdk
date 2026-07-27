@@ -33,3 +33,6 @@ export {
   OUTPUT_SCHEMA_METADATA,
   DESCRIPTION_METADATA,
 } from "./schema.decorator.js";
+
+// Messaging Function name + schema bundles
+export { Messaging } from "./messaging.decorators.js";

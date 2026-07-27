@@ -1,51 +1,85 @@
-# Messaging Family
+# Messaging Extension
 
-Messaging is still more AppStore-driven than most SDK extensions.
+Use the `messaging` v1 Extension when an app connects an external messaging medium to Channel.
+Messaging is an advanced integration: its app-level setup, channel permissions, runtime Functions,
+and external-provider delivery must be designed as separate boundaries.
 
-## Current State
+## TypeScript entry points
 
-- The SDK ships messaging v1 schemas and interfaces from `@channel.io/app-sdk-core`
-- The SDK also exposes typed native-function contracts for the channel/Core API calls used by messaging integrations
-- AppStore still treats messaging as several legacy registrations:
-  - inbox messaging
-  - prebuilt messaging
-  - follow-up
-  - medium link
-  - chx
+The SDK provides:
 
-That means you should implement messaging-family behavior with generic extension definitions and align the function names and native-function usage with the AppStore contract.
+- `@Extension("messaging")` for Extension registration;
+- `Messaging.inbox.*()` and `Messaging.prebuilt.*()` method decorators from
+  `@channel.io/app-sdk-server`, bundling the correct relative Function name and Zod schemas;
+- `MessagingFunctionNames`, DTO schemas, and interfaces from `@channel.io/app-sdk-core`;
+- `createMessagingExtension()` for lower-level `ExtensionDefinition` consumers.
 
-## App-Level Registration Claims
+The runtime Function prefix is always `extension.messaging.*`. Payload fields use camelCase.
 
-These app-level registrations are public defaults in AppStore today:
+```ts
+import {
+  Extension,
+  Messaging,
+  type MessagingInboxExtensionInterface,
+  type OnMediumMessageCreatedInput,
+  type OnMediumMessageCreatedOutput,
+  type Context,
+} from "@channel.io/app-sdk-server";
 
-- `registerInboxMessagingExtension`
-- `registerPrebuiltMessagingExtension`
-- `registerFollowUpExtension`
-- `registerMediumLinkExtension`
-- `registerChxExtension`
+@Extension({ name: "messaging", systemVersion: "v1" })
+export class InboxMessagingExtension implements MessagingInboxExtensionInterface {
+  @Messaging.inbox.onMediumMessageCreated()
+  async onMediumMessageCreated(
+    _ctx: Context,
+    input: OnMediumMessageCreatedInput,
+  ): Promise<OnMediumMessageCreatedOutput> {
+    await deliverToProvider(input.userChat, input.message);
+    return { sendResult: { sendState: "sent" } };
+  }
+}
+```
 
-In practice, the SDK still exposes only the generic `registerExtension()` method, so this area remains more AppStore-driven than other extensions.
+List the decorated class in the NestJS module's `providers`. `ChannelAppModule` discovers its
+Functions and `autoRegister` performs normal Extension registration.
 
-## Inbox Messaging Runtime Claims
+## Function groups
 
-Inbox messaging also needs channel-scoped runtime native functions. The required set currently includes:
+Inbox Functions cover incoming/outgoing medium messages, chat closure, available writing types,
+custom-editor WAMs, medium-topic selection, and provider error descriptions. Prebuilt Functions
+cover writing types, entity validation, custom editors, topic building, and default options.
 
-- `findOrCreateContactAndUser`
-- `findOrCreateUserChatByMedium`
-- `submitHandlingWorkflowButton`
-- `findContactsByUser`
-- `writeUserChatMessage`
-- `writeUserChatMessageAsUser`
-- `updateUserChatStateByUser`
-- `startUserChatFromUserByMedium`
+Implement only the optional Functions your enabled product flow requires. The inbox
+`onMediumMessageCreated` handler is the core delivery Function and is required by
+`MessagingInboxExtensionInterface`.
 
-These are channel-role available claims, not app defaults. That is an intentional security boundary.
-`submitHandlingWorkflowButton` is listed by AppStore as a required inbox messaging claim, but the inspected core API proto does not currently expose a request DTO for it; the SDK keeps its type intentionally open.
+## Registration and permissions
 
-## Practical Guidance
+Normal SDK auto-registration publishes the `messaging` Extension and its Function schemas.
+Additional messaging product setup is coordinated through AppStore configuration and is not
+automated by the SDK helper. Do not assume that registering the Extension grants channel-scoped
+Native Function permissions.
 
-- Treat messaging as an advanced integration
-- Plan the native function surface first
-- Keep registration and runtime behavior separate in your design
-- Prefer documenting the exact AppStore contract next to your app code until the SDK grows a first-class helper
+Before implementation:
+
+1. choose inbox, prebuilt, or both;
+2. identify the Native Functions needed by that flow;
+3. request only those app/channel permission scopes;
+4. map provider identities to Channel users/chats without exposing provider secrets;
+5. define delivery idempotency, retry, ordering, and close/reopen behavior.
+
+Use a channel token and the typed `NativeFunctionClient` proxy for server-side Channel operations.
+See [Native Functions](../NATIVE.md) and [authentication and tokens](../AUTH-AND-TOKENS.md).
+
+## Reliability and security
+
+- Deduplicate provider events before side effects.
+- Make retries safe and preserve provider event ordering where required.
+- Treat external IDs, message content, and contact data as sensitive.
+- Keep access tokens and provider credentials server-side.
+- Return stable Function error types without echoing message payloads or credentials.
+- Validate WAM input and keep privileged writes on the server unless the current manager is the
+  intended actor.
+
+For a product-level task flow, start with the localized
+[Extension guide](../../../guides/en/extensions/messaging.md). For exact DTO fields, use the
+installed package types and schemas.

@@ -134,4 +134,3 @@ Use this order when examples disagree:
 2. Core extension schemas and interfaces.
 3. Server discovery/router/token source.
 4. Reference documents and current examples.
-5. Legacy web articles.

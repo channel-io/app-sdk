@@ -25,6 +25,16 @@ if rg --hidden --glob '!.git/**' --line-number 'AS-[0-9]{3,}' .; then
   failed=1
 fi
 
+if rg --glob '*.md' --line-number 'https?://developers\.channel\.io/[^ )]+/articles/' README.md AGENT.md docs skills ts; then
+  echo "Public content policy violation: retired article documentation link found."
+  failed=1
+fi
+
+if rg --glob '*.md' --ignore-case --line-number 'app[ -]?studio|앱 ?스튜디오|アプリスタジオ' README.md AGENT.md docs skills ts; then
+  echo "Public content policy violation: non-public app-building product name found."
+  failed=1
+fi
+
 if [[ ! -f LICENSE ]]; then
   echo "Public content policy violation: LICENSE is missing."
   failed=1

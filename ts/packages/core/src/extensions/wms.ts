@@ -142,7 +142,7 @@ export type GetWmsOrderOutput = ProtoBacked<
  * Current commerce key shapes:
  * - Cafe24: `commerceType` is `appCafe24`, `commerceKey` is
  *   `{encode(mallId)}-{shopNo}-{encode(shopName)}`.
- *   Producers emit this shape; WMS readers may retain legacy `{mallId}-{shopNo}` parsing.
+ *   Producers emit this shape; WMS readers may retain `{mallId}-{shopNo}` compatibility parsing.
  * - Naver SmartStore: `commerceType` is `appNaverSmartStore`, `commerceKey` is
  *   `{encode(accountId)}-{encode(accountUid)}`. Both parts are required.
  *
@@ -400,12 +400,12 @@ export type WmsOperationOptions = ProtoBacked<
 
 export const WmsAppCapabilitiesSchema = z.object({
   getOrdersOptions: WmsOperationOptionsSchema.optional(),
-  cancelRequestOrderOptions: WmsOperationOptionsSchema.optional(),
-  cancelRestoreOrderOptions: WmsOperationOptionsSchema.optional(),
-  returnRequestOrderOptions: WmsOperationOptionsSchema.optional(),
-  returnRestoreOrderOptions: WmsOperationOptionsSchema.optional(),
-  exchangeRequestOrderOptions: WmsOperationOptionsSchema.optional(),
-  exchangeRestoreOrderOptions: WmsOperationOptionsSchema.optional(),
+  requestCancelOrderOptions: WmsOperationOptionsSchema.optional(),
+  restoreCanceledOrderOptions: WmsOperationOptionsSchema.optional(),
+  requestReturnOrderOptions: WmsOperationOptionsSchema.optional(),
+  restoreReturnedOrderOptions: WmsOperationOptionsSchema.optional(),
+  requestExchangeOrderOptions: WmsOperationOptionsSchema.optional(),
+  restoreExchangedOrderOptions: WmsOperationOptionsSchema.optional(),
   changeShippingAddressOptions: WmsOperationOptionsSchema.optional(),
 });
 export type WmsAppCapabilities = ProtoBacked<

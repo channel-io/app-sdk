@@ -16,7 +16,7 @@ responsibilities should be available at the same abstraction level.
 | Input/output schemas         | Available     | Struct-derived schema, schema tags, explicit overrides                              |
 | Extensible outputs           | Available     | `appsdk.WithExtraFields`, `appsdk.ExtensibleOutput`                                 |
 | Function discovery           | Available     | `getFunctions` and `getTestFunctions` handling                                      |
-| Native client                | Available     | `native.Client` token, extension, ALF, Notebook, data-table, and app-function calls |
+| Native client                | Available     | `native.Client`, `CallNative[T]`, and `ProxyAPI` typed/raw native calls             |
 | Token manager cache          | Available     | `native.TokenManager`, custom cache, refresh dedup                                  |
 | Auto registration            | Available     | `native.AutoRegistrar`, `server.WithAutoRegister`                                   |
 | Server bootstrap             | Available     | `server.Run`; `server/gin.NewServer`; `server/gin.NewRoute` for custom Gin mounting |
@@ -26,21 +26,18 @@ responsibilities should be available at the same abstraction level.
 | Generated proto DTOs         | Available     | Extension packages re-export generated DTOs directly or with `Proto*` aliases       |
 | DataSource query server      | Available     | `io.channel.datasource.v1` gRPC plus BigQuery Storage/PostgreSQL Arrow executors    |
 | DataSource metadata DTOs     | Available     | JSON-RPC DTOs plus `Proto*` aliases for common extension proto types                |
-| Legacy migration             | Available     | `compat/legacy.Composite`                                                           |
 
 ## Not Yet Covered
 
-| TypeScript SDK area                          | Go direction                                                                                                     |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| NestJS decorators/modules                    | Not a direct Go concept; use builders and framework handlers                                                     |
-| WAM React SDK                                | Browser/frontend-only; stays TypeScript                                                                          |
-| CLI app scaffolding                          | Planned only if Go app templates become necessary                                                                |
-| Full schema validation                       | Add validator integration and richer JSON Schema generation                                                      |
-| Generic/typed Channel native-operation proxy | The public client does not yet expose the TypeScript `createProxyApi` equivalent or a generic native-call method |
+| TypeScript SDK area       | Go direction                                                 |
+| ------------------------- | ------------------------------------------------------------ |
+| NestJS decorators/modules | Not a direct Go concept; use builders and framework handlers |
+| WAM React SDK             | Browser/frontend-only; stays TypeScript                      |
+| CLI app scaffolding       | Planned only if Go app templates become necessary            |
+| Full schema validation    | Add validator integration and richer JSON Schema generation  |
 
-The runnable [Go app tutorial](https://github.com/channel-io/app-tutorial) keeps token lifecycle in
-`native.TokenManager` and isolates its one `writeGroupMessage` transport call in a small adapter.
-Remove that adapter when a public Go native-operation API is released.
+The runnable [Go app tutorial](https://github.com/channel-io/app-tutorial) demonstrates
+`native.TokenManager` with the typed `ProxyAPI` message call.
 
 ## Target
 
@@ -55,7 +52,6 @@ for Go apps:
 - signature verification middleware for common routers
 - test helpers
 - extension helper packages
-- mixed legacy and SDK registry migration
 
 TypeScript-only frontend features such as WAM React hooks remain in the
 TypeScript SDK.

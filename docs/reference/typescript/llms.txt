@@ -24,7 +24,6 @@ Verified releases on 2026-07-22:
 2. Core extension schemas and interfaces.
 3. Server discovery, token, native-client, and WAM hook source.
 4. SDK reference and current examples.
-5. Legacy developers.channel.io App articles.
 
 ## Current defaults
 
@@ -89,9 +88,15 @@ export class CommandExtension {
 }
 ```
 
-Known extension names include config, oauth, apikey (legacy), calendar, command, widget, customtab, hook, mailRelay, polling, store, datasource, messaging, alftask/alfTask, notebook, commerce, order, and wms. Hook metadata in `0.17.2` also supports app-level public webhook ingress through `webhook.received`; read the hook guide for its required public `targetId` and high-entropy `endpointToken`. Read every extension's guide and exported schemas before choosing relative function names.
+Known Extension names for new apps include config, oauth, calendar, command, widget, customtab,
+hook, mailRelay, polling, store, datasource, messaging, alftask/alfTask, notebook, commerce, and wms.
+Hook metadata in `0.17.2` also supports app-level public webhook ingress through
+`webhook.received`; read the hook guide for its required public `targetId` and high-entropy
+`endpointToken`. Read every Extension's guide and exported schemas before choosing relative
+Function names.
 
-Do not use generic `createExtension()` / `defineFunction()` snippets from older templates; those are not current public exports. Some family-specific core factories exist, but use them only when a current guide shows how the returned definition is integrated into the chosen runtime.
+Use the decorator APIs shown above. Use a family-specific core factory only when a current guide
+shows how its returned definition integrates with the selected runtime.
 
 ## NestJS module and auto-registration
 
@@ -168,7 +173,8 @@ await api.writeGroupMessage({
 });
 ```
 
-Use `NativeFunctionClient.registerExtension` with an app token only when not using module auto-registration. `AppStoreClient` and the simple API service are deprecated.
+Use `NativeFunctionClient.registerExtension` with an app token only when module auto-registration
+is disabled.
 
 ## WAM
 

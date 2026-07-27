@@ -1,21 +1,212 @@
 # Extension Guide
 
-An Extension connects typed app Functions to a standard Channel capability. Choose an official
-Extension before writing handlers, reuse the SDK schemas and names, and keep app-specific business
-Functions standalone. Registration and runtime execution are separate: a successful
-`registerExtension` call does not prove that metadata discovery or handlers work.
+## What an Extension is
+
+An Extension is a named, versioned contract that connects typed app Functions to a standard
+Channel capability. Channel surfaces know how to discover and invoke a command, widget, custom tab,
+hook, OAuth flow, or other capability because the app implements that Extension's official Function
+names and schemas.
+
+An Extension normally contains two kinds of Functions:
+
+| Function kind         | Purpose                                                  | Example                                  |
+| --------------------- | -------------------------------------------------------- | ---------------------------------------- |
+| Metadata or discovery | Describes the capability and points to runtime Functions | `extension.command.metadata.getCommands` |
+| Runtime or action     | Performs the user-visible or background operation        | `extension.command.command.execute`      |
+
+Metadata may reference a standalone app Function such as `orders.sync`. Keep app-specific business
+operations standalone, and use the Extension namespace only for the standard contract. Inside an
+Extension, a relative name becomes `extension.{extensionName}.{relativeName}`.
+
+Registration does not upload or deploy app code. It announces the app-level
+`(extensionName, systemVersion)` contract so AppStore can call the configured Function Endpoint and
+discover schemas. It also does not install or enable the app in an individual Channel; installation,
+permission grants, and capability activation are separate steps.
+
+## From implementation to discovery
+
+```text
+SDK decorator or builder
+  → Function schemas and Extension registration target
+  → HTTPS server starts listening
+  → SDK obtains a cached app token
+  → registerExtension(appId, extensionName, systemVersion)
+  → AppStore calls getFunctions and metadata Functions
+  → installed Channel surfaces invoke runtime Functions
+```
+
+Use the SDK-owned Extension family, Function names, and schemas. A metadata response that points to
+an action Function does not create that Function automatically; both the metadata Function and every
+referenced runtime Function must be registered in the app server.
+
+## TypeScript implementation and auto-registration
+
+Use `@Extension` for the family and system version, `@Func` for relative names, and register the
+decorated class as a NestJS provider. `ChannelAppModule` discovers the provider and performs the
+recommended registration flow after the HTTP listener is ready.
+
+```ts
+import { Module } from "@nestjs/common";
+import { z } from "zod";
+import {
+  ChannelAppModule,
+  CommandResultSchema,
+  Extension,
+  Func,
+  GetCommandsOutputSchema,
+  InputSchema,
+  OutputSchema,
+} from "@channel.io/app-sdk-server";
+
+@Extension({ name: "command", systemVersion: "v1" })
+class CommandExtension {
+  @Func("metadata.getCommands")
+  @InputSchema(z.object({}))
+  @OutputSchema(GetCommandsOutputSchema)
+  getCommands() {
+    return {
+      commands: [
+        {
+          name: "hello",
+          scope: "desk",
+          actionFunctionName: "extension.command.command.open",
+          alfMode: "disable",
+          enabledByDefault: true,
+        },
+      ],
+    };
+  }
+
+  @Func("command.open")
+  @InputSchema(z.object({}).passthrough())
+  @OutputSchema(CommandResultSchema)
+  open() {
+    return { type: "text", attributes: { message: "Hello" } };
+  }
+}
+
+@Module({
+  imports: [
+    ChannelAppModule.forRoot({
+      appId: process.env.APP_ID!,
+      appSecret: process.env.APP_SECRET!,
+      signingKey: process.env.SIGNING_KEY!,
+      autoRegister: true,
+    }),
+  ],
+  providers: [CommandExtension],
+})
+export class AppModule {}
+```
+
+If the class is missing from `providers`, discovery cannot see it. If `autoRegister` is false, the
+SDK still dispatches implemented Functions, but it does not publish their Extension target to
+AppStore.
+
+## Go implementation and auto-registration
+
+Use the typed `extension/{family}` builder with `app.Use`. The builder declares both the Function
+schemas and the Extension target. `server.WithAutoRegister()` starts registration after the server
+can answer discovery requests.
+
+```go
+app := appsdk.New(appsdk.Options{
+  AppID:     os.Getenv("APP_ID"),
+  AppSecret: os.Getenv("APP_SECRET"),
+})
+
+if err := app.Use(command.Extension().
+  GetCommands(command.StaticCommands(&command.Config{
+    Name:               "meeting",
+    Scope:              command.ScopeDesk,
+    ActionFunctionName: "commands.meeting.execute",
+    AlfMode:            command.AlfModeDisable,
+  })).
+  Execute("commands.meeting.execute", executeMeeting),
+); err != nil {
+  log.Fatal(err)
+}
+
+if err := server.Run(
+  app,
+  server.WithSignature(os.Getenv("SIGNING_KEY")),
+  server.WithAutoRegister(),
+); err != nil {
+  log.Fatal(err)
+}
+```
+
+Use `server.WithAutoRegisterRetry` and `server.WithAutoRegisterResult` when deployment policy needs
+custom retry or observability. Existing Gin servers use the equivalent options from `server/gin`.
+
+## What `registerExtension` does
+
+The recommended auto-registration flow:
+
+1. waits until the Function server is listening;
+2. gets one cached **app token** through `TokenManager`;
+3. calls `registerExtension` for every discovered Extension name and system version;
+4. retries transient failures with bounded exponential backoff;
+5. lets AppStore call the versioned Function Endpoint for schema and metadata discovery.
+
+The request fields are camelCase: `appId`, `extensionName`, and `systemVersion`. `systemVersion` such
+as `v1` is the Channel Extension contract version, not the release version of your app.
+
+Only custom bootstraps or deployment-controlled registration normally call the native Function
+directly:
+
+| SDK        | Explicit call                                                                                    |
+| ---------- | ------------------------------------------------------------------------------------------------ |
+| TypeScript | `nativeClient.registerExtension(appId, extensionName, systemVersion, appToken.accessToken)`      |
+| Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
+
+Do not issue a new token or register on every Function request. Apps with only standalone Functions
+use the SDK's `core:v1` fallback. Advanced families such as ALF task, Notebook, and Messaging may
+require a secondary sync or coordinated product setup after generic Extension registration; follow
+their family recipe.
+
+## Registration lifecycle and verification
+
+- Deploy the Function Endpoint before registration because AppStore may call discovery immediately.
+- Keep auto-registration enabled on normal startup and use its bounded retry instead of a custom
+  infinite loop.
+- In a multi-replica deployment, use shared token storage. Duplicate idempotent registration calls
+  are acceptable, but every replica must not issue its own uncached token loop.
+- Re-register after changing Extension schemas, metadata, Function names, permissions, or the
+  Function Endpoint. Do not change `systemVersion` merely for an app release.
+- Use `unregisterExtension` only when intentionally removing a capability; deployment rollback alone
+  should restore the last compatible server and schemas.
+
+Verify these boundaries separately:
+
+1. startup logs show the expected Extension name, system version, and successful registration;
+2. `getFunctions` discovery contains every metadata and referenced runtime Function;
+3. metadata appears on the intended Channel surface after installation and activation;
+4. one real runtime call succeeds in a test Channel;
+5. invalid input, invalid signature, missing permission, and transient registration failure are
+   rejected or retried as designed.
+
+A successful `registerExtension` response proves only that the registration request was accepted.
+It does not prove that discovery, metadata validation, Channel installation, activation, or runtime
+handlers work.
+
+## Choose an Extension family
 
 For every Extension:
 
 1. enable only the permissions used by its Functions;
 2. implement metadata and referenced Functions with SDK schemas;
-3. register the Extension once with an app token;
+3. use SDK auto-registration with an app token;
 4. test discovery, valid calls, invalid input, missing authorization, and retries;
 5. keep App Secret, Signing Key, app/channel tokens, and provider credentials out of WAM code.
 
 TypeScript apps normally use `@Extension` and `@Func`. Go apps should prefer the typed
-`extension/{family}` builder. Follow the linked TypeScript reference for exact schemas and the
-[Go Extension reference](../../reference/go/EXTENSIONS.md) for builder behavior.
+`extension/{family}` builder. Each family recipe below covers both languages, authentication, WAM,
+reliability, and testing, then links the exact TypeScript schemas and
+[Go Extension reference](../../reference/go/EXTENSIONS.md).
+
+Read [Function registration](functions.md) for the shared wire contract and apply the
+[WAM guide](wam.md) to any Extension that opens UI.
 
 ## Config
 
@@ -24,7 +215,7 @@ Implement `extension.config.metadata.getConfigSchema`. Optional validation, save
 Functions may enforce provider rules. Mark secrets as credentials, localize labels rather than
 stable keys, and read injected values from Function context instead of sending them to a WAM.
 
-[TypeScript details](../../reference/typescript/extensions/config.md)
+[Config recipe](extensions/config.md)
 
 ## OAuth
 
@@ -33,15 +224,7 @@ Use `oauth` only for a provider's Authorization Code flow. Implement
 injects the connected provider token as `ctx.authToken`. Do not use this Extension for API keys or
 `client_credentials`; those belong in Config.
 
-[TypeScript details](../../reference/typescript/extensions/oauth.md)
-
-## API key (legacy)
-
-`apikey` exposes `extension.apikey.metadata.getAuthConfig` and legacy credential native Functions.
-It remains for compatibility, but new apps should use Config. Never return stored credentials from
-an app Function or place them in logs.
-
-[TypeScript details](../../reference/typescript/extensions/apikey.md)
+[OAuth recipe](extensions/oauth.md)
 
 ## Command
 
@@ -49,7 +232,7 @@ an app Function or place them in logs.
 exact full name of a standalone or Extension Function. Use a command to return text, perform an
 action, or open a WAM. Test command discovery separately from the referenced action handler.
 
-[TypeScript details](../../reference/typescript/extensions/command.md) ·
+[Command recipe](extensions/command.md) · [WAM guide](wam.md) ·
 [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) ·
 [Go tutorial](https://github.com/channel-io/app-tutorial)
 
@@ -59,7 +242,7 @@ action, or open a WAM. Test command discovery separately from the referenced act
 surface and action Function; the action can return a WAM. Treat chat, user, and manager fields as
 surface-dependent optional context and verify permissions for every native action.
 
-[TypeScript details](../../reference/typescript/extensions/widget.md)
+[Widget recipe](extensions/widget.md)
 
 ## Custom tab
 
@@ -67,7 +250,7 @@ surface-dependent optional context and verify permissions for every native actio
 point actions to exact Function names, and use a WAM for interactive content. Do not place tokens or
 private records in tab metadata or `wamArgs`.
 
-[TypeScript details](../../reference/typescript/extensions/customtab.md)
+[Custom tab recipe](extensions/customtab.md)
 
 ## Hook
 
@@ -76,7 +259,7 @@ authenticate signed app Function calls, and return quickly when the event can be
 asynchronously. Public `webhook.received` targets require a public `targetId`, a high-entropy
 `endpointToken`, payload validation, replay protection, and secret rotation.
 
-[TypeScript details](../../reference/typescript/extensions/hook.md)
+[Hook recipe](extensions/hook.md)
 
 ## Polling
 
@@ -84,7 +267,7 @@ asynchronously. Public `webhook.received` targets require a public `targetId`, a
 `target.getChannels` pages through installed channels, and each poller names a full Function to
 invoke. Store cursors durably, make retries idempotent, bound each batch, and test partial failure.
 
-[TypeScript details](../../reference/typescript/extensions/polling.md)
+[Polling recipe](extensions/polling.md)
 
 ## Calendar
 
@@ -93,7 +276,7 @@ queries. Keep provider credentials server-side, normalize time zones explicitly,
 mutations idempotent. A WAM is appropriate for slot selection while server Functions own provider
 calls.
 
-[TypeScript details](../../reference/typescript/extensions/calendar.md)
+[Calendar recipe](extensions/calendar.md)
 
 ## Store
 
@@ -101,7 +284,7 @@ calls.
 AppStore reads the profile during registration or synchronization. Keep stable IDs separate from
 localized labels and do not include provider credentials in the profile.
 
-[TypeScript details](../../reference/typescript/extensions/store.md)
+[Store recipe](extensions/store.md)
 
 ## DataSource
 
@@ -110,8 +293,8 @@ the authenticated DataSource gRPC endpoint rather than the normal app Function r
 `x-access-token`, enforce catalog/table allowlists, parameterize SQL, cap rows and time, and stream
 Arrow-compatible results. The SDK includes PostgreSQL and BigQuery-oriented runners.
 
-[TypeScript details](../../reference/typescript/extensions/datasource.md) ·
-[Go examples](../../reference/go-extensions.md#datasource-extension-and-query-server)
+[DataSource recipe](extensions/datasource.md) ·
+[Go examples](../../reference/go/EXTENSIONS.md#datasource-extension-and-query-server)
 
 ## Commerce
 
@@ -122,21 +305,12 @@ and return explicit unsupported results when a provider lacks an operation.
 
 [Commerce details](extensions/commerce.md)
 
-## Order (legacy)
-
-`order` is the legacy `createdAt`-based commerce contract. Do not choose it for new development.
-Existing apps should map their provider model to Commerce and migrate handlers before removing
-legacy registration.
-
-[Migration details](extensions/order.md)
-
 ## WMS
 
-`wms` connects warehouse/order-management providers. Prefer the ID-based
+`wms` connects warehouse/order-management providers. Use the ID-based
 `extension.wms.order.*` Functions for order lookup, cancel/return/exchange restore flows, and
-shipping-address changes. The older `core`, `cancel`, `return`, `exchange`, and `edit` groups remain
-only for migration. Require explicit shop configuration and test reversible mutations in a safe
-environment.
+shipping-address changes. Require explicit shop configuration and test reversible mutations in a
+safe environment.
 
 [WMS details](extensions/wms.md)
 
@@ -148,7 +322,7 @@ channel-scoped native Functions. Design the required native claims first, persis
 conversation/message mappings, make webhook or polling delivery idempotent, and never impersonate a
 user without the proper user/manager authorization.
 
-[TypeScript details](../../reference/typescript/extensions/messaging.md)
+[Messaging recipe](extensions/messaging.md)
 
 ## ALF task
 
@@ -156,7 +330,7 @@ user without the proper user/manager authorization.
 steps: `registerExtension("alfTask", "v1")` and `registerAlfTasks`. Keep task keys stable, increment
 versions for behavior changes, and verify the synchronized versions.
 
-[TypeScript details](../../reference/typescript/extensions/alf-task.md)
+[ALF task recipe](extensions/alf-task.md)
 
 ## Notebook
 
@@ -164,7 +338,7 @@ versions for behavior changes, and verify the synchronized versions.
 requires `registerAppNotebooks`. Keep notebook and cell keys stable, increment versions for
 definition changes, and treat rendered content as untrusted when it includes external data.
 
-[TypeScript details](../../reference/typescript/extensions/notebook.md)
+[Notebook recipe](extensions/notebook.md)
 
 ## Mail relay
 
@@ -174,7 +348,7 @@ as a standalone `@Func` and calls `registerExtension("mailRelay", "v1")` explici
 typed builder. Validate relay tokens, bound attachments and body size, deduplicate message IDs, and
 avoid logging raw mail content.
 
-[TypeScript details](../../reference/typescript/extensions/mail-relay.md)
+[Mail relay recipe](extensions/mail-relay.md)
 
 ## Verification checklist
 
@@ -185,3 +359,6 @@ avoid logging raw mail content.
 - Provider credentials are injected from Config/OAuth and never returned to the client.
 - Mutations are idempotent or safely retryable and have explicit permission-failure behavior.
 - Discovery and at least one real invocation pass in an installed test app.
+
+After implementation passes, use the [production readiness guide](app-development.md) as the final
+security, reliability, deployment, operations, and rollback gate.

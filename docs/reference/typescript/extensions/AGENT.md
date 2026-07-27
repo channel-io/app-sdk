@@ -16,6 +16,7 @@ This folder explains extension contracts from the SDK user's point of view.
 - current SDK exports
 - practical implementation flow
 
-## Known Gap
+## Messaging boundary
 
-Messaging is still partly AppStore-driven and does not yet have the same level of SDK ergonomics as command, widget, custom tab, hook, OAuth, API key, calendar, or ALF task.
+Use the `Messaging` decorators for Function names and schemas. Normal Extension registration is
+SDK-managed; product-specific messaging setup remains an explicit AppStore configuration step.

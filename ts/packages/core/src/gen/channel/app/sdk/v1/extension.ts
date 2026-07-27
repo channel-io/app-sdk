@@ -1265,10 +1265,10 @@ export interface CommerceGetOrdersOutput {
 
 export interface CommerceAppCapabilities {
   getOrdersOptions?: OrderOperationOptions | undefined;
-  cancelRequestOrderOptions?: OrderOperationOptions | undefined;
-  returnRequestOrderOptions?: OrderOperationOptions | undefined;
-  returnAcceptOrderOptions?: OrderOperationOptions | undefined;
-  exchangeRequestOrderOptions?: OrderOperationOptions | undefined;
+  requestCancelOrderOptions?: OrderOperationOptions | undefined;
+  requestReturnOrderOptions?: OrderOperationOptions | undefined;
+  acceptReturnOrderOptions?: OrderOperationOptions | undefined;
+  requestExchangeOrderOptions?: OrderOperationOptions | undefined;
   changeShippingAddressOptions?: OrderOperationOptions | undefined;
 }
 
@@ -1309,7 +1309,7 @@ export interface CommerceReturnOrderInput {
   defectInfo?: OrderDefectInfo | undefined;
 }
 
-export interface CommerceReturnAcceptOrderInput {
+export interface CommerceAcceptReturnOrderInput {
   identifier?: CommerceIdentifier | undefined;
   orderId?: string | undefined;
   returnItems?: OrderClaimItem[] | undefined;
@@ -1549,12 +1549,12 @@ export interface WmsOperationOptions_FieldConfigsEntry {
 
 export interface WmsAppCapabilities {
   getOrdersOptions?: WmsOperationOptions | undefined;
-  cancelRequestOrderOptions?: WmsOperationOptions | undefined;
-  cancelRestoreOrderOptions?: WmsOperationOptions | undefined;
-  returnRequestOrderOptions?: WmsOperationOptions | undefined;
-  returnRestoreOrderOptions?: WmsOperationOptions | undefined;
-  exchangeRequestOrderOptions?: WmsOperationOptions | undefined;
-  exchangeRestoreOrderOptions?: WmsOperationOptions | undefined;
+  requestCancelOrderOptions?: WmsOperationOptions | undefined;
+  restoreCanceledOrderOptions?: WmsOperationOptions | undefined;
+  requestReturnOrderOptions?: WmsOperationOptions | undefined;
+  restoreReturnedOrderOptions?: WmsOperationOptions | undefined;
+  requestExchangeOrderOptions?: WmsOperationOptions | undefined;
+  restoreExchangedOrderOptions?: WmsOperationOptions | undefined;
   changeShippingAddressOptions?: WmsOperationOptions | undefined;
 }
 

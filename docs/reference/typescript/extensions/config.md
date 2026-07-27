@@ -2,7 +2,7 @@
 
 Use the config extension when your app needs a layout-aware setup surface that can store plain configuration values, sensitive credentials, or both.
 
-This is the canonical successor to API key-only setup flows. It is designed to cover:
+This is the canonical setup contract for:
 
 - grouped fields and sectioned layouts
 - helper copy and descriptions
@@ -23,12 +23,9 @@ The canonical registration path is:
 
 - `registerExtension("config", "v1")`
 
-Legacy apps may still register `apikey`, but API key registration is deprecated for new apps. AppStore may internally normalize API key registrations into config-backed storage over time.
-
 ## Runtime Expectations
 
 - AppStore resolves stored config into `ctx.config`
-- sensitive values can still be projected into legacy `ctx.apiCredentials` for backward compatibility
 - config setup WAMs should use public native functions for reading, saving, validating, and deleting scoped config values
 - schema `hooks` may reference ordinary app functions such as `draftResolverFunctionName` and `validateFunctionName`
 - these hook targets are ordinary app functions, not additional config extension functions

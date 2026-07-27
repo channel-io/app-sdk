@@ -1,6 +1,6 @@
 {
   "name": "@tutorial-example/server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,8 +10,8 @@
     "lint": "eslint src/"
   },
   "dependencies": {
-    "@channel.io/app-sdk-core": "^0.17.2",
-    "@channel.io/app-sdk-server": "^0.17.2",
+    "@channel.io/app-sdk-core": "workspace:*",
+    "@channel.io/app-sdk-server": "workspace:*",
     "@nestjs/common": "11.1.27",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "11.1.27",

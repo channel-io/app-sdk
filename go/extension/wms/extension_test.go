@@ -161,12 +161,12 @@ func TestCanonicalFunctionSchemasMatchRegistry(t *testing.T) {
 		wms.FunctionRestoreExchangedOrder,
 		wms.FunctionGetAppConfigs,
 		wms.FunctionOrderGetOrders,
-		wms.FunctionOrderCancelRequestOrder,
-		wms.FunctionOrderCancelRestoreOrder,
-		wms.FunctionOrderReturnRequestOrder,
-		wms.FunctionOrderReturnRestoreOrder,
-		wms.FunctionOrderExchangeRequestOrder,
-		wms.FunctionOrderExchangeRestoreOrder,
+		wms.FunctionOrderRequestCancelOrder,
+		wms.FunctionOrderRestoreCanceledOrder,
+		wms.FunctionOrderRequestReturnOrder,
+		wms.FunctionOrderRestoreReturnedOrder,
+		wms.FunctionOrderRequestExchangeOrder,
+		wms.FunctionOrderRestoreExchangedOrder,
 		wms.FunctionOrderChangeShippingAddress,
 	}
 
