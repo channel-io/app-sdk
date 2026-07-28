@@ -2,6 +2,8 @@ package bigquery
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	stderrors "errors"
 	"fmt"
 	"io"
@@ -25,11 +27,13 @@ import (
 )
 
 type Config struct {
-	ProjectID          string
-	CredentialsJSON    string
-	CredentialsEnvVars []string
-	Sources            []SourceConfig
-	Logger             *slog.Logger
+	ProjectID                    string
+	CredentialsJSON              string
+	CredentialsEnvVars           []string
+	Sources                      []SourceConfig
+	BilledBytesWarningThreshold  int64
+	BilledBytesCriticalThreshold int64
+	Logger                       *slog.Logger
 }
 
 type SourceConfig struct {
@@ -40,11 +44,13 @@ type SourceConfig struct {
 }
 
 type Executor struct {
-	bq        *cloudbigquery.Client
-	bqService *bqapi.Service
-	reader    *storage.BigQueryReadClient
-	sources   map[string]SourceConfig
-	logger    *slog.Logger
+	bq                           *cloudbigquery.Client
+	bqService                    *bqapi.Service
+	reader                       *storage.BigQueryReadClient
+	sources                      map[string]SourceConfig
+	logger                       *slog.Logger
+	billedBytesWarningThreshold  int64
+	billedBytesCriticalThreshold int64
 }
 
 type tableRef struct {
@@ -63,6 +69,9 @@ func NewExecutor(ctx context.Context, cfg Config) (*Executor, error) {
 	}
 	if len(cfg.Sources) == 0 {
 		return nil, fmt.Errorf("at least one BigQuery datasource source is required")
+	}
+	if err := validateBillingThresholds(cfg.BilledBytesWarningThreshold, cfg.BilledBytesCriticalThreshold); err != nil {
+		return nil, err
 	}
 
 	opts, err := clientOptions(ctx, cfg)
@@ -86,11 +95,13 @@ func NewExecutor(ctx context.Context, cfg Config) (*Executor, error) {
 	}
 
 	executor := &Executor{
-		bq:        bq,
-		bqService: bqService,
-		reader:    reader,
-		sources:   make(map[string]SourceConfig, len(cfg.Sources)),
-		logger:    cfg.Logger,
+		bq:                           bq,
+		bqService:                    bqService,
+		reader:                       reader,
+		sources:                      make(map[string]SourceConfig, len(cfg.Sources)),
+		logger:                       cfg.Logger,
+		billedBytesWarningThreshold:  cfg.BilledBytesWarningThreshold,
+		billedBytesCriticalThreshold: cfg.BilledBytesCriticalThreshold,
 	}
 	if executor.logger == nil {
 		executor.logger = slog.Default().With("component", "datasource.bigquery")
@@ -150,20 +161,109 @@ func (e *Executor) ExecuteQuery(ctx context.Context, req grpcdatasource.QueryReq
 	if err := status.Err(); err != nil {
 		return classifyUpstreamError(err)
 	}
+	e.logQueryBilling(ctx, job.ID(), job.ProjectID(), job.Location(), req, status)
 
 	destination, err := e.queryDestinationTable(ctx, job.ProjectID(), job.ID(), job.Location())
 	if err != nil {
 		return err
 	}
-	rowCount, bytesScanned, err := e.readTable(ctx, destination, sender)
+	rowCount, resultBytesReadEstimate, err := e.readTable(ctx, destination, sender)
 	if err != nil {
 		return err
 	}
-	e.logger.DebugContext(ctx, "BigQuery datasource query finished", "sourceID", req.SourceID, "rows", rowCount, "bytesScanned", bytesScanned)
+	e.logger.DebugContext(ctx, "BigQuery datasource query result read finished",
+		"source_id", req.SourceID,
+		"rows", rowCount,
+		"result_bytes_read_estimate", resultBytesReadEstimate,
+	)
 	return sender.SendExecutionResult(grpcdatasource.ExecutionResult{
 		RowCount:    rowCount,
 		ExecutionMS: time.Since(startedAt).Milliseconds(),
 	})
+}
+
+type queryBillingStatistics struct {
+	totalBytesProcessed int64
+	totalBytesBilled    int64
+}
+
+func validateBillingThresholds(warning int64, critical int64) error {
+	if warning < 0 {
+		return fmt.Errorf("billed bytes warning threshold must not be negative")
+	}
+	if critical < 0 {
+		return fmt.Errorf("billed bytes critical threshold must not be negative")
+	}
+	if warning > 0 && critical > 0 && warning > critical {
+		return fmt.Errorf("billed bytes warning threshold must not exceed critical threshold")
+	}
+	return nil
+}
+
+func extractQueryBillingStatistics(status *cloudbigquery.JobStatus) (queryBillingStatistics, bool) {
+	if status == nil || status.Statistics == nil {
+		return queryBillingStatistics{}, false
+	}
+	statistics := queryBillingStatistics{
+		totalBytesProcessed: status.Statistics.TotalBytesProcessed,
+	}
+	queryStatistics, ok := status.Statistics.Details.(*cloudbigquery.QueryStatistics)
+	if !ok || queryStatistics == nil {
+		return statistics, false
+	}
+	statistics.totalBytesProcessed = queryStatistics.TotalBytesProcessed
+	statistics.totalBytesBilled = queryStatistics.TotalBytesBilled
+	return statistics, true
+}
+
+func billingLogLevel(totalBytesBilled int64, warning int64, critical int64) (slog.Level, string) {
+	if critical > 0 && totalBytesBilled >= critical {
+		return slog.LevelError, "critical"
+	}
+	if warning > 0 && totalBytesBilled >= warning {
+		return slog.LevelWarn, "warning"
+	}
+	return slog.LevelInfo, "none"
+}
+
+func (e *Executor) logQueryBilling(
+	ctx context.Context,
+	jobID string,
+	jobProjectID string,
+	jobLocation string,
+	req grpcdatasource.QueryRequest,
+	status *cloudbigquery.JobStatus,
+) {
+	statistics, available := extractQueryBillingStatistics(status)
+	level, alertLevel := billingLogLevel(
+		statistics.totalBytesBilled,
+		e.billedBytesWarningThreshold,
+		e.billedBytesCriticalThreshold,
+	)
+	attrs := []slog.Attr{
+		slog.String("job_id", jobID),
+		slog.String("job_project_id", jobProjectID),
+		slog.String("job_location", jobLocation),
+		slog.String("source_id", req.SourceID),
+		slog.String("query_hash", queryHash(req.Query)),
+		slog.Int64("max_bytes_billed", req.ByteLimit),
+		slog.Int64("total_bytes_processed", statistics.totalBytesProcessed),
+		slog.Int64("total_bytes_billed", statistics.totalBytesBilled),
+		slog.Bool("billing_statistics_available", available),
+		slog.String("billing_alert_level", alertLevel),
+	}
+	if identity, ok := grpcdatasource.AccessTokenIdentityFromContext(ctx); ok {
+		attrs = append(attrs,
+			slog.String("app_id", identity.AppID),
+			slog.String("channel_id", identity.ChannelID),
+		)
+	}
+	e.logger.LogAttrs(ctx, level, "BigQuery datasource query billing", attrs...)
+}
+
+func queryHash(query string) string {
+	digest := sha256.Sum256([]byte(query))
+	return hex.EncodeToString(digest[:])
 }
 
 func (e *Executor) Close() error {
