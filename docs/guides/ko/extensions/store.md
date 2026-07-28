@@ -13,6 +13,10 @@ sync 시 profile을 읽어 저장하며, list/detail 요청마다 app Function�
 media key image와 optional alt text, intro(`helpsWith`, `recommendedFor`), FAQ를 포함합니다.
 `profile` wrapper 없이 persisted metadata를 직접 반환합니다.
 
+AppStore는 이미지, intro 필드, 관련 앱을 extension 우선 fallback으로 처리합니다. extension 값이
+비어 있지 않으면 Developer GUI에 read-only로 표시됩니다. FAQ는 예외로 합산합니다. extension
+FAQ를 먼저 read-only로 표시하고, 그 뒤에 Developer GUI FAQ를 추가·수정할 수 있습니다.
+
 ## TypeScript
 
 `@Extension({ name: "store", systemVersion: "v1" })`, `GetStoreProfileInputSchema`,

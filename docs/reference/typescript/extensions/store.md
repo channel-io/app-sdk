@@ -36,7 +36,8 @@ type StoreProfileLocalizedContent = {
 - `images[].alt` is limited to 120 characters.
 - Intro and FAQ answers support the limited Markdown syntax validated by App Store.
 - The SDK output always represents the `extension` source. It never contains Developer GUI values or source wrappers.
-- Use empty arrays or whitespace-only/empty strings when App Store Developer GUI should provide a fallback value. App Store evaluates arrays per locale and intro strings per locale/field.
+- Use empty image/related-app arrays or whitespace-only/empty intro strings when App Store Developer GUI should provide a fallback value. App Store evaluates those fields per locale/field.
+- FAQs are additive rather than fallback-only: App Store shows extension FAQs first and appends Developer GUI FAQs. Extension FAQs remain read-only in the Developer GUI, while developers can add, edit, or remove GUI FAQs.
 
 ## TypeScript Implementation
 

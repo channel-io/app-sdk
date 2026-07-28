@@ -14,6 +14,10 @@ that contain authored content; `ko`, `ja`, and `en` are not pre-created or requi
 contains media-key images with optional alt text, an intro (`helpsWith`, `recommendedFor`), and
 FAQs. Return the persisted metadata directly without a `profile` wrapper.
 
+AppStore treats images, intro fields, and related apps as extension-first fallbacks: a non-empty
+extension value is shown read-only in the Developer GUI. FAQs are additive instead. Extension FAQs
+are shown first and remain read-only, while Developer GUI FAQs can be appended and edited.
+
 ## TypeScript
 
 Use `@Extension({ name: "store", systemVersion: "v1" })` with

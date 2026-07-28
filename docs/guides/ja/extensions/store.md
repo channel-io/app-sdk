@@ -13,6 +13,10 @@ registration/sync 時に profile を読み、list/detail request ごとには ap
 ありません。各 locale は media key image と optional alt text、intro（`helpsWith`、
 `recommendedFor`）、FAQ を含みます。`profile` wrapper なしで persisted metadata を直接返します。
 
+AppStore は image、intro field、related app を extension-first fallback として扱います。
+extension value が空でなければ Developer GUI では read-only です。FAQ は例外として加算され、
+extension FAQ を先に read-only で表示した後、Developer GUI FAQ を追加・編集できます。
+
 ## TypeScript
 
 `@Extension({ name: "store", systemVersion: "v1" })`、`GetStoreProfileInputSchema`、
