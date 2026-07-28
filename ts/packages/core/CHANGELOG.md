@@ -1,5 +1,29 @@
 # @channel.io/app-sdk-core
 
+## 0.18.0
+
+### Minor Changes
+
+- 3cd63f2: Rename commerce and WMS claim functions to verb-first names.
+
+  `extension.commerce.order.cancelRequestOrder`, `returnRequestOrder`, `returnAcceptOrder`, and
+  `exchangeRequestOrder` become `requestCancelOrder`, `requestReturnOrder`, `acceptReturnOrder`, and
+  `requestExchangeOrder`. The WMS order group follows the same rule, and its restore functions become
+  `restoreCanceledOrder`, `restoreReturnedOrder`, and `restoreExchangedOrder`.
+
+  The matching `getAppConfigs` capability fields are renamed the same way (for example
+  `cancelRequestOrderOptions` becomes `requestCancelOrderOptions`), and the
+  `CommerceReturnAcceptOrderInput` proto message becomes `CommerceAcceptReturnOrderInput`. Proto field
+  numbers are unchanged, so binary payloads stay compatible; JSON keys and generated type names change.
+
+  This is a breaking rename. Apps must update their registered function names to match the extension
+  definitions in the app store, otherwise function discovery will not resolve them.
+
+### Patch Changes
+
+- 6dfd90d: Generate a current secure TypeScript starter, add first-class Messaging helpers, and verify WAM UI
+  against Bezier React 4.0.0-next.14.
+
 ## 0.17.2
 
 ## 0.17.1

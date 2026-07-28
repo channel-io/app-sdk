@@ -37,6 +37,9 @@ const (
 
 	CommerceTypeAppCafe24          = "appCafe24"
 	CommerceTypeAppNaverSmartStore = "appNaverSmartStore"
+	// CommerceTypeAppFlexg: commerceKey is the FlexG shop_id verbatim — a single
+	// opaque token (may contain hyphens; no encoding or splitting).
+	CommerceTypeAppFlexg = "appFlexg"
 )
 
 type ShippingInfo = sdkv1.WmsShippingInfo

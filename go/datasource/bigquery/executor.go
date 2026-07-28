@@ -2,6 +2,8 @@ package bigquery
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	stderrors "errors"
 	"fmt"
 	"io"
@@ -15,17 +17,23 @@ import (
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/channel-io/app-sdk/go/datasource"
 	grpcdatasource "github.com/channel-io/app-sdk/go/datasource/grpc"
+	datasourcev1 "github.com/channel-io/app-sdk/go/internal/gen/io/channel/datasource/v1"
 	"golang.org/x/oauth2/google"
 	bqapi "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Config struct {
-	ProjectID          string
-	CredentialsJSON    string
-	CredentialsEnvVars []string
-	Sources            []SourceConfig
-	Logger             *slog.Logger
+	ProjectID                    string
+	CredentialsJSON              string
+	CredentialsEnvVars           []string
+	Sources                      []SourceConfig
+	BilledBytesWarningThreshold  int64
+	BilledBytesCriticalThreshold int64
+	Logger                       *slog.Logger
 }
 
 type SourceConfig struct {
@@ -36,11 +44,13 @@ type SourceConfig struct {
 }
 
 type Executor struct {
-	bq        *cloudbigquery.Client
-	bqService *bqapi.Service
-	reader    *storage.BigQueryReadClient
-	sources   map[string]SourceConfig
-	logger    *slog.Logger
+	bq                           *cloudbigquery.Client
+	bqService                    *bqapi.Service
+	reader                       *storage.BigQueryReadClient
+	sources                      map[string]SourceConfig
+	logger                       *slog.Logger
+	billedBytesWarningThreshold  int64
+	billedBytesCriticalThreshold int64
 }
 
 type tableRef struct {
@@ -59,6 +69,9 @@ func NewExecutor(ctx context.Context, cfg Config) (*Executor, error) {
 	}
 	if len(cfg.Sources) == 0 {
 		return nil, fmt.Errorf("at least one BigQuery datasource source is required")
+	}
+	if err := validateBillingThresholds(cfg.BilledBytesWarningThreshold, cfg.BilledBytesCriticalThreshold); err != nil {
+		return nil, err
 	}
 
 	opts, err := clientOptions(ctx, cfg)
@@ -82,11 +95,13 @@ func NewExecutor(ctx context.Context, cfg Config) (*Executor, error) {
 	}
 
 	executor := &Executor{
-		bq:        bq,
-		bqService: bqService,
-		reader:    reader,
-		sources:   make(map[string]SourceConfig, len(cfg.Sources)),
-		logger:    cfg.Logger,
+		bq:                           bq,
+		bqService:                    bqService,
+		reader:                       reader,
+		sources:                      make(map[string]SourceConfig, len(cfg.Sources)),
+		logger:                       cfg.Logger,
+		billedBytesWarningThreshold:  cfg.BilledBytesWarningThreshold,
+		billedBytesCriticalThreshold: cfg.BilledBytesCriticalThreshold,
 	}
 	if executor.logger == nil {
 		executor.logger = slog.Default().With("component", "datasource.bigquery")
@@ -137,29 +152,118 @@ func (e *Executor) ExecuteQuery(ctx context.Context, req grpcdatasource.QueryReq
 
 	job, err := query.Run(ctx)
 	if err != nil {
-		return err
+		return classifyUpstreamError(err)
 	}
 	status, err := job.Wait(ctx)
 	if err != nil {
-		return err
+		return classifyUpstreamError(err)
 	}
 	if err := status.Err(); err != nil {
-		return err
+		return classifyUpstreamError(err)
 	}
+	e.logQueryBilling(ctx, job.ID(), job.ProjectID(), job.Location(), req, status)
 
 	destination, err := e.queryDestinationTable(ctx, job.ProjectID(), job.ID(), job.Location())
 	if err != nil {
 		return err
 	}
-	rowCount, bytesScanned, err := e.readTable(ctx, destination, sender)
+	rowCount, resultBytesReadEstimate, err := e.readTable(ctx, destination, sender)
 	if err != nil {
 		return err
 	}
-	e.logger.DebugContext(ctx, "BigQuery datasource query finished", "sourceID", req.SourceID, "rows", rowCount, "bytesScanned", bytesScanned)
+	e.logger.DebugContext(ctx, "BigQuery datasource query result read finished",
+		"source_id", req.SourceID,
+		"rows", rowCount,
+		"result_bytes_read_estimate", resultBytesReadEstimate,
+	)
 	return sender.SendExecutionResult(grpcdatasource.ExecutionResult{
 		RowCount:    rowCount,
 		ExecutionMS: time.Since(startedAt).Milliseconds(),
 	})
+}
+
+type queryBillingStatistics struct {
+	totalBytesProcessed int64
+	totalBytesBilled    int64
+}
+
+func validateBillingThresholds(warning int64, critical int64) error {
+	if warning < 0 {
+		return fmt.Errorf("billed bytes warning threshold must not be negative")
+	}
+	if critical < 0 {
+		return fmt.Errorf("billed bytes critical threshold must not be negative")
+	}
+	if warning > 0 && critical > 0 && warning > critical {
+		return fmt.Errorf("billed bytes warning threshold must not exceed critical threshold")
+	}
+	return nil
+}
+
+func extractQueryBillingStatistics(status *cloudbigquery.JobStatus) (queryBillingStatistics, bool) {
+	if status == nil || status.Statistics == nil {
+		return queryBillingStatistics{}, false
+	}
+	statistics := queryBillingStatistics{
+		totalBytesProcessed: status.Statistics.TotalBytesProcessed,
+	}
+	queryStatistics, ok := status.Statistics.Details.(*cloudbigquery.QueryStatistics)
+	if !ok || queryStatistics == nil {
+		return statistics, false
+	}
+	statistics.totalBytesProcessed = queryStatistics.TotalBytesProcessed
+	statistics.totalBytesBilled = queryStatistics.TotalBytesBilled
+	return statistics, true
+}
+
+func billingLogLevel(totalBytesBilled int64, warning int64, critical int64) (slog.Level, string) {
+	if critical > 0 && totalBytesBilled >= critical {
+		return slog.LevelError, "critical"
+	}
+	if warning > 0 && totalBytesBilled >= warning {
+		return slog.LevelWarn, "warning"
+	}
+	return slog.LevelInfo, "none"
+}
+
+func (e *Executor) logQueryBilling(
+	ctx context.Context,
+	jobID string,
+	jobProjectID string,
+	jobLocation string,
+	req grpcdatasource.QueryRequest,
+	status *cloudbigquery.JobStatus,
+) {
+	statistics, available := extractQueryBillingStatistics(status)
+	level, alertLevel := billingLogLevel(
+		statistics.totalBytesBilled,
+		e.billedBytesWarningThreshold,
+		e.billedBytesCriticalThreshold,
+	)
+	attrs := []slog.Attr{
+		slog.String("job_id", jobID),
+		slog.String("job_project_id", jobProjectID),
+		slog.String("job_location", jobLocation),
+		slog.String("source_id", req.SourceID),
+		slog.String("query_hash", queryHash(req.Query)),
+		slog.Int64("max_bytes_billed", req.ByteLimit),
+		slog.Int64("total_bytes_processed", statistics.totalBytesProcessed),
+		slog.Int64("total_bytes_billed", statistics.totalBytesBilled),
+		slog.Bool("billing_statistics_available", available),
+		slog.String("billing_alert_level", alertLevel),
+	}
+	if identity, ok := grpcdatasource.AccessTokenIdentityFromContext(ctx); ok {
+		attrs = append(attrs,
+			slog.String("app_id", identity.AppID),
+			slog.String("channel_id", identity.ChannelID),
+		)
+	}
+	e.logger.LogAttrs(ctx, level, "BigQuery datasource query billing", attrs...)
+}
+
+func queryHash(query string) string {
+	digest := sha256.Sum256([]byte(query))
+	return hex.EncodeToString(digest[:])
 }
 
 func (e *Executor) Close() error {
@@ -185,7 +289,7 @@ func (e *Executor) queryDestinationTable(ctx context.Context, projectID string, 
 	}
 	rawJob, err := call.Do()
 	if err != nil {
-		return tableRef{}, err
+		return tableRef{}, classifyUpstreamError(err)
 	}
 	if rawJob.Configuration == nil || rawJob.Configuration.Query == nil || rawJob.Configuration.Query.DestinationTable == nil {
 		return tableRef{}, fmt.Errorf("bigquery query job destination table is missing")
@@ -211,7 +315,7 @@ func (e *Executor) readTable(ctx context.Context, table tableRef, sender grpcdat
 		MaxStreamCount: 1,
 	})
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, classifyUpstreamError(err)
 	}
 	if schema := session.GetArrowSchema(); schema != nil {
 		if err := sender.SendArrowSchema(schema.GetSerializedSchema()); err != nil {
@@ -223,12 +327,12 @@ func (e *Executor) readTable(ctx context.Context, table tableRef, sender grpcdat
 	for _, stream := range session.GetStreams() {
 		client, err := e.reader.ReadRows(ctx, &storagepb.ReadRowsRequest{ReadStream: stream.GetName()})
 		if err != nil {
-			return rowCount, session.GetEstimatedTotalBytesScanned(), err
+			return rowCount, session.GetEstimatedTotalBytesScanned(), classifyUpstreamError(err)
 		}
 		for {
 			resp, err := client.Recv()
 			if stderrors.Is(err, context.Canceled) || stderrors.Is(err, context.DeadlineExceeded) {
-				return rowCount, session.GetEstimatedTotalBytesScanned(), err
+				return rowCount, session.GetEstimatedTotalBytesScanned(), classifyUpstreamError(err)
 			}
 			if err != nil {
 				if stderrors.Is(err, io.EOF) {
@@ -250,6 +354,87 @@ func (e *Executor) readTable(ctx context.Context, table tableRef, sender grpcdat
 		}
 	}
 	return rowCount, session.GetEstimatedTotalBytesScanned(), nil
+}
+
+func classifyUpstreamError(err error) error {
+	if err == nil || stderrors.Is(err, context.Canceled) || stderrors.Is(err, context.DeadlineExceeded) {
+		return err
+	}
+	if _, ok := grpcdatasource.QueryFailureDetail(err); ok {
+		return err
+	}
+
+	reason, upstreamMessage := bigQueryErrorDetail(err)
+	code, retryable := classifyBigQueryReason(reason)
+	if upstreamMessage == "" {
+		upstreamMessage = err.Error()
+	}
+	return grpcdatasource.QueryFailure(
+		code,
+		err.Error(),
+		err,
+		grpcdatasource.Retryable(retryable),
+		grpcdatasource.Upstream("bigquery", reason, upstreamMessage),
+	)
+}
+
+func bigQueryErrorDetail(err error) (string, string) {
+	var valueErr cloudbigquery.Error
+	if stderrors.As(err, &valueErr) {
+		return valueErr.Reason, valueErr.Message
+	}
+	var pointerErr *cloudbigquery.Error
+	if stderrors.As(err, &pointerErr) && pointerErr != nil {
+		return pointerErr.Reason, pointerErr.Message
+	}
+	var multiErr cloudbigquery.MultiError
+	if stderrors.As(err, &multiErr) {
+		for _, nested := range multiErr {
+			if reason, message := bigQueryErrorDetail(nested); reason != "" || message != "" {
+				return reason, message
+			}
+		}
+	}
+	var apiErr *googleapi.Error
+	if stderrors.As(err, &apiErr) && apiErr != nil {
+		for _, item := range apiErr.Errors {
+			if item.Reason != "" || item.Message != "" {
+				return item.Reason, item.Message
+			}
+		}
+		return fmt.Sprintf("http_%d", apiErr.Code), apiErr.Message
+	}
+	if grpcStatus, ok := status.FromError(err); ok && grpcStatus.Code() != codes.Unknown {
+		return grpcStatus.Code().String(), grpcStatus.Message()
+	}
+	return "", err.Error()
+}
+
+func classifyBigQueryReason(reason string) (datasourcev1.DataSourceErrorCode, bool) {
+	switch reason {
+	case "bytesBilledLimitExceeded":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_LIMIT_EXCEEDED, false
+	case "accessDenied":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_PERMISSION_DENIED, false
+	case "invalidQuery":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_QUERY_INVALID, false
+	case "notFound":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_TABLE_NOT_FOUND, false
+	case "rateLimitExceeded":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_RESOURCE_EXHAUSTED, true
+	case "quotaExceeded", "resourcesExceeded":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_RESOURCE_EXHAUSTED, false
+	case codes.Unavailable.String():
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_UNAVAILABLE, true
+	case codes.ResourceExhausted.String():
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_RESOURCE_EXHAUSTED, true
+	case codes.DeadlineExceeded.String():
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_TIMEOUT, true
+	case "backendError", "internalError", "jobBackendError":
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_EXTERNAL_ERROR, true
+	default:
+		return datasourcev1.DataSourceErrorCode_DATA_SOURCE_ERROR_CODE_EXTERNAL_ERROR, false
+	}
 }
 
 func normalizeSourceConfig(cfg SourceConfig, defaultProjectID string) (SourceConfig, error) {

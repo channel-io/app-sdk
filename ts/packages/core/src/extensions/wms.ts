@@ -145,6 +145,9 @@ export type GetWmsOrderOutput = ProtoBacked<
  *   Producers emit this shape; WMS readers may retain `{mallId}-{shopNo}` compatibility parsing.
  * - Naver SmartStore: `commerceType` is `appNaverSmartStore`, `commerceKey` is
  *   `{encode(accountId)}-{encode(accountUid)}`. Both parts are required.
+ * - FlexG: `commerceType` is `appFlexg`, `commerceKey` is the FlexG shop_id
+ *   verbatim — a single opaque token (may contain hyphens; no encoding or
+ *   splitting).
  *
  * Treat `commerceKey` as a commerce-owned opaque string. If a commerce key has
  * multiple parts, split on unencoded `-` first, then decode each part. Source
