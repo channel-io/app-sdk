@@ -18,6 +18,14 @@ func TestStaticProfilePreservesEmptyExtensionValuesForGUIFallback(t *testing.T) 
 	}
 	profile := &Profile{
 		RelatedAppIds: []string{},
+		Root: &LocalizedContent{
+			Images: []*Image{},
+			Intro: &Intro{
+				HelpsWith:      "Root help",
+				RecommendedFor: "",
+			},
+			Faqs: []*FAQ{},
+		},
 		I18NMap: map[string]*LocalizedContent{
 			"fr": empty,
 		},
@@ -32,5 +40,8 @@ func TestStaticProfilePreservesEmptyExtensionValuesForGUIFallback(t *testing.T) 
 	}
 	if got := response.GetI18NMap()["fr"].GetIntro().GetRecommendedFor(); got != "   " {
 		t.Fatalf("expected whitespace-only fallback marker to be preserved, got %q", got)
+	}
+	if got := response.GetRoot().GetIntro().GetHelpsWith(); got != "Root help" {
+		t.Fatalf("expected root content to be preserved, got %q", got)
 	}
 }

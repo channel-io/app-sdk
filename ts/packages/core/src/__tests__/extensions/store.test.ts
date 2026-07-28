@@ -33,6 +33,18 @@ describe("store extension schemas", () => {
 
     expect(parsed.relatedAppIds).toEqual(["appCafe24"]);
     expect(parsed.i18nMap.en.intro.helpsWith).toContain("shipping");
+    expect(parsed.root).toBeUndefined();
+  });
+
+  it("accepts optional root content without treating it as a locale", () => {
+    const parsed = StoreProfileMetadataSchema.parse({
+      relatedAppIds: [],
+      root: localizedContent,
+      i18nMap: { en: localizedContent },
+    });
+
+    expect(parsed.root?.intro.helpsWith).toContain("shipping");
+    expect(Object.keys(parsed.i18nMap)).toEqual(["en"]);
   });
 
   it("rejects the legacy runtime profile shapes", () => {

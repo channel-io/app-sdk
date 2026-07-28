@@ -8,7 +8,7 @@ operation を実装する Extension ではなく、credential を含めてはい
 `extension.store.metadata.getStoreProfile` が必須です。`store:v1` を登録すると AppStore は
 registration/sync 時に profile を読み、list/detail request ごとには app Function を呼びません。
 
-`relatedAppIds` と、Desk の non-empty locale code を key にする `i18nMap` を返します。実際に
+`relatedAppIds`、optional `root` content、Desk の non-empty locale code を key にする `i18nMap` を返します。root は locale ではありません。実際に
 作成した locale だけを追加し、`ko`、`ja`、`en` を事前に作成したり、すべて埋めたりする必要は
 ありません。各 locale は media key image と optional alt text、intro（`helpsWith`、
 `recommendedFor`）、FAQ を含みます。`profile` wrapper なしで persisted metadata を直接返します。
@@ -16,6 +16,8 @@ registration/sync 時に profile を読み、list/detail request ごとには ap
 AppStore は image、intro field、related app を extension-first fallback として扱います。
 extension value が空でなければ Developer GUI では read-only です。FAQ は例外として加算され、
 extension FAQ を先に read-only で表示した後、Developer GUI FAQ を追加・編集できます。
+Field ごとの locale fallback は、韓国語では `ko → root → en`、英語では `en → root`、その他の
+locale では `locale → en → root` の順です。
 
 ## TypeScript
 

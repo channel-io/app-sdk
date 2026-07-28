@@ -22393,6 +22393,73 @@
             ],
             "additionalProperties": false
           }
+        },
+        "root": {
+          "type": "object",
+          "properties": {
+            "images": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "alt": {
+                    "type": "string",
+                    "maxLength": 120
+                  }
+                },
+                "required": [
+                  "key"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "intro": {
+              "type": "object",
+              "properties": {
+                "helpsWith": {
+                  "type": "string"
+                },
+                "recommendedFor": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "helpsWith",
+                "recommendedFor"
+              ],
+              "additionalProperties": false
+            },
+            "faqs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "question": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "answer": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "question",
+                  "answer"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "images",
+            "intro",
+            "faqs"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
