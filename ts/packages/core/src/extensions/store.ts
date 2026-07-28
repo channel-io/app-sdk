@@ -14,6 +14,12 @@ type ProtoBacked<T, Proto> = T & Proto;
 
 const StoreNonEmptyStringSchema = z.string().trim().min(1);
 const StoreMediaKeySchema = StoreNonEmptyStringSchema;
+const StoreProfileLocaleSchema = z
+  .string()
+  .min(1)
+  .refine((locale) => locale.trim() === locale, {
+    message: "Store profile locale keys must not contain surrounding whitespace.",
+  });
 
 export const StoreProfileImageSchema = z
   .object({
@@ -57,16 +63,16 @@ export type StoreProfileLocalizedContent = ProtoBacked<
   ProtoStoreProfileLocalizedContent
 >;
 
+/**
+ * Metadata supplied by the extension source. Empty localized arrays and intro strings intentionally
+ * leave those fields available for an App Store Developer GUI fallback. Root content is optional
+ * and remains distinct from every authored locale.
+ */
 export const StoreProfileMetadataSchema = z
   .object({
     relatedAppIds: z.array(StoreNonEmptyStringSchema),
-    i18nMap: z
-      .object({
-        ko: StoreProfileLocalizedContentSchema,
-        ja: StoreProfileLocalizedContentSchema,
-        en: StoreProfileLocalizedContentSchema,
-      })
-      .strict(),
+    i18nMap: z.record(StoreProfileLocaleSchema, StoreProfileLocalizedContentSchema),
+    root: StoreProfileLocalizedContentSchema.optional(),
   })
   .strict();
 export type StoreProfileMetadata = ProtoBacked<

@@ -861,6 +861,7 @@ export type StoreGetProfileInputProto = z.infer<typeof StoreGetProfileInputProto
 export const StoreGetProfileOutputProtoSchema = z.object({
   relatedAppIds: z.array(z.string()).optional(),
   i18nMap: z.record(z.string(), z.lazy(() => StoreProfileLocalizedContentProtoSchema)).optional(),
+  root: z.lazy(() => StoreProfileLocalizedContentProtoSchema).optional(),
 }) satisfies z.ZodType<pb.StoreGetProfileOutput>;
 export type StoreGetProfileOutputProto = z.infer<typeof StoreGetProfileOutputProtoSchema>;
 

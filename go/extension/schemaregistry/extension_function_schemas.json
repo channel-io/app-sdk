@@ -22326,213 +22326,138 @@
         },
         "i18nMap": {
           "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "images": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "alt": {
+                      "type": "string",
+                      "maxLength": 120
+                    }
+                  },
+                  "required": [
+                    "key"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "intro": {
+                "type": "object",
+                "properties": {
+                  "helpsWith": {
+                    "type": "string"
+                  },
+                  "recommendedFor": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "helpsWith",
+                  "recommendedFor"
+                ],
+                "additionalProperties": false
+              },
+              "faqs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "question": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "answer": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "question",
+                    "answer"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "images",
+              "intro",
+              "faqs"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "root": {
+          "type": "object",
           "properties": {
-            "ko": {
+            "images": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "alt": {
+                    "type": "string",
+                    "maxLength": 120
+                  }
+                },
+                "required": [
+                  "key"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "intro": {
               "type": "object",
               "properties": {
-                "images": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "alt": {
-                        "type": "string",
-                        "maxLength": 120
-                      }
-                    },
-                    "required": [
-                      "key"
-                    ],
-                    "additionalProperties": false
-                  }
+                "helpsWith": {
+                  "type": "string"
                 },
-                "intro": {
-                  "type": "object",
-                  "properties": {
-                    "helpsWith": {
-                      "type": "string"
-                    },
-                    "recommendedFor": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "helpsWith",
-                    "recommendedFor"
-                  ],
-                  "additionalProperties": false
-                },
-                "faqs": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "question": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "answer": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "question",
-                      "answer"
-                    ],
-                    "additionalProperties": false
-                  }
+                "recommendedFor": {
+                  "type": "string"
                 }
               },
               "required": [
-                "images",
-                "intro",
-                "faqs"
+                "helpsWith",
+                "recommendedFor"
               ],
               "additionalProperties": false
             },
-            "ja": {
-              "type": "object",
-              "properties": {
-                "images": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "alt": {
-                        "type": "string",
-                        "maxLength": 120
-                      }
-                    },
-                    "required": [
-                      "key"
-                    ],
-                    "additionalProperties": false
-                  }
-                },
-                "intro": {
-                  "type": "object",
-                  "properties": {
-                    "helpsWith": {
-                      "type": "string"
-                    },
-                    "recommendedFor": {
-                      "type": "string"
-                    }
+            "faqs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "question": {
+                    "type": "string",
+                    "minLength": 1
                   },
-                  "required": [
-                    "helpsWith",
-                    "recommendedFor"
-                  ],
-                  "additionalProperties": false
-                },
-                "faqs": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "question": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "answer": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "question",
-                      "answer"
-                    ],
-                    "additionalProperties": false
-                  }
-                }
-              },
-              "required": [
-                "images",
-                "intro",
-                "faqs"
-              ],
-              "additionalProperties": false
-            },
-            "en": {
-              "type": "object",
-              "properties": {
-                "images": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "alt": {
-                        "type": "string",
-                        "maxLength": 120
-                      }
-                    },
-                    "required": [
-                      "key"
-                    ],
-                    "additionalProperties": false
+                  "answer": {
+                    "type": "string"
                   }
                 },
-                "intro": {
-                  "type": "object",
-                  "properties": {
-                    "helpsWith": {
-                      "type": "string"
-                    },
-                    "recommendedFor": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "helpsWith",
-                    "recommendedFor"
-                  ],
-                  "additionalProperties": false
-                },
-                "faqs": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "question": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "answer": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "question",
-                      "answer"
-                    ],
-                    "additionalProperties": false
-                  }
-                }
-              },
-              "required": [
-                "images",
-                "intro",
-                "faqs"
-              ],
-              "additionalProperties": false
+                "required": [
+                  "question",
+                  "answer"
+                ],
+                "additionalProperties": false
+              }
             }
           },
           "required": [
-            "ko",
-            "ja",
-            "en"
+            "images",
+            "intro",
+            "faqs"
           ],
           "additionalProperties": false
         }

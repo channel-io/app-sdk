@@ -884,6 +884,7 @@ export interface StoreGetProfileInput {
 export interface StoreGetProfileOutput {
   relatedAppIds?: string[] | undefined;
   i18nMap?: { [key: string]: StoreProfileLocalizedContent } | undefined;
+  root?: StoreProfileLocalizedContent | undefined;
 }
 
 export interface StoreGetProfileOutput_I18nMapEntry {

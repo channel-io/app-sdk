@@ -2,7 +2,7 @@
 
 Use the Store Extension to provide localized App Store introduction metadata without hardcoding app-specific copy in App Store.
 
-App Store calls the metadata function during registration or re-registration, validates the result, and persists it. App Store reads the stored effective profile for list and detail queries; it does not call the app function for every customer-facing read.
+App Store calls the metadata function during registration or re-registration, validates the result, and persists it as the `extension` source. App Store combines it with any Developer GUI fallback when serving list and detail queries; it does not call the app function for every customer-facing read.
 
 ## Required Function
 
@@ -17,11 +17,8 @@ The function returns the persisted metadata directly. Do not wrap it in a `profi
 ```typescript
 type StoreProfileMetadata = {
   relatedAppIds: string[];
-  i18nMap: {
-    ko: StoreProfileLocalizedContent;
-    ja: StoreProfileLocalizedContent;
-    en: StoreProfileLocalizedContent;
-  };
+  root?: StoreProfileLocalizedContent;
+  i18nMap: Record<string, StoreProfileLocalizedContent>;
 };
 
 type StoreProfileLocalizedContent = {
@@ -35,10 +32,15 @@ type StoreProfileLocalizedContent = {
 ```
 
 - `relatedAppIds` lists apps that work with this app.
+- `root` is optional default content. It is not a locale and is never copied into `i18nMap`.
+- `i18nMap` accepts every non-empty locale code exposed by Desk. Add only locales that have authored content; `ko`, `ja`, and `en` are not pre-created or required.
 - `images[].key` is the opaque relative key returned by the App Store media upload API. Do not assume a storage prefix or pass an external URL.
 - `images[].alt` is limited to 120 characters.
 - Intro and FAQ answers support the limited Markdown syntax validated by App Store.
-- Use empty arrays or empty strings when App Store Developer GUI should provide a fallback value.
+- The SDK output always represents the `extension` source. It never contains Developer GUI values or source wrappers.
+- Use empty image/related-app arrays or whitespace-only/empty intro strings when App Store Developer GUI should provide a fallback value. App Store evaluates those fields per locale/field.
+- FAQs are additive rather than fallback-only: App Store shows extension FAQs first and appends Developer GUI FAQs. Extension FAQs remain read-only in the Developer GUI, while developers can add, edit, or remove GUI FAQs.
+- App Store resolves each field as `ko → root → en` for Korean, `en → root` for English, and `locale → en → root` for every other locale.
 
 ## TypeScript Implementation
 
@@ -70,9 +72,8 @@ export class MyStoreExtension implements StoreExtensionInterface {
 
     return {
       relatedAppIds: [],
+      root: localizedContent,
       i18nMap: {
-        ko: localizedContent,
-        ja: localizedContent,
         en: localizedContent,
       },
     };

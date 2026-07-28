@@ -766,6 +766,7 @@ message StoreGetProfileInput {}
 message StoreGetProfileOutput {
   repeated string related_app_ids = 1;
   map<string, StoreProfileLocalizedContent> i18n_map = 2;
+  StoreProfileLocalizedContent root = 3;
 }
 
 message NotebookCell {
