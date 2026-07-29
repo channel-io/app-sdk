@@ -1,11 +1,12 @@
 # Polling Extension
 
-Use polling when AppStore should schedule repeated channel-scoped app functions. AppStore owns scheduling and queueing; the app owns target discovery and poller logic.
+Use polling when AppStore should schedule repeated channel- or manager-scoped app functions. AppStore owns scheduling and queueing; the app owns target discovery and poller logic.
 
 Required functions:
 
 - `extension.polling.metadata.getPollers`
-- `extension.polling.target.getChannels`
+- `extension.polling.target.getChannels` for channel-scoped pollers
+- `extension.polling.target.getManagers` for manager-scoped pollers
 
 ```ts
 import { z } from "zod";
@@ -17,6 +18,8 @@ import {
   GetPollersOutputSchema,
   GetPollingTargetChannelsInputSchema,
   GetPollingTargetChannelsOutputSchema,
+  GetPollingTargetManagersInputSchema,
+  GetPollingTargetManagersOutputSchema,
   Input,
   InputSchema,
   OutputSchema,
@@ -36,9 +39,24 @@ export class PollingExtension {
           timeoutSeconds: 30,
           maxConcurrency: 5,
           rps: 1,
+          executionScope: "channel",
+        },
+        {
+          functionName: "extension.polling.poller.pollCalendars",
+          intervalSeconds: 3600,
+          executionScope: "manager",
         },
       ],
     };
+  }
+
+  @Func("target.getManagers")
+  @InputSchema(GetPollingTargetManagersInputSchema)
+  @OutputSchema(GetPollingTargetManagersOutputSchema)
+  async getManagers(
+    @Input() input: z.infer<typeof GetPollingTargetManagersInputSchema>,
+  ) {
+    return listConnectedManagers(input);
   }
 
   @Func("target.getChannels")
@@ -57,6 +75,14 @@ export class PollingExtension {
     await pollExternalBoard(ctx.channel.id);
     return {};
   }
+
+  @Func("poller.pollCalendars")
+  @InputSchema(z.object({}))
+  @OutputSchema(z.object({}))
+  async pollCalendars(@Ctx() ctx: Context) {
+    await pollProviderCalendar(ctx.channel.id, ctx.caller.id);
+    return {};
+  }
 }
 ```
 
@@ -64,12 +90,15 @@ export class PollingExtension {
 
 | Field             | Required | Description                                    |
 | ----------------- | -------- | ---------------------------------------------- |
-| `functionName`    | Yes      | Full function name called with channel context |
+| `functionName`    | Yes      | Full function name called with scoped context  |
 | `intervalSeconds` | Yes      | Run creation interval                          |
 | `timeoutSeconds`  | No       | Per-call timeout; default `30`                 |
 | `maxConcurrency`  | No       | Per-worker in-flight limit; default `5`        |
 | `rps`             | No       | Per-worker rate limit; default `1`             |
+| `executionScope`  | No       | `channel` (default) or `manager`                |
 
-The target resolver receives `functionName`, optional `cursor`, and `limit` (maximum 500). Return `channelIds`, optional `nextCursor`, and optional `hasNextPage`. If `hasNextPage` is true, `nextCursor` is required.
+Both target resolvers receive `functionName`, optional `cursor`, and `limit` (maximum 500). `getChannels` returns `channelIds`; `getManagers` returns `targets` containing `{ channelId, managerId }`. Each manager target counts toward `limit`, so the app pages targets directly instead of asking AppStore to fan out channel credentials. If `hasNextPage` is true, `nextCursor` is required.
 
-Enable `autoRegister` for the decorated class. AppStore reads poller metadata during `registerExtension("polling", "v1")` and requires the target resolver.
+Manager-scoped pollers run with the target manager as caller. The existing AppStore function-call path uses that caller to hydrate manager OAuth, API key, and manager config; polling itself is not coupled to OAuth.
+
+Enable `autoRegister` for the decorated class. AppStore reads poller metadata during `registerExtension("polling", "v1")` and requires the resolver for every declared execution scope.

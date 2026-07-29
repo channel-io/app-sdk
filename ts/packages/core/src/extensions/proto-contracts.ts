@@ -138,6 +138,9 @@ import type {
   PollingGetPollersOutput as ProtoPollingGetPollersOutput,
   PollingGetTargetChannelsInput as ProtoPollingGetTargetChannelsInput,
   PollingGetTargetChannelsOutput as ProtoPollingGetTargetChannelsOutput,
+  PollingGetTargetManagersInput as ProtoPollingGetTargetManagersInput,
+  PollingGetTargetManagersOutput as ProtoPollingGetTargetManagersOutput,
+  PollingManagerTarget as ProtoPollingManagerTarget,
   PollingPoller as ProtoPollingPoller,
   StoreFaq as ProtoStoreFaq,
   StoreGetProfileInput as ProtoStoreGetProfileInput,
@@ -797,6 +800,24 @@ export type ExtensionProtoSchemaContracts = [
     SchemaOutputExtendsProto<
       typeof PollingSchemas.GetPollingTargetChannelsOutputSchema,
       ProtoPollingGetTargetChannelsOutput
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof PollingSchemas.PollingManagerTargetSchema,
+      ProtoPollingManagerTarget
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof PollingSchemas.GetPollingTargetManagersInputSchema,
+      ProtoPollingGetTargetManagersInput
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof PollingSchemas.GetPollingTargetManagersOutputSchema,
+      ProtoPollingGetTargetManagersOutput
     >
   >,
 

@@ -111,7 +111,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 
 	use(t, app, polling.Extension().
 		GetPollers(zero[polling.GetPollersRequest, polling.GetPollersResponse]()).
-		GetChannels(zero[polling.GetChannelsRequest, polling.GetChannelsResponse]()))
+		GetChannels(zero[polling.GetChannelsRequest, polling.GetChannelsResponse]()).
+		GetManagers(zero[polling.GetManagersRequest, polling.GetManagersResponse]()))
 
 	use(t, app, store.Extension().
 		GetStoreProfile(zero[store.GetStoreProfileRequest, store.GetStoreProfileResponse]()))
@@ -145,8 +146,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	got := app.Schemas()
 	want := schemaregistry.Schemas()
 
-	if len(got) != 76 {
-		t.Fatalf("expected 76 registered extension function schemas, got %d", len(got))
+	if len(got) != 77 {
+		t.Fatalf("expected 77 registered extension function schemas, got %d", len(got))
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("registered extension function schemas drifted from canonical registry")

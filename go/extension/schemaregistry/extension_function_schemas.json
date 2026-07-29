@@ -22238,6 +22238,13 @@
               "rps": {
                 "type": "integer",
                 "minimum": 1
+              },
+              "executionScope": {
+                "type": "string",
+                "enum": [
+                  "channel",
+                  "manager"
+                ]
               }
             },
             "required": [
@@ -22301,6 +22308,71 @@
       },
       "required": [
         "channelIds"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  },
+  {
+    "name": "extension.polling.target.getManagers",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "functionName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        }
+      },
+      "required": [
+        "functionName",
+        "limit"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "channelId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "managerId": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "channelId",
+              "managerId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "nextCursor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hasNextPage": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "targets"
       ],
       "additionalProperties": false,
       "$schema": "http://json-schema.org/draft-07/schema#"

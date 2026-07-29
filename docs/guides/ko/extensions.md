@@ -256,10 +256,10 @@ replay 방지, secret rotation이 필요합니다.
 
 ## Polling
 
-`extension.polling.metadata.getPollers`가 schedule poller를 선언합니다. `target.getChannels` 같은
-target resolver가 설치 채널을 page 단위로 반환하고 각 poller는 호출할 전체 Function 이름을
-지정합니다. Cursor를 영구 저장하고 retry를 idempotent하게 만들며 batch 크기와 실행 시간을
-제한하고 부분 실패를 테스트하세요.
+`extension.polling.metadata.getPollers`가 schedule poller를 선언합니다. Scope별 resolver가 channel
+target(`target.getChannels`) 또는 channel/manager target(`target.getManagers`)을 page 단위로 반환하고
+각 poller는 호출할 전체 Function 이름을 지정합니다. Cursor를 영구 저장하고 retry를 idempotent하게
+만들며 batch 크기와 실행 시간을 제한하고 부분 실패를 테스트하세요.
 
 [Polling 상세](extensions/polling.md)
 

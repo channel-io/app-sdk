@@ -64,6 +64,8 @@ import {
   GetNotebooksResponseSchema,
   GetPollingTargetChannelsInputSchema,
   GetPollingTargetChannelsOutputSchema,
+  GetPollingTargetManagersInputSchema,
+  GetPollingTargetManagersOutputSchema,
   GetPollersOutputSchema,
   GetStoreProfileInputSchema,
   GetWidgetsOutputSchema,
@@ -132,6 +134,7 @@ import {
   NotebookPayloadSchema,
   NotebookTabSchema,
   PollingPollerSchema,
+  PollingManagerTargetSchema,
   PrebuiltBuildMediumTopicsInputSchema,
   PrebuiltBuildMediumTopicsOutputSchema,
   PrebuiltGetCustomEditorWamInputSchema,
@@ -371,6 +374,19 @@ const contracts: Contract[] = [
     GetPollingTargetChannelsOutputSchema,
     "extension",
     "PollingGetTargetChannelsOutput"
+  ),
+  contract("PollingManagerTarget", PollingManagerTargetSchema, "extension", "PollingManagerTarget"),
+  contract(
+    "GetPollingTargetManagersInput",
+    GetPollingTargetManagersInputSchema,
+    "extension",
+    "PollingGetTargetManagersInput"
+  ),
+  contract(
+    "GetPollingTargetManagersOutput",
+    GetPollingTargetManagersOutputSchema,
+    "extension",
+    "PollingGetTargetManagersOutput"
   ),
 
   contract("MailRelayHeader", MailRelayHeaderSchema, "extension", "MailRelayHeader"),

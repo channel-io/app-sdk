@@ -82,6 +82,8 @@ import {
   GetPollersOutputSchema,
   GetPollingTargetChannelsInputSchema,
   GetPollingTargetChannelsOutputSchema,
+  GetPollingTargetManagersInputSchema,
+  GetPollingTargetManagersOutputSchema,
 } from "./polling.js";
 import { GetStoreProfileInputSchema, GetStoreProfileOutputSchema } from "./store.js";
 import { WidgetActionResultSchema, GetWidgetsOutputSchema } from "./widget.js";
@@ -546,6 +548,11 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     name: "extension.polling.target.getChannels",
     input: GetPollingTargetChannelsInputSchema,
     output: GetPollingTargetChannelsOutputSchema,
+  },
+  {
+    name: "extension.polling.target.getManagers",
+    input: GetPollingTargetManagersInputSchema,
+    output: GetPollingTargetManagersOutputSchema,
   },
   {
     name: "extension.store.metadata.getStoreProfile",
