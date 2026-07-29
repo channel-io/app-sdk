@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.18.1
+
+### Patch Changes
+
+- 6f0574d: Add manager-scoped polling metadata, target schemas, and function helpers.
+
 ## 0.18.0
 
 ### Minor Changes
