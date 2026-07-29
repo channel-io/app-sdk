@@ -26,7 +26,7 @@ describe("extension function schema parity fixture", () => {
     const names = extensionFunctionSchemaDefinitions.map((definition) => definition.name);
     const uniqueNames = new Set(names);
 
-    expect(names).toHaveLength(76);
+    expect(names).toHaveLength(77);
     expect(uniqueNames.size).toBe(names.length);
     expect([...names].sort()).toEqual(names);
   });
@@ -52,7 +52,7 @@ describe("extension function schema parity fixture", () => {
       notebook: 1,
       oauth: 2,
       order: 7,
-      polling: 2,
+      polling: 3,
       store: 1,
       widget: 2,
       wms: 20,

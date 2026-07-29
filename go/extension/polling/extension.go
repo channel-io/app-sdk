@@ -15,6 +15,10 @@ const (
 
 	FunctionGetPollers  = "extension.polling.metadata.getPollers"
 	FunctionGetChannels = "extension.polling.target.getChannels"
+	FunctionGetManagers = "extension.polling.target.getManagers"
+
+	ExecutionScopeChannel = "channel"
+	ExecutionScopeManager = "manager"
 )
 
 type ExtensionBuilder struct {
@@ -32,6 +36,11 @@ func (b *ExtensionBuilder) GetPollers(handler appsdk.TypedHandlerFunc[GetPollers
 
 func (b *ExtensionBuilder) GetChannels(handler appsdk.TypedHandlerFunc[GetChannelsRequest, GetChannelsResponse]) *ExtensionBuilder {
 	b.base.Func(FunctionGetChannels, schemaregistry.Append(FunctionGetChannels, appsdk.HandleProto(handler))...)
+	return b
+}
+
+func (b *ExtensionBuilder) GetManagers(handler appsdk.TypedHandlerFunc[GetManagersRequest, GetManagersResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionGetManagers, schemaregistry.Append(FunctionGetManagers, appsdk.HandleProto(handler))...)
 	return b
 }
 
@@ -60,3 +69,6 @@ type GetPollersResponse = sdkv1.PollingGetPollersOutput
 type Poller = sdkv1.PollingPoller
 type GetChannelsRequest = sdkv1.PollingGetTargetChannelsInput
 type GetChannelsResponse = sdkv1.PollingGetTargetChannelsOutput
+type ManagerTarget = sdkv1.PollingManagerTarget
+type GetManagersRequest = sdkv1.PollingGetTargetManagersInput
+type GetManagersResponse = sdkv1.PollingGetTargetManagersOutput

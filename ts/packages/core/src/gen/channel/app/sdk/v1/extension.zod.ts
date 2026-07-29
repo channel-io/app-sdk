@@ -750,6 +750,7 @@ export const PollingPollerProtoSchema = z.object({
   timeoutSeconds: z.number().int().optional(),
   maxConcurrency: z.number().int().optional(),
   rps: z.number().int().optional(),
+  executionScope: z.string().optional(),
 }) satisfies z.ZodType<pb.PollingPoller>;
 export type PollingPollerProto = z.infer<typeof PollingPollerProtoSchema>;
 
@@ -1791,3 +1792,23 @@ export const OAuthTokenResponseMappingProtoSchema = z.object({
   refreshTokenExpiresInPath: z.string().optional(),
 }) satisfies z.ZodType<pb.OAuthTokenResponseMapping>;
 export type OAuthTokenResponseMappingProto = z.infer<typeof OAuthTokenResponseMappingProtoSchema>;
+
+export const PollingManagerTargetProtoSchema = z.object({
+  channelId: z.string().optional(),
+  managerId: z.string().optional(),
+}) satisfies z.ZodType<pb.PollingManagerTarget>;
+export type PollingManagerTargetProto = z.infer<typeof PollingManagerTargetProtoSchema>;
+
+export const PollingGetTargetManagersInputProtoSchema = z.object({
+  functionName: z.string().optional(),
+  cursor: z.string().optional(),
+  limit: z.number().int().optional(),
+}) satisfies z.ZodType<pb.PollingGetTargetManagersInput>;
+export type PollingGetTargetManagersInputProto = z.infer<typeof PollingGetTargetManagersInputProtoSchema>;
+
+export const PollingGetTargetManagersOutputProtoSchema = z.object({
+  targets: z.array(z.lazy(() => PollingManagerTargetProtoSchema)).optional(),
+  nextCursor: z.string().optional(),
+  hasNextPage: z.boolean().optional(),
+}) satisfies z.ZodType<pb.PollingGetTargetManagersOutput>;
+export type PollingGetTargetManagersOutputProto = z.infer<typeof PollingGetTargetManagersOutputProtoSchema>;

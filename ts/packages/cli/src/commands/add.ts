@@ -350,6 +350,7 @@ export const pollingExtension = createExtension({
               timeoutSeconds: 30,
               maxConcurrency: 5,
               rps: 1,
+              executionScope: "channel",
             },
           ],
         }),

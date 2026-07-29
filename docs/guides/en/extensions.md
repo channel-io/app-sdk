@@ -263,9 +263,10 @@ asynchronously. Public `webhook.received` targets require a public `targetId`, a
 
 ## Polling
 
-`extension.polling.metadata.getPollers` declares scheduled pollers. A target resolver such as
-`target.getChannels` pages through installed channels, and each poller names a full Function to
-invoke. Store cursors durably, make retries idempotent, bound each batch, and test partial failure.
+`extension.polling.metadata.getPollers` declares scheduled pollers. Scope-specific resolvers page
+through channel targets (`target.getChannels`) or channel/manager targets (`target.getManagers`),
+and each poller names a full Function to invoke. Store cursors durably, make retries idempotent,
+bound each batch, and test partial failure.
 
 [Polling recipe](extensions/polling.md)
 

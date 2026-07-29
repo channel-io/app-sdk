@@ -10,6 +10,8 @@ import {
   GetPollersOutputSchema,
   GetPollingTargetChannelsInputSchema,
   GetPollingTargetChannelsOutputSchema,
+  GetPollingTargetManagersInputSchema,
+  GetPollingTargetManagersOutputSchema,
 } from "../../extensions/index.js";
 
 describe("widget metadata schema", () => {
@@ -178,12 +180,24 @@ describe("polling metadata schema", () => {
       timeoutSeconds: 30,
       maxConcurrency: 5,
       rps: 1,
+      executionScope: "manager",
     });
 
     expect(parsed).toMatchObject({
       functionName: "extension.polling.poller.pollQnAs",
       intervalSeconds: 900,
+      executionScope: "manager",
     });
+  });
+
+  it("rejects unknown polling execution scopes", () => {
+    expect(() =>
+      PollingPollerSchema.parse({
+        functionName: "extension.polling.poller.pollQnAs",
+        intervalSeconds: 900,
+        executionScope: "workspace",
+      })
+    ).toThrow();
   });
 
   it("rejects invalid polling handler limits", () => {
@@ -238,6 +252,40 @@ describe("polling metadata schema", () => {
     expect(() =>
       GetPollingTargetChannelsOutputSchema.parse({
         channelIds: ["channel-2"],
+        hasNextPage: true,
+      })
+    ).toThrow();
+  });
+
+  it("accepts manager target paging input and output", () => {
+    expect(
+      GetPollingTargetManagersInputSchema.parse({
+        functionName: "extension.polling.poller.pollCalendars",
+        limit: 200,
+      })
+    ).toEqual({
+      functionName: "extension.polling.poller.pollCalendars",
+      limit: 200,
+    });
+
+    expect(
+      GetPollingTargetManagersOutputSchema.parse({
+        targets: [{ channelId: "channel-1", managerId: "manager-1" }],
+      })
+    ).toEqual({
+      targets: [{ channelId: "channel-1", managerId: "manager-1" }],
+    });
+  });
+
+  it("rejects manager target responses with empty IDs or a missing next cursor", () => {
+    expect(() =>
+      GetPollingTargetManagersOutputSchema.parse({
+        targets: [{ channelId: "channel-1", managerId: "" }],
+      })
+    ).toThrow();
+    expect(() =>
+      GetPollingTargetManagersOutputSchema.parse({
+        targets: [],
         hasNextPage: true,
       })
     ).toThrow();

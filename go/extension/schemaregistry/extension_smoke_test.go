@@ -270,11 +270,13 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 		functions: []string{
 			polling.FunctionGetPollers,
 			polling.FunctionGetChannels,
+			polling.FunctionGetManagers,
 		},
 		build: func() appsdk.Extension {
 			return polling.Extension().
 				GetPollers(smokeZero[polling.GetPollersRequest, polling.GetPollersResponse]()).
-				GetChannels(smokeZero[polling.GetChannelsRequest, polling.GetChannelsResponse]())
+				GetChannels(smokeZero[polling.GetChannelsRequest, polling.GetChannelsResponse]()).
+				GetManagers(smokeZero[polling.GetManagersRequest, polling.GetManagersResponse]())
 		},
 	},
 	{

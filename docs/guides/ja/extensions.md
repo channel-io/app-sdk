@@ -263,10 +263,10 @@ payload validation、replay protection、secret rotation が必要です。
 
 ## Polling
 
-`extension.polling.metadata.getPollers` が scheduled poller を宣言します。
-`target.getChannels` のような target resolver が install 済み channel を page 単位で返し、各
-poller は呼び出す full Function name を指定します。Cursor を永続化し、retry を idempotent にし、
-batch size と実行時間を制限して partial failure を test してください。
+`extension.polling.metadata.getPollers` が scheduled poller を宣言します。Scope ごとの resolver が
+channel target（`target.getChannels`）または channel/manager target（`target.getManagers`）を page
+単位で返し、各 poller は呼び出す full Function name を指定します。Cursor を永続化し、retry を
+idempotent にし、batch size と実行時間を制限して partial failure を test してください。
 
 [Polling 詳細](extensions/polling.md)
 

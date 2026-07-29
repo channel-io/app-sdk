@@ -787,6 +787,7 @@ export interface PollingPoller {
   timeoutSeconds?: number | undefined;
   maxConcurrency?: number | undefined;
   rps?: number | undefined;
+  executionScope?: string | undefined;
 }
 
 export interface PollingGetPollersInput {
@@ -1717,4 +1718,22 @@ export interface OAuthTokenResponseMapping {
   expiresInPath?: string | undefined;
   tokenTypePath?: string | undefined;
   refreshTokenExpiresInPath?: string | undefined;
+}
+
+/** Manager-scoped polling target contracts. */
+export interface PollingManagerTarget {
+  channelId?: string | undefined;
+  managerId?: string | undefined;
+}
+
+export interface PollingGetTargetManagersInput {
+  functionName?: string | undefined;
+  cursor?: string | undefined;
+  limit?: number | undefined;
+}
+
+export interface PollingGetTargetManagersOutput {
+  targets?: PollingManagerTarget[] | undefined;
+  nextCursor?: string | undefined;
+  hasNextPage?: boolean | undefined;
 }

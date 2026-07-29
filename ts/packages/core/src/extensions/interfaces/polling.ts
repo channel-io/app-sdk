@@ -2,6 +2,8 @@ import type { Context } from "../../types/context.js";
 import type { PollingGetPollersInput as ProtoGetPollersInput } from "../../gen/channel/app/sdk/v1/extension.js";
 import type {
   GetPollersOutput,
+  GetPollingTargetManagersInput,
+  GetPollingTargetManagersOutput,
   GetPollingTargetChannelsInput,
   GetPollingTargetChannelsOutput,
 } from "../polling.js";
@@ -35,6 +37,12 @@ export type GetPollersInput = ProtoGetPollersInput;
  *           timeoutSeconds: 30,
  *           maxConcurrency: 5,
  *           rps: 1,
+ *           executionScope: "channel",
+ *         },
+ *         {
+ *           functionName: "extension.polling.poller.pollCalendars",
+ *           intervalSeconds: 3600,
+ *           executionScope: "manager",
  *         },
  *       ],
  *     };
@@ -46,6 +54,14 @@ export type GetPollersInput = ProtoGetPollersInput;
  *     params: GetPollingTargetChannelsInput
  *   ): Promise<GetPollingTargetChannelsOutput> {
  *     return { channelIds: [], nextCursor: undefined };
+ *   }
+ *
+ *   @Func("target.getManagers")
+ *   async getManagers(
+ *     ctx: Context,
+ *     params: GetPollingTargetManagersInput
+ *   ): Promise<GetPollingTargetManagersOutput> {
+ *     return { targets: [], nextCursor: undefined };
  *   }
  * }
  * ```
@@ -63,10 +79,20 @@ export interface PollingExtensionInterface {
    *
    * Function name: "target.getChannels"
    */
-  getChannels(
+  getChannels?(
     ctx: Context,
     params: GetPollingTargetChannelsInput
   ): Promise<GetPollingTargetChannelsOutput>;
+
+  /**
+   * Return the target channel/manager page for a manager-scoped polling handler.
+   *
+   * Function name: "target.getManagers"
+   */
+  getManagers?(
+    ctx: Context,
+    params: GetPollingTargetManagersInput
+  ): Promise<GetPollingTargetManagersOutput>;
 }
 
 /**
@@ -75,4 +101,5 @@ export interface PollingExtensionInterface {
 export const PollingFunctionNames = {
   getPollers: "metadata.getPollers",
   getChannels: "target.getChannels",
+  getManagers: "target.getManagers",
 } as const;

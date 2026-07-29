@@ -197,13 +197,20 @@ export {
 // Polling Extension Schemas (v1)
 export {
   PollingPollerSchema,
+  PollingExecutionScopeSchema,
   GetPollersOutputSchema,
   GetPollingTargetChannelsInputSchema,
   GetPollingTargetChannelsOutputSchema,
+  PollingManagerTargetSchema,
+  GetPollingTargetManagersInputSchema,
+  GetPollingTargetManagersOutputSchema,
   type PollingPoller,
   type GetPollersOutput,
   type GetPollingTargetChannelsInput,
   type GetPollingTargetChannelsOutput,
+  type PollingManagerTarget,
+  type GetPollingTargetManagersInput,
+  type GetPollingTargetManagersOutput,
 } from "./polling.js";
 
 // Store Extension Schemas (v1)
