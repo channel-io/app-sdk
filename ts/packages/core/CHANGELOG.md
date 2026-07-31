@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.18.2
+
+### Patch Changes
+
+- f00ae2b: Add optional datasource query authorization schemas, types, and registration helpers.
+
 ## 0.18.1
 
 ### Patch Changes
