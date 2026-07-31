@@ -1,5 +1,7 @@
 import type { Context } from "../../types/context.js";
 import type {
+  AuthorizeQueryInput,
+  AuthorizeQueryOutput,
   DescribeTableInput,
   DescribeTableOutput,
   ListCatalogsInput,
@@ -24,6 +26,10 @@ export type {
   ListTablesInput,
   ListTablesOutput,
   SearchedTable,
+  AuthorizeQueryInput,
+  AuthorizeQueryOutput,
+  DataSourceQueryFilter,
+  DataSourceQueryTableAccess,
 } from "../datasource.js";
 
 export interface DataSourceExtensionInterface {
@@ -47,10 +53,19 @@ export interface DataSourceExtensionInterface {
    * Function name: "catalog.describeTable"
    */
   describeTable(ctx: Context, params: DescribeTableInput): Promise<DescribeTableOutput>;
+
+  /**
+   * Optionally authorize an actual datasource query from its canonical table/column access plan.
+   * Raw SQL is never included in params.
+   *
+   * Function name: "query.authorizeQuery"
+   */
+  authorizeQuery?(ctx: Context, params: AuthorizeQueryInput): Promise<AuthorizeQueryOutput>;
 }
 
 export const DataSourceFunctionNames = {
   listCatalogs: "catalog.listCatalogs",
   listTables: "catalog.listTables",
   describeTable: "catalog.describeTable",
+  authorizeQuery: "query.authorizeQuery",
 } as const;

@@ -38,6 +38,7 @@ const allowedTsHelperTypes = new Set([
   "CreateDataSourceIngestionEventRowInput",
   "DataSourceIngestionEventRow",
   "DataSourceMetadataProvider",
+  "DataSourceQueryAuthorizer",
   "MessagingExtensionProvider",
   "MessagingHandler",
   "MessagingInboxProvider",
@@ -59,7 +60,7 @@ const allowedGoHelpers = new Set([
   "Metadata",
   "Option",
 ]);
-const allowedGoInterfaces = new Set(["Provider"]);
+const allowedGoInterfaces = new Set(["Provider", "QueryAuthorizer"]);
 
 checkTypeScriptExtensionTypes();
 checkTypeScriptCoreDTOs();

@@ -188,6 +188,7 @@ Datasource metadata is served through JSON-RPC extension functions:
 - `extension.datasource.catalog.listCatalogs`
 - `extension.datasource.catalog.listTables`
 - `extension.datasource.catalog.describeTable`
+- optional `extension.datasource.query.authorizeQuery`
 
 Query execution is not a JSON-RPC function. Implement
 `io.channel.datasource.v1.DataSourceService.ExecuteQuery` with
@@ -219,6 +220,33 @@ app.Use(datasource.StaticMetadata(datasource.Metadata{
   },
 }))
 ```
+
+Add query authorization only when the app needs dynamic row scope:
+
+```go
+app.Use(datasource.StaticMetadata(metadata).
+  AuthorizeQuery(func(ctx context.Context, fnCtx appsdk.Context, input *datasource.AuthorizeQueryInput) (*datasource.AuthorizeQueryOutput, error) {
+    scopeKeys, err := loadQueryEntitlements(ctx, fnCtx.Channel.ID, input.GetTables())
+    if err != nil {
+      return nil, err
+    }
+    return &datasource.AuthorizeQueryOutput{
+      Authorized: true,
+      Filters: []*datasource.QueryFilter{
+        {Table: "orders", Column: "scope_key", Values: scopeKeys},
+      },
+    }, nil
+  }))
+```
+
+`AuthorizeQuery` is optional and is registered only when the builder method is
+used, or when `FromProvider` receives a provider that also implements
+`QueryAuthorizer`. AppStore calls it once immediately before an actual query,
+passes canonical table/column access metadata instead of raw SQL, and rewrites
+the query from structured string allow-list filters. Empty values yield zero
+rows. The call has a 2-second timeout, no retry or cache, and fails closed. Keep
+the handler read-only, do not log filter values, and do not recursively call the
+same datasource query path.
 
 Set `ManagerAccess` to `datasource.ManagerAccessOwner` when only channel
 Owner-role managers may discover, describe, or query a table. Use

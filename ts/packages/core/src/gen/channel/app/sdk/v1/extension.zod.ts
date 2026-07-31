@@ -1812,3 +1812,28 @@ export const PollingGetTargetManagersOutputProtoSchema = z.object({
   hasNextPage: z.boolean().optional(),
 }) satisfies z.ZodType<pb.PollingGetTargetManagersOutput>;
 export type PollingGetTargetManagersOutputProto = z.infer<typeof PollingGetTargetManagersOutputProtoSchema>;
+
+export const DataSourceQueryTableAccessProtoSchema = z.object({
+  name: z.string().optional(),
+  columns: z.array(z.string()).optional(),
+}) satisfies z.ZodType<pb.DataSourceQueryTableAccess>;
+export type DataSourceQueryTableAccessProto = z.infer<typeof DataSourceQueryTableAccessProtoSchema>;
+
+export const DataSourceQueryFilterProtoSchema = z.object({
+  table: z.string().optional(),
+  column: z.string().optional(),
+  values: z.array(z.string()).optional(),
+}) satisfies z.ZodType<pb.DataSourceQueryFilter>;
+export type DataSourceQueryFilterProto = z.infer<typeof DataSourceQueryFilterProtoSchema>;
+
+export const DataSourceAuthorizeQueryInputProtoSchema = z.object({
+  localCatalogAlias: z.string().optional(),
+  tables: z.array(z.lazy(() => DataSourceQueryTableAccessProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.DataSourceAuthorizeQueryInput>;
+export type DataSourceAuthorizeQueryInputProto = z.infer<typeof DataSourceAuthorizeQueryInputProtoSchema>;
+
+export const DataSourceAuthorizeQueryOutputProtoSchema = z.object({
+  authorized: z.boolean().optional(),
+  filters: z.array(z.lazy(() => DataSourceQueryFilterProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.DataSourceAuthorizeQueryOutput>;
+export type DataSourceAuthorizeQueryOutputProto = z.infer<typeof DataSourceAuthorizeQueryOutputProtoSchema>;

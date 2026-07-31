@@ -45,6 +45,9 @@ func TestExtensionRegistersDatasourceMetadataFunctions(t *testing.T) {
 			t.Fatalf("expected function %s to be registered", name)
 		}
 	}
+	if names[datasource.FunctionAuthorizeQuery] {
+		t.Fatalf("did not expect optional function %s to be registered", datasource.FunctionAuthorizeQuery)
+	}
 }
 
 func TestFromProviderRegistersDatasourceMetadataFunctions(t *testing.T) {
@@ -67,6 +70,24 @@ func TestFromProviderRegistersDatasourceMetadataFunctions(t *testing.T) {
 			t.Fatalf("expected function %s to be registered", name)
 		}
 	}
+	if names[datasource.FunctionAuthorizeQuery] {
+		t.Fatalf("did not expect optional function %s to be registered", datasource.FunctionAuthorizeQuery)
+	}
+}
+
+func TestFromProviderRegistersOptionalQueryAuthorizer(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	if err := app.Use(datasource.FromProvider(fakeAuthorizingProvider{})); err != nil {
+		t.Fatal(err)
+	}
+
+	functions := testkit.Functions(t, app)
+	for _, fn := range functions {
+		if fn.Name == datasource.FunctionAuthorizeQuery {
+			return
+		}
+	}
+	t.Fatalf("expected optional function %s to be registered", datasource.FunctionAuthorizeQuery)
 }
 
 func TestStaticMetadataListsAndDescribesTables(t *testing.T) {
@@ -152,6 +173,14 @@ func TestProtoMetadataTypesAreExported(t *testing.T) {
 	if output.GetCatalogs()[0].GetAlias() != "bigquery" {
 		t.Fatalf("unexpected proto catalog output: %+v", output.GetCatalogs())
 	}
+}
+
+type fakeAuthorizingProvider struct {
+	fakeProvider
+}
+
+func (fakeAuthorizingProvider) AuthorizeQuery(context.Context, appsdk.Context, *datasource.AuthorizeQueryInput) (*datasource.AuthorizeQueryOutput, error) {
+	return &datasource.AuthorizeQueryOutput{Authorized: true}, nil
 }
 
 type fakeProvider struct{}

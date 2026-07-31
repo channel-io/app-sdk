@@ -1737,3 +1737,24 @@ export interface PollingGetTargetManagersOutput {
   nextCursor?: string | undefined;
   hasNextPage?: boolean | undefined;
 }
+
+export interface DataSourceQueryTableAccess {
+  name?: string | undefined;
+  columns?: string[] | undefined;
+}
+
+export interface DataSourceQueryFilter {
+  table?: string | undefined;
+  column?: string | undefined;
+  values?: string[] | undefined;
+}
+
+export interface DataSourceAuthorizeQueryInput {
+  localCatalogAlias?: string | undefined;
+  tables?: DataSourceQueryTableAccess[] | undefined;
+}
+
+export interface DataSourceAuthorizeQueryOutput {
+  authorized?: boolean | undefined;
+  filters?: DataSourceQueryFilter[] | undefined;
+}

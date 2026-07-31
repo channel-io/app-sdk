@@ -1,6 +1,8 @@
 import { z } from "zod";
 import type {
   DataSourceCatalog as ProtoDataSourceCatalog,
+  DataSourceAuthorizeQueryInput as ProtoAuthorizeQueryInput,
+  DataSourceAuthorizeQueryOutput as ProtoAuthorizeQueryOutput,
   DataSourceColumn as ProtoDataSourceColumn,
   DataSourceDescribeTableInput as ProtoDescribeTableInput,
   DataSourceDescribeTableOutput as ProtoDescribeTableOutput,
@@ -8,6 +10,8 @@ import type {
   DataSourceListCatalogsOutput as ProtoListCatalogsOutput,
   DataSourceListTablesInput as ProtoListTablesInput,
   DataSourceListTablesOutput as ProtoListTablesOutput,
+  DataSourceQueryFilter as ProtoDataSourceQueryFilter,
+  DataSourceQueryTableAccess as ProtoDataSourceQueryTableAccess,
   DataSourceTable as ProtoDataSourceTable,
   DataSourceTableDefinition as ProtoDataSourceTableDefinition,
   DataSourceTableListing as ProtoDataSourceTableListing,
@@ -143,6 +147,90 @@ export type DescribeTableOutput = ProtoBacked<
   ProtoDescribeTableOutput
 >;
 
+export const DataSourceQueryAuthorizationPolicy = {
+  maxTables: 64,
+  maxColumnsPerTable: 256,
+  maxFilters: 64,
+  maxValuesPerFilter: 1000,
+  maxOutputBytes: 64 * 1024,
+} as const;
+
+export const DataSourceQueryTableAccessSchema = z
+  .object({
+    name: DataSourceNonEmptyStringSchema,
+    columns: z
+      .array(DataSourceNonEmptyStringSchema)
+      .max(DataSourceQueryAuthorizationPolicy.maxColumnsPerTable)
+      .refine(hasUniqueStrings, "DataSource query columns must be unique"),
+  })
+  .strict();
+export type DataSourceQueryTableAccess = ProtoBacked<
+  z.infer<typeof DataSourceQueryTableAccessSchema>,
+  ProtoDataSourceQueryTableAccess
+>;
+
+export const AuthorizeQueryInputSchema = z
+  .object({
+    localCatalogAlias: DataSourceNonEmptyStringSchema,
+    tables: z
+      .array(DataSourceQueryTableAccessSchema)
+      .min(1)
+      .max(DataSourceQueryAuthorizationPolicy.maxTables)
+      .refine(
+        (tables) => hasUniqueStrings(tables.map((table) => table.name)),
+        "DataSource query tables must be unique"
+      ),
+  })
+  .strict();
+export type AuthorizeQueryInput = ProtoBacked<
+  z.infer<typeof AuthorizeQueryInputSchema>,
+  ProtoAuthorizeQueryInput
+>;
+
+export const DataSourceQueryFilterSchema = z
+  .object({
+    table: DataSourceNonEmptyStringSchema,
+    column: DataSourceNonEmptyStringSchema,
+    values: z
+      .array(z.string())
+      .max(DataSourceQueryAuthorizationPolicy.maxValuesPerFilter)
+      .refine(hasUniqueStrings, "DataSource query filter values must be unique"),
+  })
+  .strict();
+export type DataSourceQueryFilter = ProtoBacked<
+  z.infer<typeof DataSourceQueryFilterSchema>,
+  ProtoDataSourceQueryFilter
+>;
+
+export const AuthorizeQueryOutputSchema = z
+  .object({
+    authorized: z.boolean(),
+    filters: z
+      .array(DataSourceQueryFilterSchema)
+      .max(DataSourceQueryAuthorizationPolicy.maxFilters)
+      .refine(
+        (filters) =>
+          hasUniqueStrings(filters.map((filter) => `${filter.table}\u0000${filter.column}`)),
+        "DataSource query filters must target unique table and column pairs"
+      )
+      .optional(),
+  })
+  .strict()
+  .refine(
+    (output) =>
+      utf8ByteLength(JSON.stringify(output)) <= DataSourceQueryAuthorizationPolicy.maxOutputBytes,
+    `DataSource query authorization output must be at most ${DataSourceQueryAuthorizationPolicy.maxOutputBytes} bytes`
+  );
+export type AuthorizeQueryOutput = ProtoBacked<
+  z.infer<typeof AuthorizeQueryOutputSchema>,
+  ProtoAuthorizeQueryOutput
+>;
+
+export type DataSourceQueryAuthorizer = (
+  ctx: Context,
+  input: AuthorizeQueryInput
+) => AuthorizeQueryOutput | Promise<AuthorizeQueryOutput>;
+
 export interface DataSourceMetadataProvider {
   listCatalogs(
     ctx: Context,
@@ -153,6 +241,7 @@ export interface DataSourceMetadataProvider {
     ctx: Context,
     input: DescribeTableInput
   ): DescribeTableOutput | Promise<DescribeTableOutput>;
+  authorizeQuery?: DataSourceQueryAuthorizer;
 }
 
 export interface StaticDataSourceMetadata {
@@ -265,6 +354,7 @@ export function validateDataSourceSample(
 export function createDataSourceExtension(
   provider: DataSourceMetadataProvider
 ): ExtensionDefinition {
+  const authorizeQuery = provider.authorizeQuery;
   return {
     name: "datasource",
     systemVersion: "v1",
@@ -304,6 +394,22 @@ export function createDataSourceExtension(
           },
         },
       },
+      ...(authorizeQuery
+        ? {
+            query: {
+              authorizeQuery: {
+                description:
+                  "Authorize a datasource access plan and return bounded row allow-list filters.",
+                input: AuthorizeQueryInputSchema,
+                output: AuthorizeQueryOutputSchema,
+                handler: async (ctx, input) => {
+                  const params = AuthorizeQueryInputSchema.parse(input);
+                  return AuthorizeQueryOutputSchema.parse(await authorizeQuery(ctx, params));
+                },
+              },
+            },
+          }
+        : {}),
     },
   };
 }
@@ -363,6 +469,10 @@ function parsePageToken(pageToken: string | undefined): number {
     throw new Error("DataSource pageToken must be a non-negative offset");
   }
   return offset;
+}
+
+function hasUniqueStrings(values: readonly string[]): boolean {
+  return new Set(values).size === values.length;
 }
 
 function stableHash(value: unknown): string {

@@ -10,6 +10,7 @@ Function route를, query 실행은 별도 DataSource gRPC endpoint를 사용합�
 | `extension.datasource.catalog.listCatalogs`  | 필수      | Catalog 목록               |
 | `extension.datasource.catalog.listTables`    | 필수      | Table metadata pagination  |
 | `extension.datasource.catalog.describeTable` | 필수      | Column과 table detail 설명 |
+| `extension.datasource.query.authorizeQuery`  | 선택      | 동적 row allow-list 적용   |
 
 gRPC query service는 app Function이 아닙니다. Endpoint, authentication, streaming limit을
 `/functions`와 분리합니다.
@@ -23,6 +24,10 @@ gRPC query service는 app Function이 아닙니다. Endpoint, authentication, st
 - Description sample은 선택이며 10 row와 64 KiB로 제한하고 key가 선언 column과 일치해야 합니다.
 - gRPC handler는 검증된 access-token identity를 받습니다. 하나의 endpoint가 여러 app을 제공하면
   identity의 app scope로 signing key와 route를 결정합니다.
+- 동적 row scope가 필요할 때만 `authorizeQuery`를 구현합니다. Raw SQL이 아닌 canonical
+  table/column access를 받고 구조화된 string allow-list만 반환합니다. 빈 values는 0 row가 됩니다.
+- AppStore는 실제 query마다 한 번 호출하며 timeout은 2초, retry/cache는 없고 오류 시 fail closed합니다.
+  Handler 안에서 같은 datasource query API를 다시 호출하지 않습니다.
 
 ## TypeScript
 
@@ -36,7 +41,8 @@ gRPC query service는 app Function이 아닙니다. Endpoint, authentication, st
 err := app.Use(datasource.Extension().
   ListCatalogs(handler.ListCatalogs).
   ListTables(handler.ListTables).
-  DescribeTable(handler.DescribeTable))
+  DescribeTable(handler.DescribeTable).
+  AuthorizeQuery(handler.AuthorizeQuery)) // 선택
 ```
 
 [Go DataSource 예제](../../../reference/go/EXTENSIONS.md#datasource-extension-and-query-server)의 gRPC

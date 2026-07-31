@@ -71,6 +71,8 @@ import type {
   CustomTabConfig as ProtoCustomTabConfig,
   CustomTabGetCustomTabsOutput as ProtoCustomTabGetCustomTabsOutput,
   CustomTabNameI18n as ProtoCustomTabNameI18n,
+  DataSourceAuthorizeQueryInput as ProtoDataSourceAuthorizeQueryInput,
+  DataSourceAuthorizeQueryOutput as ProtoDataSourceAuthorizeQueryOutput,
   DataSourceCatalog as ProtoDataSourceCatalog,
   DataSourceColumn as ProtoDataSourceColumn,
   DataSourceDescribeTableInput as ProtoDataSourceDescribeTableInput,
@@ -79,6 +81,8 @@ import type {
   DataSourceListCatalogsOutput as ProtoDataSourceListCatalogsOutput,
   DataSourceListTablesInput as ProtoDataSourceListTablesInput,
   DataSourceListTablesOutput as ProtoDataSourceListTablesOutput,
+  DataSourceQueryFilter as ProtoDataSourceQueryFilter,
+  DataSourceQueryTableAccess as ProtoDataSourceQueryTableAccess,
   DataSourceTable as ProtoDataSourceTable,
   DataSourceTableDefinition as ProtoDataSourceTableDefinition,
   DataSourceTableListing as ProtoDataSourceTableListing,
@@ -470,6 +474,30 @@ export type ExtensionProtoSchemaContracts = [
     SchemaOutputExtendsProto<
       typeof DataSourceSchemas.DescribeTableOutputSchema,
       ProtoDataSourceDescribeTableOutput
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof DataSourceSchemas.DataSourceQueryTableAccessSchema,
+      ProtoDataSourceQueryTableAccess
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof DataSourceSchemas.AuthorizeQueryInputSchema,
+      ProtoDataSourceAuthorizeQueryInput
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof DataSourceSchemas.DataSourceQueryFilterSchema,
+      ProtoDataSourceQueryFilter
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof DataSourceSchemas.AuthorizeQueryOutputSchema,
+      ProtoDataSourceAuthorizeQueryOutput
     >
   >,
 

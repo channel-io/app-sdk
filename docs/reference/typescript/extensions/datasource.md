@@ -8,8 +8,10 @@ The metadata DTOs are also defined in the SDK common proto at
 `channel.app.sdk.v1` as `DataSourceListCatalogsInput`,
 `DataSourceListCatalogsOutput`, `DataSourceListTablesInput`,
 `DataSourceListTablesOutput`, `DataSourceDescribeTableInput`, and
-`DataSourceDescribeTableOutput`. The TypeScript zod schemas validate the same
-JSON shape and keep app code on camelCase fields.
+`DataSourceDescribeTableOutput`. Optional query authorization uses
+`DataSourceAuthorizeQueryInput` and `DataSourceAuthorizeQueryOutput`. The
+TypeScript zod schemas validate the same JSON shape and keep app code on
+camelCase fields.
 
 ## Metadata Functions
 
@@ -18,10 +20,17 @@ JSON shape and keep app code on camelCase fields.
 | `catalog.listCatalogs`  | Returns local catalogs such as `bigquery` or `postgresql`                 | Yes      |
 | `catalog.listTables`    | Returns lightweight table metadata for discovery and search cache refresh | Yes      |
 | `catalog.describeTable` | Returns detailed table columns and keys; may include bounded samples      | Yes      |
+| `query.authorizeQuery`  | Authorizes an actual query access plan and returns row allow-list filters | No       |
 
 ```typescript
 import { z } from "zod";
 import {
+  AuthorizeQueryInputSchema,
+  AuthorizeQueryOutputSchema,
+  type AuthorizeQueryInput,
+  type AuthorizeQueryOutput,
+  type Context,
+  Ctx,
   DataSourceFunctionNames,
   DescribeTableInputSchema,
   DescribeTableOutputSchema,
@@ -83,6 +92,27 @@ export class DataSourceExtension {
       },
     };
   }
+
+  @Func(DataSourceFunctionNames.authorizeQuery)
+  @InputSchema(AuthorizeQueryInputSchema)
+  @OutputSchema(AuthorizeQueryOutputSchema)
+  async authorizeQuery(
+    @Ctx() ctx: Context,
+    @Input() input: AuthorizeQueryInput,
+  ): Promise<AuthorizeQueryOutput> {
+    const allowedScopeKeys = await loadQueryEntitlements(
+      ctx.channel.id,
+      input.tables,
+    );
+    return {
+      authorized: true,
+      filters: input.tables.map((table) => ({
+        table: table.name,
+        column: "scope_key",
+        values: allowedScopeKeys[table.name] ?? [],
+      })),
+    };
+  }
 }
 ```
 
@@ -95,6 +125,20 @@ does not change the datasource gRPC runner's local table allowlist.
 
 Samples are optional and must be bounded: at most 10 rows and 64 KiB, with keys
 that match the declared columns.
+
+`authorizeQuery` is called once only for actual query execution, before the
+datasource gRPC stream is opened. AppStore passes canonical table and column
+access metadata, never raw SQL. The handler may return only structured string
+allow-list filters; an empty `values` array makes that table source return zero
+rows instead of failing the query. AppStore applies a 2-second timeout with no
+retry or cache and fails closed on timeout, invalid output, or dependency error.
+Keep this handler read-only and fast, do not log filter values, and do not call
+the same datasource query API from it because that can recurse into authorization.
+
+The SDK registers `query.authorizeQuery` only when the decorated method or the
+declarative provider callback exists. Do not add a no-op handler: once AppStore
+discovers the capability, removing or failing it is treated as a security-sensitive
+downgrade rather than a fail-open fallback.
 
 ## gRPC Query Server
 

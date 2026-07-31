@@ -1599,3 +1599,24 @@ message PollingGetTargetManagersOutput {
   string next_cursor = 2;
   bool has_next_page = 3;
 }
+
+message DataSourceQueryTableAccess {
+  string name = 1;
+  repeated string columns = 2;
+}
+
+message DataSourceQueryFilter {
+  string table = 1;
+  string column = 2;
+  repeated string values = 3;
+}
+
+message DataSourceAuthorizeQueryInput {
+  string local_catalog_alias = 1;
+  repeated DataSourceQueryTableAccess tables = 2;
+}
+
+message DataSourceAuthorizeQueryOutput {
+  bool authorized = 1;
+  repeated DataSourceQueryFilter filters = 2;
+}

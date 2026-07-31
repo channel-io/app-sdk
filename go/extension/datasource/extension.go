@@ -17,9 +17,10 @@ const (
 	ExtensionName = "datasource"
 	SystemVersion = "v1"
 
-	FunctionListCatalogs  = "extension.datasource.catalog.listCatalogs"
-	FunctionListTables    = "extension.datasource.catalog.listTables"
-	FunctionDescribeTable = "extension.datasource.catalog.describeTable"
+	FunctionListCatalogs   = "extension.datasource.catalog.listCatalogs"
+	FunctionListTables     = "extension.datasource.catalog.listTables"
+	FunctionDescribeTable  = "extension.datasource.catalog.describeTable"
+	FunctionAuthorizeQuery = "extension.datasource.query.authorizeQuery"
 
 	MaxSampleRows  = 10
 	MaxSampleBytes = 64 * 1024
@@ -35,6 +36,10 @@ type Provider interface {
 	DescribeTable(context.Context, appsdk.Context, *DescribeTableInput) (*DescribeTableOutput, error)
 }
 
+type QueryAuthorizer interface {
+	AuthorizeQuery(context.Context, appsdk.Context, *AuthorizeQueryInput) (*AuthorizeQueryOutput, error)
+}
+
 func Extension() *ExtensionBuilder {
 	return &ExtensionBuilder{base: extensionkit.New(ExtensionName, extensionkit.SystemVersion(SystemVersion))}
 }
@@ -44,10 +49,14 @@ func FromProvider(provider Provider) *ExtensionBuilder {
 	if provider == nil {
 		return builder
 	}
-	return builder.
+	builder = builder.
 		ListCatalogs(provider.ListCatalogs).
 		ListTables(provider.ListTables).
 		DescribeTable(provider.DescribeTable)
+	if authorizer, ok := provider.(QueryAuthorizer); ok {
+		builder.AuthorizeQuery(authorizer.AuthorizeQuery)
+	}
+	return builder
 }
 
 func (b *ExtensionBuilder) ListCatalogs(handler appsdk.TypedHandlerFunc[ListCatalogsInput, ListCatalogsOutput]) *ExtensionBuilder {

@@ -151,12 +151,14 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 		name:          datasource.ExtensionName,
 		systemVersion: datasource.SystemVersion,
 		functions: []string{
+			datasource.FunctionAuthorizeQuery,
 			datasource.FunctionDescribeTable,
 			datasource.FunctionListCatalogs,
 			datasource.FunctionListTables,
 		},
 		build: func() appsdk.Extension {
 			return datasource.Extension().
+				AuthorizeQuery(smokeZero[datasource.AuthorizeQueryInput, datasource.AuthorizeQueryOutput]()).
 				DescribeTable(smokeZero[datasource.DescribeTableInput, datasource.DescribeTableOutput]()).
 				ListCatalogs(smokeZero[datasource.ListCatalogsInput, datasource.ListCatalogsOutput]()).
 				ListTables(smokeZero[datasource.ListTablesInput, datasource.ListTablesOutput]())
