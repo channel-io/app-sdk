@@ -13,6 +13,8 @@ import { CommandChoiceSchema, CommandConfigSchema, CommandResultSchema } from ".
 import { GetConfigSchemaOutputSchema, ValidateStoredConfigOutputSchema } from "./config.js";
 import { CustomTabActionResultSchema, GetCustomTabsOutputSchema } from "./customtab.js";
 import {
+  AuthorizeQueryInputSchema,
+  AuthorizeQueryOutputSchema,
   DescribeTableInputSchema,
   DescribeTableOutputSchema,
   ListCatalogsInputSchema,
@@ -418,6 +420,11 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     name: "extension.datasource.catalog.listTables",
     input: ListTablesInputSchema,
     output: ListTablesOutputSchema,
+  },
+  {
+    name: "extension.datasource.query.authorizeQuery",
+    input: AuthorizeQueryInputSchema,
+    output: AuthorizeQueryOutputSchema,
   },
   {
     name: "extension.hook.metadata.getHooks",

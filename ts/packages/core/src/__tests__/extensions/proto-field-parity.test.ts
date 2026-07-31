@@ -42,11 +42,15 @@ import {
   CustomTabActionResultSchema,
   CustomTabConfigSchema,
   CustomTabNameI18nSchema,
+  AuthorizeQueryInputSchema,
+  AuthorizeQueryOutputSchema,
   DataSourceCatalogSchema,
   DataSourceColumnSchema,
   DataSourceTableDefinitionSchema,
   DataSourceTableListingSchema,
   DataSourceTableSchema,
+  DataSourceQueryFilterSchema,
+  DataSourceQueryTableAccessSchema,
   DefectInfoSchema,
   DescribeTableInputSchema,
   DescribeTableOutputSchema,
@@ -468,6 +472,30 @@ const contracts: Contract[] = [
     DescribeTableOutputSchema,
     "extension",
     "DataSourceDescribeTableOutput"
+  ),
+  contract(
+    "DataSourceQueryTableAccess",
+    DataSourceQueryTableAccessSchema,
+    "extension",
+    "DataSourceQueryTableAccess"
+  ),
+  contract(
+    "AuthorizeQueryInput",
+    AuthorizeQueryInputSchema,
+    "extension",
+    "DataSourceAuthorizeQueryInput"
+  ),
+  contract(
+    "DataSourceQueryFilter",
+    DataSourceQueryFilterSchema,
+    "extension",
+    "DataSourceQueryFilter"
+  ),
+  contract(
+    "AuthorizeQueryOutput",
+    AuthorizeQueryOutputSchema,
+    "extension",
+    "DataSourceAuthorizeQueryOutput"
   ),
 
   contract("Address", AddressSchema, "extension", "OrderAddress"),

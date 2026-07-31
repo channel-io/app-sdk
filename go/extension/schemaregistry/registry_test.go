@@ -71,7 +71,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	use(t, app, datasource.Extension().
 		DescribeTable(zero[datasource.DescribeTableInput, datasource.DescribeTableOutput]()).
 		ListCatalogs(zero[datasource.ListCatalogsInput, datasource.ListCatalogsOutput]()).
-		ListTables(zero[datasource.ListTablesInput, datasource.ListTablesOutput]()))
+		ListTables(zero[datasource.ListTablesInput, datasource.ListTablesOutput]()).
+		AuthorizeQuery(zero[datasource.AuthorizeQueryInput, datasource.AuthorizeQueryOutput]()))
 
 	use(t, app, hook.Extension().
 		GetHooks(zero[hook.GetHooksRequest, hook.GetHooksResponse]()))
@@ -146,8 +147,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	got := app.Schemas()
 	want := schemaregistry.Schemas()
 
-	if len(got) != 77 {
-		t.Fatalf("expected 77 registered extension function schemas, got %d", len(got))
+	if len(got) != 78 {
+		t.Fatalf("expected 78 registered extension function schemas, got %d", len(got))
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("registered extension function schemas drifted from canonical registry")

@@ -10,6 +10,7 @@ Catalog、table、column metadata と認証済み query result を提供する�
 | `extension.datasource.catalog.listCatalogs`  | 必須 | Catalog list                  |
 | `extension.datasource.catalog.listTables`    | 必須 | Table metadata pagination     |
 | `extension.datasource.catalog.describeTable` | 必須 | Column と table detail を説明 |
+| `extension.datasource.query.authorizeQuery`  | 任意 | 動的 row allow-list を適用    |
 
 gRPC query service は app Function ではありません。Endpoint、authentication、streaming limit を
 `/functions` と分離します。
@@ -24,6 +25,10 @@ gRPC query service は app Function ではありません。Endpoint、authentic
 - Description sample は任意で、10 row/64 KiB 以下、key は宣言 column と一致させます。
 - gRPC handler は検証済み access-token identity を受け取ります。一つの endpoint が複数 app を
   提供する場合、identity の app scope で signing key と route を決めます。
+- 動的 row scope が必要な場合だけ `authorizeQuery` を実装します。Raw SQL ではなく canonical な
+  table/column access を受け取り、構造化 string allow-list だけを返します。空 values は 0 row になります。
+- AppStore は実 query ごとに一度呼び出し、timeout は 2 秒、retry/cache はなく、error は fail closed です。
+  Handler から同じ datasource query API を再帰的に呼び出さないでください。
 
 ## TypeScript
 
@@ -37,7 +42,8 @@ DataSource gRPC server と対応する PostgreSQL/BigQuery runner を構成し�
 err := app.Use(datasource.Extension().
   ListCatalogs(handler.ListCatalogs).
   ListTables(handler.ListTables).
-  DescribeTable(handler.DescribeTable))
+  DescribeTable(handler.DescribeTable).
+  AuthorizeQuery(handler.AuthorizeQuery)) // 任意
 ```
 
 [Go DataSource example](../../../reference/go/EXTENSIONS.md#datasource-extension-and-query-server) の

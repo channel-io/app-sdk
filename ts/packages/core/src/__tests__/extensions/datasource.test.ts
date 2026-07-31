@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type {
+  DataSourceAuthorizeQueryInput as ProtoAuthorizeQueryInput,
+  DataSourceAuthorizeQueryOutput as ProtoAuthorizeQueryOutput,
   DataSourceDescribeTableOutput as ProtoDescribeTableOutput,
   DataSourceListCatalogsOutput as ProtoListCatalogsOutput,
 } from "../../gen/channel/app/sdk/v1/extension.js";
@@ -8,6 +10,8 @@ import {
   createDataSourceExtension,
   createDataSourceIngestionEventRow,
   createStaticDataSourceExtension,
+  AuthorizeQueryInputSchema,
+  AuthorizeQueryOutputSchema,
   DataSourceFunctionNames,
   DataSourceTableSchema,
   DescribeTableOutputSchema,
@@ -81,6 +85,77 @@ describe("datasource extension schemas", () => {
       "catalog.listTables",
       "catalog.describeTable",
     ]);
+  });
+
+  it("registers query authorization only when the provider implements it", async () => {
+    const inputs: ProtoAuthorizeQueryInput[] = [];
+    const extension = createDataSourceExtension({
+      listCatalogs: async () => ({ catalogs: [] }),
+      listTables: async () => ({ tables: [] }),
+      describeTable: async () => ({ definition: tableDefinition }),
+      authorizeQuery: async (_ctx, input) => {
+        inputs.push(input);
+        return {
+          authorized: true,
+          filters: [{ table: "orders", column: "scope_key", values: [] }],
+        };
+      },
+    });
+    const registered = registerExtension(extension);
+    const authorize = registered.functions.find(
+      (fn) => fn.name === DataSourceFunctionNames.authorizeQuery
+    );
+
+    const output = (await authorize?.handler(
+      { caller: { type: "system" }, channel: { id: "channel-1" }, app: { id: "app-1" } },
+      {
+        localCatalogAlias: "bigquery",
+        tables: [{ name: "orders", columns: ["scope_key"] }],
+      }
+    )) as ProtoAuthorizeQueryOutput | undefined;
+
+    expect(registered.functions.map((fn) => fn.name)).toContain("query.authorizeQuery");
+    expect(inputs).toEqual([
+      {
+        localCatalogAlias: "bigquery",
+        tables: [{ name: "orders", columns: ["scope_key"] }],
+      },
+    ]);
+    expect(output).toEqual({
+      authorized: true,
+      filters: [{ table: "orders", column: "scope_key", values: [] }],
+    });
+  });
+
+  it("rejects duplicate and oversized query authorization values", () => {
+    expect(() =>
+      AuthorizeQueryInputSchema.parse({
+        localCatalogAlias: "bigquery",
+        tables: [
+          { name: "orders", columns: [] },
+          { name: "orders", columns: [] },
+        ],
+      })
+    ).toThrow(/tables must be unique/);
+    expect(() =>
+      AuthorizeQueryInputSchema.parse({
+        localCatalogAlias: "bigquery",
+        tables: [{ name: "orders", columns: [] }],
+        rawSql: "SELECT * FROM orders",
+      })
+    ).toThrow();
+    expect(() =>
+      AuthorizeQueryOutputSchema.parse({
+        authorized: true,
+        filters: [{ table: "orders", column: "scope_key", values: ["scope-1", "scope-1"] }],
+      })
+    ).toThrow(/values must be unique/);
+    expect(() =>
+      AuthorizeQueryOutputSchema.parse({
+        authorized: true,
+        filters: [{ table: "orders", column: "scope_key", values: ["x".repeat(64 * 1024)] }],
+      })
+    ).toThrow(/at most 65536 bytes/);
   });
 
   it("creates static metadata functions with paging and samples", async () => {
@@ -164,6 +239,7 @@ describe("datasource extension schemas", () => {
       listCatalogs: "catalog.listCatalogs",
       listTables: "catalog.listTables",
       describeTable: "catalog.describeTable",
+      authorizeQuery: "query.authorizeQuery",
     });
   });
 });

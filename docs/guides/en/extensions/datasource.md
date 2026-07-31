@@ -10,6 +10,7 @@ the normal Function route; query execution uses a separate DataSource gRPC endpo
 | `extension.datasource.catalog.listCatalogs`  | Required    | Lists catalogs                      |
 | `extension.datasource.catalog.listTables`    | Required    | Pages table metadata                |
 | `extension.datasource.catalog.describeTable` | Required    | Describes columns and table details |
+| `extension.datasource.query.authorizeQuery`  | Optional    | Applies dynamic row allow-lists     |
 
 The gRPC query service is not an app Function. Keep its endpoint, authentication, and streaming
 limits separate from `/functions`.
@@ -25,6 +26,10 @@ limits separate from `/functions`.
   columns.
 - The gRPC handler receives a verified access-token identity. When one endpoint serves several apps,
   resolve signing keys and routing by the identity's app scope.
+- Implement `authorizeQuery` only for dynamic row scope. It receives canonical table/column access,
+  never raw SQL, and returns structured string allow-lists. Empty values produce zero rows.
+- AppStore calls it once per actual query with a 2-second timeout, no retry/cache, and fail-closed
+  behavior. Do not call the same datasource query API from the handler.
 
 ## TypeScript
 
@@ -38,7 +43,8 @@ runner. See the [TypeScript DataSource reference](../../../reference/typescript/
 err := app.Use(datasource.Extension().
   ListCatalogs(handler.ListCatalogs).
   ListTables(handler.ListTables).
-  DescribeTable(handler.DescribeTable))
+  DescribeTable(handler.DescribeTable).
+  AuthorizeQuery(handler.AuthorizeQuery)) // Optional
 ```
 
 Use the Go gRPC DataSource server and Arrow executor described in the
