@@ -1,5 +1,15 @@
 # @channel.io/app-sdk-core
 
+## 0.19.0
+
+### Minor Changes
+
+- b3b2ed3: Add the shared `needsUserInput` Function result, question, option, and answer schemas.
+
+### Patch Changes
+
+- 56e6092: Add versioned app-function WAM render snapshot contracts and a compatibility hook for legacy public snapshots.
+
 ## 0.18.2
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @channel.io/app-sdk-wam
 
+## 0.19.0
+
+### Patch Changes
+
+- 56e6092: Add versioned app-function WAM render snapshot contracts and a compatibility hook for legacy public snapshots.
+- Updated dependencies [b3b2ed3]
+- Updated dependencies [56e6092]
+  - @channel.io/app-sdk-core@0.19.0
+
 ## 0.18.2
 
 ## 0.18.1

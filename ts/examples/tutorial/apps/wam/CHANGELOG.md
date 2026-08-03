@@ -1,5 +1,12 @@
 # @tutorial-example/wam
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [56e6092]
+  - @channel.io/app-sdk-wam@0.19.0
+
 ## 0.0.4
 
 ### Patch Changes
