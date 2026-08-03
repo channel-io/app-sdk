@@ -400,6 +400,10 @@ importers:
         version: 3.2.7(@types/node@26.1.1)(jsdom@25.0.1)(terser@5.49.0)(yaml@2.9.0)
 
   packages/wam:
+    dependencies:
+      '@channel.io/app-sdk-core':
+        specifier: workspace:*
+        version: link:../core
     devDependencies:
       '@types/react':
         specifier: ^18.3.18

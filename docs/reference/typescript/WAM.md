@@ -34,6 +34,35 @@ For example:
 }
 ```
 
+## Versioned Render Snapshots
+
+App Functions that create a durable WAM clip should return a versioned render
+snapshot. The renderer version and snapshot schema version are intentionally
+separate: the latest WAM implementation can keep reading older saved data.
+
+```ts
+import type { WamResult } from "@channel.io/app-sdk-core";
+
+const result: WamResult = {
+  type: "wam",
+  attributes: {
+    name: "trend-report",
+    wamVersion: 1,
+    renderSnapshot: {
+      schemaVersion: 1,
+      capturedAt: new Date().toISOString(),
+      data: { summary: { title: "This week's trend" } },
+    },
+    sharePolicy: { public: "interactiveSnapshot" },
+  },
+};
+```
+
+Use `useRenderSnapshot()` inside the WAM. It also reads legacy CoS clips that
+only contain `publicSnapshot` as renderer/schema version 1. A render snapshot
+must be a JSON object and must never contain credentials or private data when
+the public share policy is enabled.
+
 Register the WAM Endpoint root and serve the built SPA from `${WAM_ENDPOINT}/${name}`. `wamArgs` and injected runtime data are client-readable; never use them to transport a secret or token.
 
 ## Minimal Setup
