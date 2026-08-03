@@ -55,6 +55,7 @@ The manager:
 
 - caches token pairs by app or channel scope;
 - refreshes before expiry, with a five-minute default buffer;
+- immediately refreshes a newly issued token once when its lifetime is already inside that buffer;
 - re-issues after a failed refresh;
 - deduplicates concurrent issue/refresh work in one process;
 - supports invalidation and a custom `native.TokenCache`.
@@ -63,7 +64,19 @@ The manager:
 
 ## Multiple Replicas
 
-`native.InMemoryTokenCache` is process-local. Multiple replicas should implement `native.TokenCache` with shared storage such as Redis or a database so token pairs are shared. In-flight deduplication is still process-local; add storage-side locking if strict cross-replica refresh coordination is required.
+`native.InMemoryTokenCache` is process-local. Multiple replicas should implement `native.TokenCache` with shared storage such as Redis or a database so token pairs are shared. For strict cross-replica coordination, the cache can also implement the optional `native.TokenCacheLocker` interface:
+
+```go
+func (c *RedisTokenCache) WithLock(
+  ctx context.Context,
+  key string,
+  fn func(context.Context) error,
+) error {
+  return c.distributedLock.WithLock(ctx, "token-manager:"+key, fn)
+}
+```
+
+`TokenManager` acquires this lock after process-local deduplication and reads the shared cache again while holding it. The implementation must use a distributed per-key lock, invoke `fn` exactly once, return its error unchanged, and release the lock after success or failure. Set the lock lease and wait timeout longer than the AppStore request timeout. A shared cache without `TokenCacheLocker` still shares completed tokens, but simultaneous cache misses in different replicas can each issue a token.
 
 The cache stores access and refresh tokens. Encrypt them as appropriate for the storage layer, restrict access, apply TTL, and never log cache values.
 

@@ -22,6 +22,13 @@ type TokenCache interface {
 	Clear(ctx context.Context) error
 }
 
+// TokenCacheLocker is an optional extension for caches shared by multiple
+// replicas. WithLock must invoke fn exactly once while holding a
+// storage-backed lock for key and return fn's error unchanged.
+type TokenCacheLocker interface {
+	WithLock(ctx context.Context, key string, fn func(context.Context) error) error
+}
+
 type InMemoryTokenCache struct {
 	mu    sync.Mutex
 	cache map[string]memoryTokenEntry

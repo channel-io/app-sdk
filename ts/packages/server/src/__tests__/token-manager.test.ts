@@ -1,7 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { TokenManager, TokenManagerError } from "../token/manager.js";
 import { InMemoryTokenCache } from "../token/cache.js";
-import type { CachedToken, TokenManagerConfig, TokenResponse } from "../token/types.js";
+import type {
+  CachedToken,
+  TokenCacheStorage,
+  TokenManagerConfig,
+  TokenResponse,
+} from "../token/types.js";
 
 function makeTokenResponse(overrides: Partial<TokenResponse> = {}): TokenResponse {
   return {
@@ -46,6 +51,56 @@ function getRequest(index: number): { method: string; params: Record<string, unk
     method: string;
     params: Record<string, unknown>;
   };
+}
+
+class SharedLockingTokenCache implements TokenCacheStorage {
+  private readonly entries = new Map<string, { token: CachedToken; expiresAt: number }>();
+  private readonly lockTails = new Map<string, Promise<void>>();
+
+  async get(key: string): Promise<CachedToken | null> {
+    const entry = this.entries.get(key);
+    if (!entry) return null;
+    if (Date.now() >= entry.expiresAt) {
+      this.entries.delete(key);
+      return null;
+    }
+    return entry.token;
+  }
+
+  async set(key: string, token: CachedToken, ttlMs?: number): Promise<void> {
+    this.entries.set(key, {
+      token,
+      expiresAt: ttlMs === undefined ? token.expiresAt : Date.now() + ttlMs,
+    });
+  }
+
+  async delete(key: string): Promise<void> {
+    this.entries.delete(key);
+  }
+
+  async clear(): Promise<void> {
+    this.entries.clear();
+  }
+
+  async withLock<T>(key: string, callback: () => Promise<T>): Promise<T> {
+    const previous = this.lockTails.get(key) ?? Promise.resolve();
+    let release: () => void = () => undefined;
+    const current = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const tail = previous.then(() => current);
+    this.lockTails.set(key, tail);
+
+    await previous;
+    try {
+      return await callback();
+    } finally {
+      release();
+      if (this.lockTails.get(key) === tail) {
+        this.lockTails.delete(key);
+      }
+    }
+  }
 }
 
 describe("InMemoryTokenCache", () => {
@@ -188,6 +243,81 @@ describe("TokenManager", () => {
     manager.destroy();
   });
 
+  it("refreshes a newly issued short-lived token before returning it", async () => {
+    globalThis.fetch = createMockFetch([
+      {
+        ok: true,
+        status: 200,
+        body: makeNativeFunctionResponse({
+          accessToken: "short-token",
+          refreshToken: "short-refresh-token",
+          expiresIn: 300,
+        }),
+      },
+      {
+        ok: true,
+        status: 200,
+        body: makeNativeFunctionResponse({
+          accessToken: "refreshed-token",
+          refreshToken: "refreshed-refresh-token",
+          expiresIn: 3600,
+        }),
+      },
+    ]);
+    const manager = createManager();
+
+    await expect(manager.getAppToken()).resolves.toMatchObject({
+      accessToken: "refreshed-token",
+    });
+    await expect(manager.getAppToken()).resolves.toMatchObject({
+      accessToken: "refreshed-token",
+    });
+    expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+    expect(getRequest(0).method).toBe("issueToken");
+    expect(getRequest(1)).toEqual({
+      method: "refreshToken",
+      params: { refreshToken: "short-refresh-token" },
+    });
+
+    manager.destroy();
+  });
+
+  it("rejects a token that remains within the refresh buffer after one refresh", async () => {
+    globalThis.fetch = createMockFetch([
+      { ok: true, status: 200, body: makeNativeFunctionResponse({ expiresIn: 60 }) },
+      { ok: true, status: 200, body: makeNativeFunctionResponse({ expiresIn: 60 }) },
+    ]);
+    const manager = createManager();
+
+    await expect(manager.getAppToken()).rejects.toThrow(
+      "Token after immediate refresh expires within the configured refresh buffer"
+    );
+    expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+
+    manager.destroy();
+  });
+
+  it("re-issues when refreshing a cached token still returns a short lifetime", async () => {
+    globalThis.fetch = createMockFetch([
+      { ok: true, status: 200, body: makeNativeFunctionResponse() },
+      { ok: true, status: 200, body: makeNativeFunctionResponse({ expiresIn: 60 }) },
+      {
+        ok: true,
+        status: 200,
+        body: makeNativeFunctionResponse({ accessToken: "reissued-token" }),
+      },
+    ]);
+    const manager = createManager();
+
+    await manager.getAppToken();
+    vi.advanceTimersByTime(56 * 60 * 1000);
+    await expect(manager.getAppToken()).resolves.toMatchObject({ accessToken: "reissued-token" });
+    expect(getRequest(1).method).toBe("refreshToken");
+    expect(getRequest(2).method).toBe("issueToken");
+
+    manager.destroy();
+  });
+
   it("falls back to issueToken when refreshToken fails", async () => {
     globalThis.fetch = createMockFetch([
       { ok: true, status: 200, body: makeNativeFunctionResponse() },
@@ -234,6 +364,27 @@ describe("TokenManager", () => {
     expect(globalThis.fetch).toHaveBeenCalledTimes(1);
 
     manager.destroy();
+  });
+
+  it("deduplicates issuance across managers when shared storage provides a lock", async () => {
+    const storage = new SharedLockingTokenCache();
+    globalThis.fetch = createMockFetch([
+      { ok: true, status: 200, body: makeNativeFunctionResponse() },
+    ]);
+    const manager1 = createManager({ cacheStorage: storage });
+    const manager2 = createManager({ cacheStorage: storage });
+
+    const [token1, token2] = await Promise.all([
+      manager1.getChannelToken({ channelId: "ch-1" }),
+      manager2.getChannelToken({ channelId: "ch-1" }),
+    ]);
+
+    expect(token1.accessToken).toBe("access-token");
+    expect(token2.accessToken).toBe("access-token");
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+
+    manager1.destroy();
+    manager2.destroy();
   });
 
   it("retries instead of returning an issued token invalidated during the request", async () => {

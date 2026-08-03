@@ -41,6 +41,11 @@ export interface TokenCacheStorage {
   delete(key: string): Promise<void>;
   /** Clear all cached tokens */
   clear(): Promise<void>;
+  /**
+   * Optionally serialize token resolution for a cache key across replicas.
+   * The callback must run exactly once while the storage-backed lock is held.
+   */
+  withLock?<T>(key: string, callback: () => Promise<T>): Promise<T>;
 }
 
 /**
