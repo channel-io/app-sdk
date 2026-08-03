@@ -75,11 +75,26 @@ const api = nativeClient.createProxyApi(channelToken.accessToken);
 
 - caches app and channel token pairs by scope;
 - refreshes them before expiry;
+- immediately refreshes a newly issued token once when its lifetime is already inside the refresh buffer;
 - falls back to re-issue when refresh fails;
 - deduplicates concurrent issue/refresh work in one process;
-- supports a custom `TokenCacheStorage`.
+- supports a custom `TokenCacheStorage`, including an optional storage-backed `withLock` hook for cross-replica coordination.
 
-`issueToken` and `refreshToken` share a native rate limit of 10 calls per 30 minutes per app. Never issue a token for every Function call. Omitting `channelId` issues an app token; supplying the ID of an installed Channel issues a channel token for permitted server-side operations in that Channel. Both calls return an access/refresh token pair and `expiresIn` in seconds. The default cache is in memory and therefore process-local. Multiple replicas should use a shared cache implementation such as Redis or a database so token pairs are shared. In-flight deduplication is process-local; use storage-side locking if strict cross-replica refresh coordination is required.
+`issueToken` and `refreshToken` share a native rate limit of 10 calls per 30 minutes per app. Never issue a token for every Function call. Omitting `channelId` issues an app token; supplying the ID of an installed Channel issues a channel token for permitted server-side operations in that Channel. Both calls return an access/refresh token pair and `expiresIn` in seconds. The default cache is in memory and therefore process-local. Multiple replicas should use a shared cache implementation such as Redis or a database so token pairs are shared.
+
+For strict cross-replica coordination, implement the optional `withLock` method on that same storage. `TokenManager` acquires it after process-local deduplication and reads the shared cache again while holding the lock, so only one replica issues or refreshes a missing token. The lock must be distributed, scoped by the supplied key, invoke the callback exactly once, and always release after success or failure:
+
+```ts
+class RedisTokenCache implements TokenCacheStorage {
+  // get, set, delete, and clear omitted
+
+  async withLock<T>(key: string, callback: () => Promise<T>): Promise<T> {
+    return this.distributedLock.runExclusive(`token-manager:${key}`, callback);
+  }
+}
+```
+
+Set the lock lease and wait timeout longer than the AppStore request timeout. A shared cache without `withLock` still shares completed tokens, but simultaneous cache misses in different replicas can each issue a token.
 
 Direct repeated use of `NativeFunctionClient.issueToken()` does not cache for you. Use it only when you intentionally own persistence, expiry calculation, refresh, invalidation, and concurrency control.
 

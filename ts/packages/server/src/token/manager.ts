@@ -105,7 +105,9 @@ export class TokenManager {
       return cached.token;
     }
 
-    return this.dedup(cacheKey, () => this.getOrRefreshTokenWithRetry(cacheKey, issueToken));
+    return this.dedup(cacheKey, () =>
+      this.withCacheLock(cacheKey, () => this.getOrRefreshTokenWithRetry(cacheKey, issueToken))
+    );
   }
 
   private async getOrRefreshTokenWithRetry(
@@ -147,6 +149,7 @@ export class TokenManager {
       this.log(`Token expiring soon, refreshing for ${cacheKey}`);
       try {
         const refreshed = await this.refreshToken(latest.token.refreshToken);
+        this.assertOutsideRefreshBuffer(refreshed, "Refreshed token");
         if (await this.cacheTokenIfCurrent(cacheKey, refreshed, generation)) {
           return refreshed;
         }
@@ -162,7 +165,8 @@ export class TokenManager {
     }
 
     this.log(`Issuing new token for ${cacheKey}`);
-    const token = await issueToken();
+    const issued = await issueToken();
+    const token = await this.refreshNewShortLivedToken(cacheKey, issued);
     if (await this.cacheTokenIfCurrent(cacheKey, token, generation)) {
       return token;
     }
@@ -173,6 +177,39 @@ export class TokenManager {
 
   private needsRefresh(cached: CachedToken): boolean {
     return Date.now() >= cached.expiresAt - this.refreshBufferMs;
+  }
+
+  private isWithinRefreshBuffer(token: TokenResponse): boolean {
+    return token.expiresIn * 1000 <= this.refreshBufferMs;
+  }
+
+  private assertOutsideRefreshBuffer(token: TokenResponse, source: string): void {
+    if (this.isWithinRefreshBuffer(token)) {
+      throw new TokenManagerError(
+        `${source} expires within the configured refresh buffer (${String(token.expiresIn)}s)`
+      );
+    }
+  }
+
+  private async refreshNewShortLivedToken(
+    cacheKey: string,
+    token: TokenResponse
+  ): Promise<TokenResponse> {
+    if (!this.isWithinRefreshBuffer(token)) {
+      return token;
+    }
+
+    this.log(`New token expires within refresh buffer, refreshing once for ${cacheKey}`);
+    const refreshed = await this.refreshToken(token.refreshToken);
+    this.assertOutsideRefreshBuffer(refreshed, "Token after immediate refresh");
+    return refreshed;
+  }
+
+  private withCacheLock<T>(cacheKey: string, fn: () => Promise<T>): Promise<T> {
+    if (this.cache.withLock) {
+      return this.cache.withLock(cacheKey, fn);
+    }
+    return fn();
   }
 
   private async dedup(cacheKey: string, fn: () => Promise<TokenResponse>): Promise<TokenResponse> {

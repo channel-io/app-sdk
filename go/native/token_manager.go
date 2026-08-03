@@ -164,7 +164,9 @@ func (m *TokenManager) getOrRefreshToken(ctx context.Context, key string, issueT
 	}
 
 	return m.dedup(ctx, key, func(ctx context.Context) (*TokenResponse, error) {
-		return m.getOrRefreshTokenWithRetry(ctx, key, issueToken)
+		return m.withCacheLock(ctx, key, func(ctx context.Context) (*TokenResponse, error) {
+			return m.getOrRefreshTokenWithRetry(ctx, key, issueToken)
+		})
 	})
 }
 
@@ -198,8 +200,11 @@ func (m *TokenManager) getOrRefreshTokenOnce(ctx context.Context, key string, is
 	if latest != nil {
 		m.log("token expiring soon; refreshing", "key", key)
 		refreshed, err := m.RefreshToken(ctx, latest.Token.RefreshToken)
-		if err == nil {
+		if err == nil && !m.isWithinRefreshBuffer(*refreshed) {
 			return m.cacheTokenIfCurrent(ctx, key, *refreshed, generation)
+		}
+		if err == nil {
+			err = &TokenManagerError{Message: fmt.Sprintf("refreshed token expires within the configured refresh buffer (%ds)", refreshed.ExpiresIn)}
 		}
 		m.log("refresh failed; issuing new token", "key", key, "err", err)
 		if m.cacheGeneration() != generation {
@@ -212,7 +217,42 @@ func (m *TokenManager) getOrRefreshTokenOnce(ctx context.Context, key string, is
 	if err != nil {
 		return nil, err
 	}
+	token, err = m.refreshNewShortLivedToken(ctx, key, token)
+	if err != nil {
+		return nil, err
+	}
 	return m.cacheTokenIfCurrent(ctx, key, *token, generation)
+}
+
+func (m *TokenManager) withCacheLock(ctx context.Context, key string, fn func(context.Context) (*TokenResponse, error)) (*TokenResponse, error) {
+	locker, ok := m.cache.(TokenCacheLocker)
+	if !ok {
+		return fn(ctx)
+	}
+
+	var token *TokenResponse
+	err := locker.WithLock(ctx, key, func(lockCtx context.Context) error {
+		var err error
+		token, err = fn(lockCtx)
+		return err
+	})
+	return token, err
+}
+
+func (m *TokenManager) refreshNewShortLivedToken(ctx context.Context, key string, token *TokenResponse) (*TokenResponse, error) {
+	if !m.isWithinRefreshBuffer(*token) {
+		return token, nil
+	}
+
+	m.log("new token expires within refresh buffer; refreshing once", "key", key)
+	refreshed, err := m.RefreshToken(ctx, token.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+	if m.isWithinRefreshBuffer(*refreshed) {
+		return nil, &TokenManagerError{Message: fmt.Sprintf("token after immediate refresh expires within the configured refresh buffer (%ds)", refreshed.ExpiresIn)}
+	}
+	return refreshed, nil
 }
 
 func (m *TokenManager) dedup(ctx context.Context, key string, fn func(context.Context) (*TokenResponse, error)) (*TokenResponse, error) {
@@ -300,6 +340,10 @@ func (m *TokenManager) cacheToken(ctx context.Context, key string, token TokenRe
 
 func (m *TokenManager) needsRefresh(cached CachedToken) bool {
 	return !time.Now().Before(cached.ExpiresAt.Add(-m.refreshBuffer))
+}
+
+func (m *TokenManager) isWithinRefreshBuffer(token TokenResponse) bool {
+	return time.Duration(token.ExpiresIn)*time.Second <= m.refreshBuffer
 }
 
 func (m *TokenManager) cacheGeneration() uint64 {
