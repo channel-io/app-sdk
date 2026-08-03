@@ -50,6 +50,44 @@ unauthorized, `-32601` for method not found, and `-32603` for internal error. Ke
 programmatic handling and never put credentials or customer data in errors. The
 [shared protocol](../../reference/protocol.md) defines the complete envelope.
 
+### Functions that need more user input
+
+When a call cannot complete without another user choice, return
+`NeedsUserInputResultSchema` as a successful result. Include every currently required question in
+one result. The next call goes to the same Function with the original `continuationToken` and only
+the answers the user supplied.
+
+```ts
+const CreatorDiscoveryOutputSchema = z.union([
+  NeedsUserInputResultSchema,
+  CreatorRankingResultSchema,
+]);
+
+return {
+  type: "needsUserInput",
+  requestId: "creatorDiscovery",
+  questions: [
+    {
+      key: "platform",
+      label: "Platform",
+      prompt: "Which platform should be searched?",
+      inputType: "singleSelect",
+      required: true,
+      options: [
+        { value: "youtube", label: "YouTube" },
+        { value: "instagram", label: "Instagram" },
+      ],
+    },
+  ],
+  continuationToken,
+};
+```
+
+The `continuationToken` is opaque and must not be shown to the user. Give it an expiry and sign it
+with bindings for the app, Function, Channel, and caller. A resumed call must repeat the normal
+input validation, authorization, and execution-policy checks. Never store credentials or raw
+customer data in the token.
+
 ## Incoming handling and discovery
 
 Register the Function root in the developer portal. AppStore calls the route with a system version.
