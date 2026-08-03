@@ -49,6 +49,42 @@ not found `-32601`、internal error `-32603` です。Programmatic handling 用�
 error に credential や customer data を入れないでください。完全な envelope は
 [共通 protocol](../../reference/protocol.md)を基準にします。
 
+### 追加のユーザー入力が必要な Function
+
+呼び出しを完了するために追加の選択が必要な場合は、成功結果として
+`NeedsUserInputResultSchema` を返せます。現在必要な質問を一つの結果にまとめ、次の呼び出しでは
+同じ Function に元の `continuationToken` と実際に受け取った回答だけを渡します。
+
+```ts
+const CreatorDiscoveryOutputSchema = z.union([
+  NeedsUserInputResultSchema,
+  CreatorRankingResultSchema,
+]);
+
+return {
+  type: "needsUserInput",
+  requestId: "creatorDiscovery",
+  questions: [
+    {
+      key: "platform",
+      label: "プラットフォーム",
+      prompt: "どのプラットフォームを検索しますか？",
+      inputType: "singleSelect",
+      required: true,
+      options: [
+        { value: "youtube", label: "YouTube" },
+        { value: "instagram", label: "Instagram" },
+      ],
+    },
+  ],
+  continuationToken,
+};
+```
+
+`continuationToken` はユーザーに表示しない opaque な値です。有効期限を設定し、app、Function、
+Channel、caller に結び付けて署名してください。再開された呼び出しにも通常の入力検証、権限検証、
+実行ポリシーを適用し、credential や生の顧客データを token に保存しないでください。
+
 ## 受信処理と discovery
 
 Developer portal には Function root を登録し、AppStore は system version 付き route を呼び出します。

@@ -49,6 +49,42 @@ found `-32601`, internal error `-32603`입니다. `type`은 programmatic handlin
 유지하고, error에 credential이나 고객 데이터를 넣지 마세요. 전체 envelope는
 [공통 protocol](../../reference/protocol.md)을 기준으로 합니다.
 
+### 추가 입력이 필요한 Function
+
+호출을 완료하려면 사용자의 선택이 더 필요한 경우 성공 결과로
+`NeedsUserInputResultSchema`를 반환할 수 있습니다. 한 번의 결과에 필요한 질문을 모두 담고,
+다음 호출은 같은 Function에 기존 `continuationToken`과 실제로 받은 답만 전달합니다.
+
+```ts
+const CreatorDiscoveryOutputSchema = z.union([
+  NeedsUserInputResultSchema,
+  CreatorRankingResultSchema,
+]);
+
+return {
+  type: "needsUserInput",
+  requestId: "creatorDiscovery",
+  questions: [
+    {
+      key: "platform",
+      label: "플랫폼",
+      prompt: "어느 플랫폼을 조회할까요?",
+      inputType: "singleSelect",
+      required: true,
+      options: [
+        { value: "youtube", label: "YouTube" },
+        { value: "instagram", label: "Instagram" },
+      ],
+    },
+  ],
+  continuationToken,
+};
+```
+
+`continuationToken`은 사용자에게 표시하지 않는 opaque 값입니다. 만료 시간을 두고 앱, Function,
+Channel, caller에 바인딩해 서명하세요. 재개 호출도 새 호출과 동일하게 입력 검증, 권한 검증,
+실행 정책을 적용해야 합니다. token에 credential이나 원문 고객 데이터를 넣지 마세요.
+
 ## 수신 처리와 discovery
 
 Developer portal에는 Function root를 등록하고 AppStore는 system version이 붙은 route를 호출합니다.
