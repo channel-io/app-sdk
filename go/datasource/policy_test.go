@@ -25,6 +25,59 @@ func TestValidateReadOnlyQueryAcceptsMultilineSelectAndWith(t *testing.T) {
 	}
 }
 
+func TestValidateReadOnlyQueryAcceptsCommentsAndLiteralContent(t *testing.T) {
+	queries := map[string]string{
+		"dash comment":    "-- generated query; do not update\nSELECT * FROM orders",
+		"hash comment":    "# generated query; do not delete\nSELECT * FROM orders",
+		"block comment":   "/* generated query; do not insert */\nSELECT * FROM orders",
+		"inline comments": "SELECT * /* delete; update */ FROM orders -- drop;\n",
+		"quoted content":  "SELECT 'delete; update' AS note FROM orders",
+		"escaped quote":   "SELECT 'don''t delete; update' AS note FROM orders",
+		"dollar quote":    "SELECT $$delete; update$$ AS note FROM orders",
+		"quoted table":    "SELECT * FROM `project.dataset.orders`",
+	}
+
+	for name, query := range queries {
+		t.Run(name, func(t *testing.T) {
+			err := datasource.ValidateReadOnlyQuery(query, nil, []datasource.TableConfig{{Name: "orders"}})
+			if err != nil {
+				t.Fatalf("expected commented read-only query to pass: %v", err)
+			}
+		})
+	}
+}
+
+func TestValidateReadOnlyQueryRejectsExecutableStatementsAfterCommentsAndLiterals(t *testing.T) {
+	queries := map[string]string{
+		"commented write":          "-- generated query\nUPDATE orders SET id = 'x'",
+		"multiple statements":      "SELECT * FROM orders; DELETE FROM orders",
+		"write in CTE":             "WITH changed AS (UPDATE orders SET id = 'x') SELECT * FROM changed",
+		"unterminated comment":     "SELECT * FROM orders /* unfinished",
+		"comment after terminator": "SELECT * FROM orders; -- wrapper would be invalid",
+		"postgres hash operator":   "SELECT payload #>> '{path}' FROM orders; DELETE FROM orders",
+	}
+
+	for name, query := range queries {
+		t.Run(name, func(t *testing.T) {
+			if err := datasource.ValidateReadOnlyQuery(query, nil, nil); err == nil {
+				t.Fatal("expected unsafe query to fail")
+			}
+		})
+	}
+}
+
+func TestValidateReadOnlyQueryIgnoresTableNamesInCommentsAndLiterals(t *testing.T) {
+	for _, query := range []string{
+		"SELECT 'orders' AS note",
+		"SELECT 1 /* FROM orders */",
+	} {
+		err := datasource.ValidateReadOnlyQuery(query, nil, []datasource.TableConfig{{Name: "orders"}})
+		if err == nil {
+			t.Fatal("expected query without an executable table reference to fail")
+		}
+	}
+}
+
 func TestValidateReadOnlyQueryChecksSupportedTables(t *testing.T) {
 	err := datasource.ValidateReadOnlyQuery(
 		"SELECT id FROM orders",
