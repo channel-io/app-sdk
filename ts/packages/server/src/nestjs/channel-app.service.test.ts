@@ -530,6 +530,36 @@ describe("ChannelAppService", () => {
   });
 
   describe("function discovery", () => {
+    it("should invoke a hidden function by its full name", async () => {
+      const options: ChannelAppModuleOptions = {
+        appId: "test-app",
+        appSecret: "test-secret",
+      };
+      const discoveryService = createMockDiscoveryService([]);
+      const service = createService(options, discoveryService);
+      const handler = vi.fn().mockResolvedValue({ ok: true });
+
+      (discoveryService as any).getFunction = vi.fn().mockReturnValue({
+        fullName: "internal.ping",
+        hidden: true,
+        handler,
+      });
+
+      await expect(
+        service.handleFunctionCall({
+          method: "internal.ping",
+          context: {
+            caller: { type: "system", id: "internal-service" },
+          } as never,
+          params: {},
+        })
+      ).resolves.toEqual({ result: { ok: true } });
+      expect(handler).toHaveBeenCalledWith(
+        { caller: { type: "system", id: "internal-service" } },
+        {}
+      );
+    });
+
     it("should keep test functions out of getFunctions", async () => {
       const options: ChannelAppModuleOptions = {
         appId: "test-app",

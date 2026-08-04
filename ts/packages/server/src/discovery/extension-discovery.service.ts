@@ -186,6 +186,9 @@ export class ExtensionDiscoveryService implements OnModuleInit {
       if (funcMeta.test) {
         funcMetadata.test = true;
       }
+      if (funcMeta.hidden) {
+        funcMetadata.hidden = true;
+      }
       if (inputSchema) {
         funcMetadata.inputSchema = inputSchema;
       }
@@ -297,14 +300,14 @@ export class ExtensionDiscoveryService implements OnModuleInit {
    * Get registered functions that are exposed through getFunctions.
    */
   getPublicFunctions(): FunctionMetadata[] {
-    return this.getAllFunctions().filter((func) => !func.test);
+    return this.getAllFunctions().filter((func) => !func.test && !func.hidden);
   }
 
   /**
    * Get registered test-only functions.
    */
   getTestFunctions(): FunctionMetadata[] {
-    return this.getAllFunctions().filter((func) => func.test);
+    return this.getAllFunctions().filter((func) => func.test && !func.hidden);
   }
 
   /**
