@@ -49,12 +49,14 @@ func TestValidateReadOnlyQueryAcceptsCommentsAndLiteralContent(t *testing.T) {
 
 func TestValidateReadOnlyQueryRejectsExecutableStatementsAfterCommentsAndLiterals(t *testing.T) {
 	queries := map[string]string{
-		"commented write":          "-- generated query\nUPDATE orders SET id = 'x'",
-		"multiple statements":      "SELECT * FROM orders; DELETE FROM orders",
-		"write in CTE":             "WITH changed AS (UPDATE orders SET id = 'x') SELECT * FROM changed",
-		"unterminated comment":     "SELECT * FROM orders /* unfinished",
-		"comment after terminator": "SELECT * FROM orders; -- wrapper would be invalid",
-		"postgres hash operator":   "SELECT payload #>> '{path}' FROM orders; DELETE FROM orders",
+		"commented write":           "-- generated query\nUPDATE orders SET id = 'x'",
+		"multiple statements":       "SELECT * FROM orders; DELETE FROM orders",
+		"write in CTE":              "WITH changed AS (UPDATE orders SET id = 'x') SELECT * FROM changed",
+		"unterminated comment":      "SELECT * FROM orders /* unfinished",
+		"comment after terminator":  "SELECT * FROM orders; -- wrapper would be invalid",
+		"postgres hash operator":    "SELECT payload #>> '{path}' FROM orders; DELETE FROM orders",
+		"nested block comment":      "SELECT 1 /* /* */ ; DELETE FROM orders */",
+		"ambiguous backslash quote": "SELECT 'a\\'' AS note FROM orders",
 	}
 
 	for name, query := range queries {

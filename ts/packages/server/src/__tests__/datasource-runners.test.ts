@@ -72,6 +72,8 @@ describe("datasource policy helpers", () => {
       "SELECT * FROM orders /* unfinished",
       "SELECT * FROM orders; -- wrapper would be invalid",
       "SELECT payload #>> '{path}' FROM orders; DELETE FROM orders",
+      "SELECT 1 /* /* */ ; DELETE FROM orders */",
+      "SELECT 'a\\'' AS note FROM orders",
     ];
 
     for (const query of queries) {

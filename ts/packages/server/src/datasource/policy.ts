@@ -199,7 +199,7 @@ function analyzeSql(query: string): SqlAnalysis {
       reference.push(" ");
       const result = skipSqlBlockComment(query, index);
       index = result.end;
-      if (!result.closed) {
+      if (!result.closed || result.nested) {
         analysis.valid = false;
       }
       continue;
@@ -284,25 +284,23 @@ function skipSqlLineComment(query: string, start: number): number {
   return index;
 }
 
-function skipSqlBlockComment(query: string, start: number): { end: number; closed: boolean } {
-  let depth = 1;
+function skipSqlBlockComment(
+  query: string,
+  start: number
+): { end: number; closed: boolean; nested: boolean } {
+  let nested = false;
   for (let index = start + 2; index < query.length;) {
     if (query.startsWith("/*", index)) {
-      depth += 1;
+      nested = true;
       index += 2;
       continue;
     }
     if (query.startsWith("*/", index)) {
-      depth -= 1;
-      index += 2;
-      if (depth === 0) {
-        return { end: index, closed: true };
-      }
-      continue;
+      return { end: index + 2, closed: true, nested };
     }
     index += 1;
   }
-  return { end: query.length, closed: false };
+  return { end: query.length, closed: false, nested };
 }
 
 function skipSqlQuotedValue(
@@ -311,9 +309,8 @@ function skipSqlQuotedValue(
   quote: string
 ): { end: number; closed: boolean } {
   for (let index = start + 1; index < query.length;) {
-    if (quote === "`" && query[index] === "\\" && index + 1 < query.length) {
-      index += 2;
-      continue;
+    if (quote === "'" && query[index] === "\\") {
+      return { end: query.length, closed: false };
     }
     if (query[index] !== quote) {
       index += 1;

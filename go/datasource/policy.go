@@ -141,9 +141,9 @@ func analyzeSQL(query string) sqlAnalysis {
 				analysis.valid = false
 			}
 			reference.WriteByte(' ')
-			var closed bool
-			i, closed = skipSQLBlockComment(query, i)
-			if !closed {
+			var closed, nested bool
+			i, closed, nested = skipSQLBlockComment(query, i)
+			if !closed || nested {
 				analysis.valid = false
 			}
 			continue
@@ -230,32 +230,26 @@ func skipSQLLineComment(query string, start int) int {
 	return i
 }
 
-func skipSQLBlockComment(query string, start int) (int, bool) {
-	depth := 1
+func skipSQLBlockComment(query string, start int) (int, bool, bool) {
+	nested := false
 	for i := start + 2; i < len(query); {
 		if strings.HasPrefix(query[i:], "/*") {
-			depth++
+			nested = true
 			i += 2
 			continue
 		}
 		if strings.HasPrefix(query[i:], "*/") {
-			depth--
-			i += 2
-			if depth == 0 {
-				return i, true
-			}
-			continue
+			return i + 2, true, nested
 		}
 		i++
 	}
-	return len(query), false
+	return len(query), false, nested
 }
 
 func skipSQLQuotedValue(query string, start int, quote byte) (int, bool) {
 	for i := start + 1; i < len(query); {
-		if quote == '`' && query[i] == '\\' && i+1 < len(query) {
-			i += 2
-			continue
+		if quote == '\'' && query[i] == '\\' {
+			return len(query), false
 		}
 		if query[i] != quote {
 			i++
