@@ -46,6 +46,48 @@ describe("datasource policy helpers", () => {
       "SELECT * FROM (select * from orders) AS datasource_query LIMIT 10"
     );
   });
+
+  it("accepts comments and literals in read-only queries", () => {
+    const queries = [
+      "-- generated query; do not update\nSELECT * FROM orders",
+      "# generated query; do not delete\nSELECT * FROM orders",
+      "/* generated query; do not insert */\nSELECT * FROM orders",
+      "SELECT * /* delete; update */ FROM orders -- drop;\n",
+      "SELECT 'delete; update' AS note FROM orders",
+      "SELECT 'don''t delete; update' AS note FROM orders",
+      "SELECT $$delete; update$$ AS note FROM orders",
+      "SELECT * FROM `project.dataset.orders`",
+    ];
+
+    for (const query of queries) {
+      expect(() => validateReadOnlyQuery(query, [], [{ name: "orders" }])).not.toThrow();
+    }
+  });
+
+  it("rejects executable writes hidden after comments and literals", () => {
+    const queries = [
+      "-- generated query\nUPDATE orders SET id = 'x'",
+      "SELECT * FROM orders; DELETE FROM orders",
+      "WITH changed AS (UPDATE orders SET id = 'x') SELECT * FROM changed",
+      "SELECT * FROM orders /* unfinished",
+      "SELECT * FROM orders; -- wrapper would be invalid",
+      "SELECT payload #>> '{path}' FROM orders; DELETE FROM orders",
+      "SELECT 1 /* /* */ ; DELETE FROM orders */",
+      "SELECT 'a\\'' AS note FROM orders",
+    ];
+
+    for (const query of queries) {
+      expect(() => validateReadOnlyQuery(query)).toThrow("read-only SELECT");
+    }
+  });
+
+  it("ignores table names inside comments and literals", () => {
+    for (const query of ["SELECT 'orders' AS note", "SELECT 1 /* FROM orders */"]) {
+      expect(() => validateReadOnlyQuery(query, [], [{ name: "orders" }])).toThrow(
+        "supported datasource table"
+      );
+    }
+  });
 });
 
 describe("Arrow row conversion", () => {
