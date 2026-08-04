@@ -1,5 +1,13 @@
 # @channel.io/app-sdk-server
 
+## 0.19.1
+
+### Patch Changes
+
+- 2a83a7e: Harden token management for short-lived tokens and add optional storage-backed locking for cross-replica issue and refresh deduplication.
+- 956cc26: Allow read-only datasource queries to contain SQL comments and literals while preserving write and multi-statement guards.
+  - @channel.io/app-sdk-core@0.19.1
+
 ## 0.19.0
 
 ### Patch Changes
