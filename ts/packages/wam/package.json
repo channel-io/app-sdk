@@ -1,6 +1,6 @@
 {
   "name": "@channel.io/app-sdk-wam",
-  "version": "0.19.1",
+  "version": "0.20.0",
   "description": "React SDK for Channel.io WAM (Web App Module)",
   "type": "module",
   "main": "./dist/index.js",

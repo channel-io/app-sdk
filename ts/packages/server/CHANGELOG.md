@@ -1,5 +1,15 @@
 # @channel.io/app-sdk-server
 
+## 0.20.0
+
+### Minor Changes
+
+- 5aeeb15: Allow functions to remain directly invokable while being omitted from public and test function discovery.
+
+### Patch Changes
+
+- @channel.io/app-sdk-core@0.20.0
+
 ## 0.19.1
 
 ### Patch Changes
