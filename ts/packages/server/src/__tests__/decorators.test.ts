@@ -127,6 +127,20 @@ describe("Decorators", () => {
       });
     });
 
+    it("should preserve hidden function metadata from options", () => {
+      class TestClass {
+        @Func({ name: "admin.list", hidden: true })
+        ping() {}
+      }
+
+      const metadata = Reflect.getMetadata(FUNCTION_METADATA, TestClass, "ping");
+      expect(metadata).toMatchObject({
+        name: "admin.list",
+        methodName: "ping",
+        hidden: true,
+      });
+    });
+
     it("should default test function names to the test namespace", () => {
       class TestClass {
         @TestFunc({ description: "Create a test order" })

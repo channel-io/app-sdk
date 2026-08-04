@@ -9,6 +9,8 @@ export interface FunctionOptions {
   name?: string;
   /** Function description for documentation */
   description?: string;
+  /** Whether this function is omitted from Function discovery */
+  hidden?: boolean;
 }
 
 export interface FunctionMetadataValue {
@@ -16,6 +18,7 @@ export interface FunctionMetadataValue {
   methodName: string | symbol;
   description?: string;
   test?: boolean;
+  hidden?: boolean;
 }
 
 /**
@@ -84,6 +87,10 @@ function createFunctionDecorator(
 
     if (test) {
       metadata.test = true;
+    }
+
+    if (options.hidden) {
+      metadata.hidden = true;
     }
 
     if (options.description) {

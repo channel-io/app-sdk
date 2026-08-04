@@ -32,6 +32,8 @@ export interface FunctionMetadata {
   description?: string;
   /** Whether this function is only exposed through getTestFunctions */
   test?: boolean;
+  /** Whether this function is omitted from Function discovery */
+  hidden?: boolean;
   /** Input schema (Zod) */
   inputSchema?: z.ZodSchema;
   /** Output schema (Zod) */
