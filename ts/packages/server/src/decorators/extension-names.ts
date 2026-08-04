@@ -15,6 +15,7 @@ export const SDK_EXTENSION_NAMES = [
   "commerce",
   "order",
   "wms",
+  "userAuthorization",
   "alfTask",
   "notebook",
 ] as const;

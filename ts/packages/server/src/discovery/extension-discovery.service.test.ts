@@ -1,6 +1,8 @@
-import { DiscoveryService, Reflector } from "@nestjs/core";
+import "reflect-metadata";
+import type { DiscoveryService } from "@nestjs/core";
+import { Reflector } from "@nestjs/core";
 import { describe, expect, it } from "vitest";
-import { Func, TestFunc } from "../decorators/index.js";
+import { Extension, Func, TestFunc } from "../decorators/index.js";
 import { ExtensionDiscoveryService } from "./extension-discovery.service.js";
 
 class StandaloneFunctions {
@@ -25,13 +27,24 @@ class StandaloneFunctions {
   }
 }
 
-function createDiscoveryService(): ExtensionDiscoveryService {
-  const provider = {
-    instance: new StandaloneFunctions(),
-    metatype: StandaloneFunctions,
-  };
+@Extension("userAuthorization")
+class UserAuthorizationExtension {
+  @Func("metadata.getConfig")
+  getConfig() {
+    return { systemVersions: ["v1"], functions: [] };
+  }
+}
+
+function createDiscoveryService(
+  providers = [
+    {
+      instance: new StandaloneFunctions(),
+      metatype: StandaloneFunctions,
+    },
+  ]
+): ExtensionDiscoveryService {
   const nestDiscovery = {
-    getProviders: () => [provider],
+    getProviders: () => providers,
   } as unknown as DiscoveryService;
   const service = new ExtensionDiscoveryService(nestDiscovery, new Reflector());
   service.onModuleInit();
@@ -60,6 +73,23 @@ describe("ExtensionDiscoveryService hidden functions", () => {
     expect(hidden).toMatchObject({ fullName: "admin.ping", hidden: true });
     await expect(hidden!.handler({}, {})).resolves.toEqual({
       source: "hidden",
+    });
+  });
+});
+
+describe("ExtensionDiscoveryService", () => {
+  it("builds the canonical userAuthorization metadata Function name", () => {
+    const service = createDiscoveryService([
+      {
+        instance: new UserAuthorizationExtension(),
+        metatype: UserAuthorizationExtension,
+      },
+    ]);
+
+    expect(service.getFunction("extension.userAuthorization.metadata.getConfig")).toMatchObject({
+      name: "metadata.getConfig",
+      fullName: "extension.userAuthorization.metadata.getConfig",
+      methodName: "getConfig",
     });
   });
 });
