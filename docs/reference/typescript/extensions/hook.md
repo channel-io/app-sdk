@@ -86,11 +86,17 @@ Register that URL with the external provider while handling the manager's
 connect action. Do not derive manager or Channel identity from webhook payloads,
 headers, or query parameters; AppStore resolves both from the endpoint binding.
 
-After registration, providers send asynchronous `POST` requests to:
+For app-scoped Hooks, providers send asynchronous `POST` requests to the URL
+formed with the app-provided `endpointToken`:
 
 ```text
 https://app-store-api.channel.io/public/v1/apps/{appId}/hooks/{targetId}/{endpointToken}
 ```
+
+For manager-scoped Hooks, register the complete
+`context.webhooks[targetId].url` value instead. Do not construct that URL or
+append an app-provided `endpointToken`; AppStore issues the opaque endpoint
+binding URL.
 
 AppStore returns `202 Accepted` and calls the configured ordinary app function
 with the delivery ID, app ID, target ID, receive time, and original request. The
