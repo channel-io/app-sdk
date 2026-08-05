@@ -649,6 +649,7 @@ message CustomTabActionResult {
 
 message HookWebhookConfig {
   string endpoint_token = 1;
+  string execution_scope = 2;
 }
 
 message HookConfig {

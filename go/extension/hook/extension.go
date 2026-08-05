@@ -23,6 +23,9 @@ const (
 	TypeWidgetInstalled   = "widget.installed"
 	TypeWidgetUninstalled = "widget.uninstalled"
 	TypeWebhookReceived   = "webhook.received"
+
+	WebhookExecutionScopeApp     = "app"
+	WebhookExecutionScopeManager = "manager"
 )
 
 type ExtensionBuilder struct {

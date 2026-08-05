@@ -249,8 +249,9 @@ action Function을 정하고 action은 WAM을 열 수 있습니다. Chat, user, 
 
 `extension.hook.metadata.getHooks`가 event-driven Function을 선언합니다. Handler는 idempotent하게
 만들고 서명된 app Function 요청만 처리하며 비동기 처리할 수 있는 event에는 빠르게 응답합니다.
-공개 `webhook.received` target은 public `targetId`, entropy가 높은 `endpointToken`, payload 검증,
-replay 방지, secret rotation이 필요합니다.
+공개 `webhook.received` target에는 public `targetId`가 필요합니다. App scope는 entropy가 높은
+`endpointToken`을 사용하고 manager scope는 Function context에서 AppStore 발급 URL을 받습니다.
+두 scope 모두 provider payload 검증과 replay 방지가 필요합니다.
 
 [Hook 상세](extensions/hook.md)
 

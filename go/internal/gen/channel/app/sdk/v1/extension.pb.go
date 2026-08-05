@@ -6167,10 +6167,11 @@ func (x *CustomTabActionResult) GetAttributes() *structpb.Struct {
 }
 
 type HookWebhookConfig struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	EndpointToken string                 `protobuf:"bytes,1,opt,name=endpoint_token,json=endpointToken,proto3" json:"endpoint_token,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	EndpointToken  string                 `protobuf:"bytes,1,opt,name=endpoint_token,json=endpointToken,proto3" json:"endpoint_token,omitempty"`
+	ExecutionScope string                 `protobuf:"bytes,2,opt,name=execution_scope,json=executionScope,proto3" json:"execution_scope,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *HookWebhookConfig) Reset() {
@@ -6206,6 +6207,13 @@ func (*HookWebhookConfig) Descriptor() ([]byte, []int) {
 func (x *HookWebhookConfig) GetEndpointToken() string {
 	if x != nil {
 		return x.EndpointToken
+	}
+	return ""
+}
+
+func (x *HookWebhookConfig) GetExecutionScope() string {
+	if x != nil {
+		return x.ExecutionScope
 	}
 	return ""
 }
@@ -16399,9 +16407,10 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x127\n" +
 	"\n" +
 	"attributes\x18\x02 \x01(\v2\x17.google.protobuf.StructR\n" +
-	"attributes\":\n" +
+	"attributes\"c\n" +
 	"\x11HookWebhookConfig\x12%\n" +
-	"\x0eendpoint_token\x18\x01 \x01(\tR\rendpointToken\"\xd7\x01\n" +
+	"\x0eendpoint_token\x18\x01 \x01(\tR\rendpointToken\x12'\n" +
+	"\x0fexecution_scope\x18\x02 \x01(\tR\x0eexecutionScope\"\xd7\x01\n" +
 	"\n" +
 	"HookConfig\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x120\n" +

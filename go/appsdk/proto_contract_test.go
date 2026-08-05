@@ -44,6 +44,11 @@ func TestCoreDTOJSONFieldsMatchProto(t *testing.T) {
 			descriptor: sdkv1.File_channel_app_sdk_v1_context_proto.Messages().ByName("UserChat"),
 		},
 		{
+			name:       "WebhookEndpointContext",
+			runtime:    appsdk.WebhookEndpointContext{},
+			descriptor: sdkv1.File_channel_app_sdk_v1_context_proto.Messages().ByName("WebhookEndpointContext"),
+		},
+		{
 			name:       "FunctionContext",
 			runtime:    appsdk.Context{},
 			descriptor: sdkv1.File_channel_app_sdk_v1_context_proto.Messages().ByName("FunctionContext"),
@@ -98,6 +103,16 @@ func TestContextAcceptsLegacyAuthTokenAlias(t *testing.T) {
 	}
 	if got.GetAuthToken() != "legacy-token" {
 		t.Fatalf("expected legacy auth token alias to be accepted, got %q", got.GetAuthToken())
+	}
+}
+
+func TestContextDecodesManagerWebhookEndpoints(t *testing.T) {
+	var got appsdk.Context
+	if err := json.Unmarshal([]byte(`{"webhooks":{"provider.events":{"url":"https://app-store.example.com/hook"}}}`), &got); err != nil {
+		t.Fatal(err)
+	}
+	if got.Webhooks["provider.events"].URL != "https://app-store.example.com/hook" {
+		t.Fatalf("unexpected webhook context: %#v", got.Webhooks)
 	}
 }
 

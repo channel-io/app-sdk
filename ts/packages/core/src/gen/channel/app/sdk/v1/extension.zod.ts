@@ -724,6 +724,7 @@ export type CustomTabActionResultProto = z.infer<typeof CustomTabActionResultPro
 
 export const HookWebhookConfigProtoSchema = z.object({
   endpointToken: z.string().optional(),
+  executionScope: z.string().optional(),
 }) satisfies z.ZodType<pb.HookWebhookConfig>;
 export type HookWebhookConfigProto = z.infer<typeof HookWebhookConfigProtoSchema>;
 

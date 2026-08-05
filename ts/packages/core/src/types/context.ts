@@ -4,6 +4,7 @@ import type {
   FunctionContext as ProtoFunctionContext,
   User as ProtoUser,
   UserChat as ProtoUserChat,
+  WebhookEndpointContext as ProtoWebhookEndpointContext,
 } from "../gen/channel/app/sdk/v1/context.js";
 import type {
   FunctionRequest as ProtoFunctionRequest,
@@ -44,6 +45,9 @@ export type User = ProtoUser;
  */
 export type UserChat = ProtoUserChat;
 
+/** One AppStore-issued webhook callback endpoint. */
+export type WebhookEndpointContext = ProtoWebhookEndpointContext;
+
 /**
  * Context passed to function handlers.
  * Mirrors Go's ChannelContext struct (internal/domain/app/subdomain/core/svc/function.go).
@@ -79,6 +83,8 @@ export interface Context extends Omit<
    * also the forward-compatible source of truth for Config-based credential setups.
    */
   config?: Record<string, unknown>;
+  /** Manager-scoped webhook callback endpoints keyed by Hook target ID. */
+  webhooks?: Record<string, WebhookEndpointContext>;
   /** Sandbox mode flag (for LLM mock testing) */
   sandbox?: boolean;
   /** Sandbox session ID (stateful mode) */

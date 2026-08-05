@@ -26,6 +26,40 @@ describe("HookConfigSchema", () => {
     });
   });
 
+  it("accepts a manager-scoped public webhook hook without an endpoint token", () => {
+    expect(
+      HookConfigSchema.parse({
+        type: "webhook.received",
+        targetId: "provider.events",
+        actionFunctionName: "hooks.provider.receive",
+        webhook: {
+          executionScope: "manager",
+        },
+      })
+    ).toEqual({
+      type: "webhook.received",
+      targetId: "provider.events",
+      actionFunctionName: "hooks.provider.receive",
+      webhook: {
+        executionScope: "manager",
+      },
+    });
+  });
+
+  it("rejects endpoint tokens on manager-scoped webhook hooks", () => {
+    expect(() =>
+      HookConfigSchema.parse({
+        type: "webhook.received",
+        targetId: "provider.events",
+        actionFunctionName: "hooks.provider.receive",
+        webhook: {
+          executionScope: "manager",
+          endpointToken,
+        },
+      })
+    ).toThrow();
+  });
+
   it("rejects invalid webhook target IDs", () => {
     expect(() =>
       HookConfigSchema.parse({

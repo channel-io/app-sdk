@@ -167,6 +167,7 @@ export {
 // Hook Extension Schemas (v1)
 export {
   HookTypeSchema,
+  WebhookExecutionScopeSchema,
   WebhookConfigSchema,
   HookConfigSchema,
   GetHooksOutputSchema,

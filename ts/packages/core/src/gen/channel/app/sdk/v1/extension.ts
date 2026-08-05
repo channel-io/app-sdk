@@ -764,6 +764,7 @@ export interface CustomTabActionResult {
 
 export interface HookWebhookConfig {
   endpointToken?: string | undefined;
+  executionScope?: string | undefined;
 }
 
 export interface HookConfig {

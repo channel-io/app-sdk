@@ -43,15 +43,28 @@ const WebhookTargetIdSchema = z
   .max(64)
   .regex(/^[A-Za-z0-9][A-Za-z0-9._-]*$/);
 
-export const WebhookConfigSchema = z
+const WebhookEndpointTokenSchema = z
+  .string()
+  .min(32)
+  .max(128)
+  .regex(/^[A-Za-z0-9_-]+$/);
+
+export const WebhookExecutionScopeSchema = z.enum(["app", "manager"]);
+
+const AppWebhookConfigSchema = z
   .object({
-    endpointToken: z
-      .string()
-      .min(32)
-      .max(128)
-      .regex(/^[A-Za-z0-9_-]+$/),
+    endpointToken: WebhookEndpointTokenSchema,
+    executionScope: z.literal("app").optional(),
   })
   .strict();
+
+const ManagerWebhookConfigSchema = z
+  .object({
+    executionScope: z.literal("manager"),
+  })
+  .strict();
+
+export const WebhookConfigSchema = z.union([AppWebhookConfigSchema, ManagerWebhookConfigSchema]);
 
 export type WebhookConfig = ProtoBacked<z.infer<typeof WebhookConfigSchema>, ProtoWebhookConfig>;
 
@@ -65,7 +78,8 @@ const BaseHookConfigSchema = z.object({
  *
  * App, command, and config hooks do not require a target identifier.
  * Widget hooks must include a targetId that matches the widget name.
- * Public webhook hooks require a targetId and high-entropy endpoint token.
+ * Public webhook hooks require a targetId. App-scoped hooks require a
+ * high-entropy endpoint token; manager-scoped hooks use an AppStore-issued binding URL.
  */
 export const HookConfigSchema = z.discriminatedUnion("type", [
   BaseHookConfigSchema.extend({

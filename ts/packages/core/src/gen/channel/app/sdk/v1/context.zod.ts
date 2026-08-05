@@ -37,6 +37,11 @@ export const UserChatProtoSchema = z.object({
 }) satisfies z.ZodType<pb.UserChat>;
 export type UserChatProto = z.infer<typeof UserChatProtoSchema>;
 
+export const WebhookEndpointContextProtoSchema = z.object({
+  url: z.string().optional(),
+}) satisfies z.ZodType<pb.WebhookEndpointContext>;
+export type WebhookEndpointContextProto = z.infer<typeof WebhookEndpointContextProtoSchema>;
+
 export const FunctionContextProtoSchema = z.object({
   caller: z.lazy(() => CallerProtoSchema).optional(),
   channel: z.lazy(() => ChannelProtoSchema).optional(),
@@ -50,5 +55,6 @@ export const FunctionContextProtoSchema = z.object({
   sandbox: z.boolean().optional(),
   sessionId: z.string().optional(),
   seedState: z.any().optional(),
+  webhooks: z.record(z.string(), z.lazy(() => WebhookEndpointContextProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.FunctionContext>;
 export type FunctionContextProto = z.infer<typeof FunctionContextProtoSchema>;

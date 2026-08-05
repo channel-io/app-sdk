@@ -256,8 +256,9 @@ Metadata と `wamArgs` に token や private record を入れません。
 
 `extension.hook.metadata.getHooks` が event-driven Function を宣言します。Handler を idempotent
 にし、署名済み app Function request だけを処理し、非同期処理できる event には速く response
-します。公開 `webhook.received` target には public `targetId`、高 entropy の `endpointToken`、
-payload validation、replay protection、secret rotation が必要です。
+します。公開 `webhook.received` target には public `targetId` が必要です。App scope は高 entropy
+の `endpointToken` を使い、manager scope は Function context で AppStore 発行 URL を受け取ります。
+両 scope とも provider payload validation と replay protection が必要です。
 
 [Hook 詳細](extensions/hook.md)
 

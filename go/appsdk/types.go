@@ -48,19 +48,24 @@ type UserChat struct {
 	State   string          `json:"state,omitempty"`
 }
 
+type WebhookEndpointContext struct {
+	URL string `json:"url"`
+}
+
 type Context struct {
-	Caller          Caller            `json:"caller"`
-	Channel         Channel           `json:"channel"`
-	User            *User             `json:"user,omitempty"`
-	UserChat        *UserChat         `json:"userChat,omitempty"`
-	AuthToken       string            `json:"authToken,omitempty"`
-	LegacyAuthToken string            `json:"legacyAuthToken,omitempty"`
-	APICredentials  map[string]string `json:"apiCredentials,omitempty"`
-	Config          map[string]any    `json:"config,omitempty"`
-	Language        string            `json:"language,omitempty"`
-	Sandbox         bool              `json:"sandbox,omitempty"`
-	SessionID       string            `json:"sessionId,omitempty"`
-	SeedState       any               `json:"seedState,omitempty"`
+	Caller          Caller                            `json:"caller"`
+	Channel         Channel                           `json:"channel"`
+	User            *User                             `json:"user,omitempty"`
+	UserChat        *UserChat                         `json:"userChat,omitempty"`
+	AuthToken       string                            `json:"authToken,omitempty"`
+	LegacyAuthToken string                            `json:"legacyAuthToken,omitempty"`
+	APICredentials  map[string]string                 `json:"apiCredentials,omitempty"`
+	Config          map[string]any                    `json:"config,omitempty"`
+	Webhooks        map[string]WebhookEndpointContext `json:"webhooks,omitempty"`
+	Language        string                            `json:"language,omitempty"`
+	Sandbox         bool                              `json:"sandbox,omitempty"`
+	SessionID       string                            `json:"sessionId,omitempty"`
+	SeedState       any                               `json:"seedState,omitempty"`
 }
 
 func (c *Context) UnmarshalJSON(data []byte) error {
