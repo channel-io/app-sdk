@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.20.1
+
+### Patch Changes
+
+- 7632db8: Expose manager-scoped webhook metadata and AppStore-issued callback URLs in Function context.
+
 ## 0.20.0
 
 ## 0.19.1
