@@ -68,14 +68,14 @@ func TestValidateReadOnlyQueryRejectsExecutableStatementsAfterCommentsAndLiteral
 	}
 }
 
-func TestValidateReadOnlyQueryIgnoresTableNamesInCommentsAndLiterals(t *testing.T) {
+func TestValidateReadOnlyQueryAllowsTablelessCommentsAndLiterals(t *testing.T) {
 	for _, query := range []string{
 		"SELECT 'orders' AS note",
 		"SELECT 1 /* FROM orders */",
 	} {
 		err := datasource.ValidateReadOnlyQuery(query, nil, []datasource.TableConfig{{Name: "orders"}})
-		if err == nil {
-			t.Fatal("expected query without an executable table reference to fail")
+		if err != nil {
+			t.Fatalf("expected tableless query to pass: %v", err)
 		}
 	}
 }
@@ -97,6 +97,33 @@ func TestValidateReadOnlyQueryChecksSupportedTables(t *testing.T) {
 	)
 	if err == nil {
 		t.Fatal("expected unsupported table query to fail")
+	}
+}
+
+func TestValidateReadOnlyQueryAcceptsTablelessQueries(t *testing.T) {
+	tables := []datasource.TableConfig{{Name: "orders"}}
+	for _, query := range []string{
+		"SELECT 1",
+		"-- health check\nSELECT CURRENT_TIMESTAMP()",
+		"SELECT 'from orders' AS note /* JOIN customers */",
+		`SELECT "join customers" AS note`,
+	} {
+		if err := datasource.ValidateReadOnlyQuery(query, nil, tables); err != nil {
+			t.Errorf("expected tableless query %q to pass: %v", query, err)
+		}
+	}
+}
+
+func TestValidateReadOnlyQueryRejectsUnresolvedTableSources(t *testing.T) {
+	tables := []datasource.TableConfig{{Name: "orders"}}
+	for _, query := range []string{
+		"SELECT * FROM customers",
+		"SELECT * FROM UNNEST([1, 2, 3])",
+		"SELECT * FROM (SELECT 1)",
+	} {
+		if err := datasource.ValidateReadOnlyQuery(query, nil, tables); err == nil {
+			t.Errorf("expected unresolved table source %q to fail", query)
+		}
 	}
 }
 
