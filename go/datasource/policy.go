@@ -66,6 +66,9 @@ func ValidateReadOnlyQuery(query string, explicitTableNames []string, tables []T
 	}
 	tableNames := ReferencedTables(query, explicitTableNames, tables)
 	if len(tableNames) == 0 {
+		if !analyzeSQL(query).hasTableSourceKeyword {
+			return nil
+		}
 		return fmt.Errorf("query must reference a supported datasource table")
 	}
 	for _, tableName := range tableNames {
@@ -91,6 +94,7 @@ type sqlAnalysis struct {
 	firstTokenIsIdentifier bool
 	firstKeyword           string
 	hasBlockedKeyword      bool
+	hasTableSourceKeyword  bool
 	terminated             bool
 	referenceText          string
 }
@@ -114,8 +118,12 @@ func analyzeSQL(query string) sqlAnalysis {
 			}
 		}
 		if isIdentifier {
-			if _, blocked := blockedSQLKeywords[strings.ToLower(identifier)]; blocked {
+			keyword := strings.ToLower(identifier)
+			if _, blocked := blockedSQLKeywords[keyword]; blocked {
 				analysis.hasBlockedKeyword = true
+			}
+			if keyword == "from" || keyword == "join" {
+				analysis.hasTableSourceKeyword = true
 			}
 		}
 	}
