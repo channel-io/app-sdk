@@ -16894,19 +16894,40 @@
                     "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
                   },
                   "webhook": {
-                    "type": "object",
-                    "properties": {
-                      "endpointToken": {
-                        "type": "string",
-                        "minLength": 32,
-                        "maxLength": 128,
-                        "pattern": "^[A-Za-z0-9_-]+$"
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "endpointToken": {
+                            "type": "string",
+                            "minLength": 32,
+                            "maxLength": 128,
+                            "pattern": "^[A-Za-z0-9_-]+$"
+                          },
+                          "executionScope": {
+                            "type": "string",
+                            "const": "app"
+                          }
+                        },
+                        "required": [
+                          "endpointToken"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "executionScope": {
+                            "type": "string",
+                            "const": "manager"
+                          }
+                        },
+                        "required": [
+                          "executionScope"
+                        ],
+                        "additionalProperties": false
                       }
-                    },
-                    "required": [
-                      "endpointToken"
-                    ],
-                    "additionalProperties": false
+                    ]
                   }
                 },
                 "required": [

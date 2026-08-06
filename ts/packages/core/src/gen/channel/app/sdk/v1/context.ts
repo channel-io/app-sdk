@@ -37,6 +37,10 @@ export interface UserChat {
   state?: string | undefined;
 }
 
+export interface WebhookEndpointContext {
+  url?: string | undefined;
+}
+
 export interface FunctionContext {
   caller?: Caller | undefined;
   channel?: Channel | undefined;
@@ -50,9 +54,15 @@ export interface FunctionContext {
   sandbox?: boolean | undefined;
   sessionId?: string | undefined;
   seedState?: any | undefined;
+  webhooks?: { [key: string]: WebhookEndpointContext } | undefined;
 }
 
 export interface FunctionContext_ApiCredentialsEntry {
   key: string;
   value: string;
+}
+
+export interface FunctionContext_WebhooksEntry {
+  key: string;
+  value?: WebhookEndpointContext | undefined;
 }

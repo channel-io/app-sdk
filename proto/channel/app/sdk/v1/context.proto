@@ -35,6 +35,10 @@ message UserChat {
   string state = 3;
 }
 
+message WebhookEndpointContext {
+  string url = 1;
+}
+
 message FunctionContext {
   Caller caller = 1;
   Channel channel = 2;
@@ -48,4 +52,5 @@ message FunctionContext {
   bool sandbox = 10;
   string session_id = 11;
   google.protobuf.Value seed_state = 12;
+  map<string, WebhookEndpointContext> webhooks = 13;
 }

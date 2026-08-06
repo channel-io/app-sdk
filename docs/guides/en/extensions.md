@@ -256,8 +256,9 @@ private records in tab metadata or `wamArgs`.
 
 `extension.hook.metadata.getHooks` declares event-driven Functions. Make handlers idempotent,
 authenticate signed app Function calls, and return quickly when the event can be processed
-asynchronously. Public `webhook.received` targets require a public `targetId`, a high-entropy
-`endpointToken`, payload validation, replay protection, and secret rotation.
+asynchronously. Public `webhook.received` targets require a public `targetId`. App scope uses a
+high-entropy `endpointToken`; manager scope receives an AppStore-issued URL in Function context.
+Both require provider payload validation and replay protection.
 
 [Hook recipe](extensions/hook.md)
 

@@ -47,6 +47,7 @@ Use `appsdk.Register` when startup should return an error and `appsdk.MustRegist
 - `Caller`, `Channel`, `User`, `UserChat`, and `Language`;
 - `AuthToken` for an external OAuth provider;
 - `Config` for Config Extension values;
+- `Webhooks` for AppStore-issued manager callback URLs keyed by Hook target ID;
 - sandbox/session fields when that execution surface provides them.
 
 Optional fields are not guaranteed. Use `fnCtx.GetAuthToken()` to read the injected OAuth provider

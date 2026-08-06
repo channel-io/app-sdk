@@ -61,6 +61,7 @@ Input schema는 신뢰하지 않은 `params`의 형태를 제한하고, output s
 - `user`, `userChat`, `language`: 해당 흐름에 존재할 때만 제공되는 사용자 문맥
 - `authToken`: OAuth 연결에서 AppStore가 복호화해 주입한 provider access token
 - `config`: config extension으로 저장한 현재 scope의 설정과 credential
+- `webhooks`: Hook `targetId`별 AppStore 발급 manager callback URL
 
 Optional 값은 항상 존재한다고 가정하지 말고 Function의 실행 surface와 schema에 맞게 검사하세요. `ctx.authToken`은 Channel App app/channel token이 아니라 외부 OAuth provider의 token입니다.
 

@@ -21,7 +21,8 @@ Channel app Functions use a JSON-RPC-like request:
 ```
 
 `method` selects the Function, `params` is its typed input, `context` carries the current runtime
-identity, and `systemVersion` selects the Extension contract version. Successful calls return
+identity and optional AppStore-issued resources such as manager webhook callback URLs, and
+`systemVersion` selects the Extension contract version. Successful calls return
 `{"result": ...}`. Expected app failures return an `error` envelope:
 
 ```json

@@ -61,6 +61,7 @@ Call surface に応じて `context` には次の値が含まれる場合があ�
 - `user`、`userChat`、`language`: その flow で提供される場合の user context
 - `authToken`: OAuth connection 用に AppStore が復号して注入した provider access token
 - `config`: config Extension で保存した現在 scope の設定と credential
+- `webhooks`: Hook `targetId` ごとの AppStore 発行 manager callback URL
 
 Optional field が常に存在するとは考えず、Function の実行 surface に合わせて検証してください。`ctx.authToken` は Channel App の app/channel token ではなく、外部 OAuth provider の token です。
 
