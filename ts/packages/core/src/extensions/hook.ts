@@ -5,7 +5,7 @@ import type {
   HookWebhookConfig as ProtoWebhookConfig,
 } from "../gen/channel/app/sdk/v1/extension.js";
 
-type ProtoBacked<T, Proto> = T & Proto;
+type ProtoBacked<T extends Proto, Proto> = T;
 
 /**
  * Hook type returned from extension.hook.metadata.getHooks.
@@ -129,7 +129,4 @@ export const GetHooksOutputSchema = z.object({
   hooks: z.array(HookConfigSchema),
 });
 
-export type GetHooksOutput = ProtoBacked<
-  z.infer<typeof GetHooksOutputSchema>,
-  ProtoGetHooksOutput
->;
+export type GetHooksOutput = ProtoBacked<z.infer<typeof GetHooksOutputSchema>, ProtoGetHooksOutput>;
