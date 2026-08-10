@@ -50,4 +50,26 @@ err := app.Use(oauth.Extension().
 - Consent 拒否、不正 state、refresh failure、disconnect、credential expiry、WAM authorization 不足を
   token を log せず test します。
 
+## Lifecycle の復旧
+
+`oauth.connected` と `oauth.disconnected` Hook には `actionFunctionName` と optional
+`systemVersion` だけを登録します。どちらの lifecycle Hook にも `targetId`、`webhook`、endpoint
+token を入れないでください。Manager event では `params.managerId` で manager を識別します。
+`context.caller` は manager ではなく system caller のままで、`oauth.connected` の
+`context.authToken` には新しい provider access token が入ります。
+
+Manager `oauth.connected` Hook で別途 manager-scoped webhook target を登録している場合、
+`context.webhooks?.[targetId]?.url` が callback 登録用の optional fast path として届くことが
+あります。URL がない場合や Hook delivery が失敗する場合があるため、
+`TokenManager.getAppToken()` の app token で active manager target を page することが復旧経路です。
+Channel OAuth と `oauth.disconnected` では webhook URL を期待しないでください。
+
+```ts
+const { accessToken } = await tokenManager.getAppToken();
+const page = await nativeClient.listActiveOAuthManagerTargets(
+  { limit: 500, cursor },
+  accessToken,
+);
+```
+
 [Go Extension reference](../../../reference/go/EXTENSIONS.md) も参照してください。

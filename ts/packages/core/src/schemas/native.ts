@@ -110,6 +110,27 @@ export const NativeGetAppNotebookVersionsResultSchema = z.object({
   notebooks: z.array(NativeAppNotebookVersionSchema),
 });
 
+export const NativeListActiveOAuthManagerTargetsParamsSchema = z
+  .object({
+    cursor: NativeNonEmptyStringSchema.optional(),
+    limit: z.number().int().min(1).max(500),
+  })
+  .strict();
+
+export const NativeActiveOAuthManagerTargetSchema = z
+  .object({
+    channelId: NativeNonEmptyStringSchema,
+    managerId: NativeNonEmptyStringSchema,
+  })
+  .strict();
+
+export const NativeListActiveOAuthManagerTargetsResultSchema = z
+  .object({
+    targets: z.array(NativeActiveOAuthManagerTargetSchema),
+    nextCursor: NativeNonEmptyStringSchema.optional(),
+  })
+  .strict();
+
 interface NativeFunctionSchemaDefinition {
   name: string;
   description: string;
@@ -153,6 +174,12 @@ export const nativeFunctionSchemaDefinitions = [
     description: "Get the latest synced app notebook versions.",
     input: NativeGetAppNotebookVersionsParamsSchema,
     output: NativeGetAppNotebookVersionsResultSchema,
+  },
+  {
+    name: "listActiveOAuthManagerTargets",
+    description: "Page active manager-scoped OAuth targets within the app token's own app scope.",
+    input: NativeListActiveOAuthManagerTargetsParamsSchema,
+    output: NativeListActiveOAuthManagerTargetsResultSchema,
   },
 ] satisfies NativeFunctionSchemaDefinition[];
 

@@ -20,6 +20,8 @@ Current SDK schema supports:
 - `widget.installed`
 - `widget.uninstalled`
 - `webhook.received`
+- `oauth.connected`
+- `oauth.disconnected`
 
 Widget hooks must include a `targetId` that matches the widget name. App,
 command, and config hooks must not include a `targetId`. Public webhook hooks
@@ -29,6 +31,20 @@ alphanumeric character, and otherwise contains only `A-Z`, `a-z`, `0-9`, `.`,
 `manager`. App-scoped hooks must include a high-entropy `webhook.endpointToken`.
 Manager-scoped hooks must omit it because AppStore issues a bound endpoint URL.
 The `webhook` field is not allowed on other hook types.
+
+OAuth lifecycle Hooks use only `actionFunctionName` and optional
+`systemVersion`; they must not include `targetId`, `webhook`, or an endpoint
+token. On a manager OAuth event, identify the manager from `params.managerId`.
+`context.caller` is still the system caller (`{ type: "system", id: "system" }`),
+not the manager. `oauth.connected` receives the newly issued provider access
+token in `context.authToken`.
+
+For a manager `oauth.connected` event, a separately declared manager-scoped
+`webhook.received` target may be available at
+`context.webhooks?.[targetId]?.url`. Use it as an optional provider-callback
+fast path only. The URL can be absent and Hook delivery can fail, so reconcile
+manager targets by polling as the recovery path. Do not expect a webhook URL
+for channel OAuth or `oauth.disconnected`.
 
 ## Public Webhook Ingress
 
@@ -119,7 +135,8 @@ Hooks register through:
 - `registerExtension("hook", "v1")`
 
 AppStore currently backs this with app-level install, command toggle, config
-lifecycle, widget installation, and app- or manager-scoped public webhook registrations.
+lifecycle, widget installation, OAuth connection lifecycle, and app- or
+manager-scoped public webhook registrations.
 
 ## Good Fit
 

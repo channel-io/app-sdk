@@ -5,7 +5,7 @@ import type {
   HookWebhookConfig as ProtoWebhookConfig,
 } from "../gen/channel/app/sdk/v1/extension.js";
 
-type ProtoBacked<T, Proto> = T & Proto;
+type ProtoBacked<T extends Proto, Proto> = T;
 
 /**
  * Hook type returned from extension.hook.metadata.getHooks.
@@ -19,6 +19,8 @@ export const HookTypeSchema = z.enum([
   "widget.installed",
   "widget.uninstalled",
   "webhook.received",
+  "oauth.connected",
+  "oauth.disconnected",
 ]);
 
 export type HookType = z.infer<typeof HookTypeSchema>;
@@ -109,6 +111,12 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
     type: z.literal("webhook.received"),
     targetId: WebhookTargetIdSchema,
     webhook: WebhookConfigSchema,
+  }).strict(),
+  BaseHookConfigSchema.extend({
+    type: z.literal("oauth.connected"),
+  }).strict(),
+  BaseHookConfigSchema.extend({
+    type: z.literal("oauth.disconnected"),
   }).strict(),
 ]);
 

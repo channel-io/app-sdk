@@ -118,12 +118,58 @@ Once the extension is registered, the manager experience depends on manager-scop
 
 These are manager-level operations, not app-level registration calls.
 
+## OAuth Lifecycle Hooks
+
+Register `oauth.connected` and `oauth.disconnected` through the Hook extension
+when the app must react to OAuth connection lifecycle changes. Each Hook config
+contains only `type`, `actionFunctionName`, and an optional `systemVersion`:
+
+```ts
+{
+  type: "oauth.connected",
+  actionFunctionName: "hooks.oauth.onConnected",
+  systemVersion: "v1",
+}
+```
+
+OAuth lifecycle Hook configs do not accept `targetId`, `webhook`, or a webhook
+endpoint token. Those settings belong only to a separately declared
+`webhook.received` Hook.
+
+For a manager OAuth event, use `params.managerId` to identify the connected
+manager. `context.caller` remains the system caller (`{ type: "system", id:
+"system" }`), not that manager. `context.authToken` contains the newly issued
+provider access token on `oauth.connected`.
+
+When a manager connects and the app has separately declared a manager-scoped
+`webhook.received` target, AppStore may also provide
+`context.webhooks?.[targetId]?.url`. This is an optional fast path for
+registering the provider callback URL. The URL can be absent and Hook delivery
+can fail, so polling active manager targets is the required recovery path.
+Do not expect webhook URLs for channel OAuth or `oauth.disconnected` events.
+
+Use the app-scoped token from `TokenManager` to page those targets:
+
+```ts
+const { accessToken } = await tokenManager.getAppToken();
+const page = await nativeClient.listActiveOAuthManagerTargets(
+  { limit: 500, cursor },
+  accessToken,
+);
+```
+
+`listActiveOAuthManagerTargets` accepts only an app token, never a channel or
+manager token. Persist or reconcile the returned `{ channelId, managerId }`
+targets so a missed lifecycle Hook can be recovered safely.
+
 ## Implementation Notes
 
 - Put provider configuration under `oauthProvider` in `metadata.getAuthConfig`
 - Return only provider metadata there. Do not treat it as a token exchange handler
 - `validateCredentials` is called by AppStore after token exchange with `ctx.authToken`
   populated and should return `{ valid: boolean }`
+- `oauth.connected` receives the newly issued provider token in `ctx.authToken`; it is
+  distinct from the app token used for native target polling
 - In WAM or Desk surfaces, use `useNativeFunction()` only when the current role and surface expose the relevant manager native functions
 
 ## Reference

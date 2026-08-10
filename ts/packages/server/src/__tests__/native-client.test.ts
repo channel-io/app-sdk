@@ -393,6 +393,30 @@ describe("NativeFunctionClient", () => {
     });
   });
 
+  describe("OAuth manager target functions", () => {
+    it("should discover active OAuth manager targets with an app token", async () => {
+      const expected = {
+        targets: [{ channelId: "channel-1", managerId: "manager-1" }],
+        nextCursor: "cursor-2",
+      };
+      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: expected }));
+
+      const result = await client.listActiveOAuthManagerTargets(
+        { limit: 500, cursor: "cursor-1" },
+        "app-token"
+      );
+
+      const body = parseFetchBody(mockFetch);
+      expect(body).toEqual({
+        method: "listActiveOAuthManagerTargets",
+        params: { limit: 500, cursor: "cursor-1" },
+      });
+      const init = getFetchInit(mockFetch);
+      expect((init.headers as Record<string, string>)["x-access-token"]).toBe("app-token");
+      expect(result).toEqual(expected);
+    });
+  });
+
   // ============================================
   // Typed Native Function Calls
   // ============================================

@@ -786,6 +786,21 @@ export interface NativeGetAppNotebookVersionsResult {
   notebooks: NativeAppNotebookVersion[];
 }
 
+export interface NativeActiveOAuthManagerTarget {
+  channelId: string;
+  managerId: string;
+}
+
+export interface NativeListActiveOAuthManagerTargetsParams {
+  cursor?: string;
+  limit: number;
+}
+
+export interface NativeListActiveOAuthManagerTargetsResult {
+  targets: readonly NativeActiveOAuthManagerTarget[];
+  nextCursor?: string;
+}
+
 export interface NativeIssueEntityTokenParams {
   channelId: string;
   entityType: string;
@@ -1007,6 +1022,10 @@ export interface NativeFunctionTypeMap {
   getAppNotebookVersions: {
     params: NativeGetAppNotebookVersionsParams;
     result: NativeGetAppNotebookVersionsResult;
+  };
+  listActiveOAuthManagerTargets: {
+    params: NativeListActiveOAuthManagerTargetsParams;
+    result: NativeListActiveOAuthManagerTargetsResult;
   };
   issueEntityToken: {
     params: NativeIssueEntityTokenParams;
