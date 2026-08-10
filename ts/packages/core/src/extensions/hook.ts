@@ -1,5 +1,9 @@
 import { z } from "zod";
-import type { HookWebhookConfig as ProtoWebhookConfig } from "../gen/channel/app/sdk/v1/extension.js";
+import type {
+  HookConfig as ProtoHookConfig,
+  HookGetHooksOutput as ProtoGetHooksOutput,
+  HookWebhookConfig as ProtoWebhookConfig,
+} from "../gen/channel/app/sdk/v1/extension.js";
 
 type ProtoBacked<T, Proto> = T & Proto;
 
@@ -116,7 +120,7 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
   }).strict(),
 ]);
 
-export type HookConfig = z.infer<typeof HookConfigSchema>;
+export type HookConfig = ProtoBacked<z.infer<typeof HookConfigSchema>, ProtoHookConfig>;
 
 /**
  * Metadata response schema for hook registration.
@@ -125,4 +129,7 @@ export const GetHooksOutputSchema = z.object({
   hooks: z.array(HookConfigSchema),
 });
 
-export type GetHooksOutput = z.infer<typeof GetHooksOutputSchema>;
+export type GetHooksOutput = ProtoBacked<
+  z.infer<typeof GetHooksOutputSchema>,
+  ProtoGetHooksOutput
+>;
