@@ -31,7 +31,7 @@ class StandaloneFunctions {
 class UserAuthorizationExtension {
   @Func("metadata.getConfig")
   getConfig() {
-    return { systemVersions: ["v1"], functions: [] };
+    return { targetSystemVersion: "v2", functions: [] };
   }
 }
 
