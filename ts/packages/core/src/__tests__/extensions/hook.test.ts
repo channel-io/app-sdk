@@ -1,9 +1,47 @@
 import { describe, expect, it } from "vitest";
-import { HookConfigSchema, WebhookConfigSchema } from "../../extensions/hook.js";
+import { HookConfigSchema, HookTypeSchema, WebhookConfigSchema } from "../../extensions/hook.js";
 
 const endpointToken = "a".repeat(32);
 
 describe("HookConfigSchema", () => {
+  it.each(["oauth.connected", "oauth.disconnected"] as const)(
+    "accepts %s lifecycle hooks with an action function and system version",
+    (type) => {
+      expect(
+        HookConfigSchema.parse({
+          type,
+          actionFunctionName: "hooks.oauth.lifecycle",
+          systemVersion: "v1",
+        })
+      ).toEqual({
+        type,
+        actionFunctionName: "hooks.oauth.lifecycle",
+        systemVersion: "v1",
+      });
+    }
+  );
+
+  it.each([
+    ["oauth.connected", { targetId: "provider.events" }],
+    ["oauth.connected", { webhook: { endpointToken } }],
+    ["oauth.disconnected", { targetId: "provider.events" }],
+    ["oauth.disconnected", { webhook: { endpointToken } }],
+  ] as const)("rejects forbidden OAuth lifecycle settings for %s: %j", (type, extra) => {
+    expect(() =>
+      HookConfigSchema.parse({
+        type,
+        actionFunctionName: "hooks.oauth.lifecycle",
+        ...extra,
+      })
+    ).toThrow();
+  });
+
+  it("includes the exact OAuth lifecycle hook type literals", () => {
+    expect(HookTypeSchema.options).toEqual(
+      expect.arrayContaining(["oauth.connected", "oauth.disconnected"])
+    );
+  });
+
   it("accepts an app-level public webhook hook", () => {
     expect(
       HookConfigSchema.parse({

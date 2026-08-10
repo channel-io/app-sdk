@@ -96,6 +96,21 @@ describe("custom tab metadata schema", () => {
 });
 
 describe("hook metadata schema", () => {
+  it.each(["oauth.connected", "oauth.disconnected"] as const)(
+    "accepts %s hooks without targetId",
+    (type) => {
+      const parsed = HookConfigSchema.parse({
+        type,
+        actionFunctionName: "hooks.oauth.lifecycle",
+      });
+
+      expect(parsed).toEqual({
+        type,
+        actionFunctionName: "hooks.oauth.lifecycle",
+      });
+    }
+  );
+
   it("accepts app hooks without targetId", () => {
     const parsed = HookConfigSchema.parse({
       type: "app.installed",

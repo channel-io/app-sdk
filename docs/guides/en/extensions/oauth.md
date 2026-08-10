@@ -50,4 +50,28 @@ or channel token.
 - Test denied consent, invalid state, refresh failure, disconnect, expired credentials, and missing
   WAM authorization without logging tokens.
 
+## Lifecycle recovery
+
+Register `oauth.connected` and `oauth.disconnected` Hook handlers with only
+`actionFunctionName` and optional `systemVersion`; do not put `targetId`,
+`webhook`, or an endpoint token on either lifecycle Hook. For manager events,
+use `params.managerId` as the manager identity. `context.caller` remains the
+system caller, not the manager, and `context.authToken` is the newly issued
+provider access token on `oauth.connected`.
+
+If a manager `oauth.connected` Hook also has a separately declared
+manager-scoped webhook target, `context.webhooks?.[targetId]?.url` may be an
+optional callback-registration fast path. It can be absent and Hook delivery
+can fail, so page active manager targets with an app token from
+`TokenManager.getAppToken()` as the recovery path. Do not expect webhook URLs
+for channel OAuth or `oauth.disconnected`.
+
+```ts
+const { accessToken } = await tokenManager.getAppToken();
+const page = await nativeClient.listActiveOAuthManagerTargets(
+  { limit: 500, cursor },
+  accessToken,
+);
+```
+
 See the [Go Extension reference](../../../reference/go/EXTENSIONS.md).
