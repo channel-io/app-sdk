@@ -1,5 +1,12 @@
 # @channel.io/app-sdk-core
 
+## 0.20.1
+
+### Patch Changes
+
+- 7632db8: Expose manager-scoped webhook metadata and AppStore-issued callback URLs in Function context, including the OAuth connected lifecycle fast path and OAuth lifecycle Hook schemas.
+- 2ca28c1: Add App Token-only paginated OAuth manager target discovery and a typed server client method.
+
 ## 0.20.0
 
 ## 0.19.1
