@@ -9,6 +9,8 @@ import type {
   NativeFunctionResult,
   NativeGetAppDataTableSchemaParams,
   NativeGetAppDataTableSchemaResult,
+  NativeListActiveOAuthManagerTargetsParams,
+  NativeListActiveOAuthManagerTargetsResult,
   NativeUpsertAppDataTableRowsParams,
   NativeUpsertAppDataTableRowsResult,
 } from "@channel.io/app-sdk-core";
@@ -317,6 +319,22 @@ export class NativeFunctionClient {
       NativeUpsertAppDataTableRowsParams,
       NativeUpsertAppDataTableRowsResult
     >("upsertAppDataTableRows", params, accessToken);
+  }
+
+  /**
+   * List active manager-scoped OAuth targets for this app.
+   *
+   * Use an app token from `TokenManager.getAppToken()` or one issued without a
+   * `channelId`. Channel- and manager-scoped tokens are rejected.
+   */
+  listActiveOAuthManagerTargets(
+    params: NativeListActiveOAuthManagerTargetsParams,
+    accessToken: string
+  ): Promise<NativeListActiveOAuthManagerTargetsResult> {
+    return this.callNativeFunctionWithToken<
+      NativeListActiveOAuthManagerTargetsParams,
+      NativeListActiveOAuthManagerTargetsResult
+    >("listActiveOAuthManagerTargets", params, accessToken);
   }
 
   // ============================================
