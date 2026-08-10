@@ -31,12 +31,12 @@ class StandaloneFunctions {
 class UserAuthorizationExtension {
   @Func("metadata.getConfig")
   getConfig() {
-    return { targetSystemVersion: "v2", functions: [] };
+    return { functions: [] };
   }
 }
 
 function createDiscoveryService(
-  providers = [
+  providers: Array<{ instance: unknown; metatype: unknown }> = [
     {
       instance: new StandaloneFunctions(),
       metatype: StandaloneFunctions,

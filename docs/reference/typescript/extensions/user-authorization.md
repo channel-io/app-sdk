@@ -1,8 +1,8 @@
 # User Authorization Extension
 
 Use the `userAuthorization` Extension to declare which app Functions can require end-user
-verification. The Extension metadata contract is `v1`; each metadata response declares one target
-`systemVersion` shared by every Function in the snapshot.
+verification. Extension `v1` is a metadata and routing contract only: it describes the Functions
+that carry user-authorization policy metadata.
 
 ## Metadata Function
 
@@ -18,15 +18,9 @@ import {
   OutputSchema,
 } from "@channel.io/app-sdk-server";
 
-const TargetSystemVersionSchema = z
-  .string()
-  .min(1)
-  .max(50)
-  .regex(/^[A-Za-z0-9._-]+$/);
 const DescriptionSchema = z.object({ description: z.string() });
 const PathSchema = z.object({ path: z.string().min(1) });
 const UserAuthorizationConfigSchema = z.object({
-  targetSystemVersion: TargetSystemVersionSchema,
   functions: z
     .array(
       z.object({
@@ -53,7 +47,6 @@ export class UserAuthorizationExtension {
   @OutputSchema(UserAuthorizationConfigSchema)
   getConfig() {
     return {
-      targetSystemVersion: "v2",
       functions: [
         {
           functionName: "orders.get",
@@ -74,15 +67,16 @@ The routed metadata Function name is
 provider and enable SDK auto-registration, or explicitly call
 `registerExtension("userAuthorization", "v1")`.
 
-## Snapshot Rules
+## Contract Rules
 
-- `targetSystemVersion` selects the one app Function version whose authorization snapshot this
-  response replaces. It is independent from the `userAuthorization` Extension contract version.
-- `functions` is the complete protected Function list for `targetSystemVersion`. Omitting it or
-  returning an empty array removes all protected Functions from that target-version snapshot.
-- Every Function in the response shares the top-level `targetSystemVersion`; do not add a
-  Function-level `systemVersion` field.
-- `functionName` must exactly match a Function exposed by discovery for the target version.
+- `functions` contains the app Functions for which the response declares user-authorization
+  metadata. Omit it or return an empty array when there are no such Functions.
+- `functionName` must exactly match the canonical Function name exposed by discovery. For example,
+  use `orders.get` when discovery exposes `orders.get`; do not use an alias or display label.
+- Policy identity is the app ID and canonical Function name. The SDK registry routes the canonical
+  Function name to its handler globally; this Extension does not add a separate dispatch rule.
+- The Extension contract version is `v1`. It does not impose an app Function version, a capability
+  declaration, or an SDK major-version requirement.
 - Both dot-notation identifier paths must resolve to strings at runtime. The type value is `phone`,
   `email`, or `memberId`; the value path identifies the value to verify.
 - `enabledByDefault` defaults to `true` when omitted. Channel-specific settings can override it.
