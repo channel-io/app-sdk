@@ -1,5 +1,14 @@
 # @channel.io/app-sdk-server
 
+## 0.20.1
+
+### Patch Changes
+
+- 2ca28c1: Add App Token-only paginated OAuth manager target discovery and a typed server client method.
+- Updated dependencies [7632db8]
+- Updated dependencies [2ca28c1]
+  - @channel.io/app-sdk-core@0.20.1
+
 ## 0.20.0
 
 ### Minor Changes
