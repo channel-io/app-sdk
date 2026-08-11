@@ -31,6 +31,12 @@ server.Engine().PUT("/functions", server.Handler().Handle)
 
 Do not create a second dispatcher or bypass the SDK signature option.
 
+The `:version` route parameter and request `systemVersion` carry the AppStore system contract; they
+do not select separate developer-defined Function implementations. After signature verification,
+the current SDK dispatches against one registered handler catalog using the exact request `method`.
+Use distinct Function names such as `orders.getV2` when an app-owned standalone contract must evolve
+without breaking existing callers.
+
 ## Existing Gin Server
 
 Mount the SDK route on an existing engine:
