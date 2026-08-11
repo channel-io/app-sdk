@@ -23,7 +23,7 @@ standalone name で登録し、標準 Extension Function は Extension name と 
 - `method`: discovery が公開する正確な完全 Function name
 - `params`: schema で検証する untrusted input
 - `context`: surface に応じた caller、Channel、language、auth、config data
-- `systemVersion`: 必要な場合に Extension contract version を選択
+- `systemVersion`: AppStore と app server の間で適用される system contract の識別子
 
 Public JSON field は TypeScript と Go の両方で camelCase を使用します。Raw body の
 `x-signature` 検証に成功した後だけ `context` を信頼してください。
@@ -98,6 +98,19 @@ SDK が routing、dispatch、schema validation、error envelope、
 `extension.core.function.getFunctions` discovery を処理します。Raw JSON-RPC router や manual
 discovery response を別に作らないでください。TypeScript は `SignatureGuard` と `rawBody: true`、
 Go は `server.WithSignature` で正確な request bytes を検証します。
+
+Route suffix の `v1` と request の `systemVersion` は同じ AppStore system contract を渡します。
+現在の TypeScript と Go SDK は URL の `:version` や request の `systemVersion` ごとに handler set を
+分けず、signature 検証後の dispatch は正確な `method` に基づきます。したがって
+`/functions/v1` は developer が所有する API version namespace ではありません。
+
+### Function contract の互換性を保って変更する
+
+App が所有する standalone Function に breaking change が必要で、既存 caller との互換性も維持する
+場合は、`orders.get` を残して新しい contract を `orders.getV2` のような別の name で登録します。
+準備ができた metadata と caller から新しい name を明示的に参照してください。この目的で
+`systemVersion: "v2"` や `/functions/v2` を使わないでください。標準 Extension Function は公式
+Function name を任意に変更せず、AppStore と SDK が提供する新しい system contract に従います。
 
 ## TypeScript
 

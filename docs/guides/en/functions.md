@@ -24,7 +24,7 @@ Incoming calls use this JSON-RPC-like envelope:
 - `method`: the exact full Function name exposed by discovery
 - `params`: untrusted input validated by a schema
 - `context`: surface-dependent caller, Channel, language, auth, and config data
-- `systemVersion`: selects an Extension contract version when required
+- `systemVersion`: identifies the system contract between AppStore and the app server
 
 Public JSON fields use camelCase in both TypeScript and Go. Trust `context` only after the raw-body
 `x-signature` verification succeeds.
@@ -101,6 +101,19 @@ The SDK handles routing, dispatch, schema validation, error envelopes, and
 `extension.core.function.getFunctions` discovery. Do not build a second raw JSON-RPC router or a
 manual discovery response. Verify the exact request bytes with `SignatureGuard` and
 `rawBody: true` in TypeScript, or `server.WithSignature` in Go.
+
+The route suffix `v1` and request `systemVersion` carry the same AppStore system contract. The
+current TypeScript and Go SDKs do not maintain separate handler sets for the URL `:version` or the
+request `systemVersion`; after signature verification, dispatch is based on the exact `method`.
+`/functions/v1` is therefore not a developer-owned API version namespace.
+
+### Evolving a Function contract compatibly
+
+When an app-owned standalone Function needs a breaking change while preserving existing callers,
+keep `orders.get` and register the new contract under a distinct name such as `orders.getV2`.
+Update metadata and callers to reference the new name explicitly when they are ready. Do not use
+`systemVersion: "v2"` or `/functions/v2` for this purpose. Standard Extension Functions must keep
+their official Function names and follow the new system contract published by AppStore and the SDK.
 
 ## TypeScript
 

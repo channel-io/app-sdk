@@ -165,6 +165,27 @@ Standalone Function だけのアプリは SDK の `core:v1` fallback を使い�
 Messaging などの advanced family では product setup または family-specific secondary sync が必要な
 場合があるため、family recipe に従ってください。
 
+## `systemVersion` を理解する
+
+`systemVersion` は AppStore と app server の間の system contract version です。AppStore が
+third-party app に送る request の field、schema、または invocation contract に後方互換性を壊す
+変更（breaking change）を導入するときに Channel が上げます。App の deployment version、npm/Go
+SDK package version、developer が定義する Function API version とは異なります。現在の default
+system contract は `v1` です。たとえば AppStore system contract `v2` は、そのような breaking
+change が反映された platform version であり、各 app が作る v2 ではありません。
+
+| `systemVersion` が現れる場所                        | 意味                                                               |
+| --------------------------------------------------- | ------------------------------------------------------------------ |
+| `@Extension` または Go Extension registration       | App が実装すると AppStore に宣言する system contract               |
+| Extension metadata の target `systemVersion`        | その Function の呼び出しに使う同じ AppStore system contract        |
+| Request の `systemVersion` と `/functions/v1`        | AppStore が同じ contract を app server に渡す request と route の表現 |
+
+現在の SDK は version ごとに別の handler set を作りません。そのため、developer が
+`systemVersion: "v2"` を任意に指定して独自の Function v2 を運用することはできません。AppStore と
+SDK が公式 v2 contract を提供した場合だけその値を使ってください。App が所有する standalone
+Function の互換性を維持する方法は [Function 登録](functions.md)を参照してください。標準 Extension
+Function の公式 name は変更せず、AppStore と SDK が提供する contract を実装します。
+
 ## Registration lifecycle と検証
 
 - AppStore は registration 直後に discovery を呼び出す可能性があるため、Function Endpoint を先に

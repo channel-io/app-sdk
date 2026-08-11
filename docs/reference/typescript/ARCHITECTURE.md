@@ -32,6 +32,12 @@ default `/functions/v1` route while preserving the raw body. Reuse the same SDK 
 signature guard; do not add an unsigned second dispatcher. A hosting platform may provide this
 mapping; otherwise configure it in the app's ingress.
 
+The `:version` route parameter and request `systemVersion` carry the AppStore system contract; they
+do not select separate developer-defined Function implementations. After signature verification,
+the current SDK dispatches against one discovered handler catalog using the exact request `method`.
+Use distinct Function names such as `orders.getV2` when an app-owned standalone contract must evolve
+without breaking existing callers.
+
 ## Extension discovery
 
 Place decorated classes in a NestJS module's `providers`:

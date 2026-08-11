@@ -166,6 +166,28 @@ ALF tasks and Notebooks; do not call a separate registration Function for either
 and other advanced families may still require coordinated product setup or a family-specific
 secondary sync, so follow their family recipe.
 
+## Understanding `systemVersion`
+
+`systemVersion` is the system contract version between AppStore and the app server. Channel
+increments it when fields, schemas, or invocation behavior in requests that AppStore sends to
+third-party apps introduce a backward-incompatible breaking change. It is not an app deployment
+version, an npm or Go SDK package version, or a developer-defined Function API version. The current
+default system contract is `v1`. For example, an AppStore system contract `v2` would identify a
+platform contract with those breaking changes; it would not be a v2 created by each app.
+
+| Where `systemVersion` appears                         | Meaning                                                                   |
+| ----------------------------------------------------- | ------------------------------------------------------------------------- |
+| `@Extension` or Go Extension registration             | The system contract that the app declares it implements to AppStore      |
+| An Extension metadata target `systemVersion`          | The same AppStore system contract to use when invoking that Function      |
+| Request `systemVersion` and `/functions/v1`            | Request and route representations of the same contract sent by AppStore   |
+
+The current SDK does not create a separate handler set for each version. Developers therefore
+cannot operate their own Function v2 by setting `systemVersion: "v2"`. Use that value only after
+AppStore and the SDK publish an official v2 contract. See
+[Function registration](functions.md) for preserving compatibility in app-owned standalone
+Functions. Keep the official names of standard Extension Functions and implement the contract
+published by AppStore and the SDK.
+
 ## Registration lifecycle and verification
 
 - Deploy the Function Endpoint before registration because AppStore may call discovery immediately.
