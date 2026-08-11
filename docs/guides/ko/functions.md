@@ -100,9 +100,12 @@ SDK가 route, dispatch, schema validation, error envelope와
 `server.WithSignature`로 정확한 request bytes의 HMAC-SHA256 signature를 검증합니다.
 
 Route suffix의 `v1`과 request의 `systemVersion`은 같은 AppStore 시스템 계약을 전달합니다. 현재
-TypeScript와 Go SDK는 URL의 `:version`이나 request의 `systemVersion`별로 handler 집합을 나누지
-않으며, signature 검증 후 dispatch 기준은 정확한 `method`입니다. 따라서 `/functions/v1`은 개발자가
-소유하는 API version namespace가 아닙니다.
+TypeScript와 Go SDK는 URL의 `:version`을 기준으로 version별 handler와 discovery catalog를 선택한 뒤
+정확한 `method`로 dispatch합니다. Body의 `systemVersion`이 있으면 route와 같아야 하고, 생략하면
+route version을 사용합니다. 불일치하거나 등록되지 않은 version은 `versionMismatch`로 거부하며 다른
+version의 같은 method로 fallback하지 않습니다. 즉 dispatch key는 `(systemVersion, method)`입니다.
+따라서 `/functions/v1`은 개발자가 소유하는 API
+version namespace가 아닙니다.
 
 ### Function 계약을 호환성 있게 변경하기
 
@@ -130,6 +133,16 @@ async getOrder(@Ctx() ctx: Context, @Input() input: { orderId: string }) {
 가짜 `@Extension`을 붙이지 마세요. 모든 decorated class를 NestJS module의 `providers`에 추가해야
 discovery됩니다.
 
+AppStore와 SDK가 공식 새 시스템 계약을 제공한 뒤 standalone Function 구현을 분리해야 할 때만
+Function에 그 version을 지정합니다. 생략하면 `v1`입니다.
+
+```ts
+@Func({ name: "orders.get", systemVersion: "v2" })
+async getOrderV2(@Ctx() ctx: Context, @Input() input: GetOrderV2Input) {
+  return this.service.getOrderV2(ctx.channel.id, input);
+}
+```
+
 ## Go
 
 Go는 builder와 generic handler를 사용합니다.
@@ -155,6 +168,13 @@ appsdk.MustRegister(
 `appsdk.Register`와 `appsdk.MustRegister`는 Go struct에서 schema를 만들고, 입력이
 `Validate() error`를 구현하면 자동으로 호출합니다. 명시적인 계약에는 `appsdk.InputSchema`,
 `appsdk.OutputSchema`, proto helper를 사용하세요.
+
+공식 새 시스템 계약용 standalone Function에는 `appsdk.SystemVersion`을 추가합니다. 생략하면
+기존과 같이 `v1`에 등록됩니다.
+
+```go
+appsdk.MustRegister(app, "orders.get", getOrderV2, appsdk.SystemVersion("v2"))
+```
 
 ## Native Function과 App Function 호출
 

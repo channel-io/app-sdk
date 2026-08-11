@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { HttpAdapterHost } from "@nestjs/core";
-import { FunctionCallNotFoundError } from "@channel.io/app-sdk-core";
-import { ChannelAppService } from "./channel-app.service.js";
+import { FunctionCallNotFoundError, FunctionNotFoundError } from "@channel.io/app-sdk-core";
+import { ChannelAppService, VersionMismatchError } from "./channel-app.service.js";
 import type { ChannelAppModuleOptions } from "./types.js";
 import type { ExtensionDiscoveryService } from "../discovery/extension-discovery.service.js";
-import type { ExtensionMetadata } from "../discovery/metadata.interface.js";
+import type { ExtensionMetadata, FunctionMetadata } from "../discovery/metadata.interface.js";
 
 // Mock NativeFunctionClient
 vi.mock("../native/client.js", () => {
@@ -85,16 +85,33 @@ function createMockHttpAdapterHost(): HttpAdapterHost {
 }
 
 function createMockDiscoveryService(
-  extensions: ExtensionMetadata[] = []
+  extensions: ExtensionMetadata[] = [],
+  functions: FunctionMetadata[] = []
 ): ExtensionDiscoveryService {
   return {
     hasExtensions: () => extensions.length > 0,
     getExtensions: () => extensions,
-    getExtension: (name: string) => extensions.find((e) => e.name === name),
-    getFunction: () => undefined,
-    getAllFunctions: () => [],
-    getPublicFunctions: () => [],
-    getTestFunctions: () => [],
+    getExtension: (name: string, systemVersion = "v1") =>
+      extensions.find((e) => e.name === name && e.systemVersion === systemVersion),
+    getFunction: (fullName: string, systemVersion = "v1") =>
+      functions.find((func) => func.fullName === fullName && func.systemVersion === systemVersion),
+    getAllFunctions: (systemVersion?: string) =>
+      systemVersion === undefined
+        ? functions
+        : functions.filter((func) => func.systemVersion === systemVersion),
+    getPublicFunctions: (systemVersion = "v1") =>
+      functions.filter(
+        (func) => func.systemVersion === systemVersion && !func.test && !func.hidden
+      ),
+    getTestFunctions: (systemVersion = "v1") =>
+      functions.filter((func) => func.systemVersion === systemVersion && func.test && !func.hidden),
+    getSupportedSystemVersions: () => {
+      const versions = new Set([
+        ...extensions.map((extension) => extension.systemVersion),
+        ...functions.map((func) => func.systemVersion),
+      ]);
+      return versions.size === 0 ? ["v1"] : Array.from(versions);
+    },
   } as unknown as ExtensionDiscoveryService;
 }
 
@@ -272,6 +289,46 @@ describe("ChannelAppService", () => {
         "core",
         "v1",
         expect.anything()
+      );
+    });
+
+    it("should add a core target for standalone function versions without an extension", async () => {
+      const options: ChannelAppModuleOptions = {
+        appId: "test-app",
+        appSecret: "test-secret",
+        autoRegister: true,
+      };
+      const extensions: ExtensionMetadata[] = [
+        { name: "calendar", systemVersion: "v1", exclusive: false, instance: {}, functions: [] },
+      ];
+      const functions: FunctionMetadata[] = [
+        {
+          name: "orders.get",
+          fullName: "orders.get",
+          systemVersion: "v2",
+          methodName: "getV2",
+          handler: vi.fn(),
+        },
+      ];
+      const service = createService(options, createMockDiscoveryService(extensions, functions));
+      const client = getClient(service);
+
+      service.onApplicationBootstrap();
+      await fireListeningEvent(service);
+
+      expect(client.registerExtension).toHaveBeenNthCalledWith(
+        1,
+        "test-app",
+        "calendar",
+        "v1",
+        "mock-access-token"
+      );
+      expect(client.registerExtension).toHaveBeenNthCalledWith(
+        2,
+        "test-app",
+        "core",
+        "v2",
+        "mock-access-token"
       );
     });
 
@@ -516,7 +573,7 @@ describe("ChannelAppService", () => {
 
       expect(logger.debug).toHaveBeenNthCalledWith(
         1,
-        "Calling function: extension.messaging.thread.sync"
+        "Calling function: extension.messaging.thread.sync (v1)"
       );
       expect(logger.debug).toHaveBeenNthCalledWith(
         2,
@@ -692,7 +749,7 @@ describe("ChannelAppService", () => {
       expect(service.getRegisteredVersions()).toEqual(["v1"]);
     });
 
-    it("should return empty array when no extensions and autoRegister is false", () => {
+    it("should return the default routable version when autoRegister is false", () => {
       const options: ChannelAppModuleOptions = {
         appId: "test-app",
         appSecret: "test-secret",
@@ -701,7 +758,7 @@ describe("ChannelAppService", () => {
 
       const service = createService(options, createMockDiscoveryService([]));
 
-      expect(service.getRegisteredVersions()).toEqual([]);
+      expect(service.getRegisteredVersions()).toEqual(["v1"]);
     });
 
     it("should return versions from discovered extensions", () => {
@@ -717,6 +774,134 @@ describe("ChannelAppService", () => {
       const service = createService(options, createMockDiscoveryService(extensions));
 
       expect(service.getRegisteredVersions()).toEqual(["v2"]);
+    });
+  });
+
+  describe("system-version routing", () => {
+    const functionMetadata = (
+      systemVersion: string,
+      fullName: string,
+      handler: FunctionMetadata["handler"]
+    ): FunctionMetadata => ({
+      name: fullName,
+      fullName,
+      systemVersion,
+      methodName: fullName,
+      handler,
+    });
+
+    it("routes the same method to handlers scoped by URL version", async () => {
+      const v1Handler = vi.fn().mockResolvedValue({ version: "v1" });
+      const v2Handler = vi.fn().mockResolvedValue({ version: "v2" });
+      const discovery = createMockDiscoveryService(
+        [],
+        [
+          functionMetadata("v1", "orders.get", v1Handler),
+          functionMetadata("v2", "orders.get", v2Handler),
+        ]
+      );
+      const service = createService({ appId: "test-app", appSecret: "test-secret" }, discovery);
+
+      await expect(
+        service.handleFunctionCall(
+          { method: "orders.get", systemVersion: "v2", context: {} as never, params: {} },
+          "v2"
+        )
+      ).resolves.toEqual({ result: { version: "v2" } });
+      expect(v1Handler).not.toHaveBeenCalled();
+      expect(v2Handler).toHaveBeenCalledOnce();
+    });
+
+    it("uses the URL version when the body omits systemVersion", async () => {
+      const handler = vi.fn().mockResolvedValue({ version: "v2" });
+      const service = createService(
+        { appId: "test-app", appSecret: "test-secret" },
+        createMockDiscoveryService([], [functionMetadata("v2", "orders.get", handler)])
+      );
+
+      await expect(
+        service.handleFunctionCall({ method: "orders.get", context: {} as never, params: {} }, "v2")
+      ).resolves.toEqual({ result: { version: "v2" } });
+    });
+
+    it("rejects URL and body version mismatches", async () => {
+      const service = createService(
+        { appId: "test-app", appSecret: "test-secret" },
+        createMockDiscoveryService()
+      );
+
+      await expect(
+        service.handleFunctionCall(
+          { method: "orders.get", systemVersion: "v2", context: {} as never },
+          "v1"
+        )
+      ).rejects.toMatchObject({
+        name: "VersionMismatchError",
+        requestedVersion: "v2",
+        routeVersion: "v1",
+      });
+    });
+
+    it("rejects unsupported versions without falling back", async () => {
+      const handler = vi.fn().mockResolvedValue({ version: "v1" });
+      const service = createService(
+        { appId: "test-app", appSecret: "test-secret" },
+        createMockDiscoveryService([], [functionMetadata("v1", "orders.get", handler)])
+      );
+
+      await expect(
+        service.handleFunctionCall(
+          { method: "orders.get", systemVersion: "v2", context: {} as never },
+          "v2"
+        )
+      ).rejects.toBeInstanceOf(VersionMismatchError);
+      expect(handler).not.toHaveBeenCalled();
+    });
+
+    it("returns method-not-found when the version exists without the requested method", async () => {
+      const service = createService(
+        { appId: "test-app", appSecret: "test-secret" },
+        createMockDiscoveryService(
+          [],
+          [functionMetadata("v2", "orders.list", vi.fn().mockResolvedValue([]))]
+        )
+      );
+
+      await expect(
+        service.handleFunctionCall(
+          { method: "orders.get", systemVersion: "v2", context: {} as never },
+          "v2"
+        )
+      ).rejects.toBeInstanceOf(FunctionNotFoundError);
+    });
+
+    it("scopes getFunctions to the requested version", async () => {
+      const service = createService(
+        { appId: "test-app", appSecret: "test-secret" },
+        createMockDiscoveryService(
+          [],
+          [
+            functionMetadata("v1", "orders.get", vi.fn()),
+            functionMetadata("v2", "orders.get", vi.fn()),
+            functionMetadata("v2", "orders.list", vi.fn()),
+          ]
+        )
+      );
+
+      await expect(
+        service.handleFunctionCall(
+          {
+            method: "extension.core.function.getFunctions",
+            systemVersion: "v2",
+            context: {} as never,
+          },
+          "v2"
+        )
+      ).resolves.toMatchObject({
+        result: {
+          functions: [{ name: "orders.get" }, { name: "orders.list" }],
+        },
+      });
     });
   });
 

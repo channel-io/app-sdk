@@ -19,6 +19,8 @@ import { parseFunctionInputParams } from "../utils/function-input-validator.js";
 
 @Injectable()
 export class ExtensionDiscoveryService implements OnModuleInit {
+  static readonly DEFAULT_SYSTEM_VERSION = "v1";
+
   private readonly logger = new Logger(ExtensionDiscoveryService.name);
   private readonly extensions = new Map<string, ExtensionMetadata>();
   private readonly functionRegistry = new Map<string, FunctionMetadata>();
@@ -47,33 +49,47 @@ export class ExtensionDiscoveryService implements OnModuleInit {
       const extensionMeta = this.reflector.get(EXTENSION_METADATA, metatype);
       if (!extensionMeta) continue;
 
-      this.logger.log(`Discovered extension: ${extensionMeta.name}`);
+      const systemVersion =
+        (extensionMeta.systemVersion as string | undefined) ??
+        ExtensionDiscoveryService.DEFAULT_SYSTEM_VERSION;
+
+      this.logger.log(`Discovered extension: ${extensionMeta.name} (${systemVersion})`);
 
       // Discover functions on this extension
       const functions = this.discoverFunctions(
         instance,
         metatype as Type,
-        `extension.${extensionMeta.name as string}`
+        `extension.${extensionMeta.name as string}`,
+        systemVersion
       );
 
       const metadata: ExtensionMetadata = {
         name: extensionMeta.name,
-        systemVersion: extensionMeta.systemVersion ?? "v1",
+        systemVersion,
         exclusive: extensionMeta.exclusive ?? false,
         description: extensionMeta.description,
         instance,
         functions,
       };
 
-      this.extensions.set(extensionMeta.name, metadata);
+      const extensionKey = this.registryKey(systemVersion, extensionMeta.name as string);
+      if (this.extensions.has(extensionKey)) {
+        throw new Error(
+          `Duplicate extension "${extensionMeta.name as string}" for system version "${systemVersion}"`
+        );
+      }
+      this.extensions.set(extensionKey, metadata);
 
       // Register functions globally for routing
       for (const func of functions) {
-        if (this.functionRegistry.has(func.fullName)) {
-          throw new Error(`Duplicate function name "${func.fullName}"`);
+        const functionKey = this.registryKey(func.systemVersion, func.fullName);
+        if (this.functionRegistry.has(functionKey)) {
+          throw new Error(
+            `Duplicate function name "${func.fullName}" for system version "${func.systemVersion}"`
+          );
         }
-        this.functionRegistry.set(func.fullName, func);
-        this.logger.debug(`Registered function: ${func.fullName}`);
+        this.functionRegistry.set(functionKey, func);
+        this.logger.debug(`Registered function: ${func.fullName} (${func.systemVersion})`);
       }
     }
   }
@@ -103,11 +119,14 @@ export class ExtensionDiscoveryService implements OnModuleInit {
       const functions = this.discoverFunctions(instance, metatype as Type, null);
 
       for (const func of functions) {
-        if (this.functionRegistry.has(func.fullName)) {
-          throw new Error(`Duplicate function name "${func.fullName}"`);
+        const functionKey = this.registryKey(func.systemVersion, func.fullName);
+        if (this.functionRegistry.has(functionKey)) {
+          throw new Error(
+            `Duplicate function name "${func.fullName}" for system version "${func.systemVersion}"`
+          );
         }
-        this.functionRegistry.set(func.fullName, func);
-        this.logger.debug(`Registered function: ${func.fullName}`);
+        this.functionRegistry.set(functionKey, func);
+        this.logger.debug(`Registered function: ${func.fullName} (${func.systemVersion})`);
       }
     }
   }
@@ -118,7 +137,8 @@ export class ExtensionDiscoveryService implements OnModuleInit {
   private discoverFunctions(
     instance: unknown,
     metatype: Type,
-    namePrefix: string | null
+    namePrefix: string | null,
+    extensionSystemVersion?: string
   ): FunctionMetadata[] {
     const functionKeys: (string | symbol)[] =
       Reflect.getMetadata(FUNCTIONS_METADATA, metatype) ?? [];
@@ -133,6 +153,17 @@ export class ExtensionDiscoveryService implements OnModuleInit {
       );
 
       if (!funcMeta) continue;
+
+      if (extensionSystemVersion !== undefined && funcMeta.systemVersion !== undefined) {
+        throw new Error(
+          `@Func systemVersion cannot be used inside @Extension for function "${funcMeta.name}"`
+        );
+      }
+
+      const systemVersion =
+        extensionSystemVersion ??
+        funcMeta.systemVersion ??
+        ExtensionDiscoveryService.DEFAULT_SYSTEM_VERSION;
 
       // Get schema metadata
       const inputSchema: z.ZodSchema | undefined = Reflect.getMetadata(
@@ -175,6 +206,7 @@ export class ExtensionDiscoveryService implements OnModuleInit {
 
       const funcMetadata: FunctionMetadata = {
         name: funcMeta.name,
+        systemVersion,
         fullName,
         methodName,
         handler,
@@ -278,36 +310,67 @@ export class ExtensionDiscoveryService implements OnModuleInit {
   /**
    * Get a specific extension by name
    */
-  getExtension(name: string): ExtensionMetadata | undefined {
-    return this.extensions.get(name);
+  getExtension(
+    name: string,
+    systemVersion = ExtensionDiscoveryService.DEFAULT_SYSTEM_VERSION
+  ): ExtensionMetadata | undefined {
+    return this.extensions.get(this.registryKey(systemVersion, name));
   }
 
   /**
    * Get a function by its full name (e.g., "extension.calendar.getAvailability")
    */
-  getFunction(fullName: string): FunctionMetadata | undefined {
-    return this.functionRegistry.get(fullName);
+  getFunction(
+    fullName: string,
+    systemVersion = ExtensionDiscoveryService.DEFAULT_SYSTEM_VERSION
+  ): FunctionMetadata | undefined {
+    return this.functionRegistry.get(this.registryKey(systemVersion, fullName));
   }
 
   /**
    * Get all registered functions
    */
-  getAllFunctions(): FunctionMetadata[] {
-    return Array.from(this.functionRegistry.values());
+  getAllFunctions(systemVersion?: string): FunctionMetadata[] {
+    const functions = Array.from(this.functionRegistry.values());
+    return systemVersion === undefined
+      ? functions
+      : functions.filter((func) => func.systemVersion === systemVersion);
   }
 
   /**
    * Get registered functions that are exposed through getFunctions.
    */
-  getPublicFunctions(): FunctionMetadata[] {
-    return this.getAllFunctions().filter((func) => !func.test && !func.hidden);
+  getPublicFunctions(
+    systemVersion = ExtensionDiscoveryService.DEFAULT_SYSTEM_VERSION
+  ): FunctionMetadata[] {
+    return this.getAllFunctions(systemVersion).filter((func) => !func.test && !func.hidden);
   }
 
   /**
    * Get registered test-only functions.
    */
-  getTestFunctions(): FunctionMetadata[] {
-    return this.getAllFunctions().filter((func) => func.test && !func.hidden);
+  getTestFunctions(
+    systemVersion = ExtensionDiscoveryService.DEFAULT_SYSTEM_VERSION
+  ): FunctionMetadata[] {
+    return this.getAllFunctions(systemVersion).filter((func) => func.test && !func.hidden);
+  }
+
+  /**
+   * Get every system version represented by an Extension or Function.
+   * An empty app still serves the default v1 Function catalog.
+   */
+  getSupportedSystemVersions(): string[] {
+    const versions = new Set<string>();
+    for (const extension of this.extensions.values()) {
+      versions.add(extension.systemVersion);
+    }
+    for (const func of this.functionRegistry.values()) {
+      versions.add(func.systemVersion);
+    }
+    if (versions.size === 0) {
+      versions.add(ExtensionDiscoveryService.DEFAULT_SYSTEM_VERSION);
+    }
+    return Array.from(versions);
   }
 
   /**
@@ -315,5 +378,9 @@ export class ExtensionDiscoveryService implements OnModuleInit {
    */
   hasExtensions(): boolean {
     return this.extensions.size > 0;
+  }
+
+  private registryKey(systemVersion: string, name: string): string {
+    return `${systemVersion}\u0000${name}`;
   }
 }

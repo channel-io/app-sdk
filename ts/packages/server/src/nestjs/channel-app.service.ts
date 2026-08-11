@@ -37,10 +37,13 @@ const DEFAULT_AUTO_REGISTER_MAX_BACKOFF_MS = 5000;
 export class VersionMismatchError extends Error {
   constructor(
     public readonly requestedVersion: string,
-    public readonly availableVersions: string[]
+    public readonly availableVersions: string[],
+    public readonly routeVersion?: string
   ) {
     super(
-      `Version '${requestedVersion}' not found. Available versions: ${availableVersions.join(", ")}`
+      routeVersion === undefined
+        ? `Version '${requestedVersion}' not found. Available versions: ${availableVersions.join(", ")}`
+        : `Request system version '${requestedVersion}' does not match route version '${routeVersion}'`
     );
     this.name = "VersionMismatchError";
   }
@@ -194,25 +197,38 @@ export class ChannelAppService implements OnModuleInit, OnApplicationBootstrap {
 
   private getAutoRegisterPlan(): AutoRegisterPlan {
     const extensions = this.discoveryService?.getExtensions() ?? [];
+    const functions = this.discoveryService?.getAllFunctions() ?? [];
+    const targets: AutoRegisterPlan["targets"] = [];
+    const targetKeys = new Set<string>();
+    const extensionVersions = new Set<string>();
 
-    if (extensions.length === 0) {
-      return {
-        targets: [
-          {
-            extensionName: ChannelAppService.CORE_EXTENSION_NAME,
-            systemVersion: ChannelAppService.DEFAULT_SYSTEM_VERSION,
-          },
-        ],
-        usesCoreFallback: true,
-      };
+    const addTarget = (extensionName: string, systemVersion: string) => {
+      const key = `${systemVersion}\u0000${extensionName}`;
+      if (targetKeys.has(key)) return;
+      targetKeys.add(key);
+      targets.push({ extensionName, systemVersion });
+    };
+
+    for (const extension of extensions) {
+      addTarget(extension.name, extension.systemVersion);
+      extensionVersions.add(extension.systemVersion);
+    }
+
+    const functionVersions = new Set(functions.map((func) => func.systemVersion));
+    if (extensions.length === 0 && functions.length === 0) {
+      functionVersions.add(ChannelAppService.DEFAULT_SYSTEM_VERSION);
+    }
+
+    let usesCoreFallback = false;
+    for (const systemVersion of functionVersions) {
+      if (extensionVersions.has(systemVersion)) continue;
+      addTarget(ChannelAppService.CORE_EXTENSION_NAME, systemVersion);
+      usesCoreFallback = true;
     }
 
     return {
-      targets: extensions.map((extension) => ({
-        extensionName: extension.name,
-        systemVersion: extension.systemVersion,
-      })),
-      usesCoreFallback: false,
+      targets,
+      usesCoreFallback,
     };
   }
 
@@ -303,54 +319,47 @@ export class ChannelAppService implements OnModuleInit, OnApplicationBootstrap {
 
   /**
    * Get all registered versions.
-   * When no extensions are discovered and autoRegister is enabled,
-   * returns the default system version ("v1") for the core extension.
+   * An empty app still supports the default system version ("v1").
    */
   getRegisteredVersions(): string[] {
-    const versions = new Set<string>();
-    const extensions = this.discoveryService?.getExtensions() ?? [];
-
-    if (extensions.length === 0 && this.options.autoRegister) {
-      versions.add(ChannelAppService.DEFAULT_SYSTEM_VERSION);
-    } else {
-      for (const ext of extensions) {
-        versions.add(ext.systemVersion);
-      }
-    }
-
-    return Array.from(versions);
+    return (
+      this.discoveryService?.getSupportedSystemVersions() ?? [
+        ChannelAppService.DEFAULT_SYSTEM_VERSION,
+      ]
+    );
   }
 
   /**
    * Handle incoming function call
    * @param request The function call request
-   * @param _version Optional version from URL path (e.g., "v1")
+   * @param version Optional version from URL path (e.g., "v1")
    */
   async handleFunctionCall(
     request: FunctionCallRequest,
-    _version?: string
+    version?: string
   ): Promise<FunctionCallResponse> {
     const { method, context, params } = request;
+    const systemVersion = this.resolveSystemVersion(request.systemVersion, version);
 
     // Handle getFunctions request
     if (method === "extension.core.function.getFunctions") {
-      return this.getFunctions();
+      return this.getFunctions(systemVersion);
     }
 
     // Handle getTestFunctions request
     if (method === "extension.core.function.getTestFunctions") {
-      return this.getTestFunctions();
+      return this.getTestFunctions(systemVersion);
     }
 
     // Find the function from discovery service
-    const func = this.discoveryService?.getFunction(method);
+    const func = this.discoveryService?.getFunction(method, systemVersion);
 
     if (!func) {
       throw new FunctionNotFoundError(method);
     }
 
     if (this.options.debug) {
-      this.logger.debug(`Calling function: ${method}`);
+      this.logger.debug(`Calling function: ${method} (${systemVersion})`);
       this.logger.debug(`Request: ${JSON.stringify(sanitizeForLogging(request))}`);
     }
 
@@ -381,8 +390,8 @@ export class ChannelAppService implements OnModuleInit, OnApplicationBootstrap {
   /**
    * Get list of all registered functions
    */
-  getFunctions(): GetFunctionsResponse {
-    const allFunctions = this.discoveryService?.getPublicFunctions() ?? [];
+  getFunctions(systemVersion = ChannelAppService.DEFAULT_SYSTEM_VERSION): GetFunctionsResponse {
+    const allFunctions = this.discoveryService?.getPublicFunctions(systemVersion) ?? [];
 
     return this.toGetFunctionsResponse(allFunctions);
   }
@@ -390,8 +399,8 @@ export class ChannelAppService implements OnModuleInit, OnApplicationBootstrap {
   /**
    * Get list of all registered test functions
    */
-  getTestFunctions(): GetFunctionsResponse {
-    const allFunctions = this.discoveryService?.getTestFunctions() ?? [];
+  getTestFunctions(systemVersion = ChannelAppService.DEFAULT_SYSTEM_VERSION): GetFunctionsResponse {
+    const allFunctions = this.discoveryService?.getTestFunctions(systemVersion) ?? [];
 
     return this.toGetFunctionsResponse(allFunctions);
   }
@@ -423,6 +432,22 @@ export class ChannelAppService implements OnModuleInit, OnApplicationBootstrap {
         errorMessage: "",
       },
     };
+  }
+
+  private resolveSystemVersion(bodyVersion?: string, routeVersion?: string): string {
+    const requestedVersion =
+      routeVersion ?? bodyVersion ?? ChannelAppService.DEFAULT_SYSTEM_VERSION;
+
+    if (routeVersion !== undefined && bodyVersion !== undefined && bodyVersion !== routeVersion) {
+      throw new VersionMismatchError(bodyVersion, [routeVersion], routeVersion);
+    }
+
+    const availableVersions = this.getRegisteredVersions();
+    if (!availableVersions.includes(requestedVersion)) {
+      throw new VersionMismatchError(requestedVersion, availableVersions);
+    }
+
+    return requestedVersion;
   }
 
   /**

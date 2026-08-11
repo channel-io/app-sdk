@@ -97,15 +97,15 @@ for locale in "${locales[@]}"; do
     fi
   done
 
-  for expected in x-signature callAppFunction CallAppFunction camelCase orders.getV2 ':version'; do
+  for expected in x-signature callAppFunction CallAppFunction camelCase orders.getV2 ':version' versionMismatch '(systemVersion, method)' appsdk.SystemVersion; do
     if ! grep -Fq "$expected" "docs/guides/${locale}/functions.md"; then
       printf 'Missing preserved Function guidance in %s: %s\n' "docs/guides/${locale}/functions.md" "$expected" >&2
       failed=1
     fi
   done
 
-  if ! grep -Eq 'dispatch.*`method`' "docs/guides/${locale}/functions.md"; then
-    printf 'Missing method-based Function dispatch guidance in %s\n' "docs/guides/${locale}/functions.md" >&2
+  if ! grep -Eq 'systemVersion.*method|method.*systemVersion' "docs/guides/${locale}/functions.md"; then
+    printf 'Missing version-and-method Function dispatch guidance in %s\n' "docs/guides/${locale}/functions.md" >&2
     failed=1
   fi
 

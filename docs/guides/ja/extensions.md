@@ -160,7 +160,8 @@ Custom bootstrap や deployment system が registration を管理する場合に
 | Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
 
 Function request ごとに新しい token を発行したり、registration を実行したりしないでください。
-Standalone Function だけのアプリは SDK の `core:v1` fallback を使います。ALF task と Notebook は
+Standalone Function だけのアプリでは、SDK が Function の各 system version に対応する `core`
+fallback を作り、version 指定がなければ `core:v1` になります。ALF task と Notebook は
 `registerExtension` が成功すると自動的に sync されるため、別の registration Function は呼び出しません。
 Messaging などの advanced family では product setup または family-specific secondary sync が必要な
 場合があるため、family recipe に従ってください。
@@ -174,15 +175,16 @@ SDK package version、developer が定義する Function API version とは異�
 system contract は `v1` です。たとえば AppStore system contract `v2` は、そのような breaking
 change が反映された platform version であり、各 app が作る v2 ではありません。
 
-| `systemVersion` が現れる場所                        | 意味                                                               |
-| --------------------------------------------------- | ------------------------------------------------------------------ |
-| `@Extension` または Go Extension registration       | App が実装すると AppStore に宣言する system contract               |
-| Extension metadata の target `systemVersion`        | その Function の呼び出しに使う同じ AppStore system contract        |
-| Request の `systemVersion` と `/functions/v1`        | AppStore が同じ contract を app server に渡す request と route の表現 |
+| `systemVersion` が現れる場所                  | 意味                                                                  |
+| --------------------------------------------- | --------------------------------------------------------------------- |
+| `@Extension` または Go Extension registration | App が実装すると AppStore に宣言する system contract                  |
+| Extension metadata の target `systemVersion`  | その Function の呼び出しに使う同じ AppStore system contract           |
+| Request の `systemVersion` と `/functions/v1` | AppStore が同じ contract を app server に渡す request と route の表現 |
 
-現在の SDK は version ごとに別の handler set を作りません。そのため、developer が
-`systemVersion: "v2"` を任意に指定して独自の Function v2 を運用することはできません。AppStore と
-SDK が公式 v2 contract を提供した場合だけその値を使ってください。App が所有する standalone
+SDK は route と request が渡す `systemVersion` ごとに handler と discovery catalog を分離します。
+同じ公式 Function name の v1 と v2 implementation を共存させられますが、これは developer が
+所有する Function API version namespace ではありません。`systemVersion: "v2"` は AppStore と
+SDK が公式 v2 contract を提供した場合だけ使ってください。App が所有する standalone
 Function の互換性を維持する方法は [Function 登録](functions.md)を参照してください。標準 Extension
 Function の公式 name は変更せず、AppStore と SDK が提供する contract を実装します。
 

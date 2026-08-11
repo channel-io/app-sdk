@@ -100,9 +100,11 @@ discovery response を別に作らないでください。TypeScript は `Signat
 Go は `server.WithSignature` で正確な request bytes を検証します。
 
 Route suffix の `v1` と request の `systemVersion` は同じ AppStore system contract を渡します。
-現在の TypeScript と Go SDK は URL の `:version` や request の `systemVersion` ごとに handler set を
-分けず、signature 検証後の dispatch は正確な `method` に基づきます。したがって
-`/functions/v1` は developer が所有する API version namespace ではありません。
+TypeScript と Go SDK は URL の `:version` で version ごとの handler と discovery catalog を選び、
+正確な `method` で dispatch します。Body に `systemVersion` がある場合は route と一致する必要が
+あり、省略時は route version を使います。不一致または未登録 version は `versionMismatch` で拒否し、
+別 version の同じ method には fallback しません。したがって `/functions/v1` は developer が所有する
+API version namespace ではなく、dispatch key は `(systemVersion, method)` です。
 
 ### Function contract の互換性を保って変更する
 
@@ -130,6 +132,16 @@ async getOrder(@Ctx() ctx: Context, @Input() input: { orderId: string }) {
 Extension を作らないでください。Discovery されるよう、decorated class を NestJS module の
 `providers` に追加します。
 
+AppStore と SDK が公式の新しい system contract を公開した後、その contract 用に standalone
+実装を分ける場合だけ version を指定します。省略時は `v1` に登録されます。
+
+```ts
+@Func({ name: "orders.get", systemVersion: "v2" })
+async getOrderV2(@Ctx() ctx: Context, @Input() input: GetOrderV2Input) {
+  return this.service.getOrderV2(ctx.channel.id, input);
+}
+```
+
 ## Go
 
 Go は builder と generic handler を使用します。
@@ -155,6 +167,13 @@ appsdk.MustRegister(
 `appsdk.Register` と `appsdk.MustRegister` は Go struct から schema を作り、input が
 `Validate() error` を実装する場合は自動で呼び出します。明示的な contract には
 `appsdk.InputSchema`、`appsdk.OutputSchema`、proto helper を使用します。
+
+公式の新しい system contract 用 standalone Function には `appsdk.SystemVersion` を追加します。
+省略時は従来どおり `v1` に登録されます。
+
+```go
+appsdk.MustRegister(app, "orders.get", getOrderV2, appsdk.SystemVersion("v2"))
+```
 
 ## Native Function と App Function の呼び出し
 

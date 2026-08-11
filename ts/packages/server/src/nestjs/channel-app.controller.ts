@@ -5,7 +5,7 @@ import {
   FunctionNotFoundError,
   ValidationError,
 } from "@channel.io/app-sdk-core";
-import { ChannelAppService } from "./channel-app.service.js";
+import { ChannelAppService, VersionMismatchError } from "./channel-app.service.js";
 
 @Controller("functions")
 export class ChannelAppController {
@@ -53,6 +53,20 @@ export class ChannelAppController {
             error: "VALIDATION_ERROR",
             message: error.message,
             details: error.details,
+          },
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
+      if (error instanceof VersionMismatchError) {
+        throw new HttpException(
+          {
+            error: "VERSION_MISMATCH",
+            type: "versionMismatch",
+            message: error.message,
+            requestedVersion: error.requestedVersion,
+            availableVersions: error.availableVersions,
+            ...(error.routeVersion === undefined ? {} : { routeVersion: error.routeVersion }),
           },
           HttpStatus.BAD_REQUEST
         );

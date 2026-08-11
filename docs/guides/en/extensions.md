@@ -160,8 +160,9 @@ directly:
 | TypeScript | `nativeClient.registerExtension(appId, extensionName, systemVersion, appToken.accessToken)`      |
 | Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
 
-Do not issue a new token or register on every Function request. Apps with only standalone Functions
-use the SDK's `core:v1` fallback. A successful `registerExtension` call automatically synchronizes
+Do not issue a new token or register on every Function request. For apps with only standalone
+Functions, the SDK creates a `core` fallback for each Function system version; without an explicit
+version this is `core:v1`. A successful `registerExtension` call automatically synchronizes
 ALF tasks and Notebooks; do not call a separate registration Function for either family. Messaging
 and other advanced families may still require coordinated product setup or a family-specific
 secondary sync, so follow their family recipe.
@@ -175,15 +176,16 @@ version, an npm or Go SDK package version, or a developer-defined Function API v
 default system contract is `v1`. For example, an AppStore system contract `v2` would identify a
 platform contract with those breaking changes; it would not be a v2 created by each app.
 
-| Where `systemVersion` appears                         | Meaning                                                                   |
-| ----------------------------------------------------- | ------------------------------------------------------------------------- |
-| `@Extension` or Go Extension registration             | The system contract that the app declares it implements to AppStore      |
-| An Extension metadata target `systemVersion`          | The same AppStore system contract to use when invoking that Function      |
-| Request `systemVersion` and `/functions/v1`            | Request and route representations of the same contract sent by AppStore   |
+| Where `systemVersion` appears                | Meaning                                                                 |
+| -------------------------------------------- | ----------------------------------------------------------------------- |
+| `@Extension` or Go Extension registration    | The system contract that the app declares it implements to AppStore     |
+| An Extension metadata target `systemVersion` | The same AppStore system contract to use when invoking that Function    |
+| Request `systemVersion` and `/functions/v1`  | Request and route representations of the same contract sent by AppStore |
 
-The current SDK does not create a separate handler set for each version. Developers therefore
-cannot operate their own Function v2 by setting `systemVersion: "v2"`. Use that value only after
-AppStore and the SDK publish an official v2 contract. See
+The SDK keeps handlers and discovery catalogs separate for each `systemVersion` carried by the
+route and request. The same official Function name can therefore have v1 and v2 implementations,
+but this is not a developer-owned Function API version namespace. Use `systemVersion: "v2"` only
+after AppStore and the SDK publish an official v2 contract. See
 [Function registration](functions.md) for preserving compatibility in app-owned standalone
 Functions. Keep the official names of standard Extension Functions and implement the contract
 published by AppStore and the SDK.

@@ -3,6 +3,7 @@ package appsdk
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 const (
@@ -34,6 +35,22 @@ func NewError(code int, typ string, message string, data ...any) *FunctionError 
 		err.Data = data[0]
 	}
 	return err
+}
+
+func NewVersionMismatchError(requestedVersion string, availableVersions []string) *FunctionError {
+	return NewError(
+		CodeBadRequest,
+		"versionMismatch",
+		fmt.Sprintf(
+			"system version %q not found; available versions: %v",
+			requestedVersion,
+			availableVersions,
+		),
+		map[string]any{
+			"requestedVersion":  requestedVersion,
+			"availableVersions": availableVersions,
+		},
+	)
 }
 
 func ErrorResponse(err error) FunctionResponse {

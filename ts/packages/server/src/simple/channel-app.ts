@@ -27,6 +27,7 @@ import {
   ValidationError,
 } from "@channel.io/app-sdk-core";
 import { AppStoreClient } from "../appstore/client.js";
+import { VersionMismatchError } from "../nestjs/channel-app.service.js";
 import { normalizeExtensionResult } from "../utils/extension-result-normalizer.js";
 import { parseFunctionInputParams } from "../utils/function-input-validator.js";
 
@@ -241,7 +242,23 @@ class ChannelAppSimpleService implements OnModuleInit {
     }
   }
 
-  async handleFunctionCall(request: FunctionCallRequest): Promise<FunctionCallResponse> {
+  async handleFunctionCall(
+    request: FunctionCallRequest,
+    routeVersion = "v1"
+  ): Promise<FunctionCallResponse> {
+    if (
+      routeVersion !== "v1" ||
+      (request.systemVersion !== undefined && request.systemVersion !== routeVersion)
+    ) {
+      throw new VersionMismatchError(
+        request.systemVersion ?? routeVersion,
+        ["v1"],
+        request.systemVersion !== undefined && request.systemVersion !== routeVersion
+          ? routeVersion
+          : undefined
+      );
+    }
+
     const { method, context, params } = request;
 
     // Handle getFunctions
@@ -325,15 +342,15 @@ class ChannelAppSimpleController {
 
   @Put(":version")
   async handleVersionedFunctions(
-    @Param("version") _version: string,
+    @Param("version") version: string,
     @Body() body: FunctionCallRequest
   ) {
-    return this.handleRequest(body);
+    return this.handleRequest(body, version);
   }
 
-  private async handleRequest(body: FunctionCallRequest) {
+  private async handleRequest(body: FunctionCallRequest, version: string) {
     try {
-      return await this.service.handleFunctionCall(body);
+      return await this.service.handleFunctionCall(body, version);
     } catch (error) {
       if (error instanceof FunctionNotFoundError) {
         throw new HttpException(
@@ -347,6 +364,19 @@ class ChannelAppSimpleController {
             error: "VALIDATION_ERROR",
             message: error.message,
             details: error.details,
+          },
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      if (error instanceof VersionMismatchError) {
+        throw new HttpException(
+          {
+            error: "VERSION_MISMATCH",
+            type: "versionMismatch",
+            message: error.message,
+            requestedVersion: error.requestedVersion,
+            availableVersions: error.availableVersions,
+            ...(error.routeVersion === undefined ? {} : { routeVersion: error.routeVersion }),
           },
           HttpStatus.BAD_REQUEST
         );

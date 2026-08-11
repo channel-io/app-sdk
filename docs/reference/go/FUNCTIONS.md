@@ -40,6 +40,19 @@ appsdk.MustRegister(
 
 Use `appsdk.Register` when startup should return an error and `appsdk.MustRegister` when invalid registration should panic. `appsdk.RegisterInput` is available when the output is intentionally dynamic.
 
+Standalone Functions default to the `v1` AppStore system contract. After AppStore and the SDK
+publish another official contract, register its implementation with the same method name and a
+version option:
+
+```go
+appsdk.MustRegister(app, "orders.get", getOrderV2, appsdk.SystemVersion("v2"))
+```
+
+The registry and discovery catalog are scoped by `(systemVersion, method)`. Use
+`HasMethodForVersion`, `MethodsForVersion`, `SchemasForVersion`, `TestSchemasForVersion`,
+`GetFunctionsForVersion`, `GetTestFunctionsForVersion`, and `SupportedSystemVersions` when
+inspecting a specific contract. Existing methods without a version continue to inspect `v1`.
+
 ## Context
 
 `appsdk.Context` can contain:

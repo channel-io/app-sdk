@@ -25,8 +25,10 @@ identity and optional AppStore-issued resources such as manager webhook callback
 `systemVersion` identifies the system contract between AppStore and the app server. Channel
 increments this value when the AppStore-to-app request contract introduces a backward-incompatible
 breaking change; it is not a developer-managed Function API version. Current SDK handlers dispatch
-by the exact `method`, not by separate URL or request-version handler catalogs. Successful calls
-return `{"result": ...}`. Expected app failures return an `error` envelope:
+against a catalog selected by the URL system version and then by the exact `method`. If the body
+contains `systemVersion`, it must equal the URL version; an omitted body value inherits the URL.
+Unsupported or conflicting versions return `versionMismatch`, and handlers never fall back across
+versions. Successful calls return `{"result": ...}`. Expected app failures return an `error` envelope:
 
 ```json
 {
@@ -44,7 +46,7 @@ for programmatic handling, a safe human-readable `message`, and optional structu
 return credentials or sensitive customer data in errors.
 
 Function discovery uses the reserved `extension.core.function.getFunctions` method. SDK servers
-answer it from registered Function schemas.
+answer it from the schemas registered for the request's system version.
 
 ## JSON Schema
 

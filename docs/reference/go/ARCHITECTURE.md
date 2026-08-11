@@ -2,17 +2,17 @@
 
 ## Packages
 
-| Package         | Responsibility                                                                       |
-| --------------- | ------------------------------------------------------------------------------------ |
-| `appsdk`        | App registry, Function request/response types, typed handlers, discovery, and errors |
-| `schema`        | JSON Schema generation, explicit overrides, and schema patches                       |
-| `extension`     | Generic Extension builder and shared helpers                                         |
-| `extension/*`   | Typed builders, names, DTOs, and validators for standard Extension families          |
-| `server`        | Default Gin-backed server with the smallest public API                               |
-| `server/gin`    | Handler, route, existing-engine mounting, signatures, and auto-registration options  |
-| `native`        | AppStore client, app/channel token manager, cache interface, and auto-registration   |
-| `testkit`       | Function invocation and discovery helpers for tests                                  |
-| `datasource/*`  | DataSource metadata, gRPC query server, and optional query executors                 |
+| Package        | Responsibility                                                                       |
+| -------------- | ------------------------------------------------------------------------------------ |
+| `appsdk`       | App registry, Function request/response types, typed handlers, discovery, and errors |
+| `schema`       | JSON Schema generation, explicit overrides, and schema patches                       |
+| `extension`    | Generic Extension builder and shared helpers                                         |
+| `extension/*`  | Typed builders, names, DTOs, and validators for standard Extension families          |
+| `server`       | Default Gin-backed server with the smallest public API                               |
+| `server/gin`   | Handler, route, existing-engine mounting, signatures, and auto-registration options  |
+| `native`       | AppStore client, app/channel token manager, cache interface, and auto-registration   |
+| `testkit`      | Function invocation and discovery helpers for tests                                  |
+| `datasource/*` | DataSource metadata, gRPC query server, and optional query executors                 |
 
 ## Request Lifecycle
 
@@ -45,7 +45,10 @@ Go does not scan decorators. Calling `app.Use(builder)` lets the builder:
 2. register Extension Functions with canonical full names;
 3. register standalone Functions referenced by metadata.
 
-`server.WithAutoRegister()` creates an `native.AutoRegistrar`. It obtains a cached app token, calls `registerExtension` for every declared Extension, and falls back to the `core:v1` registration when the app contains only standalone Functions.
+`server.WithAutoRegister()` creates an `native.AutoRegistrar`. It obtains a cached app token, calls
+`registerExtension` for every declared Extension, and adds a version-matched `core` registration for
+standalone Function versions that have no Extension target. Empty or unversioned apps keep the
+`core:v1` fallback.
 
 ## Trust Boundaries
 

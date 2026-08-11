@@ -47,6 +47,7 @@ func TestHandlerVerifiesTypeScriptCompatibleSignature(t *testing.T) {
 	rec := httptest.NewRecorder()
 	ctx, _ := ginlib.CreateTestContext(rec)
 	ctx.Request = req
+	ctx.Params = ginlib.Params{{Key: "version", Value: "v1"}}
 
 	handler.Handle(ctx)
 
@@ -71,6 +72,7 @@ func TestHandlerRejectsInvalidSignature(t *testing.T) {
 	rec := httptest.NewRecorder()
 	ctx, _ := ginlib.CreateTestContext(rec)
 	ctx.Request = req
+	ctx.Params = ginlib.Params{{Key: "version", Value: "v1"}}
 
 	handler.Handle(ctx)
 
@@ -91,6 +93,7 @@ func TestHandlerUsesCustomSignatureError(t *testing.T) {
 	rec := httptest.NewRecorder()
 	ctx, _ := ginlib.CreateTestContext(rec)
 	ctx.Request = req
+	ctx.Params = ginlib.Params{{Key: "version", Value: "v1"}}
 
 	handler.Handle(ctx)
 
@@ -135,6 +138,7 @@ func TestHandlerUsesRequestContextHook(t *testing.T) {
 	rec := httptest.NewRecorder()
 	ctx, _ := ginlib.CreateTestContext(rec)
 	ctx.Request = req
+	ctx.Params = ginlib.Params{{Key: "version", Value: "v1"}}
 
 	handler.Handle(ctx)
 
@@ -156,6 +160,122 @@ func TestServerMountsDefaultRoute(t *testing.T) {
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+}
+
+func TestServerRoutesTheSameMethodByPathVersion(t *testing.T) {
+	ginlib.SetMode(ginlib.TestMode)
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	for _, version := range []string{"v1", "v2"} {
+		version := version
+		if err := appsdk.Register(
+			app,
+			"extension.test.echo",
+			func(_ context.Context, _ appsdk.Context, _ *echoInput) (*echoOutput, error) {
+				return &echoOutput{Message: version}, nil
+			},
+			appsdk.SystemVersion(version),
+		); err != nil {
+			t.Fatal(err)
+		}
+	}
+	server := sdkgin.NewServer(app, sdkgin.WithEngine(ginlib.New()))
+
+	body := []byte(`{"method":"extension.test.echo","context":{}}`)
+	req := httptest.NewRequest(http.MethodPut, "/functions/v2", bytes.NewReader(body))
+	rec := httptest.NewRecorder()
+	server.Engine().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+	var response appsdk.FunctionResponse
+	if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
+		t.Fatal(err)
+	}
+	var output echoOutput
+	if err := json.Unmarshal(response.Result, &output); err != nil {
+		t.Fatal(err)
+	}
+	if output.Message != "v2" {
+		t.Fatalf("expected v2 handler, got %q", output.Message)
+	}
+}
+
+func TestHandlerDefaultsBareRouteToV1(t *testing.T) {
+	ginlib.SetMode(ginlib.TestMode)
+	var receivedVersion string
+	handler := sdkgin.NewHandler(requestHandlerFunc(func(_ context.Context, req appsdk.FunctionRequest) appsdk.FunctionResponse {
+		receivedVersion = req.SystemVersion
+		return appsdk.FunctionResponse{Result: json.RawMessage(`{"ok":true}`)}
+	}))
+
+	req := httptest.NewRequest(http.MethodPut, "/functions", bytes.NewReader([]byte(`{"method":"extension.test.echo","context":{}}`)))
+	rec := httptest.NewRecorder()
+	ctx, _ := ginlib.CreateTestContext(rec)
+	ctx.Request = req
+
+	handler.Handle(ctx)
+
+	if rec.Code != http.StatusOK || receivedVersion != appsdk.DefaultSystemVersion {
+		t.Fatalf("expected bare route to use v1, got status=%d version=%q", rec.Code, receivedVersion)
+	}
+}
+
+func TestHandlerPassesRouteVersionToCustomHandler(t *testing.T) {
+	ginlib.SetMode(ginlib.TestMode)
+	var receivedVersion string
+	handler := sdkgin.NewHandler(requestHandlerFunc(func(_ context.Context, req appsdk.FunctionRequest) appsdk.FunctionResponse {
+		receivedVersion = req.SystemVersion
+		return appsdk.FunctionResponse{Result: json.RawMessage(`{"ok":true}`)}
+	}))
+
+	body := []byte(`{"method":"extension.test.echo","context":{}}`)
+	req := httptest.NewRequest(http.MethodPut, "/functions/v2", bytes.NewReader(body))
+	rec := httptest.NewRecorder()
+	ctx, _ := ginlib.CreateTestContext(rec)
+	ctx.Request = req
+	ctx.Params = ginlib.Params{{Key: "version", Value: "v2"}}
+
+	handler.Handle(ctx)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+	if receivedVersion != "v2" {
+		t.Fatalf("expected route version v2, got %q", receivedVersion)
+	}
+}
+
+func TestHandlerRejectsRouteAndBodyVersionMismatch(t *testing.T) {
+	ginlib.SetMode(ginlib.TestMode)
+	called := false
+	handler := sdkgin.NewHandler(requestHandlerFunc(func(_ context.Context, _ appsdk.FunctionRequest) appsdk.FunctionResponse {
+		called = true
+		return appsdk.FunctionResponse{}
+	}))
+
+	body := []byte(`{"method":"extension.test.echo","systemVersion":"v1","context":{}}`)
+	req := httptest.NewRequest(http.MethodPut, "/functions/v2", bytes.NewReader(body))
+	rec := httptest.NewRecorder()
+	ctx, _ := ginlib.CreateTestContext(rec)
+	ctx.Request = req
+	ctx.Params = ginlib.Params{{Key: "version", Value: "v2"}}
+
+	handler.Handle(ctx)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d: %s", rec.Code, rec.Body.String())
+	}
+	if called {
+		t.Fatal("expected mismatched request not to reach custom handler")
+	}
+	var response appsdk.FunctionResponse
+	if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
+		t.Fatal(err)
+	}
+	if response.Error == nil || response.Error.Type != "versionMismatch" {
+		t.Fatalf("expected versionMismatch error, got %+v", response.Error)
 	}
 }
 

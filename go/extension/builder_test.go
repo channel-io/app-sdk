@@ -40,3 +40,37 @@ func TestBuilderDeclaresExtensionAndRegistersFunctions(t *testing.T) {
 		t.Fatalf("unexpected auto register targets: %+v", targets)
 	}
 }
+
+func TestBuilderScopesFunctionsToItsSystemVersion(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	builder := extension.New("sample", extension.SystemVersion("v2")).
+		Func("sample.echo", appsdk.Handle(func(_ context.Context, _ appsdk.Context, in *echoInput) (*echoOutput, error) {
+			return &echoOutput{Message: in.Message}, nil
+		}))
+
+	if err := app.Use(builder); err != nil {
+		t.Fatal(err)
+	}
+	if app.HasMethod("sample.echo") {
+		t.Fatal("expected v2 extension function not to be registered in v1")
+	}
+	if !app.HasMethodForVersion("v2", "sample.echo") {
+		t.Fatal("expected extension function to be registered in v2")
+	}
+}
+
+func TestBuilderRejectsConflictingFunctionSystemVersion(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	builder := extension.New("sample", extension.SystemVersion("v2")).
+		Func(
+			"sample.echo",
+			appsdk.SystemVersion("v1"),
+			appsdk.Handle(func(_ context.Context, _ appsdk.Context, in *echoInput) (*echoOutput, error) {
+				return &echoOutput{Message: in.Message}, nil
+			}),
+		)
+
+	if err := app.Use(builder); err == nil {
+		t.Fatal("expected conflicting system versions to fail")
+	}
+}

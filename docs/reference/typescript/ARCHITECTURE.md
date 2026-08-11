@@ -33,10 +33,11 @@ signature guard; do not add an unsigned second dispatcher. A hosting platform ma
 mapping; otherwise configure it in the app's ingress.
 
 The `:version` route parameter and request `systemVersion` carry the AppStore system contract; they
-do not select separate developer-defined Function implementations. After signature verification,
-the current SDK dispatches against one discovered handler catalog using the exact request `method`.
-Use distinct Function names such as `orders.getV2` when an app-owned standalone contract must evolve
-without breaking existing callers.
+select an SDK handler and discovery catalog for that contract. The URL version is authoritative; a
+body version must match it and an omitted body version inherits it. After signature verification,
+the SDK dispatches by `(systemVersion, method)` without cross-version fallback. This is not a
+developer-owned API namespace: use distinct Function names such as `orders.getV2` when an app-owned
+standalone contract must evolve without breaking existing callers.
 
 ## Extension discovery
 
@@ -55,6 +56,11 @@ export class CalendarExtension {
 ```
 
 `ExtensionDiscoveryService` reads decorator metadata, creates full names, generates the function catalog, and dispatches incoming calls. Extension classes remain normal NestJS providers and can use dependency injection.
+
+An Extension Function inherits `@Extension({ systemVersion })`. A standalone Function defaults to
+`v1` and can target a newly published official contract with
+`@Func({ name: "orders.get", systemVersion: "v2" })`. The same full name may be registered in
+different versions, while duplicates inside one version fail during discovery.
 
 ## Bootstrap and registration
 
@@ -80,7 +86,8 @@ After the HTTP server starts listening, auto-registration:
 3. Retries transient failures with exponential backoff.
 4. Lets AppStore call the versioned endpoint to read function/metadata schemas.
 
-When no extension decorator exists, auto-registration uses the `core` extension fallback for standalone functions.
+When a standalone Function version has no Extension registration, auto-registration adds a `core`
+target for that version. An empty or unversioned app therefore keeps the `core:v1` fallback.
 
 ## Authentication boundaries
 
