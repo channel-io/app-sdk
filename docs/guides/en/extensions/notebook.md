@@ -4,10 +4,8 @@ Use Notebook to publish versioned, app-managed notebook and cell definitions.
 
 ## Contract
 
-`extension.notebook.core.getNotebooks` is required. Registration has two steps:
-
-1. register `notebook:v1`;
-2. call `registerAppNotebooks` with a cached app token to synchronize definitions.
+`extension.notebook.core.getNotebooks` is required. Register `notebook:v1` through the common
+`registerExtension` flow. Successful registration also triggers definition synchronization.
 
 Each notebook has a stable key, positive integer version, title, optional initial visibility, and
 cells. Supported cell types are `markdown`, `sql`, `python`, `input`, `chart`, `table`, and
@@ -25,15 +23,14 @@ the [TypeScript Notebook reference](../../../reference/typescript/extensions/not
 err := app.Use(notebook.Extension().GetNotebooks(handler.GetNotebooks))
 ```
 
-After auto-registration, call the Go native client's notebook sync in a controlled startup or
-release step.
+Auto-registration uses the same common `registerExtension` flow and triggers notebook sync.
 
 ## Security and verification
 
 - Increment versions when definitions change; do not reuse a version for different content.
 - Treat externally sourced Markdown, URLs, and rendered data as untrusted.
 - Keep credentials and private records out of definitions and cells.
-- Test discovery, extension registration, secondary sync, version readback, invalid cells, deleted
+- Test discovery, extension registration and sync, version readback, invalid cells, deleted
   notebooks, localization, and safe rendering.
 
 See the [Go native reference](../../../reference/go/NATIVE.md).

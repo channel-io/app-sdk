@@ -60,8 +60,8 @@ func TestExecutorStreamsRowsInBatches(t *testing.T) {
 	}
 }
 
-func TestExecutorRejectsUnsupportedTable(t *testing.T) {
-	db, _, err := sqlmock.New()
+func TestExecutorDefersTableAuthorizationToAppStore(t *testing.T) {
+	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("new sqlmock: %v", err)
 	}
@@ -73,12 +73,17 @@ func TestExecutorRejectsUnsupportedTable(t *testing.T) {
 	if err != nil {
 		t.Fatalf("new executor: %v", err)
 	}
+	mock.ExpectQuery(`SELECT id FROM customers`).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}))
 	err = executor.ExecuteQuery(context.Background(), grpcdatasource.QueryRequest{
 		SourceID: "postgresql",
 		Query:    "SELECT id FROM customers",
 	}, &captureSender{})
-	if err == nil {
-		t.Fatal("expected unsupported table query to fail")
+	if err != nil {
+		t.Fatalf("expected App Store-authorized table query to reach the provider: %v", err)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("sql expectations: %v", err)
 	}
 }
 

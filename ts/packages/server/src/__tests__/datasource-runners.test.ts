@@ -45,6 +45,22 @@ describe("datasource policy helpers", () => {
     expect(queryWithRowLimit(`select * from orders${";".repeat(10_000)}`, 10)).toBe(
       "SELECT * FROM (select * from orders) AS datasource_query LIMIT 10"
     );
+    expect(
+      queryWithRowLimit(
+        "WITH RECURSIVE seq AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM seq WHERE n < 3) SELECT * FROM seq;",
+        10
+      )
+    ).toBe(
+      "WITH RECURSIVE seq AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM seq WHERE n < 3) SELECT * FROM (SELECT * FROM seq) AS datasource_query LIMIT 10"
+    );
+    expect(
+      queryWithRowLimit(
+        "WITH /* recursive query */ RECURSIVE seq AS (SELECT 1 AS n)\n-- final query\nSELECT * FROM seq",
+        10
+      )
+    ).toBe(
+      "WITH /* recursive query */ RECURSIVE seq AS (SELECT 1 AS n)\n-- final query\nSELECT * FROM (SELECT * FROM seq) AS datasource_query LIMIT 10"
+    );
   });
 
   it("accepts comments and literals in read-only queries", () => {
@@ -81,11 +97,19 @@ describe("datasource policy helpers", () => {
     }
   });
 
-  it("ignores table names inside comments and literals", () => {
+  it("allows tableless queries with configured tables", () => {
     for (const query of ["SELECT 'orders' AS note", "SELECT 1 /* FROM orders */"]) {
-      expect(() => validateReadOnlyQuery(query, [], [{ name: "orders" }])).toThrow(
-        "supported datasource table"
-      );
+      expect(() => validateReadOnlyQuery(query, [], [{ name: "orders" }])).not.toThrow();
+    }
+  });
+
+  it("defers table authorization and dialect syntax to App Store and the provider", () => {
+    for (const query of [
+      "SELECT * FROM customers",
+      "SELECT * FROM UNNEST([1, 2, 3])",
+      "SELECT * FROM (SELECT 1)",
+    ]) {
+      expect(() => validateReadOnlyQuery(query, [], [{ name: "orders" }])).not.toThrow();
     }
   });
 });

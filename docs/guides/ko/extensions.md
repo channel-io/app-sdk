@@ -158,8 +158,29 @@ Custom bootstrap이나 배포 시스템이 등록을 제어할 때만 native Fun
 | Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
 
 Function 요청마다 새 token을 발급하거나 등록하지 마세요. Standalone Function만 있는 앱은 SDK의
-`core:v1` fallback을 사용합니다. ALF task, Notebook, Messaging 같은 고급 family는 generic Extension
-등록 뒤 secondary sync 또는 product 설정이 필요할 수 있으므로 해당 family 문서를 따르세요.
+`core:v1` fallback을 사용합니다. ALF task와 Notebook은 `registerExtension`이 성공하면 자동으로
+sync되므로 별도 등록 Function을 호출하지 않습니다. Messaging과 그 밖의 고급 family는 product 설정
+또는 family별 secondary sync가 필요할 수 있으므로 해당 family 문서를 따르세요.
+
+## `systemVersion` 이해하기
+
+`systemVersion`은 AppStore와 앱 서버 사이의 시스템 계약 버전입니다. AppStore가 서드파티 앱에
+보내는 요청의 field, schema 또는 호출 규약에 하위 호환성을 깨는 변경(breaking change)을 도입할 때
+Channel이 올립니다. 앱의 배포 버전, npm/Go SDK package 버전, 개발자가 정의한 Function API 버전과는
+다릅니다. 현재 기본 시스템 계약은 `v1`입니다. 예를 들어 AppStore 시스템 계약 `v2`는 이러한
+breaking change가 반영된 플랫폼 버전이지, 각 앱이 만드는 v2가 아닙니다.
+
+| `systemVersion`이 나타나는 위치                        | 의미                                                                 |
+| ------------------------------------------------------ | -------------------------------------------------------------------- |
+| `@Extension` 또는 Go Extension 등록                    | 앱이 구현한다고 AppStore에 등록하는 시스템 계약                      |
+| Extension metadata의 target `systemVersion`            | 해당 Function을 호출할 때 사용할 동일한 AppStore 시스템 계약         |
+| Function request의 `systemVersion`과 `/functions/v1`   | AppStore가 같은 시스템 계약을 앱 서버에 전달하는 request와 route 표현 |
+
+현재 SDK는 version별 handler 집합을 만들지 않습니다. 따라서 개발자가 `systemVersion: "v2"`를
+임의로 지정해 자체 Function v2를 운영할 수 없습니다. AppStore와 SDK가 공식 v2 계약을 제공할 때만
+그 값을 사용하세요. 앱이 소유한 standalone Function의 호환성 유지 방법은
+[Function 등록](functions.md)을 참고하세요. 표준 Extension Function은 공식 이름을 바꾸지 말고
+AppStore와 SDK가 제공하는 계약을 구현해야 합니다.
 
 ## 등록 lifecycle과 검증
 
@@ -284,7 +305,8 @@ credential을 profile에 포함하지 않습니다.
 
 DataSource metadata는 catalog, table, column, table description을 제공합니다. Query는 일반 app
 Function route가 아니라 인증된 DataSource gRPC endpoint에서 실행됩니다. `x-access-token`을
-검증하고 catalog/table allowlist, parameterized SQL, row/time limit을 적용하며 Arrow 호환 결과를
+검증하고 노출 table 인가는 AppStore에 맡기며, app 범위 credential과 read-only SQL,
+row/time limit을 적용하고 Arrow 호환 결과를
 stream하세요. SDK는 PostgreSQL과 BigQuery용 runner를 제공합니다.
 
 [DataSource 상세](extensions/datasource.md) ·
@@ -319,16 +341,16 @@ authorization 없이 사용자를 대신하지 않습니다.
 
 ## ALF task
 
-`extension.alfTask.alftask.getTasks`가 versioned automation task를 공개합니다. 등록은
-`registerExtension("alfTask", "v1")`과 `registerAlfTasks` 두 단계입니다. Task key를 안정적으로
+`extension.alfTask.alftask.getTasks`가 versioned automation task를 공개합니다.
+`registerExtension("alfTask", "v1")`으로 등록하면 task sync도 함께 시작됩니다. Task key를 안정적으로
 유지하고 동작이 바뀌면 version을 올린 뒤 sync된 version을 확인하세요.
 
 [ALF task 상세](extensions/alf-task.md)
 
 ## Notebook
 
-`extension.notebook.core.getNotebooks`가 versioned notebook definition을 공개하고 등록 후
-`registerAppNotebooks` sync가 필요합니다. Notebook/cell key는 안정적으로 유지하고 definition이
+`extension.notebook.core.getNotebooks`가 versioned notebook definition을 공개합니다.
+`registerExtension`으로 Notebook extension을 등록하면 sync도 함께 시작됩니다. Notebook/cell key는 안정적으로 유지하고 definition이
 바뀌면 version을 올리며 외부 data를 render할 때는 untrusted input으로 처리합니다.
 
 [Notebook 상세](extensions/notebook.md)

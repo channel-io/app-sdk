@@ -51,4 +51,26 @@ err := app.Use(oauth.Extension().
 - 동의 거절, 잘못된 state, refresh 실패, 연결 해제, 만료 credential, WAM 권한 누락을 token log
   없이 테스트합니다.
 
+## Lifecycle 복구
+
+`oauth.connected`와 `oauth.disconnected` Hook에는 `actionFunctionName`과 선택적
+`systemVersion`만 등록합니다. 두 lifecycle Hook에 `targetId`, `webhook`, endpoint token을
+넣지 마세요. Manager event에서는 `params.managerId`로 manager를 식별합니다.
+`context.caller`는 manager가 아니라 system caller이며, `oauth.connected`의
+`context.authToken`은 새 provider access token입니다.
+
+Manager `oauth.connected` Hook에 별도로 manager-scoped webhook target을 등록했다면
+`context.webhooks?.[targetId]?.url`이 callback 등록의 선택적 fast path로 올 수 있습니다.
+URL이 없을 수 있고 Hook delivery도 실패할 수 있으므로
+`TokenManager.getAppToken()`의 app token으로 active manager target을 page하는 방식이 복구
+경로입니다. Channel OAuth와 `oauth.disconnected`에서는 webhook URL을 기대하지 마세요.
+
+```ts
+const { accessToken } = await tokenManager.getAppToken();
+const page = await nativeClient.listActiveOAuthManagerTargets(
+  { limit: 500, cursor },
+  accessToken,
+);
+```
+
 [Go Extension 레퍼런스](../../../reference/go/EXTENSIONS.md)도 확인하세요.

@@ -58,10 +58,14 @@ export function referencedTables(
     .map((table) => table.name);
 }
 
+/**
+ * Enforces the app-runner safety boundary. Table inputs are retained for API
+ * compatibility; AppStore owns table authorization.
+ */
 export function validateReadOnlyQuery(
   query: string,
-  explicitTableNames: readonly string[] = [],
-  tables: readonly DataSourceTableConfig[] = []
+  _explicitTableNames: readonly string[] = [],
+  _tables: readonly DataSourceTableConfig[] = []
 ): void {
   if (!query.trim()) {
     throw new DataSourceExecutionError({
@@ -75,26 +79,6 @@ export function validateReadOnlyQuery(
       message: "query must be a single read-only SELECT statement",
     });
   }
-  if (tables.length === 0) {
-    return;
-  }
-
-  const allowedTables = new Set(tables.map((table) => table.name.toLowerCase()));
-  const tableNames = referencedTables(query, explicitTableNames, tables);
-  if (tableNames.length === 0) {
-    throw new DataSourceExecutionError({
-      code: DataSourceErrorCode.QueryInvalid,
-      message: "query must reference a supported datasource table",
-    });
-  }
-  for (const tableName of tableNames) {
-    if (!allowedTables.has(tableName.toLowerCase())) {
-      throw new DataSourceExecutionError({
-        code: DataSourceErrorCode.TableNotFound,
-        message: `unsupported datasource table: ${tableName}`,
-      });
-    }
-  }
 }
 
 export function queryWithRowLimit(query: string, rowLimit: number | undefined): string {
@@ -102,6 +86,12 @@ export function queryWithRowLimit(query: string, rowLimit: number | undefined): 
   const limit = Math.trunc(rowLimit ?? 0);
   if (limit <= 0) {
     return normalized;
+  }
+  const analysis = analyzeSql(normalized);
+  if (analysis.withRecursive && analysis.mainQueryStart > 0) {
+    return `${normalized.slice(0, analysis.mainQueryStart)}SELECT * FROM (${normalized.slice(
+      analysis.mainQueryStart
+    )}) AS datasource_query LIMIT ${limit}`;
   }
   return `SELECT * FROM (${normalized}) AS datasource_query LIMIT ${limit}`;
 }
@@ -143,6 +133,8 @@ interface SqlAnalysis {
   hasBlockedKeyword: boolean;
   terminated: boolean;
   referenceText: string;
+  withRecursive: boolean;
+  mainQueryStart: number;
 }
 
 // This is a conservative lexer for the datasource safety policy, not a full SQL parser.
@@ -157,8 +149,12 @@ function analyzeSql(query: string): SqlAnalysis {
     hasBlockedKeyword: false,
     terminated: false,
     referenceText: "",
+    withRecursive: false,
+    mainQueryStart: -1,
   };
   const reference: string[] = [];
+  let parenDepth = 0;
+  let topLevelIdentifiers = 0;
 
   const markToken = (identifier: string | undefined): void => {
     if (analysis.terminated) {
@@ -252,6 +248,20 @@ function analyzeSql(query: string): SqlAnalysis {
         index += 1;
       }
       const identifier = query.slice(start, index);
+      if (parenDepth === 0) {
+        const lower = identifier.toLowerCase();
+        if (
+          analysis.firstKeyword === "with" &&
+          topLevelIdentifiers === 1 &&
+          lower === "recursive"
+        ) {
+          analysis.withRecursive = true;
+        }
+        if (analysis.withRecursive && lower === "select" && analysis.mainQueryStart < 0) {
+          analysis.mainQueryStart = start;
+        }
+        topLevelIdentifiers += 1;
+      }
       markToken(identifier);
       reference.push(identifier);
       continue;
@@ -267,6 +277,11 @@ function analyzeSql(query: string): SqlAnalysis {
       continue;
     }
 
+    if (character === "(") {
+      parenDepth += 1;
+    } else if (character === ")" && parenDepth > 0) {
+      parenDepth -= 1;
+    }
     markToken(undefined);
     reference.push(character);
     index += 1;

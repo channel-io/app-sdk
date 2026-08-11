@@ -4,10 +4,8 @@ Version 付き app-managed notebook/cell definition を公開するときに使�
 
 ## Contract
 
-`extension.notebook.core.getNotebooks` が必須で、registration は 2 段階です。
-
-1. `notebook:v1` を登録します。
-2. Cached app token で `registerAppNotebooks` を呼び、definition を sync します。
+`extension.notebook.core.getNotebooks` が必須です。共通の `registerExtension` フローで
+`notebook:v1` を登録すると、definition sync も開始されます。
 
 各 notebook は stable key、正の整数 version、title、optional initial visibility、cell を含みます。
 対応 cell type は `markdown`、`sql`、`python`、`input`、`chart`、`table`、`single_value` で、
@@ -25,8 +23,7 @@ optional tab と row/column layout は stable cell key を参照します。
 err := app.Use(notebook.Extension().GetNotebooks(handler.GetNotebooks))
 ```
 
-Auto-registration 後、管理された startup/release step で Go native client の notebook sync を
-呼びます。
+Auto-registration も同じ共通 `registerExtension` フローを使い、notebook sync を開始します。
 
 ## Security・検証
 

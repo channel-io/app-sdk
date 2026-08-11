@@ -23,7 +23,7 @@ Function은 Channel 또는 다른 앱이 앱 서버에 요청하는 typed RPC입
 - `method`: discovery에 공개된 정확한 전체 Function 이름
 - `params`: schema로 검증할 입력
 - `context`: caller, Channel, language, auth/config처럼 호출 surface가 제공하는 문맥
-- `systemVersion`: Extension 계약 version이 필요한 경우 사용
+- `systemVersion`: AppStore와 앱 서버 사이에서 적용되는 시스템 계약을 식별하는 값
 
 공개 JSON field는 TypeScript와 Go 모두 camelCase를 사용합니다. `context`는 raw body 기반
 `x-signature` 검증이 성공한 요청에서만 신뢰하세요.
@@ -98,6 +98,19 @@ SDK가 route, dispatch, schema validation, error envelope와
 `extension.core.function.getFunctions` discovery를 처리합니다. Raw JSON-RPC router나 수동 discovery
 응답을 만들지 마세요. TypeScript는 `SignatureGuard`와 `rawBody: true`, Go는
 `server.WithSignature`로 정확한 request bytes의 HMAC-SHA256 signature를 검증합니다.
+
+Route suffix의 `v1`과 request의 `systemVersion`은 같은 AppStore 시스템 계약을 전달합니다. 현재
+TypeScript와 Go SDK는 URL의 `:version`이나 request의 `systemVersion`별로 handler 집합을 나누지
+않으며, signature 검증 후 dispatch 기준은 정확한 `method`입니다. 따라서 `/functions/v1`은 개발자가
+소유하는 API version namespace가 아닙니다.
+
+### Function 계약을 호환성 있게 변경하기
+
+앱이 소유한 standalone Function에 breaking change가 필요하면서 기존 caller와의 호환성을 유지하려면
+기존 `orders.get`을 그대로 두고 새 계약을 `orders.getV2`처럼 별도 이름으로 등록하세요. Metadata와
+caller는 준비가 끝난 뒤 새 이름을 명시적으로 참조하게 변경합니다. `systemVersion: "v2"`나
+`/functions/v2`를 이 용도로 사용하지 마세요. 표준 Extension Function은 공식 Function 이름을 임의로
+바꾸지 않고 AppStore와 SDK가 제공하는 새 시스템 계약을 따라야 합니다.
 
 ## TypeScript
 

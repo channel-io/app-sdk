@@ -78,21 +78,6 @@ export const NativeUpsertAppDataTableRowsResultSchema = z.object({
   acceptedRowCount: z.number().int().nonnegative(),
 });
 
-export const NativeRegisterAppNotebooksParamsSchema = z.object({
-  appId: NativeNonEmptyStringSchema,
-});
-
-export const NativeRegisterAppNotebooksResultSchema = z.object({
-  success: z.boolean(),
-  errorMessage: z.string().optional(),
-  syncRunId: z.string().optional(),
-  status: z.string().optional(),
-  totalNotebooks: z.number().int().nonnegative(),
-  createdCount: z.number().int().nonnegative(),
-  updatedCount: z.number().int().nonnegative(),
-  deletedCount: z.number().int().nonnegative(),
-});
-
 export const NativeGetAppNotebookVersionsParamsSchema = z.object({
   appId: NativeNonEmptyStringSchema,
 });
@@ -109,6 +94,27 @@ export const NativeGetAppNotebookVersionsResultSchema = z.object({
   errorMessage: z.string().optional(),
   notebooks: z.array(NativeAppNotebookVersionSchema),
 });
+
+export const NativeListActiveOAuthManagerTargetsParamsSchema = z
+  .object({
+    cursor: NativeNonEmptyStringSchema.optional(),
+    limit: z.number().int().min(1).max(500),
+  })
+  .strict();
+
+export const NativeActiveOAuthManagerTargetSchema = z
+  .object({
+    channelId: NativeNonEmptyStringSchema,
+    managerId: NativeNonEmptyStringSchema,
+  })
+  .strict();
+
+export const NativeListActiveOAuthManagerTargetsResultSchema = z
+  .object({
+    targets: z.array(NativeActiveOAuthManagerTargetSchema),
+    nextCursor: NativeNonEmptyStringSchema.optional(),
+  })
+  .strict();
 
 interface NativeFunctionSchemaDefinition {
   name: string;
@@ -143,16 +149,16 @@ export const nativeFunctionSchemaDefinitions = [
     output: NativeUpsertAppDataTableRowsResultSchema,
   },
   {
-    name: "registerAppNotebooks",
-    description: "Register and sync app-managed notebooks.",
-    input: NativeRegisterAppNotebooksParamsSchema,
-    output: NativeRegisterAppNotebooksResultSchema,
-  },
-  {
     name: "getAppNotebookVersions",
     description: "Get the latest synced app notebook versions.",
     input: NativeGetAppNotebookVersionsParamsSchema,
     output: NativeGetAppNotebookVersionsResultSchema,
+  },
+  {
+    name: "listActiveOAuthManagerTargets",
+    description: "Page active manager-scoped OAuth targets within the app token's own app scope.",
+    input: NativeListActiveOAuthManagerTargetsParamsSchema,
+    output: NativeListActiveOAuthManagerTargetsResultSchema,
   },
 ] satisfies NativeFunctionSchemaDefinition[];
 

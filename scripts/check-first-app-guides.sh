@@ -97,12 +97,17 @@ for locale in "${locales[@]}"; do
     fi
   done
 
-  for expected in x-signature callAppFunction CallAppFunction camelCase; do
+  for expected in x-signature callAppFunction CallAppFunction camelCase orders.getV2 ':version'; do
     if ! grep -Fq "$expected" "docs/guides/${locale}/functions.md"; then
       printf 'Missing preserved Function guidance in %s: %s\n' "docs/guides/${locale}/functions.md" "$expected" >&2
       failed=1
     fi
   done
+
+  if ! grep -Eq 'dispatch.*`method`' "docs/guides/${locale}/functions.md"; then
+    printf 'Missing method-based Function dispatch guidance in %s\n' "docs/guides/${locale}/functions.md" >&2
+    failed=1
+  fi
 
   for expected in actionFunctionName autoCompleteFunctionName focused choices alfMode enabledByDefault; do
     if ! grep -Fq "$expected" "docs/guides/${locale}/extensions/command.md"; then
@@ -118,7 +123,7 @@ for locale in "${locales[@]}"; do
     fi
   done
 
-  for expected in 'registerExtension(appId, extensionName, systemVersion)' ChannelAppModule.forRoot '@Extension' 'server.WithAutoRegister()' app.Use getFunctions systemVersion unregisterExtension core:v1 'app token'; do
+  for expected in 'registerExtension(appId, extensionName, systemVersion)' ChannelAppModule.forRoot '@Extension' 'server.WithAutoRegister()' app.Use getFunctions systemVersion unregisterExtension core:v1 'app token' 'breaking change'; do
     if ! grep -Fq "$expected" "docs/guides/${locale}/extensions.md"; then
       printf 'Missing Extension registration guidance in %s: %s\n' "docs/guides/${locale}/extensions.md" "$expected" >&2
       failed=1
@@ -132,6 +137,11 @@ for locale in "${locales[@]}"; do
     fi
   done
 done
+
+if rg --glob '*.md' --line-number 'systemTargetVersion' docs; then
+  printf 'Found obsolete systemTargetVersion terminology in SDK docs\n' >&2
+  failed=1
+fi
 
 root_required_text=(
   '> **Building your first Channel app?**'

@@ -82,7 +82,7 @@ The cache stores access and refresh tokens. Encrypt them as appropriate for the 
 
 ## App And Channel Tokens
 
-- Use an **app token** for `RegisterExtension`, `RegisterAlfTasks`, notebook sync, and app-owned data operations.
+- Use an **app token** for `RegisterExtension`, extension sync verification, and app-owned data operations.
 - Use a **channel token** for a server-side Channel operation performed as the installed app or bot.
 
 The public Go client does not currently expose a generic or typed Channel-operation proxy equivalent to TypeScript `createProxyApi`. Check [Native Functions](NATIVE.md) and [Feature Parity](../go-feature-parity.md) before implementing a narrow transport adapter.

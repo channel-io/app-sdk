@@ -99,50 +99,6 @@ func TestCreateAppDataTable(t *testing.T) {
 	}
 }
 
-func TestRegisterAppNotebooks(t *testing.T) {
-	httpClient := &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
-		if r.URL.Path != "/general/v1/native/functions" {
-			t.Fatalf("unexpected path: %s", r.URL.Path)
-		}
-		if got := r.Header.Get("x-access-token"); got != "app-token" {
-			t.Fatalf("unexpected token: %s", got)
-		}
-		var req struct {
-			Method string `json:"method"`
-			Params struct {
-				AppID string `json:"appId"`
-			} `json:"params"`
-		}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			t.Fatal(err)
-		}
-		if req.Method != "registerAppNotebooks" {
-			t.Fatalf("unexpected method: %s", req.Method)
-		}
-		if req.Params.AppID != "app-1" {
-			t.Fatalf("unexpected params: %+v", req.Params)
-		}
-		return &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       io.NopCloser(strings.NewReader(`{"result":{"success":true,"syncRunId":"sync-1","status":"accepted","totalNotebooks":2,"createdCount":1,"updatedCount":1,"deletedCount":0}}`)),
-			Header:     make(http.Header),
-			Request:    r,
-		}, nil
-	})}
-
-	client := native.NewClient(
-		native.WithBaseURL("https://app-store.test"),
-		native.WithHTTPClient(httpClient),
-	)
-	res, err := client.RegisterAppNotebooks(context.Background(), "app-token", "app-1")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !res.Success || res.SyncRunID != "sync-1" || res.TotalNotebooks != 2 {
-		t.Fatalf("unexpected response: %+v", res)
-	}
-}
-
 func TestGetAppNotebookVersions(t *testing.T) {
 	httpClient := &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
 		if r.URL.Path != "/general/v1/native/functions" {

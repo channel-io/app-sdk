@@ -80,26 +80,6 @@ func TestValidateReadOnlyQueryAllowsTablelessCommentsAndLiterals(t *testing.T) {
 	}
 }
 
-func TestValidateReadOnlyQueryChecksSupportedTables(t *testing.T) {
-	err := datasource.ValidateReadOnlyQuery(
-		"SELECT id FROM orders",
-		nil,
-		[]datasource.TableConfig{{Name: "orders"}},
-	)
-	if err != nil {
-		t.Fatalf("expected supported query: %v", err)
-	}
-
-	err = datasource.ValidateReadOnlyQuery(
-		"SELECT id FROM customers",
-		nil,
-		[]datasource.TableConfig{{Name: "orders"}},
-	)
-	if err == nil {
-		t.Fatal("expected unsupported table query to fail")
-	}
-}
-
 func TestValidateReadOnlyQueryAcceptsTablelessQueries(t *testing.T) {
 	tables := []datasource.TableConfig{{Name: "orders"}}
 	for _, query := range []string{
@@ -114,15 +94,15 @@ func TestValidateReadOnlyQueryAcceptsTablelessQueries(t *testing.T) {
 	}
 }
 
-func TestValidateReadOnlyQueryRejectsUnresolvedTableSources(t *testing.T) {
+func TestValidateReadOnlyQueryDefersTableAuthorizationAndDialectSyntax(t *testing.T) {
 	tables := []datasource.TableConfig{{Name: "orders"}}
 	for _, query := range []string{
 		"SELECT * FROM customers",
 		"SELECT * FROM UNNEST([1, 2, 3])",
 		"SELECT * FROM (SELECT 1)",
 	} {
-		if err := datasource.ValidateReadOnlyQuery(query, nil, tables); err == nil {
-			t.Errorf("expected unresolved table source %q to fail", query)
+		if err := datasource.ValidateReadOnlyQuery(query, nil, tables); err != nil {
+			t.Errorf("expected App Store/provider validation for %q, got %v", query, err)
 		}
 	}
 }
@@ -130,6 +110,24 @@ func TestValidateReadOnlyQueryRejectsUnresolvedTableSources(t *testing.T) {
 func TestQueryWithRowLimitWrapsQuery(t *testing.T) {
 	got := datasource.QueryWithRowLimit("SELECT id FROM orders;", 10)
 	want := "SELECT * FROM (SELECT id FROM orders) AS datasource_query LIMIT 10"
+	if got != want {
+		t.Fatalf("unexpected query:\nwant: %s\n got: %s", want, got)
+	}
+}
+
+func TestQueryWithRowLimitKeepsRecursiveCTEAtTopLevel(t *testing.T) {
+	query := "WITH RECURSIVE seq AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM seq WHERE n < 3) SELECT * FROM seq;"
+	got := datasource.QueryWithRowLimit(query, 10)
+	want := "WITH RECURSIVE seq AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM seq WHERE n < 3) SELECT * FROM (SELECT * FROM seq) AS datasource_query LIMIT 10"
+	if got != want {
+		t.Fatalf("unexpected query:\nwant: %s\n got: %s", want, got)
+	}
+}
+
+func TestQueryWithRowLimitKeepsRecursiveCTECommentsIntact(t *testing.T) {
+	query := "WITH /* recursive query */ RECURSIVE seq AS (SELECT 1 AS n)\n-- final query\nSELECT * FROM seq"
+	got := datasource.QueryWithRowLimit(query, 10)
+	want := "WITH /* recursive query */ RECURSIVE seq AS (SELECT 1 AS n)\n-- final query\nSELECT * FROM (SELECT * FROM seq) AS datasource_query LIMIT 10"
 	if got != want {
 		t.Fatalf("unexpected query:\nwant: %s\n got: %s", want, got)
 	}

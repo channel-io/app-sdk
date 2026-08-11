@@ -754,21 +754,6 @@ export interface NativeUpsertAppDataTableRowsResult {
   acceptedRowCount: number;
 }
 
-export interface NativeRegisterAppNotebooksParams {
-  appId: string;
-}
-
-export interface NativeRegisterAppNotebooksResult {
-  success: boolean;
-  errorMessage?: string;
-  syncRunId?: string;
-  status?: string;
-  totalNotebooks: number;
-  createdCount: number;
-  updatedCount: number;
-  deletedCount: number;
-}
-
 export interface NativeGetAppNotebookVersionsParams {
   appId: string;
 }
@@ -784,6 +769,21 @@ export interface NativeGetAppNotebookVersionsResult {
   success: boolean;
   errorMessage?: string;
   notebooks: NativeAppNotebookVersion[];
+}
+
+export interface NativeActiveOAuthManagerTarget {
+  channelId: string;
+  managerId: string;
+}
+
+export interface NativeListActiveOAuthManagerTargetsParams {
+  cursor?: string;
+  limit: number;
+}
+
+export interface NativeListActiveOAuthManagerTargetsResult {
+  targets: readonly NativeActiveOAuthManagerTarget[];
+  nextCursor?: string;
 }
 
 export interface NativeIssueEntityTokenParams {
@@ -1000,13 +1000,13 @@ export interface NativeFunctionTypeMap {
     params: NativeUpsertAppDataTableRowsParams;
     result: NativeUpsertAppDataTableRowsResult;
   };
-  registerAppNotebooks: {
-    params: NativeRegisterAppNotebooksParams;
-    result: NativeRegisterAppNotebooksResult;
-  };
   getAppNotebookVersions: {
     params: NativeGetAppNotebookVersionsParams;
     result: NativeGetAppNotebookVersionsResult;
+  };
+  listActiveOAuthManagerTargets: {
+    params: NativeListActiveOAuthManagerTargetsParams;
+    result: NativeListActiveOAuthManagerTargetsResult;
   };
   issueEntityToken: {
     params: NativeIssueEntityTokenParams;

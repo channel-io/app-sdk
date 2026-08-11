@@ -19,7 +19,6 @@ const (
 	FunctionCreateAppDataTableSchema = "createAppDataTableSchema"
 	FunctionGetAppDataTableSchema    = "getAppDataTableSchema"
 	FunctionUpsertAppDataTableRows   = "upsertAppDataTableRows"
-	FunctionRegisterAppNotebooks     = "registerAppNotebooks"
 	FunctionGetAppNotebookVersions   = "getAppNotebookVersions"
 )
 
@@ -83,15 +82,6 @@ type RegisterExtensionResponse struct {
 	ValidationErrors []string `json:"validationErrors,omitempty"`
 }
 
-type RegisterAlfTasksResponse struct {
-	Success      bool   `json:"success"`
-	ErrorMessage string `json:"errorMessage,omitempty"`
-	TotalTasks   int    `json:"totalTasks"`
-	CreatedCount int    `json:"createdCount"`
-	UpdatedCount int    `json:"updatedCount"`
-	DeletedCount int    `json:"deletedCount"`
-}
-
 type AlfTaskVersion struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`
@@ -102,17 +92,6 @@ type GetAlfTaskVersionsResponse struct {
 	Success      bool             `json:"success"`
 	ErrorMessage string           `json:"errorMessage,omitempty"`
 	Tasks        []AlfTaskVersion `json:"tasks"`
-}
-
-type RegisterAppNotebooksResponse struct {
-	Success        bool   `json:"success"`
-	ErrorMessage   string `json:"errorMessage,omitempty"`
-	SyncRunID      string `json:"syncRunId,omitempty"`
-	Status         string `json:"status,omitempty"`
-	TotalNotebooks int    `json:"totalNotebooks"`
-	CreatedCount   int    `json:"createdCount"`
-	UpdatedCount   int    `json:"updatedCount"`
-	DeletedCount   int    `json:"deletedCount"`
 }
 
 type AppNotebookVersion struct {
@@ -218,16 +197,8 @@ func (c *Client) UnregisterExtension(ctx context.Context, accessToken, appID, ex
 	})
 }
 
-func (c *Client) RegisterAlfTasks(ctx context.Context, accessToken, appID string) (*RegisterAlfTasksResponse, error) {
-	return callNative[RegisterAlfTasksResponse](ctx, c, accessToken, "registerAlfTasks", map[string]any{"appId": appID})
-}
-
 func (c *Client) GetAlfTaskVersions(ctx context.Context, accessToken, appID string) (*GetAlfTaskVersionsResponse, error) {
 	return callNative[GetAlfTaskVersionsResponse](ctx, c, accessToken, "getAlfTaskVersions", map[string]any{"appId": appID})
-}
-
-func (c *Client) RegisterAppNotebooks(ctx context.Context, accessToken, appID string) (*RegisterAppNotebooksResponse, error) {
-	return callNative[RegisterAppNotebooksResponse](ctx, c, accessToken, FunctionRegisterAppNotebooks, map[string]any{"appId": appID})
 }
 
 func (c *Client) GetAppNotebookVersions(ctx context.Context, accessToken, appID string) (*GetAppNotebookVersionsResponse, error) {

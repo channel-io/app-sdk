@@ -160,9 +160,31 @@ Custom bootstrap や deployment system が registration を管理する場合に
 | Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
 
 Function request ごとに新しい token を発行したり、registration を実行したりしないでください。
-Standalone Function だけのアプリは SDK の `core:v1` fallback を使います。ALF task、Notebook、
-Messaging などの advanced family は generic Extension registration の後に secondary sync または
-product setup が必要な場合があるため、family recipe に従ってください。
+Standalone Function だけのアプリは SDK の `core:v1` fallback を使います。ALF task と Notebook は
+`registerExtension` が成功すると自動的に sync されるため、別の registration Function は呼び出しません。
+Messaging などの advanced family では product setup または family-specific secondary sync が必要な
+場合があるため、family recipe に従ってください。
+
+## `systemVersion` を理解する
+
+`systemVersion` は AppStore と app server の間の system contract version です。AppStore が
+third-party app に送る request の field、schema、または invocation contract に後方互換性を壊す
+変更（breaking change）を導入するときに Channel が上げます。App の deployment version、npm/Go
+SDK package version、developer が定義する Function API version とは異なります。現在の default
+system contract は `v1` です。たとえば AppStore system contract `v2` は、そのような breaking
+change が反映された platform version であり、各 app が作る v2 ではありません。
+
+| `systemVersion` が現れる場所                        | 意味                                                               |
+| --------------------------------------------------- | ------------------------------------------------------------------ |
+| `@Extension` または Go Extension registration       | App が実装すると AppStore に宣言する system contract               |
+| Extension metadata の target `systemVersion`        | その Function の呼び出しに使う同じ AppStore system contract        |
+| Request の `systemVersion` と `/functions/v1`        | AppStore が同じ contract を app server に渡す request と route の表現 |
+
+現在の SDK は version ごとに別の handler set を作りません。そのため、developer が
+`systemVersion: "v2"` を任意に指定して独自の Function v2 を運用することはできません。AppStore と
+SDK が公式 v2 contract を提供した場合だけその値を使ってください。App が所有する standalone
+Function の互換性を維持する方法は [Function 登録](functions.md)を参照してください。標準 Extension
+Function の公式 name は変更せず、AppStore と SDK が提供する contract を実装します。
 
 ## Registration lifecycle と検証
 
@@ -291,7 +313,8 @@ provider credential を profile に含めません。
 
 DataSource metadata は catalog、table、column、table description を提供します。Query は通常の
 app Function route ではなく、認証済み DataSource gRPC endpoint で実行します。
-`x-access-token` を検証し、catalog/table allowlist、parameterized SQL、row/time limit を適用し、
+`x-access-token` を検証し、公開 table の認可は AppStore に任せ、app scope credential と
+read-only SQL、row/time limit を適用し、
 Arrow-compatible result を stream してください。SDK は PostgreSQL と BigQuery 向け runner を
 提供します。
 
@@ -328,16 +351,16 @@ conversation/message mapping を保存し、webhook/polling delivery を idempot
 
 ## ALF task
 
-`extension.alfTask.alftask.getTasks` が versioned automation task を公開します。Registration は
-`registerExtension("alfTask", "v1")` と `registerAlfTasks` の 2 段階です。Task key を安定させ、
+`extension.alfTask.alftask.getTasks` が versioned automation task を公開します。
+`registerExtension("alfTask", "v1")` で登録すると task sync も開始されます。Task key を安定させ、
 behavior change では version を上げ、sync 済み version を確認してください。
 
 [ALF task 詳細](extensions/alf-task.md)
 
 ## Notebook
 
-`extension.notebook.core.getNotebooks` が versioned notebook definition を公開し、registration 後に
-`registerAppNotebooks` sync が必要です。Notebook/cell key を安定させ、definition change では
+`extension.notebook.core.getNotebooks` が versioned notebook definition を公開します。
+`registerExtension` で Notebook extension を登録すると sync も開始されます。Notebook/cell key を安定させ、definition change では
 version を上げ、外部 data を render するときは untrusted input として扱います。
 
 [Notebook 詳細](extensions/notebook.md)

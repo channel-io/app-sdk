@@ -23,8 +23,8 @@ The current Go client exposes typed methods for:
 
 - `IssueToken` and `RefreshToken`;
 - `RegisterExtension` and `UnregisterExtension`;
-- `RegisterAlfTasks` and `GetAlfTaskVersions`;
-- `RegisterAppNotebooks` and `GetAppNotebookVersions`;
+- `GetAlfTaskVersions` for ALF task sync verification; register ALF tasks through `RegisterExtension`;
+- `GetAppNotebookVersions` for notebook sync verification; register notebooks through `RegisterExtension`;
 - app data-table creation, schema, lookup, and row ingestion;
 - raw and generic public Native Function calls through `CallNativeFunction` and `CallNative[T]`;
 - typed Channel operations through `CreateProxyAPI`, starting with `WriteGroupMessage`;

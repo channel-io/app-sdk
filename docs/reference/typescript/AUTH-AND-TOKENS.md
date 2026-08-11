@@ -71,6 +71,11 @@ const api = nativeClient.createProxyApi(channelToken.accessToken);
 - **App token**: Extension registration and other app-owned operations.
 - **Channel token**: server-side operations within one Channel where the app is installed.
 
+Use an app token to reconcile manager-scoped OAuth connections. The native
+`listActiveOAuthManagerTargets({ limit, cursor }, accessToken)` call returns
+only active `{ channelId, managerId }` pairs for the app. It rejects channel
+and manager tokens, so obtain `accessToken` from `TokenManager.getAppToken()`.
+
 `TokenManager`:
 
 - caches app and channel token pairs by scope;
@@ -122,7 +127,7 @@ Use `useCallFunction()` for business logic and work performed as the app or bot;
 
 Do not confuse external-service credentials with Channel App tokens.
 
-- **OAuth Authorization Code**: declare the OAuth Extension. After connection and token exchange, AppStore injects the decrypted provider token into `ctx.authToken` for the relevant Function call.
+- **OAuth Authorization Code**: declare the OAuth Extension. After connection and token exchange, AppStore injects the decrypted provider token into `ctx.authToken` for the relevant Function call. On a manager `oauth.connected` Hook, `params.managerId` identifies the manager while `ctx.caller` remains system; the new provider access token is in `ctx.authToken`. A manager webhook URL may be present as an optional fast path, but target polling is the recovery path when the URL or Hook delivery is unavailable. Channel OAuth and `oauth.disconnected` do not provide a webhook URL.
 - **Config credential**: use the Config Extension for API keys, `client_credentials`, per-shop
   secrets, and non-redirect authentication. AppStore resolves values into `ctx.config`.
 

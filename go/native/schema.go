@@ -31,12 +31,6 @@ var appDataTableFunctionSchemas = []appsdk.FunctionSchema{
 
 var appNotebookFunctionSchemas = []appsdk.FunctionSchema{
 	{
-		Name:         FunctionRegisterAppNotebooks,
-		Description:  "Register and sync app-managed notebooks.",
-		InputSchema:  appNotebookParamsSchema(),
-		OutputSchema: registerAppNotebooksOutputSchema(),
-	},
-	{
 		Name:         FunctionGetAppNotebookVersions,
 		Description:  "Get the latest synced app notebook versions.",
 		InputSchema:  appNotebookParamsSchema(),
@@ -139,22 +133,6 @@ func appNotebookParamsSchema() map[string]any {
 		[]string{"appId"},
 		map[string]any{
 			"appId": stringSchema(),
-		},
-	)
-}
-
-func registerAppNotebooksOutputSchema() map[string]any {
-	return objectSchema(
-		[]string{"success", "totalNotebooks", "createdCount", "updatedCount", "deletedCount"},
-		map[string]any{
-			"success":        map[string]any{"type": "boolean"},
-			"errorMessage":   map[string]any{"type": "string"},
-			"syncRunId":      map[string]any{"type": "string"},
-			"status":         map[string]any{"type": "string"},
-			"totalNotebooks": nonNegativeIntegerSchema(),
-			"createdCount":   nonNegativeIntegerSchema(),
-			"updatedCount":   nonNegativeIntegerSchema(),
-			"deletedCount":   nonNegativeIntegerSchema(),
 		},
 	)
 }

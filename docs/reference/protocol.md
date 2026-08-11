@@ -22,8 +22,11 @@ Channel app Functions use a JSON-RPC-like request:
 
 `method` selects the Function, `params` is its typed input, `context` carries the current runtime
 identity and optional AppStore-issued resources such as manager webhook callback URLs, and
-`systemVersion` selects the Extension contract version. Successful calls return
-`{"result": ...}`. Expected app failures return an `error` envelope:
+`systemVersion` identifies the system contract between AppStore and the app server. Channel
+increments this value when the AppStore-to-app request contract introduces a backward-incompatible
+breaking change; it is not a developer-managed Function API version. Current SDK handlers dispatch
+by the exact `method`, not by separate URL or request-version handler catalogs. Successful calls
+return `{"result": ...}`. Expected app failures return an `error` envelope:
 
 ```json
 {

@@ -53,8 +53,9 @@ Use the Go gRPC DataSource server and Arrow executor described in the
 ## Security and reliability
 
 - Validate `x-access-token` and the datasource signature, then enforce app and tenant isolation.
-- Allowlist catalogs/tables, parameterize SQL, restrict selectable columns, and cap rows, bytes,
-  duration, and concurrency.
+- Let AppStore authorize exposed catalogs, tables, and columns. In the app runner, enforce
+  single-statement read-only SQL, use credentials constrained to app-owned data, and cap rows,
+  bytes, duration, and concurrency.
 - Stream Arrow batches without buffering the full result and propagate cancellation.
 - Test unauthorized identity, cross-tenant access, malformed SQL, timeouts, empty results, large
   batches, schema mismatch, and mid-stream failure.
