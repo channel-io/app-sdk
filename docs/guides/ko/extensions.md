@@ -158,8 +158,9 @@ Custom bootstrap이나 배포 시스템이 등록을 제어할 때만 native Fun
 | Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
 
 Function 요청마다 새 token을 발급하거나 등록하지 마세요. Standalone Function만 있는 앱은 SDK의
-`core:v1` fallback을 사용합니다. ALF task, Notebook, Messaging 같은 고급 family는 generic Extension
-등록 뒤 secondary sync 또는 product 설정이 필요할 수 있으므로 해당 family 문서를 따르세요.
+`core:v1` fallback을 사용합니다. ALF task와 Notebook은 `registerExtension`이 성공하면 자동으로
+sync되므로 별도 등록 Function을 호출하지 않습니다. Messaging과 그 밖의 고급 family는 product 설정
+또는 family별 secondary sync가 필요할 수 있으므로 해당 family 문서를 따르세요.
 
 ## 등록 lifecycle과 검증
 

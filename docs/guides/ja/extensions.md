@@ -160,9 +160,10 @@ Custom bootstrap や deployment system が registration を管理する場合に
 | Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
 
 Function request ごとに新しい token を発行したり、registration を実行したりしないでください。
-Standalone Function だけのアプリは SDK の `core:v1` fallback を使います。ALF task、Notebook、
-Messaging などの advanced family は generic Extension registration の後に secondary sync または
-product setup が必要な場合があるため、family recipe に従ってください。
+Standalone Function だけのアプリは SDK の `core:v1` fallback を使います。ALF task と Notebook は
+`registerExtension` が成功すると自動的に sync されるため、別の registration Function は呼び出しません。
+Messaging などの advanced family では product setup または family-specific secondary sync が必要な
+場合があるため、family recipe に従ってください。
 
 ## Registration lifecycle と検証
 

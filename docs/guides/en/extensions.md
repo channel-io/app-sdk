@@ -161,9 +161,10 @@ directly:
 | Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
 
 Do not issue a new token or register on every Function request. Apps with only standalone Functions
-use the SDK's `core:v1` fallback. Advanced families such as ALF task, Notebook, and Messaging may
-require a secondary sync or coordinated product setup after generic Extension registration; follow
-their family recipe.
+use the SDK's `core:v1` fallback. A successful `registerExtension` call automatically synchronizes
+ALF tasks and Notebooks; do not call a separate registration Function for either family. Messaging
+and other advanced families may still require coordinated product setup or a family-specific
+secondary sync, so follow their family recipe.
 
 ## Registration lifecycle and verification
 
