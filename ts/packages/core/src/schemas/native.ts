@@ -78,21 +78,6 @@ export const NativeUpsertAppDataTableRowsResultSchema = z.object({
   acceptedRowCount: z.number().int().nonnegative(),
 });
 
-export const NativeRegisterAppNotebooksParamsSchema = z.object({
-  appId: NativeNonEmptyStringSchema,
-});
-
-export const NativeRegisterAppNotebooksResultSchema = z.object({
-  success: z.boolean(),
-  errorMessage: z.string().optional(),
-  syncRunId: z.string().optional(),
-  status: z.string().optional(),
-  totalNotebooks: z.number().int().nonnegative(),
-  createdCount: z.number().int().nonnegative(),
-  updatedCount: z.number().int().nonnegative(),
-  deletedCount: z.number().int().nonnegative(),
-});
-
 export const NativeGetAppNotebookVersionsParamsSchema = z.object({
   appId: NativeNonEmptyStringSchema,
 });
@@ -162,12 +147,6 @@ export const nativeFunctionSchemaDefinitions = [
     description: "Validate and enqueue rows for asynchronous AppDataTable ingestion.",
     input: NativeUpsertAppDataTableRowsParamsSchema,
     output: NativeUpsertAppDataTableRowsResultSchema,
-  },
-  {
-    name: "registerAppNotebooks",
-    description: "Register and sync app-managed notebooks.",
-    input: NativeRegisterAppNotebooksParamsSchema,
-    output: NativeRegisterAppNotebooksResultSchema,
   },
   {
     name: "getAppNotebookVersions",

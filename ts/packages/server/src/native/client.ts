@@ -25,12 +25,8 @@ import type {
   NativeRegisterExtensionResult,
   NativeUnregisterExtensionParams,
   NativeUnregisterExtensionResult,
-  RegisterAlfTasksParams,
-  RegisterAlfTasksResult,
   GetAlfTaskVersionsParams,
   GetAlfTaskVersionsResult,
-  RegisterAppNotebooksParams,
-  RegisterAppNotebooksResult,
   GetAppNotebookVersionsParams,
   GetAppNotebookVersionsResult,
 } from "./types.js";
@@ -177,25 +173,6 @@ export class NativeFunctionClient {
   // ============================================
 
   /**
-   * Register ALF tasks for the app
-   *
-   * Triggers Channel App platform to call the app's alftask.getTasks function
-   * and register the returned tasks.
-   *
-   * @param appId App ID
-   * @param accessToken Access token (required for RBAC)
-   * @returns Registration result with counts
-   */
-  registerAlfTasks(appId: string, accessToken: string): Promise<RegisterAlfTasksResult> {
-    const params: RegisterAlfTasksParams = { appId };
-    return this.callNativeFunctionWithToken<RegisterAlfTasksParams, RegisterAlfTasksResult>(
-      "registerAlfTasks",
-      params,
-      accessToken
-    );
-  }
-
-  /**
    * Get ALF task versions for the app
    *
    * @param appId App ID
@@ -214,26 +191,6 @@ export class NativeFunctionClient {
   // ============================================
   // App Notebook Functions
   // ============================================
-
-  /**
-   * Register app notebooks for the app
-   *
-   * Triggers Channel App platform to register the notebook extension, then asks
-   * cht-notebook to call the app's core.getNotebooks function and sync the
-   * returned app-managed notebooks.
-   *
-   * @param appId App ID
-   * @param accessToken Access token (required for RBAC)
-   * @returns Registration result with sync counts
-   */
-  registerAppNotebooks(appId: string, accessToken: string): Promise<RegisterAppNotebooksResult> {
-    const params: RegisterAppNotebooksParams = { appId };
-    return this.callNativeFunctionWithToken<RegisterAppNotebooksParams, RegisterAppNotebooksResult>(
-      "registerAppNotebooks",
-      params,
-      accessToken
-    );
-  }
 
   /**
    * Get app notebook versions for the app

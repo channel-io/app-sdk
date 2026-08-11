@@ -319,16 +319,16 @@ authorization 없이 사용자를 대신하지 않습니다.
 
 ## ALF task
 
-`extension.alfTask.alftask.getTasks`가 versioned automation task를 공개합니다. 등록은
-`registerExtension("alfTask", "v1")`과 `registerAlfTasks` 두 단계입니다. Task key를 안정적으로
+`extension.alfTask.alftask.getTasks`가 versioned automation task를 공개합니다.
+`registerExtension("alfTask", "v1")`으로 등록하면 task sync도 함께 시작됩니다. Task key를 안정적으로
 유지하고 동작이 바뀌면 version을 올린 뒤 sync된 version을 확인하세요.
 
 [ALF task 상세](extensions/alf-task.md)
 
 ## Notebook
 
-`extension.notebook.core.getNotebooks`가 versioned notebook definition을 공개하고 등록 후
-`registerAppNotebooks` sync가 필요합니다. Notebook/cell key는 안정적으로 유지하고 definition이
+`extension.notebook.core.getNotebooks`가 versioned notebook definition을 공개합니다.
+`registerExtension`으로 Notebook extension을 등록하면 sync도 함께 시작됩니다. Notebook/cell key는 안정적으로 유지하고 definition이
 바뀌면 version을 올리며 외부 data를 render할 때는 untrusted input으로 처리합니다.
 
 [Notebook 상세](extensions/notebook.md)

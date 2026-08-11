@@ -328,16 +328,16 @@ user without the proper user/manager authorization.
 
 ## ALF task
 
-`extension.alfTask.alftask.getTasks` publishes versioned automation tasks. Registration has two
-steps: `registerExtension("alfTask", "v1")` and `registerAlfTasks`. Keep task keys stable, increment
+`extension.alfTask.alftask.getTasks` publishes versioned automation tasks. Registering through
+`registerExtension("alfTask", "v1")` also triggers task synchronization. Keep task keys stable, increment
 versions for behavior changes, and verify the synchronized versions.
 
 [ALF task recipe](extensions/alf-task.md)
 
 ## Notebook
 
-`extension.notebook.core.getNotebooks` publishes versioned notebook definitions. Registration also
-requires `registerAppNotebooks`. Keep notebook and cell keys stable, increment versions for
+`extension.notebook.core.getNotebooks` publishes versioned notebook definitions. Registering the
+Notebook extension through `registerExtension` also triggers synchronization. Keep notebook and cell keys stable, increment versions for
 definition changes, and treat rendered content as untrusted when it includes external data.
 
 [Notebook recipe](extensions/notebook.md)

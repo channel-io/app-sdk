@@ -754,21 +754,6 @@ export interface NativeUpsertAppDataTableRowsResult {
   acceptedRowCount: number;
 }
 
-export interface NativeRegisterAppNotebooksParams {
-  appId: string;
-}
-
-export interface NativeRegisterAppNotebooksResult {
-  success: boolean;
-  errorMessage?: string;
-  syncRunId?: string;
-  status?: string;
-  totalNotebooks: number;
-  createdCount: number;
-  updatedCount: number;
-  deletedCount: number;
-}
-
 export interface NativeGetAppNotebookVersionsParams {
   appId: string;
 }
@@ -1014,10 +999,6 @@ export interface NativeFunctionTypeMap {
   upsertAppDataTableRows: {
     params: NativeUpsertAppDataTableRowsParams;
     result: NativeUpsertAppDataTableRowsResult;
-  };
-  registerAppNotebooks: {
-    params: NativeRegisterAppNotebooksParams;
-    result: NativeRegisterAppNotebooksResult;
   };
   getAppNotebookVersions: {
     params: NativeGetAppNotebookVersionsParams;

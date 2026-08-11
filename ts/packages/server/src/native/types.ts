@@ -142,32 +142,6 @@ export interface NativeUnregisterExtensionResult {
 // ============================================
 
 /**
- * Register ALF tasks params
- */
-export interface RegisterAlfTasksParams {
-  /** App ID */
-  appId: string;
-}
-
-/**
- * Register ALF tasks result
- */
-export interface RegisterAlfTasksResult {
-  /** Whether registration succeeded */
-  success: boolean;
-  /** Error message if failed */
-  errorMessage?: string;
-  /** Total number of tasks */
-  totalTasks: number;
-  /** Number of tasks created */
-  createdCount: number;
-  /** Number of tasks updated */
-  updatedCount: number;
-  /** Number of tasks deleted */
-  deletedCount: number;
-}
-
-/**
  * Get ALF task versions params
  */
 export interface GetAlfTaskVersionsParams {
@@ -202,36 +176,6 @@ export interface GetAlfTaskVersionsResult {
 // ============================================
 // App Notebook Functions (PUBLIC)
 // ============================================
-
-/**
- * Register app notebooks params
- */
-export interface RegisterAppNotebooksParams {
-  /** App ID */
-  appId: string;
-}
-
-/**
- * Register app notebooks result
- */
-export interface RegisterAppNotebooksResult {
-  /** Whether registration succeeded */
-  success: boolean;
-  /** Error message if failed */
-  errorMessage?: string;
-  /** Notebook sync run ID */
-  syncRunId?: string;
-  /** Sync status */
-  status?: string;
-  /** Total number of notebooks */
-  totalNotebooks: number;
-  /** Number of notebooks created */
-  createdCount: number;
-  /** Number of notebooks updated */
-  updatedCount: number;
-  /** Number of notebooks deleted */
-  deletedCount: number;
-}
 
 /**
  * Get app notebook versions params

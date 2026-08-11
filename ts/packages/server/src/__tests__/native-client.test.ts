@@ -198,45 +198,6 @@ describe("NativeFunctionClient", () => {
   // ALF Task Functions
   // ============================================
 
-  describe("registerAlfTasks", () => {
-    it("should call registerAlfTasks with appId and token", async () => {
-      const registerResult = {
-        success: true,
-        totalTasks: 5,
-        createdCount: 3,
-        updatedCount: 1,
-        deletedCount: 1,
-      };
-      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: registerResult }));
-
-      const result = await client.registerAlfTasks(APP_ID, "test-token");
-
-      const body = parseFetchBody(mockFetch);
-      expect(body.method).toBe("registerAlfTasks");
-      expect(body.params).toEqual({ appId: APP_ID });
-      const init = getFetchInit(mockFetch);
-      expect((init.headers as Record<string, string>)["x-access-token"]).toBe("test-token");
-      expect(result).toEqual(registerResult);
-    });
-
-    it("should return error message when registration fails", async () => {
-      const failResult = {
-        success: false,
-        errorMessage: "App not found",
-        totalTasks: 0,
-        createdCount: 0,
-        updatedCount: 0,
-        deletedCount: 0,
-      };
-      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: failResult }));
-
-      const result = await client.registerAlfTasks(APP_ID, "test-token");
-
-      expect(result.success).toBe(false);
-      expect(result.errorMessage).toBe("App not found");
-    });
-  });
-
   describe("getAlfTaskVersions", () => {
     it("should call getAlfTaskVersions with appId and token", async () => {
       const versionsResult = {
@@ -278,30 +239,6 @@ describe("NativeFunctionClient", () => {
   // ============================================
   // App Notebook Functions
   // ============================================
-
-  describe("registerAppNotebooks", () => {
-    it("should call registerAppNotebooks with appId and token", async () => {
-      const registerResult = {
-        success: true,
-        syncRunId: "sync-1",
-        status: "accepted",
-        totalNotebooks: 2,
-        createdCount: 1,
-        updatedCount: 1,
-        deletedCount: 0,
-      };
-      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: registerResult }));
-
-      const result = await client.registerAppNotebooks(APP_ID, "test-token");
-
-      const body = parseFetchBody(mockFetch);
-      expect(body.method).toBe("registerAppNotebooks");
-      expect(body.params).toEqual({ appId: APP_ID });
-      const init = getFetchInit(mockFetch);
-      expect((init.headers as Record<string, string>)["x-access-token"]).toBe("test-token");
-      expect(result).toEqual(registerResult);
-    });
-  });
 
   describe("getAppNotebookVersions", () => {
     it("should call getAppNotebookVersions with appId and token", async () => {
@@ -504,7 +441,9 @@ describe("NativeFunctionClient", () => {
         })
       );
 
-      await expect(client.registerAlfTasks(APP_ID, "test-token")).rejects.toThrow("Invalid params");
+      await expect(client.getAlfTaskVersions(APP_ID, "test-token")).rejects.toThrow(
+        "Invalid params"
+      );
     });
   });
 

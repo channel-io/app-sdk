@@ -328,16 +328,16 @@ conversation/message mapping を保存し、webhook/polling delivery を idempot
 
 ## ALF task
 
-`extension.alfTask.alftask.getTasks` が versioned automation task を公開します。Registration は
-`registerExtension("alfTask", "v1")` と `registerAlfTasks` の 2 段階です。Task key を安定させ、
+`extension.alfTask.alftask.getTasks` が versioned automation task を公開します。
+`registerExtension("alfTask", "v1")` で登録すると task sync も開始されます。Task key を安定させ、
 behavior change では version を上げ、sync 済み version を確認してください。
 
 [ALF task 詳細](extensions/alf-task.md)
 
 ## Notebook
 
-`extension.notebook.core.getNotebooks` が versioned notebook definition を公開し、registration 後に
-`registerAppNotebooks` sync が必要です。Notebook/cell key を安定させ、definition change では
+`extension.notebook.core.getNotebooks` が versioned notebook definition を公開します。
+`registerExtension` で Notebook extension を登録すると sync も開始されます。Notebook/cell key を安定させ、definition change では
 version を上げ、外部 data を render するときは untrusted input として扱います。
 
 [Notebook 詳細](extensions/notebook.md)
