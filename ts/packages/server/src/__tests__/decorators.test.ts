@@ -81,6 +81,18 @@ describe("Decorators", () => {
         void WmsExtension;
       }).not.toThrow();
     });
+
+    it("should accept userAuthorization extension metadata", () => {
+      @Extension("userAuthorization")
+      class UserAuthorizationExtension {}
+
+      expect(Reflect.getMetadata(EXTENSION_METADATA, UserAuthorizationExtension)).toEqual({
+        name: "userAuthorization",
+        systemVersion: "v1",
+        exclusive: false,
+        description: undefined,
+      });
+    });
   });
 
   describe("@Func", () => {
