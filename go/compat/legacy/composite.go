@@ -33,16 +33,27 @@ func NewComposite(app *appsdk.App, legacy Registry, schemaSource SchemaProvider)
 }
 
 func (c *Composite) HandleRequest(ctx context.Context, req appsdk.FunctionRequest) appsdk.FunctionResponse {
+	systemVersion := req.SystemVersion
+	if systemVersion == "" {
+		systemVersion = appsdk.DefaultSystemVersion
+	}
+	legacyV1 := systemVersion == appsdk.DefaultSystemVersion &&
+		(len(c.legacy) > 0 || c.schemaSource != nil)
+	if !c.app.SupportsSystemVersion(systemVersion) && !legacyV1 {
+		return appsdk.ErrorResponse(
+			appsdk.NewVersionMismatchError(systemVersion, c.supportedSystemVersions()),
+		)
+	}
 	if req.Method == appsdk.MethodGetFunctions {
-		return c.getFunctions()
+		return c.getFunctions(systemVersion)
 	}
 	if req.Method == appsdk.MethodGetTestFunctions {
-		return c.app.GetTestFunctions()
+		return c.app.GetTestFunctionsForVersion(systemVersion)
 	}
-	if c.app.HasMethod(req.Method) {
+	if c.app.HasMethodForVersion(systemVersion, req.Method) {
 		return c.app.HandleRequest(ctx, req)
 	}
-	if handler, ok := c.legacy[req.Method]; ok {
+	if handler, ok := c.legacy[req.Method]; ok && systemVersion == appsdk.DefaultSystemVersion {
 		params := req.Params
 		if len(params) == 0 {
 			params = json.RawMessage(`{}`)
@@ -56,6 +67,19 @@ func (c *Composite) HandleRequest(ctx context.Context, req appsdk.FunctionReques
 	return appsdk.ErrorResponse(appsdk.NewError(appsdk.CodeMethodNotFound, "methodNotFound", fmt.Sprintf("cannot find method %s", req.Method)))
 }
 
+func (c *Composite) supportedSystemVersions() []string {
+	versions := c.app.SupportedSystemVersions()
+	if len(c.legacy) == 0 && c.schemaSource == nil {
+		return versions
+	}
+	for _, version := range versions {
+		if version == appsdk.DefaultSystemVersion {
+			return versions
+		}
+	}
+	return append(versions, appsdk.DefaultSystemVersion)
+}
+
 func (c *Composite) HandleJSON(ctx context.Context, body []byte) appsdk.FunctionResponse {
 	var req appsdk.FunctionRequest
 	if err := json.Unmarshal(body, &req); err != nil {
@@ -64,9 +88,9 @@ func (c *Composite) HandleJSON(ctx context.Context, body []byte) appsdk.Function
 	return c.HandleRequest(ctx, req)
 }
 
-func (c *Composite) getFunctions() appsdk.FunctionResponse {
-	functions := c.app.Schemas()
-	if c.schemaSource != nil {
+func (c *Composite) getFunctions(systemVersion string) appsdk.FunctionResponse {
+	functions := c.app.SchemasForVersion(systemVersion)
+	if c.schemaSource != nil && systemVersion == appsdk.DefaultSystemVersion {
 		legacySchemas, err := c.schemaSource()
 		if err != nil {
 			return appsdk.ErrorResponse(err)

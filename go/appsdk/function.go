@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/channel-io/app-sdk/go/schema"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -25,11 +26,13 @@ type ErrorMapper func(error) error
 type FunctionOption func(*functionDefinition) error
 
 type functionDefinition struct {
-	schema      FunctionSchema
-	handler     HandlerFunc
-	errorMapper ErrorMapper
-	test        bool
-	hidden      bool
+	schema                     FunctionSchema
+	handler                    HandlerFunc
+	errorMapper                ErrorMapper
+	systemVersion              string
+	systemVersionExplicitlySet bool
+	test                       bool
+	hidden                     bool
 }
 
 func Register[TIn any, TOut any](app *App, name string, handler TypedHandlerFunc[TIn, TOut], opts ...FunctionOption) error {
@@ -115,6 +118,28 @@ func MustRegisterProtoInput[TIn any](app *App, name string, handler InputHandler
 func Description(description string) FunctionOption {
 	return func(def *functionDefinition) error {
 		def.schema.Description = description
+		return nil
+	}
+}
+
+// SystemVersion associates a standalone Function with an AppStore system
+// contract version. Extension builders apply their own system version
+// automatically. Omitting this option registers the Function for v1.
+func SystemVersion(version string) FunctionOption {
+	return func(def *functionDefinition) error {
+		version = strings.TrimSpace(version)
+		if version == "" {
+			return fmt.Errorf("system version is required")
+		}
+		if def.systemVersionExplicitlySet && def.systemVersion != version {
+			return fmt.Errorf(
+				"conflicting system versions: %s and %s",
+				def.systemVersion,
+				version,
+			)
+		}
+		def.systemVersion = version
+		def.systemVersionExplicitlySet = true
 		return nil
 	}
 }

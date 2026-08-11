@@ -157,8 +157,9 @@ Custom bootstrap이나 배포 시스템이 등록을 제어할 때만 native Fun
 | TypeScript | `nativeClient.registerExtension(appId, extensionName, systemVersion, appToken.accessToken)`      |
 | Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
 
-Function 요청마다 새 token을 발급하거나 등록하지 마세요. Standalone Function만 있는 앱은 SDK의
-`core:v1` fallback을 사용합니다. ALF task와 Notebook은 `registerExtension`이 성공하면 자동으로
+Function 요청마다 새 token을 발급하거나 등록하지 마세요. Standalone Function만 있는 앱은 SDK가
+각 Function system version에 맞춰 만드는 `core` fallback을 사용하며, version 지정이 없으면
+`core:v1`입니다. ALF task와 Notebook은 `registerExtension`이 성공하면 자동으로
 sync되므로 별도 등록 Function을 호출하지 않습니다. Messaging과 그 밖의 고급 family는 product 설정
 또는 family별 secondary sync가 필요할 수 있으므로 해당 family 문서를 따르세요.
 
@@ -170,15 +171,16 @@ Channel이 올립니다. 앱의 배포 버전, npm/Go SDK package 버전, 개발
 다릅니다. 현재 기본 시스템 계약은 `v1`입니다. 예를 들어 AppStore 시스템 계약 `v2`는 이러한
 breaking change가 반영된 플랫폼 버전이지, 각 앱이 만드는 v2가 아닙니다.
 
-| `systemVersion`이 나타나는 위치                        | 의미                                                                 |
-| ------------------------------------------------------ | -------------------------------------------------------------------- |
-| `@Extension` 또는 Go Extension 등록                    | 앱이 구현한다고 AppStore에 등록하는 시스템 계약                      |
-| Extension metadata의 target `systemVersion`            | 해당 Function을 호출할 때 사용할 동일한 AppStore 시스템 계약         |
-| Function request의 `systemVersion`과 `/functions/v1`   | AppStore가 같은 시스템 계약을 앱 서버에 전달하는 request와 route 표현 |
+| `systemVersion`이 나타나는 위치                      | 의미                                                                  |
+| ---------------------------------------------------- | --------------------------------------------------------------------- |
+| `@Extension` 또는 Go Extension 등록                  | 앱이 구현한다고 AppStore에 등록하는 시스템 계약                       |
+| Extension metadata의 target `systemVersion`          | 해당 Function을 호출할 때 사용할 동일한 AppStore 시스템 계약          |
+| Function request의 `systemVersion`과 `/functions/v1` | AppStore가 같은 시스템 계약을 앱 서버에 전달하는 request와 route 표현 |
 
-현재 SDK는 version별 handler 집합을 만들지 않습니다. 따라서 개발자가 `systemVersion: "v2"`를
-임의로 지정해 자체 Function v2를 운영할 수 없습니다. AppStore와 SDK가 공식 v2 계약을 제공할 때만
-그 값을 사용하세요. 앱이 소유한 standalone Function의 호환성 유지 방법은
+SDK는 route와 request가 전달한 `systemVersion`별로 handler와 discovery catalog를 분리합니다. 같은
+Function 이름의 공식 v1·v2 구현을 함께 둘 수 있지만, 이것은 개발자가 소유하는 Function API version
+namespace가 아닙니다. `systemVersion: "v2"`는 AppStore와 SDK가 공식 v2 계약을 제공할 때만 사용하세요.
+앱이 소유한 standalone Function의 호환성 유지 방법은
 [Function 등록](functions.md)을 참고하세요. 표준 Extension Function은 공식 이름을 바꾸지 말고
 AppStore와 SDK가 제공하는 계약을 구현해야 합니다.
 

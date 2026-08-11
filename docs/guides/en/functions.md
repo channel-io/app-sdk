@@ -103,9 +103,12 @@ manual discovery response. Verify the exact request bytes with `SignatureGuard` 
 `rawBody: true` in TypeScript, or `server.WithSignature` in Go.
 
 The route suffix `v1` and request `systemVersion` carry the same AppStore system contract. The
-current TypeScript and Go SDKs do not maintain separate handler sets for the URL `:version` or the
-request `systemVersion`; after signature verification, dispatch is based on the exact `method`.
-`/functions/v1` is therefore not a developer-owned API version namespace.
+TypeScript and Go SDKs use the URL `:version` to select a version-scoped handler and discovery
+catalog, then dispatch by the exact `method`. When the body contains `systemVersion`, it must match
+the route; when omitted, the SDK uses the route version. A mismatch or unregistered version returns
+`versionMismatch`, with no fallback to the same method in another version. `/functions/v1` is
+therefore not a developer-owned API version namespace; the dispatch key is
+`(systemVersion, method)`.
 
 ### Evolving a Function contract compatibly
 
@@ -132,6 +135,16 @@ On a provider with `@Extension({ name: "command" })`, `@Func("metadata.getComman
 `extension.command.metadata.getCommands`. Do not create a fake Extension for a standalone
 Function. Add every decorated class to the NestJS module's `providers` so discovery can find it.
 
+Only after AppStore and the SDK publish a new official system contract, associate a separate
+standalone implementation with that version. Omitting the option registers it for `v1`.
+
+```ts
+@Func({ name: "orders.get", systemVersion: "v2" })
+async getOrderV2(@Ctx() ctx: Context, @Input() input: GetOrderV2Input) {
+  return this.service.getOrderV2(ctx.channel.id, input);
+}
+```
+
 ## Go
 
 Go uses builders and generic handlers.
@@ -157,6 +170,13 @@ appsdk.MustRegister(
 `appsdk.Register` and `appsdk.MustRegister` derive schemas from Go structs and call
 `Validate() error` when the input implements it. Use `appsdk.InputSchema`, `appsdk.OutputSchema`,
 or proto helpers for an explicit contract.
+
+Add `appsdk.SystemVersion` to a standalone Function for a newly published official system
+contract. Omitting it preserves the existing `v1` registration.
+
+```go
+appsdk.MustRegister(app, "orders.get", getOrderV2, appsdk.SystemVersion("v2"))
+```
 
 ## Call Native and app Functions
 

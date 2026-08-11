@@ -247,6 +247,20 @@ func (h *Handler) Handle(ctx *ginlib.Context) {
 		return
 	}
 
+	routeVersion := ctx.Param("version")
+	bodyVersion := req.SystemVersion
+	if routeVersion == "" {
+		routeVersion = appsdk.DefaultSystemVersion
+	}
+	if bodyVersion != "" && bodyVersion != routeVersion {
+		ctx.JSON(
+			http.StatusBadRequest,
+			appsdk.ErrorResponse(appsdk.NewVersionMismatchError(bodyVersion, []string{routeVersion})),
+		)
+		return
+	}
+	req.SystemVersion = routeVersion
+
 	requestCtx := ctx.Request.Context()
 	if h.requestContext != nil {
 		requestCtx = h.requestContext(requestCtx, body)

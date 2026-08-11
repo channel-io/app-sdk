@@ -173,6 +173,136 @@ func TestAppExtensionRegistrationTargets(t *testing.T) {
 	}
 }
 
+func TestAppRoutesFunctionsBySystemVersion(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	registerVersion := func(version string) error {
+		return appsdk.Register(
+			app,
+			"orders.get",
+			func(_ context.Context, _ appsdk.Context, _ *echoInput) (*echoOutput, error) {
+				return &echoOutput{Message: version}, nil
+			},
+			appsdk.SystemVersion(version),
+		)
+	}
+	if err := registerVersion("v1"); err != nil {
+		t.Fatal(err)
+	}
+	if err := registerVersion("v2"); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, version := range []string{"v1", "v2"} {
+		res := app.HandleRequest(context.Background(), appsdk.FunctionRequest{
+			Method:        "orders.get",
+			SystemVersion: version,
+		})
+		if res.Error != nil {
+			t.Fatalf("unexpected %s error: %+v", version, res.Error)
+		}
+		var out echoOutput
+		if err := json.Unmarshal(res.Result, &out); err != nil {
+			t.Fatal(err)
+		}
+		if out.Message != version {
+			t.Fatalf("expected %s handler, got %q", version, out.Message)
+		}
+	}
+
+	if !app.HasMethod("orders.get") || !app.HasMethodForVersion("v2", "orders.get") {
+		t.Fatalf("expected version-aware method lookup, got v1=%v v2=%v", app.Methods(), app.MethodsForVersion("v2"))
+	}
+	if got := app.SupportedSystemVersions(); len(got) != 2 || got[0] != "v1" || got[1] != "v2" {
+		t.Fatalf("unexpected supported versions: %v", got)
+	}
+}
+
+func TestAppRejectsDuplicateMethodWithinSystemVersion(t *testing.T) {
+	app := appsdk.New(appsdk.Options{})
+	handler := appsdk.Handle(func(context.Context, appsdk.Context, *echoInput) (*echoOutput, error) {
+		return &echoOutput{}, nil
+	})
+	if err := app.RegisterFunc("orders.get", handler, appsdk.SystemVersion("v2")); err != nil {
+		t.Fatal(err)
+	}
+	if err := app.RegisterFunc("orders.get", handler, appsdk.SystemVersion("v2")); err == nil {
+		t.Fatal("expected duplicate v2 method registration to fail")
+	}
+}
+
+func TestAppScopesFunctionDiscoveryBySystemVersion(t *testing.T) {
+	app := appsdk.New(appsdk.Options{})
+	handler := appsdk.Handle(func(context.Context, appsdk.Context, *echoInput) (*echoOutput, error) {
+		return &echoOutput{}, nil
+	})
+	if err := app.RegisterFunc("orders.get", handler); err != nil {
+		t.Fatal(err)
+	}
+	if err := app.RegisterFunc("orders.get", handler, appsdk.SystemVersion("v2")); err != nil {
+		t.Fatal(err)
+	}
+	if err := app.RegisterTestFunc("test.orders.get", handler, appsdk.SystemVersion("v2")); err != nil {
+		t.Fatal(err)
+	}
+
+	if got := app.SchemasForVersion("v1"); len(got) != 1 || got[0].Name != "orders.get" {
+		t.Fatalf("unexpected v1 schemas: %+v", got)
+	}
+	if got := app.SchemasForVersion("v2"); len(got) != 1 || got[0].Name != "orders.get" {
+		t.Fatalf("unexpected v2 schemas: %+v", got)
+	}
+	if got := app.TestSchemasForVersion("v1"); len(got) != 0 {
+		t.Fatalf("expected no v1 test schemas, got %+v", got)
+	}
+	if got := app.TestSchemasForVersion("v2"); len(got) != 1 || got[0].Name != "test.orders.get" {
+		t.Fatalf("unexpected v2 test schemas: %+v", got)
+	}
+}
+
+func TestAppDefaultsMissingVersionAndRejectsUnsupportedVersion(t *testing.T) {
+	app := appsdk.New(appsdk.Options{})
+	app.Func(
+		"orders.get",
+		appsdk.Handle(func(context.Context, appsdk.Context, *echoInput) (*echoOutput, error) {
+			return &echoOutput{Message: "v1"}, nil
+		}),
+	)
+
+	defaultResponse := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: "orders.get"})
+	if defaultResponse.Error != nil {
+		t.Fatalf("expected missing version to default to v1, got %+v", defaultResponse.Error)
+	}
+
+	unsupported := app.HandleRequest(context.Background(), appsdk.FunctionRequest{
+		Method:        "orders.get",
+		SystemVersion: "v2",
+	})
+	if unsupported.Error == nil || unsupported.Error.Type != "versionMismatch" {
+		t.Fatalf("expected versionMismatch error, got %+v", unsupported.Error)
+	}
+}
+
+func TestAutoRegisterTargetsAddCoreForStandaloneVersion(t *testing.T) {
+	app := appsdk.New(appsdk.Options{})
+	if err := app.DeclareExtension("calendar", "v1"); err != nil {
+		t.Fatal(err)
+	}
+	app.Func(
+		"orders.get",
+		appsdk.SystemVersion("v2"),
+		appsdk.Handle(func(context.Context, appsdk.Context, *echoInput) (*echoOutput, error) {
+			return &echoOutput{}, nil
+		}),
+	)
+
+	targets := app.AutoRegisterTargets()
+	if len(targets) != 2 ||
+		targets[0].Name != "calendar" || targets[0].SystemVersion != "v1" ||
+		targets[1].Name != appsdk.CoreExtensionName || targets[1].SystemVersion != "v2" {
+		t.Fatalf("unexpected version-aware auto-register targets: %+v", targets)
+	}
+}
+
 func TestHandleValidatesInput(t *testing.T) {
 	app := appsdk.New(appsdk.Options{})
 	app.Func(

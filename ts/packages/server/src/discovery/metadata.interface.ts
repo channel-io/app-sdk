@@ -24,6 +24,8 @@ export interface ExtensionMetadata {
 export interface FunctionMetadata {
   /** Function name (e.g., "getAvailability" or "booking.create") */
   name: string;
+  /** AppStore system contract version used for routing */
+  systemVersion: string;
   /** Full method name for routing (e.g., "extension.calendar.getAvailability") */
   fullName: string;
   /** Method name on the class */

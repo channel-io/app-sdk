@@ -57,7 +57,9 @@ func (b *Builder) SystemVersion() string {
 
 func (b *Builder) Func(name string, opts ...appsdk.FunctionOption) *Builder {
 	b.registrations = append(b.registrations, func(app *appsdk.App) error {
-		return app.RegisterFunc(name, opts...)
+		versionedOpts := append([]appsdk.FunctionOption{}, opts...)
+		versionedOpts = append(versionedOpts, appsdk.SystemVersion(b.systemVersion))
+		return app.RegisterFunc(name, versionedOpts...)
 	})
 	return b
 }

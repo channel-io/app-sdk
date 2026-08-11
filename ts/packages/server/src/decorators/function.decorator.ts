@@ -7,6 +7,8 @@ export const FUNCTIONS_METADATA = Symbol("FUNCTIONS_METADATA");
 export interface FunctionOptions {
   /** Function name (e.g., "getAvailability" or "calendar.getAvailability") */
   name?: string;
+  /** AppStore system contract version for a standalone function (default: "v1") */
+  systemVersion?: string;
   /** Function description for documentation */
   description?: string;
   /** Whether this function is omitted from Function discovery */
@@ -16,6 +18,7 @@ export interface FunctionOptions {
 export interface FunctionMetadataValue {
   name: string;
   methodName: string | symbol;
+  systemVersion?: string;
   description?: string;
   test?: boolean;
   hidden?: boolean;
@@ -84,6 +87,14 @@ function createFunctionDecorator(
       name: functionName,
       methodName: propertyKey,
     };
+
+    if (options.systemVersion !== undefined) {
+      const systemVersion = options.systemVersion.trim();
+      if (systemVersion === "") {
+        throw new Error("@Func systemVersion must be a non-empty string");
+      }
+      metadata.systemVersion = systemVersion;
+    }
 
     if (test) {
       metadata.test = true;
