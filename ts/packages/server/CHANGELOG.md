@@ -1,5 +1,19 @@
 # @channel.io/app-sdk-server
 
+## 0.21.0
+
+### Minor Changes
+
+- 48e466b: Allow NestJS apps to declare the `userAuthorization` Extension with `@Extension`.
+- aac3364: Remove the extension-specific `registerAlfTasks` and `registerAppNotebooks` SDK APIs. Registering or refreshing ALF Task and Notebook extensions now uses the common `registerExtension` flow.
+
+### Patch Changes
+
+- d7c35d4: Defer datasource table authorization and dialect-specific syntax validation to AppStore and the configured database provider while preserving single-statement read-only guards.
+- fb018c8: Keep recursive CTE declarations at the provider's top level when applying datasource row limits.
+- Updated dependencies [aac3364]
+  - @channel.io/app-sdk-core@0.21.0
+
 ## 0.20.1
 
 ### Patch Changes
