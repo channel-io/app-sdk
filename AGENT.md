@@ -60,8 +60,9 @@ When documentation and examples disagree, trust the code in this order:
 - `add extension` snippets are conveniences; cross-check the selected Extension family reference.
 - Messaging subfamilies require coordinated AppStore registration and native claims in addition to
   their typed Functions. Follow [the messaging contract](./docs/reference/typescript/extensions/messaging.md).
-- OAuth and ALF task flows depend on native Functions in addition to Extension registration. Read
-  the Extension-specific docs before implementing them.
+- OAuth flows depend on native Functions in addition to Extension registration. ALF Task and
+  Notebook registration use the common `registerExtension` flow. Read the Extension-specific docs
+  before implementing them.
 
 ## Doc Map
 

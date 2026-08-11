@@ -51,17 +51,14 @@ export class NotebookExtension {
 
 List `NotebookExtension` in the NestJS module's `providers` so the SDK can discover it.
 
-## Registration Is Two-Step
+## Registration
 
-Notebook apps normally need both:
-
-1. generic extension registration
-   - `registerExtension("notebook", "v1")`
-2. notebook sync
-   - `registerAppNotebooks(appId, accessToken)`
+Use the common `registerExtension("notebook", "v1")` flow. A successful registration also asks
+Channel's notebook service to synchronize the latest `getNotebooks` result. Re-register the same
+extension after changing its notebook definitions.
 
 Use `getAppNotebookVersions(appId, accessToken)` when you need to inspect the
 latest synced notebook versions.
 
-AppStore owns extension registration and native function proxying. Channel owns
+AppStore owns extension registration and version-read proxying. Channel owns
 notebook storage, revision history, sync runs, and UI presentation.

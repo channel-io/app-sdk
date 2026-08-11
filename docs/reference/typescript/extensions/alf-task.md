@@ -8,14 +8,10 @@ Use the ALF task extension when your app should publish predefined automation ta
 
 The current SDK interface names the function group `alftask` and the function `getTasks`.
 
-## Registration Is Two-Step
+## Registration
 
-ALF task apps normally need both:
-
-1. generic extension registration
-   - `registerExtension("alfTask", "v1")`
-2. task sync
-   - `registerAlfTasks(appId, accessToken)`
+Use the common `registerExtension("alfTask", "v1")` flow. Successful registration also triggers
+task synchronization. Re-register the extension after changing its task definitions.
 
 Use `getAlfTaskVersions(appId, accessToken)` when you need to inspect the registered task versions.
 

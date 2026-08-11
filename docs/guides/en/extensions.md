@@ -161,9 +161,10 @@ directly:
 | Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
 
 Do not issue a new token or register on every Function request. Apps with only standalone Functions
-use the SDK's `core:v1` fallback. Advanced families such as ALF task, Notebook, and Messaging may
-require a secondary sync or coordinated product setup after generic Extension registration; follow
-their family recipe.
+use the SDK's `core:v1` fallback. A successful `registerExtension` call automatically synchronizes
+ALF tasks and Notebooks; do not call a separate registration Function for either family. Messaging
+and other advanced families may still require coordinated product setup or a family-specific
+secondary sync, so follow their family recipe.
 
 ## Registration lifecycle and verification
 
@@ -328,16 +329,16 @@ user without the proper user/manager authorization.
 
 ## ALF task
 
-`extension.alfTask.alftask.getTasks` publishes versioned automation tasks. Registration has two
-steps: `registerExtension("alfTask", "v1")` and `registerAlfTasks`. Keep task keys stable, increment
+`extension.alfTask.alftask.getTasks` publishes versioned automation tasks. Registering through
+`registerExtension("alfTask", "v1")` also triggers task synchronization. Keep task keys stable, increment
 versions for behavior changes, and verify the synchronized versions.
 
 [ALF task recipe](extensions/alf-task.md)
 
 ## Notebook
 
-`extension.notebook.core.getNotebooks` publishes versioned notebook definitions. Registration also
-requires `registerAppNotebooks`. Keep notebook and cell keys stable, increment versions for
+`extension.notebook.core.getNotebooks` publishes versioned notebook definitions. Registering the
+Notebook extension through `registerExtension` also triggers synchronization. Keep notebook and cell keys stable, increment versions for
 definition changes, and treat rendered content as untrusted when it includes external data.
 
 [Notebook recipe](extensions/notebook.md)

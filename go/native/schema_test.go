@@ -71,7 +71,6 @@ func TestAppNotebookFunctionSchemas(t *testing.T) {
 	}
 
 	want := []string{
-		native.FunctionRegisterAppNotebooks,
 		native.FunctionGetAppNotebookVersions,
 	}
 	if len(names) != len(want) {
@@ -85,15 +84,15 @@ func TestAppNotebookFunctionSchemas(t *testing.T) {
 }
 
 func TestAppNotebookFunctionSchemaReturnsClone(t *testing.T) {
-	schema, ok := native.AppNotebookFunctionSchema(native.FunctionRegisterAppNotebooks)
+	schema, ok := native.AppNotebookFunctionSchema(native.FunctionGetAppNotebookVersions)
 	if !ok {
-		t.Fatal("expected register app notebooks schema")
+		t.Fatal("expected get app notebook versions schema")
 	}
 	schema.InputSchema["type"] = "mutated"
 
-	again, ok := native.AppNotebookFunctionSchema(native.FunctionRegisterAppNotebooks)
+	again, ok := native.AppNotebookFunctionSchema(native.FunctionGetAppNotebookVersions)
 	if !ok {
-		t.Fatal("expected register app notebooks schema")
+		t.Fatal("expected get app notebook versions schema")
 	}
 	if again.InputSchema["type"] != "object" {
 		t.Fatalf("schema was mutated: %#v", again.InputSchema)

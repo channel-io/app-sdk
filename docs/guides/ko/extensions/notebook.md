@@ -4,10 +4,8 @@ Version이 있는 app-managed notebook과 cell definition을 공개할 때 사�
 
 ## 계약
 
-`extension.notebook.core.getNotebooks`가 필수이며 등록은 두 단계입니다.
-
-1. `notebook:v1`을 등록합니다.
-2. Cached app token으로 `registerAppNotebooks`를 호출해 definition을 sync합니다.
+`extension.notebook.core.getNotebooks`가 필수입니다. 공통 `registerExtension` 흐름으로
+`notebook:v1`을 등록하면 definition sync도 함께 시작됩니다.
 
 각 notebook은 stable key, 양의 정수 version, title, optional initial visibility, cell을 포함합니다.
 지원 cell type은 `markdown`, `sql`, `python`, `input`, `chart`, `table`, `single_value`이며 optional
@@ -25,8 +23,7 @@ tab과 row/column layout은 stable cell key를 참조합니다.
 err := app.Use(notebook.Extension().GetNotebooks(handler.GetNotebooks))
 ```
 
-Auto-registration 후 통제된 startup 또는 release 단계에서 Go native client의 notebook sync를
-호출합니다.
+Auto-registration도 같은 공통 `registerExtension` 흐름을 사용하며 notebook sync를 시작합니다.
 
 ## 보안·검증
 

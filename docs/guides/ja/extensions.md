@@ -160,9 +160,10 @@ Custom bootstrap や deployment system が registration を管理する場合に
 | Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
 
 Function request ごとに新しい token を発行したり、registration を実行したりしないでください。
-Standalone Function だけのアプリは SDK の `core:v1` fallback を使います。ALF task、Notebook、
-Messaging などの advanced family は generic Extension registration の後に secondary sync または
-product setup が必要な場合があるため、family recipe に従ってください。
+Standalone Function だけのアプリは SDK の `core:v1` fallback を使います。ALF task と Notebook は
+`registerExtension` が成功すると自動的に sync されるため、別の registration Function は呼び出しません。
+Messaging などの advanced family では product setup または family-specific secondary sync が必要な
+場合があるため、family recipe に従ってください。
 
 ## Registration lifecycle と検証
 
@@ -328,16 +329,16 @@ conversation/message mapping を保存し、webhook/polling delivery を idempot
 
 ## ALF task
 
-`extension.alfTask.alftask.getTasks` が versioned automation task を公開します。Registration は
-`registerExtension("alfTask", "v1")` と `registerAlfTasks` の 2 段階です。Task key を安定させ、
+`extension.alfTask.alftask.getTasks` が versioned automation task を公開します。
+`registerExtension("alfTask", "v1")` で登録すると task sync も開始されます。Task key を安定させ、
 behavior change では version を上げ、sync 済み version を確認してください。
 
 [ALF task 詳細](extensions/alf-task.md)
 
 ## Notebook
 
-`extension.notebook.core.getNotebooks` が versioned notebook definition を公開し、registration 後に
-`registerAppNotebooks` sync が必要です。Notebook/cell key を安定させ、definition change では
+`extension.notebook.core.getNotebooks` が versioned notebook definition を公開します。
+`registerExtension` で Notebook extension を登録すると sync も開始されます。Notebook/cell key を安定させ、definition change では
 version を上げ、外部 data を render するときは untrusted input として扱います。
 
 [Notebook 詳細](extensions/notebook.md)

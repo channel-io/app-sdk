@@ -3,7 +3,6 @@ import {
   NativeCreateAppDataTableParamsSchema,
   NativeListActiveOAuthManagerTargetsParamsSchema,
   NativeListActiveOAuthManagerTargetsResultSchema,
-  NativeRegisterAppNotebooksParamsSchema,
   NativeUpsertAppDataTableRowsParamsSchema,
   getNativeFunctionSchemas,
   nativeFunctionSchemaDefinitions,
@@ -24,11 +23,10 @@ describe("native function schemas", () => {
       "createAppDataTableSchema",
       "getAppDataTableSchema",
       "upsertAppDataTableRows",
-      "registerAppNotebooks",
       "getAppNotebookVersions",
       "listActiveOAuthManagerTargets",
     ]);
-    expect(nativeFunctionSchemaDefinitions).toHaveLength(7);
+    expect(nativeFunctionSchemaDefinitions).toHaveLength(6);
   });
 
   it("validates createAppDataTable input", () => {
@@ -75,20 +73,6 @@ describe("native function schemas", () => {
         appId: "app-1",
         tableName: "orders",
         rows: Array.from({ length: 101 }, (_, index) => ({ id: `order-${index}` })),
-      })
-    ).toThrow();
-  });
-
-  it("validates registerAppNotebooks input", () => {
-    expect(() =>
-      NativeRegisterAppNotebooksParamsSchema.parse({
-        appId: "app-1",
-      })
-    ).not.toThrow();
-
-    expect(() =>
-      NativeRegisterAppNotebooksParamsSchema.parse({
-        appId: "",
       })
     ).toThrow();
   });

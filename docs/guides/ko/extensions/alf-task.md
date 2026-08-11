@@ -4,10 +4,8 @@ Version이 있는 app-provided automation task definition을 공개할 때 사�
 
 ## 계약
 
-`extension.alfTask.alftask.getTasks`가 필수이며 등록은 두 단계입니다.
-
-1. `alfTask:v1`을 등록합니다.
-2. Cached app token으로 `registerAlfTasks`를 호출해 task version을 sync합니다.
+`extension.alfTask.alftask.getTasks`가 필수입니다. 공통 `registerExtension` 흐름으로
+`alfTask:v1`을 등록하면 task version sync도 함께 시작됩니다.
 
 각 predefined task는 stable version, name, trigger, typed memory schema, workflow node,
 `startNodeId`를 포함합니다. Node ID와 `next` reference가 의도한 graph를 이루어야 하며 version은
@@ -16,7 +14,7 @@ deployment timestamp가 아니라 개발자가 관리하는 change detector입�
 ## TypeScript
 
 `@Extension({ name: "alfTask", systemVersion: "v1" })`과 `GetAlfTasksResponseSchema`를 사용하고
-server가 접근 가능한 뒤 `NativeFunctionClient.registerAlfTasks()`를 호출합니다.
+server가 접근 가능한 뒤 등록합니다.
 [TypeScript ALF task 레퍼런스](../../../reference/typescript/extensions/alf-task.md)를 확인하세요.
 
 ## Go
@@ -25,8 +23,7 @@ server가 접근 가능한 뒤 `NativeFunctionClient.registerAlfTasks()`를 호�
 err := app.Use(alftask.Extension().GetTasks(handler.GetTasks))
 ```
 
-Auto-registration 후 deployment 또는 통제된 release 단계에서 Go native client의 ALF task sync를
-한 번 호출합니다. Function request마다 호출하지 않습니다.
+Auto-registration도 공통 `RegisterExtension` 흐름을 사용하며 ALF task sync를 시작합니다.
 
 ## 신뢰성·검증
 

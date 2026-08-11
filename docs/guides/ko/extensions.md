@@ -158,8 +158,9 @@ Custom bootstrap이나 배포 시스템이 등록을 제어할 때만 native Fun
 | Go         | `nativeClient.RegisterExtension(ctx, appToken.AccessToken, appID, extensionName, systemVersion)` |
 
 Function 요청마다 새 token을 발급하거나 등록하지 마세요. Standalone Function만 있는 앱은 SDK의
-`core:v1` fallback을 사용합니다. ALF task, Notebook, Messaging 같은 고급 family는 generic Extension
-등록 뒤 secondary sync 또는 product 설정이 필요할 수 있으므로 해당 family 문서를 따르세요.
+`core:v1` fallback을 사용합니다. ALF task와 Notebook은 `registerExtension`이 성공하면 자동으로
+sync되므로 별도 등록 Function을 호출하지 않습니다. Messaging과 그 밖의 고급 family는 product 설정
+또는 family별 secondary sync가 필요할 수 있으므로 해당 family 문서를 따르세요.
 
 ## 등록 lifecycle과 검증
 
@@ -319,16 +320,16 @@ authorization 없이 사용자를 대신하지 않습니다.
 
 ## ALF task
 
-`extension.alfTask.alftask.getTasks`가 versioned automation task를 공개합니다. 등록은
-`registerExtension("alfTask", "v1")`과 `registerAlfTasks` 두 단계입니다. Task key를 안정적으로
+`extension.alfTask.alftask.getTasks`가 versioned automation task를 공개합니다.
+`registerExtension("alfTask", "v1")`으로 등록하면 task sync도 함께 시작됩니다. Task key를 안정적으로
 유지하고 동작이 바뀌면 version을 올린 뒤 sync된 version을 확인하세요.
 
 [ALF task 상세](extensions/alf-task.md)
 
 ## Notebook
 
-`extension.notebook.core.getNotebooks`가 versioned notebook definition을 공개하고 등록 후
-`registerAppNotebooks` sync가 필요합니다. Notebook/cell key는 안정적으로 유지하고 definition이
+`extension.notebook.core.getNotebooks`가 versioned notebook definition을 공개합니다.
+`registerExtension`으로 Notebook extension을 등록하면 sync도 함께 시작됩니다. Notebook/cell key는 안정적으로 유지하고 definition이
 바뀌면 version을 올리며 외부 data를 render할 때는 untrusted input으로 처리합니다.
 
 [Notebook 상세](extensions/notebook.md)
