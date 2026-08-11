@@ -64,6 +64,15 @@ func QueryWithRowLimit(query string, rowLimit int64) string {
 	if rowLimit <= 0 {
 		return normalized
 	}
+	analysis := analyzeSQL(normalized)
+	if analysis.withRecursive && analysis.mainQueryStart > 0 {
+		return fmt.Sprintf(
+			"%sSELECT * FROM (%s) AS datasource_query LIMIT %d",
+			normalized[:analysis.mainQueryStart],
+			normalized[analysis.mainQueryStart:],
+			rowLimit,
+		)
+	}
 	return fmt.Sprintf("SELECT * FROM (%s) AS datasource_query LIMIT %d", normalized, rowLimit)
 }
 
@@ -75,14 +84,18 @@ type sqlAnalysis struct {
 	hasBlockedKeyword      bool
 	terminated             bool
 	referenceText          string
+	withRecursive          bool
+	mainQueryStart         int
 }
 
 // analyzeSQL is a conservative lexer for the datasource safety policy, not a
 // full SQL parser. Hash comments are accepted only before the first executable
 // token because PostgreSQL also uses # as an operator.
 func analyzeSQL(query string) sqlAnalysis {
-	analysis := sqlAnalysis{valid: true}
+	analysis := sqlAnalysis{valid: true, mainQueryStart: -1}
 	var reference strings.Builder
+	parenDepth := 0
+	topLevelIdentifiers := 0
 
 	markToken := func(identifier string, isIdentifier bool) {
 		if analysis.terminated {
@@ -178,6 +191,16 @@ func analyzeSQL(query string) sqlAnalysis {
 				i++
 			}
 			identifier := query[start:i]
+			if parenDepth == 0 {
+				lower := strings.ToLower(identifier)
+				if analysis.firstKeyword == "with" && topLevelIdentifiers == 1 && lower == "recursive" {
+					analysis.withRecursive = true
+				}
+				if analysis.withRecursive && lower == "select" && analysis.mainQueryStart < 0 {
+					analysis.mainQueryStart = start
+				}
+				topLevelIdentifiers++
+			}
 			markToken(identifier, true)
 			reference.WriteString(identifier)
 			continue
@@ -193,6 +216,11 @@ func analyzeSQL(query string) sqlAnalysis {
 			continue
 		}
 
+		if query[i] == '(' {
+			parenDepth++
+		} else if query[i] == ')' && parenDepth > 0 {
+			parenDepth--
+		}
 		markToken("", false)
 		reference.WriteByte(query[i])
 		i++

@@ -45,6 +45,22 @@ describe("datasource policy helpers", () => {
     expect(queryWithRowLimit(`select * from orders${";".repeat(10_000)}`, 10)).toBe(
       "SELECT * FROM (select * from orders) AS datasource_query LIMIT 10"
     );
+    expect(
+      queryWithRowLimit(
+        "WITH RECURSIVE seq AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM seq WHERE n < 3) SELECT * FROM seq;",
+        10
+      )
+    ).toBe(
+      "WITH RECURSIVE seq AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM seq WHERE n < 3) SELECT * FROM (SELECT * FROM seq) AS datasource_query LIMIT 10"
+    );
+    expect(
+      queryWithRowLimit(
+        "WITH /* recursive query */ RECURSIVE seq AS (SELECT 1 AS n)\n-- final query\nSELECT * FROM seq",
+        10
+      )
+    ).toBe(
+      "WITH /* recursive query */ RECURSIVE seq AS (SELECT 1 AS n)\n-- final query\nSELECT * FROM (SELECT * FROM seq) AS datasource_query LIMIT 10"
+    );
   });
 
   it("accepts comments and literals in read-only queries", () => {

@@ -114,3 +114,21 @@ func TestQueryWithRowLimitWrapsQuery(t *testing.T) {
 		t.Fatalf("unexpected query:\nwant: %s\n got: %s", want, got)
 	}
 }
+
+func TestQueryWithRowLimitKeepsRecursiveCTEAtTopLevel(t *testing.T) {
+	query := "WITH RECURSIVE seq AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM seq WHERE n < 3) SELECT * FROM seq;"
+	got := datasource.QueryWithRowLimit(query, 10)
+	want := "WITH RECURSIVE seq AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM seq WHERE n < 3) SELECT * FROM (SELECT * FROM seq) AS datasource_query LIMIT 10"
+	if got != want {
+		t.Fatalf("unexpected query:\nwant: %s\n got: %s", want, got)
+	}
+}
+
+func TestQueryWithRowLimitKeepsRecursiveCTECommentsIntact(t *testing.T) {
+	query := "WITH /* recursive query */ RECURSIVE seq AS (SELECT 1 AS n)\n-- final query\nSELECT * FROM seq"
+	got := datasource.QueryWithRowLimit(query, 10)
+	want := "WITH /* recursive query */ RECURSIVE seq AS (SELECT 1 AS n)\n-- final query\nSELECT * FROM (SELECT * FROM seq) AS datasource_query LIMIT 10"
+	if got != want {
+		t.Fatalf("unexpected query:\nwant: %s\n got: %s", want, got)
+	}
+}
