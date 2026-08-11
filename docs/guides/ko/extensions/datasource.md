@@ -51,8 +51,8 @@ server와 Arrow executor를 사용합니다.
 ## 보안·신뢰성
 
 - `x-access-token`과 datasource signature를 검증하고 app/tenant isolation을 강제합니다.
-- Catalog/table allowlist, parameterized SQL, column 제한, row/byte/time/concurrency limit을
-  적용합니다.
+- 노출 catalog/table/column 인가는 AppStore에 맡깁니다. 앱 runner에서는 단일 read-only SQL을
+  검증하고 app 소유 데이터로 제한된 credential을 사용하며 row/byte/time/concurrency limit을 적용합니다.
 - 전체 결과를 memory에 모으지 말고 Arrow batch를 stream하며 cancellation을 전달합니다.
 - Unauthorized identity, cross-tenant access, malformed SQL, timeout, empty result, large batch,
   schema mismatch, mid-stream failure를 테스트합니다.

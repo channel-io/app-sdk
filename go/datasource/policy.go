@@ -46,35 +46,14 @@ func ReferencedTables(query string, explicitTableNames []string, tables []TableC
 	return result
 }
 
+// ValidateReadOnlyQuery enforces the app-runner safety boundary. Table inputs
+// are retained for API compatibility; App Store owns table authorization.
 func ValidateReadOnlyQuery(query string, explicitTableNames []string, tables []TableConfig) error {
 	if strings.TrimSpace(query) == "" {
 		return fmt.Errorf("query is required")
 	}
 	if !IsSingleReadOnlyStatement(query) {
 		return fmt.Errorf("query must be a single read-only SELECT statement")
-	}
-	if len(tables) == 0 {
-		return nil
-	}
-
-	tableMap := make(map[string]struct{}, len(tables))
-	for _, table := range tables {
-		tableName := strings.TrimSpace(table.Name)
-		if tableName != "" {
-			tableMap[strings.ToLower(tableName)] = struct{}{}
-		}
-	}
-	tableNames := ReferencedTables(query, explicitTableNames, tables)
-	if len(tableNames) == 0 {
-		if !analyzeSQL(query).hasTableSourceKeyword {
-			return nil
-		}
-		return fmt.Errorf("query must reference a supported datasource table")
-	}
-	for _, tableName := range tableNames {
-		if _, ok := tableMap[strings.ToLower(tableName)]; !ok {
-			return fmt.Errorf("unsupported datasource table: %s", tableName)
-		}
 	}
 	return nil
 }
@@ -94,7 +73,6 @@ type sqlAnalysis struct {
 	firstTokenIsIdentifier bool
 	firstKeyword           string
 	hasBlockedKeyword      bool
-	hasTableSourceKeyword  bool
 	terminated             bool
 	referenceText          string
 }
@@ -121,9 +99,6 @@ func analyzeSQL(query string) sqlAnalysis {
 			keyword := strings.ToLower(identifier)
 			if _, blocked := blockedSQLKeywords[keyword]; blocked {
 				analysis.hasBlockedKeyword = true
-			}
-			if keyword == "from" || keyword == "join" {
-				analysis.hasTableSourceKeyword = true
 			}
 		}
 	}

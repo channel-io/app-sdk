@@ -81,11 +81,19 @@ describe("datasource policy helpers", () => {
     }
   });
 
-  it("ignores table names inside comments and literals", () => {
+  it("allows tableless queries with configured tables", () => {
     for (const query of ["SELECT 'orders' AS note", "SELECT 1 /* FROM orders */"]) {
-      expect(() => validateReadOnlyQuery(query, [], [{ name: "orders" }])).toThrow(
-        "supported datasource table"
-      );
+      expect(() => validateReadOnlyQuery(query, [], [{ name: "orders" }])).not.toThrow();
+    }
+  });
+
+  it("defers table authorization and dialect syntax to App Store and the provider", () => {
+    for (const query of [
+      "SELECT * FROM customers",
+      "SELECT * FROM UNNEST([1, 2, 3])",
+      "SELECT * FROM (SELECT 1)",
+    ]) {
+      expect(() => validateReadOnlyQuery(query, [], [{ name: "orders" }])).not.toThrow();
     }
   });
 });

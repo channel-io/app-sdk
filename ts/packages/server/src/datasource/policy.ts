@@ -58,10 +58,14 @@ export function referencedTables(
     .map((table) => table.name);
 }
 
+/**
+ * Enforces the app-runner safety boundary. Table inputs are retained for API
+ * compatibility; AppStore owns table authorization.
+ */
 export function validateReadOnlyQuery(
   query: string,
-  explicitTableNames: readonly string[] = [],
-  tables: readonly DataSourceTableConfig[] = []
+  _explicitTableNames: readonly string[] = [],
+  _tables: readonly DataSourceTableConfig[] = []
 ): void {
   if (!query.trim()) {
     throw new DataSourceExecutionError({
@@ -74,26 +78,6 @@ export function validateReadOnlyQuery(
       code: DataSourceErrorCode.QueryInvalid,
       message: "query must be a single read-only SELECT statement",
     });
-  }
-  if (tables.length === 0) {
-    return;
-  }
-
-  const allowedTables = new Set(tables.map((table) => table.name.toLowerCase()));
-  const tableNames = referencedTables(query, explicitTableNames, tables);
-  if (tableNames.length === 0) {
-    throw new DataSourceExecutionError({
-      code: DataSourceErrorCode.QueryInvalid,
-      message: "query must reference a supported datasource table",
-    });
-  }
-  for (const tableName of tableNames) {
-    if (!allowedTables.has(tableName.toLowerCase())) {
-      throw new DataSourceExecutionError({
-        code: DataSourceErrorCode.TableNotFound,
-        message: `unsupported datasource table: ${tableName}`,
-      });
-    }
   }
 }
 
