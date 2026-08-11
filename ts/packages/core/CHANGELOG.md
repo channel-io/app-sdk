@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.21.0
+
+### Minor Changes
+
+- aac3364: Remove the extension-specific `registerAlfTasks` and `registerAppNotebooks` SDK APIs. Registering or refreshing ALF Task and Notebook extensions now uses the common `registerExtension` flow.
+
 ## 0.20.1
 
 ### Patch Changes
