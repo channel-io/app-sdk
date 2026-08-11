@@ -121,7 +121,8 @@ List `DataSourceExtension` in the NestJS module's `providers`. The lower-level `
 Set `managerAccess` to `"owner"` when only channel Owner-role managers may
 discover, describe, or query a table. Use `"all"`, or omit the field, to allow
 all channel managers. AppStore is the authorization authority; this metadata
-does not change the datasource gRPC runner's local table allowlist.
+is used by AppStore's table and column authorization. The datasource gRPC runner
+does not re-parse SQL to maintain a second table allowlist.
 
 Samples are optional and must be bounded: at most 10 rows and 64 KiB, with keys
 that match the declared columns.
@@ -265,9 +266,11 @@ Arrow packages unless the corresponding runner is executed.
 ## Policy Boundary
 
 AppStore remains the authority for app identity, permissions, tenant isolation,
-auditing, and global limits. SDK runners add local defensive checks such as
-read-only query validation, optional table allowlists, local resource limits,
-and consistent datasource error mapping.
+table and column authorization, auditing, and global limits. SDK runners enforce
+single-statement read-only queries, local resource limits, and consistent
+datasource error mapping without independently inferring referenced tables.
+Use credentials constrained to the app-owned dataset or database as the final
+provider-side boundary.
 
 For small or custom engines, `createRowQueryHandler(...)`,
 `createPostgresQueryHandler(...)`, and `createBigQueryQueryHandler(...)` remain

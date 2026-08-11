@@ -52,7 +52,8 @@ gRPC server と Arrow executor を使います。
 ## Security・信頼性
 
 - `x-access-token` と datasource signature を検証し、app/tenant isolation を強制します。
-- Catalog/table allowlist、parameterized SQL、column 制限、row/byte/time/concurrency limit を適用します。
+- 公開 catalog/table/column の認可は AppStore に任せます。app runner では単一の read-only SQL を
+  検証し、app 所有データに制限された credential を使い、row/byte/time/concurrency limit を適用します。
 - 全結果を memory に保持せず Arrow batch を stream し、cancellation を伝播します。
 - Unauthorized identity、cross-tenant access、malformed SQL、timeout、empty result、large batch、
   schema mismatch、mid-stream failure を test します。

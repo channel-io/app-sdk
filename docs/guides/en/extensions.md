@@ -293,7 +293,8 @@ localized labels and do not include provider credentials in the profile.
 
 DataSource metadata exposes catalogs, tables, columns, and table descriptions. Query execution uses
 the authenticated DataSource gRPC endpoint rather than the normal app Function route. Validate
-`x-access-token`, enforce catalog/table allowlists, parameterize SQL, cap rows and time, and stream
+`x-access-token`, let AppStore authorize exposed tables, enforce read-only SQL with app-scoped
+credentials, cap rows and time, and stream
 Arrow-compatible results. The SDK includes PostgreSQL and BigQuery-oriented runners.
 
 [DataSource recipe](extensions/datasource.md) ·

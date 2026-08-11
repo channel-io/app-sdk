@@ -285,7 +285,8 @@ credential을 profile에 포함하지 않습니다.
 
 DataSource metadata는 catalog, table, column, table description을 제공합니다. Query는 일반 app
 Function route가 아니라 인증된 DataSource gRPC endpoint에서 실행됩니다. `x-access-token`을
-검증하고 catalog/table allowlist, parameterized SQL, row/time limit을 적용하며 Arrow 호환 결과를
+검증하고 노출 table 인가는 AppStore에 맡기며, app 범위 credential과 read-only SQL,
+row/time limit을 적용하고 Arrow 호환 결과를
 stream하세요. SDK는 PostgreSQL과 BigQuery용 runner를 제공합니다.
 
 [DataSource 상세](extensions/datasource.md) ·

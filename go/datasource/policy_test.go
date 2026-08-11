@@ -80,26 +80,6 @@ func TestValidateReadOnlyQueryAllowsTablelessCommentsAndLiterals(t *testing.T) {
 	}
 }
 
-func TestValidateReadOnlyQueryChecksSupportedTables(t *testing.T) {
-	err := datasource.ValidateReadOnlyQuery(
-		"SELECT id FROM orders",
-		nil,
-		[]datasource.TableConfig{{Name: "orders"}},
-	)
-	if err != nil {
-		t.Fatalf("expected supported query: %v", err)
-	}
-
-	err = datasource.ValidateReadOnlyQuery(
-		"SELECT id FROM customers",
-		nil,
-		[]datasource.TableConfig{{Name: "orders"}},
-	)
-	if err == nil {
-		t.Fatal("expected unsupported table query to fail")
-	}
-}
-
 func TestValidateReadOnlyQueryAcceptsTablelessQueries(t *testing.T) {
 	tables := []datasource.TableConfig{{Name: "orders"}}
 	for _, query := range []string{
@@ -114,15 +94,15 @@ func TestValidateReadOnlyQueryAcceptsTablelessQueries(t *testing.T) {
 	}
 }
 
-func TestValidateReadOnlyQueryRejectsUnresolvedTableSources(t *testing.T) {
+func TestValidateReadOnlyQueryDefersTableAuthorizationAndDialectSyntax(t *testing.T) {
 	tables := []datasource.TableConfig{{Name: "orders"}}
 	for _, query := range []string{
 		"SELECT * FROM customers",
 		"SELECT * FROM UNNEST([1, 2, 3])",
 		"SELECT * FROM (SELECT 1)",
 	} {
-		if err := datasource.ValidateReadOnlyQuery(query, nil, tables); err == nil {
-			t.Errorf("expected unresolved table source %q to fail", query)
+		if err := datasource.ValidateReadOnlyQuery(query, nil, tables); err != nil {
+			t.Errorf("expected App Store/provider validation for %q, got %v", query, err)
 		}
 	}
 }

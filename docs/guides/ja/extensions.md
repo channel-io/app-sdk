@@ -292,7 +292,8 @@ provider credential を profile に含めません。
 
 DataSource metadata は catalog、table、column、table description を提供します。Query は通常の
 app Function route ではなく、認証済み DataSource gRPC endpoint で実行します。
-`x-access-token` を検証し、catalog/table allowlist、parameterized SQL、row/time limit を適用し、
+`x-access-token` を検証し、公開 table の認可は AppStore に任せ、app scope credential と
+read-only SQL、row/time limit を適用し、
 Arrow-compatible result を stream してください。SDK は PostgreSQL と BigQuery 向け runner を
 提供します。
 
