@@ -16,6 +16,10 @@
 9. 구현 중에는 완성된 [TypeScript 앱 튜토리얼](https://github.com/channel-io/app-tutorial-ts) 또는
    [Go 앱 튜토리얼](https://github.com/channel-io/app-tutorial)을 함께 봅니다.
 
+## 기능별 가이드
+
+- [User Authorization 가이드](extensions/user-authorization.md): 사용자 식별자 확인과 앱의 리소스 소유권 검증 책임을 구분합니다.
+
 ## 선택 기준
 
 TypeScript SDK는 NestJS, Zod, WAM React 개발에 적합합니다. Go SDK는 Go 서비스에서 typed
