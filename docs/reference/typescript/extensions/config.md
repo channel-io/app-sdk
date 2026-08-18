@@ -36,6 +36,43 @@ Set `supportsMultiple: true` when one scope can store multiple independent confi
 
 `keyResolverFunctionName` is optional. If it is omitted and a new item has no requested key, AppStore assigns a key. Apps that already own a stable identifier may pass that identifier to the keyed config native functions without declaring a resolver.
 
+## OAuth Client Credentials
+
+When an OAuth provider issues a different client ID and client secret for each Config, declare the Config field keys under `oauth.clientCredentials`.
+
+```typescript
+{
+  oauth: {
+    clientCredentials: {
+      clientIdFieldKey: "clientId",
+      clientSecretFieldKey: "clientSecret",
+    },
+  },
+  blocks: [
+    {
+      type: "text",
+      key: "clientId",
+      label: "OAuth Client ID",
+      required: true,
+    },
+    {
+      type: "password",
+      key: "clientSecret",
+      label: "OAuth Client Secret",
+      required: true,
+      storageClass: "credential",
+      maskType: "full",
+    },
+  ],
+}
+```
+
+The two values are field-key references, not literal credentials. If `clientCredentials` is omitted, AppStore continues using the app-level OAuth client credentials. The referenced values must both be available before AppStore can start OAuth or refresh a token.
+
+For multi-config schemas, every stored item uses the same field-key mapping and AppStore resolves the values from the selected item. The SDK does not cross-validate the references against `blocks`; runtime lookup and validation belong to AppStore.
+
+Store client secrets as password fields with `storageClass: "credential"` and a full mask. A client ID may remain a plain config field when the provider does not treat it as sensitive.
+
 ## Implementation Notes
 
 - use `storageClass: "credential"` for encrypted or masked fields

@@ -24,6 +24,7 @@
 ### Task 1: Add the Proto-backed public contract
 
 **Files:**
+
 - Modify: `ts/packages/core/src/__tests__/schemas/config.test.ts`
 - Modify: `proto/channel/app/sdk/v1/extension.proto`
 - Regenerate: `go/internal/gen/channel/app/sdk/v1/extension.pb.go`
@@ -37,6 +38,7 @@
 - Modify: `go/extension/config/extension.go`
 
 **Interfaces:**
+
 - Consumes: `ConfigGetConfigSchemaOutput.oauth` and the existing `ConfigOAuth` namespace.
 - Produces: `ConfigOAuthClientCredentials`, `ConfigOAuthClientCredentialsSchema`, `OAuthClientCredentials`, and `ProtoOAuthClientCredentials` with `clientIdFieldKey` and `clientSecretFieldKey`.
 
@@ -169,14 +171,15 @@ Run:
 ```bash
 cd ts
 pnpm vitest run packages/core/src/__tests__/schemas/config.test.ts packages/core/src/__tests__/extensions/proto-field-parity.test.ts
+pnpm --filter @channel.io/app-sdk-core build
 cd ..
-make proto-check
+make proto-generate
 make proto-ssot-check
 cd go
 go test ./extension/config
 ```
 
-Expected: both TypeScript test files pass, generated files are current, Proto SSOT passes, and the Go Config package passes.
+Expected: both TypeScript test files pass, the core package builds, regeneration produces no additional changes, Proto SSOT passes, and the Go Config package passes.
 
 - [ ] **Step 8: Commit the public contract**
 
@@ -193,16 +196,19 @@ git add proto/channel/app/sdk/v1/extension.proto \
   ts/packages/core/src/__tests__/schemas/config.test.ts \
   ts/packages/core/src/__tests__/extensions/proto-field-parity.test.ts
 git commit -m "feat(core): add Config OAuth client credential fields"
+make proto-check
 ```
 
 ### Task 2: Document and release the additive API
 
 **Files:**
+
 - Modify: `ts/packages/core/src/extensions/interfaces/config.ts`
 - Modify: `docs/reference/typescript/extensions/config.md`
 - Create: `ts/.changeset/config-oauth-client-credentials.md`
 
 **Interfaces:**
+
 - Consumes: `oauth.clientCredentials` from Task 1.
 - Produces: public TypeScript usage guidance and a minor release declaration.
 
@@ -226,7 +232,7 @@ Add an `OAuth Client Credentials` section to the TypeScript Config reference con
 - the values are Config field keys, not literal credentials
 - omitting the declaration keeps app-level OAuth client credentials
 - both referenced values must be available before the platform can start or refresh OAuth
-- sensitive secrets should use `storageClass: "credential"` and `sensitive: true`
+- secrets should use `type: "password"`, `storageClass: "credential"`, and `maskType: "full"`
 
 - [ ] **Step 3: Add the minor changeset**
 
@@ -267,9 +273,11 @@ git commit -m "docs: document Config OAuth client credentials"
 ### Task 3: Verify the complete SDK change
 
 **Files:**
+
 - Review only: all files changed from `origin/main`
 
 **Interfaces:**
+
 - Consumes: the completed Proto, TypeScript, Go, documentation, and changeset changes.
 - Produces: a verified branch ready for publication.
 
