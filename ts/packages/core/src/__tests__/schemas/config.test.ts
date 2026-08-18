@@ -22,22 +22,6 @@ describe("config extension schema", () => {
     expect(parsed.keyResolverFunctionName).toBe("config.resolveKey");
   });
 
-  it("keeps Config OAuth client credentials optional", () => {
-    const parsed = GetConfigSchemaOutputSchema.parse({
-      schemaVersion: "v1",
-      configScope: "channel",
-      providerName: "Example Provider",
-      oauth: {
-        additionalParams: [{ name: "domain", fieldKey: "commerceDomain" }],
-      },
-      blocks: [{ type: "text", key: "commerceDomain", label: "Domain" }],
-    });
-
-    expect(parsed.oauth).toEqual({
-      additionalParams: [{ name: "domain", fieldKey: "commerceDomain" }],
-    });
-  });
-
   it("accepts layout-aware grouped config fields", () => {
     const parsed = GetConfigSchemaOutputSchema.parse({
       schemaVersion: "v1",

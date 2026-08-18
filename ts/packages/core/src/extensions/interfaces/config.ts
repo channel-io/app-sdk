@@ -13,8 +13,6 @@ import type { Context } from "../../types/context.js";
  * object after AppStore uploads the file to the media server.
  * `oauth.additionalParams` can map persisted config fields to OAuth provider
  * parameters that are needed during authorization and token refresh.
- * `oauth.clientCredentials` can map persisted config fields to the OAuth
- * client ID and client secret used for that Config.
  *
  * @example
  * ```typescript
@@ -29,10 +27,6 @@ import type { Context } from "../../types/context.js";
  *       providerName: "My Provider",
  *       oauth: {
  *         additionalParams: [{ name: "domain", fieldKey: "domain" }],
- *         clientCredentials: {
- *           clientIdFieldKey: "clientId",
- *           clientSecretFieldKey: "clientSecret",
- *         },
  *       },
  *       hooks: {
  *         draftResolverFunctionName: "myConfig.resolveDraft",
@@ -44,26 +38,6 @@ import type { Context } from "../../types/context.js";
  *           key: "storeId",
  *           label: "Store ID",
  *           required: true,
- *         },
- *         {
- *           type: "text",
- *           key: "domain",
- *           label: "Domain",
- *           required: true,
- *         },
- *         {
- *           type: "text",
- *           key: "clientId",
- *           label: "OAuth Client ID",
- *           required: true,
- *         },
- *         {
- *           type: "password",
- *           key: "clientSecret",
- *           label: "OAuth Client Secret",
- *           required: true,
- *           storageClass: "credential",
- *           maskType: "full",
  *         },
  *       ],
  *     };
