@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.21.1
+
+### Patch Changes
+
+- cc224b5: Add Config Extension field references for Config-backed OAuth client credentials.
+
 ## 0.21.0
 
 ### Minor Changes

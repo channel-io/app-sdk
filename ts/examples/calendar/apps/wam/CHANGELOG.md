@@ -1,5 +1,11 @@
 # @calendar-example/wam
 
+## 0.0.12
+
+### Patch Changes
+
+- @channel.io/app-sdk-wam@0.21.1
+
 ## 0.0.11
 
 ### Patch Changes
