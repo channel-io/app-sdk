@@ -30,6 +30,10 @@ describe("config extension schema", () => {
       title: "Cafe24 setup",
       oauth: {
         additionalParams: [{ name: "domain", fieldKey: "commerceDomain" }],
+        clientCredentials: {
+          clientIdFieldKey: "oauthClientId",
+          clientSecretFieldKey: "oauthClientSecret",
+        },
       },
       hooks: {
         draftResolverFunctionName: "cafe24.config.resolveDraft",
@@ -160,6 +164,10 @@ describe("config extension schema", () => {
     expect(parsed.oauth?.additionalParams?.[0]).toEqual({
       name: "domain",
       fieldKey: "commerceDomain",
+    });
+    expect(parsed.oauth?.clientCredentials).toEqual({
+      clientIdFieldKey: "oauthClientId",
+      clientSecretFieldKey: "oauthClientSecret",
     });
     expect(parsed.hooks?.draftResolverFunctionName).toBe("cafe24.config.resolveDraft");
     if (parsed.blocks[1]?.type === "group") {

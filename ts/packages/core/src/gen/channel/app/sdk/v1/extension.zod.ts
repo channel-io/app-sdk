@@ -139,6 +139,7 @@ export type ConfigOAuthAdditionalParamProto = z.infer<typeof ConfigOAuthAddition
 
 export const ConfigOAuthProtoSchema = z.object({
   additionalParams: z.array(z.lazy(() => ConfigOAuthAdditionalParamProtoSchema)).optional(),
+  clientCredentials: z.lazy(() => ConfigOAuthClientCredentialsProtoSchema).optional(),
 }) satisfies z.ZodType<pb.ConfigOAuth>;
 export type ConfigOAuthProto = z.infer<typeof ConfigOAuthProtoSchema>;
 
@@ -1838,3 +1839,9 @@ export const DataSourceAuthorizeQueryOutputProtoSchema = z.object({
   filters: z.array(z.lazy(() => DataSourceQueryFilterProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.DataSourceAuthorizeQueryOutput>;
 export type DataSourceAuthorizeQueryOutputProto = z.infer<typeof DataSourceAuthorizeQueryOutputProtoSchema>;
+
+export const ConfigOAuthClientCredentialsProtoSchema = z.object({
+  clientIdFieldKey: z.string().optional(),
+  clientSecretFieldKey: z.string().optional(),
+}) satisfies z.ZodType<pb.ConfigOAuthClientCredentials>;
+export type ConfigOAuthClientCredentialsProto = z.infer<typeof ConfigOAuthClientCredentialsProtoSchema>;

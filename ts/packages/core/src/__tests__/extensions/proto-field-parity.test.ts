@@ -33,6 +33,7 @@ import {
   ConfigInlineLinkSchema,
   LocalizedConfigTextSchema,
   ConfigOAuthAdditionalParamSchema,
+  ConfigOAuthClientCredentialsSchema,
   ConfigOAuthSchema,
   ConfigResolvedValueTargetSchema,
   ConfigValidationErrorSchema,
@@ -246,6 +247,12 @@ const contracts: Contract[] = [
     ConfigOAuthAdditionalParamSchema,
     "extension",
     "ConfigOAuthAdditionalParam"
+  ),
+  contract(
+    "ConfigOAuthClientCredentials",
+    ConfigOAuthClientCredentialsSchema,
+    "extension",
+    "ConfigOAuthClientCredentials"
   ),
   contract("ConfigOAuth", ConfigOAuthSchema, "extension", "ConfigOAuth"),
   contract("ConfigChoicesSource", ConfigChoicesSourceSchema, "extension", "ConfigChoicesSource"),

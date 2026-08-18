@@ -9,6 +9,7 @@ type ProtoValidationNotice = sdkv1.ConfigValidationNotice
 type ProtoHooks = sdkv1.ConfigHooks
 type ProtoLocalizedText = sdkv1.ConfigLocalizedText
 type ProtoOAuthAdditionalParam = sdkv1.ConfigOAuthAdditionalParam
+type ProtoOAuthClientCredentials = sdkv1.ConfigOAuthClientCredentials
 type ProtoOAuth = sdkv1.ConfigOAuth
 type ProtoChoicesSource = sdkv1.ConfigChoicesSource
 type ProtoOverview = sdkv1.ConfigOverview

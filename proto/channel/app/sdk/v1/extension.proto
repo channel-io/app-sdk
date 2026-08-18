@@ -126,6 +126,7 @@ message ConfigOAuthAdditionalParam {
 
 message ConfigOAuth {
   repeated ConfigOAuthAdditionalParam additional_params = 1;
+  ConfigOAuthClientCredentials client_credentials = 2;
 }
 
 message ConfigChoicesSource {
@@ -1620,4 +1621,9 @@ message DataSourceAuthorizeQueryInput {
 message DataSourceAuthorizeQueryOutput {
   bool authorized = 1;
   repeated DataSourceQueryFilter filters = 2;
+}
+
+message ConfigOAuthClientCredentials {
+  string client_id_field_key = 1;
+  string client_secret_field_key = 2;
 }

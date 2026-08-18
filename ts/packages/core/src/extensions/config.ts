@@ -15,6 +15,7 @@ import type {
   ConfigMediaOptions as ProtoConfigMediaOptions,
   ConfigOAuth as ProtoConfigOAuth,
   ConfigOAuthAdditionalParam as ProtoConfigOAuthAdditionalParam,
+  ConfigOAuthClientCredentials as ProtoConfigOAuthClientCredentials,
   ConfigOverview as ProtoConfigOverview,
   ConfigResolvedValueTarget as ProtoConfigResolvedValueTarget,
   ConfigSettings as ProtoConfigSettings,
@@ -158,8 +159,18 @@ export type ConfigOAuthAdditionalParam = ProtoBacked<
   ProtoConfigOAuthAdditionalParam
 >;
 
+export const ConfigOAuthClientCredentialsSchema = z.object({
+  clientIdFieldKey: z.string(),
+  clientSecretFieldKey: z.string(),
+});
+export type ConfigOAuthClientCredentials = ProtoBacked<
+  z.infer<typeof ConfigOAuthClientCredentialsSchema>,
+  ProtoConfigOAuthClientCredentials
+>;
+
 export const ConfigOAuthSchema = z.object({
   additionalParams: z.array(ConfigOAuthAdditionalParamSchema).optional(),
+  clientCredentials: ConfigOAuthClientCredentialsSchema.optional(),
 });
 export type ConfigOAuth = ProtoBacked<z.infer<typeof ConfigOAuthSchema>, ProtoConfigOAuth>;
 

@@ -159,6 +159,7 @@ export interface ConfigOAuthAdditionalParam {
 
 export interface ConfigOAuth {
   additionalParams?: ConfigOAuthAdditionalParam[] | undefined;
+  clientCredentials?: ConfigOAuthClientCredentials | undefined;
 }
 
 export interface ConfigChoicesSource {
@@ -1758,4 +1759,9 @@ export interface DataSourceAuthorizeQueryInput {
 export interface DataSourceAuthorizeQueryOutput {
   authorized?: boolean | undefined;
   filters?: DataSourceQueryFilter[] | undefined;
+}
+
+export interface ConfigOAuthClientCredentials {
+  clientIdFieldKey?: string | undefined;
+  clientSecretFieldKey?: string | undefined;
 }
