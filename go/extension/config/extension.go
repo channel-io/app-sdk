@@ -130,6 +130,7 @@ type GetConfigSchemaRequest = sdkv1.ConfigGetConfigSchemaInput
 type GetConfigSchemaResponse = sdkv1.ConfigGetConfigSchemaOutput
 type OAuthConfig = sdkv1.ConfigOAuth
 type OAuthAdditionalParam = sdkv1.ConfigOAuthAdditionalParam
+type OAuthClientCredentials = sdkv1.ConfigOAuthClientCredentials
 type Hooks = sdkv1.ConfigHooks
 type Condition = sdkv1.ConfigCondition
 type LocalizedText = sdkv1.ConfigLocalizedText

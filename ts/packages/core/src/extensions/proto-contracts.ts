@@ -63,6 +63,7 @@ import type {
   ConfigInlineLink as ProtoConfigInlineLink,
   ConfigOAuth as ProtoConfigOAuth,
   ConfigOAuthAdditionalParam as ProtoConfigOAuthAdditionalParam,
+  ConfigOAuthClientCredentials as ProtoConfigOAuthClientCredentials,
   ConfigResolvedValueTarget as ProtoConfigResolvedValueTarget,
   ConfigValidateStoredConfigOutput as ProtoConfigValidateStoredConfigOutput,
   ConfigValidationError as ProtoConfigValidationError,
@@ -346,6 +347,12 @@ export type ExtensionProtoSchemaContracts = [
     SchemaOutputExtendsProto<
       typeof ConfigSchemas.ConfigOAuthAdditionalParamSchema,
       ProtoConfigOAuthAdditionalParam
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof ConfigSchemas.ConfigOAuthClientCredentialsSchema,
+      ProtoConfigOAuthClientCredentials
     >
   >,
   Expect<SchemaOutputExtendsProto<typeof ConfigSchemas.ConfigOAuthSchema, ProtoConfigOAuth>>,
