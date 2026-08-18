@@ -2866,6 +2866,22 @@
                 ],
                 "additionalProperties": false
               }
+            },
+            "clientCredentials": {
+              "type": "object",
+              "properties": {
+                "clientIdFieldKey": {
+                  "type": "string"
+                },
+                "clientSecretFieldKey": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "clientIdFieldKey",
+                "clientSecretFieldKey"
+              ],
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
