@@ -175,6 +175,14 @@ func TestProtoMetadataTypesAreExported(t *testing.T) {
 	}
 }
 
+func TestMySQLDialectProtoCompatibility(t *testing.T) {
+	catalog := &datasource.ProtoCatalog{Alias: "mysql", Dialect: string(datasource.DialectMySQL)}
+
+	if got := catalog.GetDialect(); got != "mysql" {
+		t.Fatalf("expected mysql dialect, got %q", got)
+	}
+}
+
 type fakeAuthorizingProvider struct {
 	fakeProvider
 }
