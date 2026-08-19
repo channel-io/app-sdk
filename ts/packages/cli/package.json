@@ -1,6 +1,6 @@
 {
   "name": "@channel.io/app-sdk",
-  "version": "0.21.1",
+  "version": "0.21.2",
   "description": "CLI and main entry for Channel.io App SDK",
   "type": "module",
   "main": "./dist/index.js",

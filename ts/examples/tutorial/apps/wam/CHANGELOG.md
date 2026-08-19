@@ -1,5 +1,11 @@
 # @tutorial-example/wam
 
+## 0.0.11
+
+### Patch Changes
+
+- @channel.io/app-sdk-wam@0.21.2
+
 ## 0.0.10
 
 ### Patch Changes
