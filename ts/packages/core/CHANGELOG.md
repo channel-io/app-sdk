@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.21.2
+
+### Patch Changes
+
+- cd0e937: Accept MySQL as a DataSource catalog dialect.
+
 ## 0.21.1
 
 ### Patch Changes
