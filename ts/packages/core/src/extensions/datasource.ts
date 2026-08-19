@@ -23,7 +23,7 @@ type ProtoBacked<T, Proto> = T & Proto;
 
 const DataSourceNonEmptyStringSchema = z.string().min(1);
 
-export const DataSourceDialectSchema = z.enum(["postgresql", "bigquery"]);
+export const DataSourceDialectSchema = z.enum(["postgresql", "bigquery", "mysql"]);
 export type DataSourceDialect = z.infer<typeof DataSourceDialectSchema>;
 
 export const DataSourceTableTypeSchema = z.enum(["table", "view", "materialized_view", "external"]);

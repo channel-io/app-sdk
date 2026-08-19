@@ -17,7 +17,7 @@ camelCase fields.
 
 | Function                | Description                                                               | Required |
 | ----------------------- | ------------------------------------------------------------------------- | -------- |
-| `catalog.listCatalogs`  | Returns local catalogs such as `bigquery` or `postgresql`                 | Yes      |
+| `catalog.listCatalogs`  | Returns catalogs using the `bigquery`, `postgresql`, or `mysql` dialect   | Yes      |
 | `catalog.listTables`    | Returns lightweight table metadata for discovery and search cache refresh | Yes      |
 | `catalog.describeTable` | Returns detailed table columns and keys; may include bounded samples      | Yes      |
 | `query.authorizeQuery`  | Authorizes an actual query access plan and returns row allow-list filters | No       |

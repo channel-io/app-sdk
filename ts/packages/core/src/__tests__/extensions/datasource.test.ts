@@ -12,6 +12,7 @@ import {
   createStaticDataSourceExtension,
   AuthorizeQueryInputSchema,
   AuthorizeQueryOutputSchema,
+  DataSourceDialectSchema,
   DataSourceFunctionNames,
   DataSourceTableSchema,
   DescribeTableOutputSchema,
@@ -36,6 +37,11 @@ const tableDefinition = {
 };
 
 describe("datasource extension schemas", () => {
+  it("accepts every supported datasource dialect", () => {
+    expect(DataSourceDialectSchema.options).toEqual(["postgresql", "bigquery", "mysql"]);
+    expect(DataSourceDialectSchema.parse("mysql")).toBe("mysql");
+  });
+
   it("accepts datasource catalog and describe table outputs", () => {
     const catalogs = ListCatalogsOutputSchema.parse({
       catalogs: [{ alias: "bigquery", dialect: "bigquery", displayName: "Cafe24 BigQuery" }],

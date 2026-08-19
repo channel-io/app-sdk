@@ -16461,7 +16461,8 @@
                 "type": "string",
                 "enum": [
                   "postgresql",
-                  "bigquery"
+                  "bigquery",
+                  "mysql"
                 ]
               },
               "active": {

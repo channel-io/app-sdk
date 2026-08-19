@@ -5,6 +5,7 @@ import sdkv1 "github.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1"
 const (
 	DialectPostgreSQL = "postgresql"
 	DialectBigQuery   = "bigquery"
+	DialectMySQL      = "mysql"
 )
 
 const (
