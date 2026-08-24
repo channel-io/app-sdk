@@ -117,7 +117,7 @@ ngrok 화면의 `Forwarding` 항목에 표시된 HTTPS 주소를 복사합니다
 
 Function Endpoint 뒤에 `/v1`을 붙이거나 WAM Endpoint 뒤에 `/tutorial`을 붙이지 마세요. 저장한 뒤 앱 서버를 한 번 재시작합니다.
 
-**완료 확인:** 서버 로그에 Extension 등록 성공이 표시되면 Channel이 `/tutorial` Command를 찾을 수 있는 상태입니다.
+**완료 확인:** 서버 로그에서 Extension 등록과 Function 목록 조회가 각각 성공했는지 확인합니다. `/tutorial` Command 정보가 오류 없이 확인되면 다음 단계로 이동합니다.
 
 **먼저 확인할 것:** 등록에 실패하면 App ID와 App Secret, tunnel 주소를 다시 확인하세요. Tunnel 주소가 바뀌었다면 개발자 포털의 두 Endpoint도 갱신해야 합니다.
 
@@ -135,7 +135,7 @@ Function Endpoint 뒤에 `/v1`을 붙이거나 WAM Endpoint 뒤에 `/tutorial`�
 
 **완료 확인:** app bot 메시지와 현재 manager 이름으로 보낸 메시지가 각각 하나씩 보여야 합니다.
 
-**먼저 확인할 것:** `/tutorial`이 목록에 없다면 서버 로그의 Extension 등록 결과를 확인하고 앱을 다시 설치하거나 새로고침하세요. WAM은 열리지만 전송이 실패하면 [문제 해결](#8-문제-해결)에서 권한 항목을 확인하세요.
+**먼저 확인할 것:** `/tutorial`이 목록에 없다면 서버 로그에서 Extension 등록, `extension.core.function.getFunctions` 조회, Command 정보 검증이 각각 성공했는지 확인한 뒤 앱을 다시 설치하거나 새로고침하세요. WAM은 열리지만 전송이 실패하면 [문제 해결](#8-문제-해결)에서 권한 항목을 확인하세요.
 
 ## 6. Go로 진행하기
 

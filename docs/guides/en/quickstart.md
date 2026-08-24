@@ -117,7 +117,7 @@ Enter these two addresses in Server Settings in the developer portal:
 
 Do not append `/v1` to the Function Endpoint or `/tutorial` to the WAM Endpoint. Save the settings, then restart the app server once.
 
-**Success:** A successful Extension registration in the server log means Channel can discover the `/tutorial` Command.
+**Success:** Confirm that Extension registration and the Function-list request succeed separately in the server log. Continue when the `/tutorial` Command metadata is accepted without an error.
 
 **First check if it fails:** Recheck the App ID, App Secret, and tunnel address. If the tunnel address changes, update both endpoints in the developer portal.
 
@@ -135,7 +135,7 @@ You are done when both messages arrive:
 
 **Success:** You should see one message from the app bot and one from the current manager.
 
-**First check if it fails:** If `/tutorial` is absent, check Extension registration in the server log, then reinstall or refresh the app. If the WAM opens but sending fails, check the permissions in [Troubleshooting](#8-troubleshooting).
+**First check if it fails:** If `/tutorial` is absent, check Extension registration, the `extension.core.function.getFunctions` request, and Command metadata validation in the server log, then reinstall or refresh the app. If the WAM opens but sending fails, check the permissions in [Troubleshooting](#8-troubleshooting).
 
 ## 6. Use Go instead
 

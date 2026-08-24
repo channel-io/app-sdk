@@ -117,7 +117,7 @@ Developer portal の Server Settings に次の 2 つのアドレスを入力し�
 
 Function Endpoint に `/v1`、WAM Endpoint に `/tutorial` を追加しないでください。保存後、アプリサーバーを一度再起動します。
 
-**完了の目安:** サーバーログに Extension 登録成功が表示されれば、Channel が `/tutorial` Command を見つけられる状態です。
+**完了の目安:** サーバーログで Extension 登録と Function 一覧の取得がそれぞれ成功したことを確認します。`/tutorial` Command の情報がエラーなく検証されたら次へ進みます。
 
 **失敗時の最初の確認:** App ID、App Secret、tunnel アドレスを確認してください。Tunnel アドレスが変わった場合は developer portal の 2 つの Endpoint も更新します。
 
@@ -135,7 +135,7 @@ Developer portal から private app をテスト Channel にインストール�
 
 **完了の目安:** App bot からのメッセージと、現在の manager 名で送られたメッセージが 1 件ずつ表示されます。
 
-**失敗時の最初の確認:** `/tutorial` が一覧にない場合はサーバーログの Extension 登録結果を確認し、アプリを再インストールまたは更新してください。WAM は開くものの送信できない場合は [トラブルシューティング](#8-トラブルシューティング) の権限項目を確認します。
+**失敗時の最初の確認:** `/tutorial` が一覧にない場合は、サーバーログで Extension 登録、`extension.core.function.getFunctions` の取得、Command 情報の検証がそれぞれ成功したか確認し、アプリを再インストールまたは更新してください。WAM は開くものの送信できない場合は [トラブルシューティング](#8-トラブルシューティング) の権限項目を確認します。
 
 ## 6. Go を使う場合
 
@@ -187,7 +187,7 @@ TypeScript と同じく、developer portal の Function Endpoint に `https://YO
 
 サーバーでは、SDK が Function schema の公開、`x-signature` の検証、app/Channel token の管理を担当します。具体的には、`TokenManager` が token を再利用し、SDK が `registerExtension(appId, extensionName, systemVersion)` の呼び出しと Function discovery への応答を行います。WAM では `useCallFunction` が AppStore を経由してアプリサーバーの Function を呼び出します。
 
-これらの内部動作を変更するときに、[基本概念](concepts.md#authentication、signature、token)、[Function 登録](functions.md)、[Command ガイド](extensions/command.md)、[WAM ガイド](wam.md) を確認してください。
+これらの内部動作を変更するときに、[基本概念](concepts.md)、[Function 登録](functions.md)、[Command ガイド](extensions/command.md)、[WAM ガイド](wam.md) を確認してください。
 
 ## 8. トラブルシューティング
 
