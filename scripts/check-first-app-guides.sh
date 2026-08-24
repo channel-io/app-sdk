@@ -27,6 +27,7 @@ assets=(
   app-id.png
   app-secret.png
   permissions.png
+  permission-team-member.png
   endpoints.png
   tutorial-wam.png
   tutorial-result.png

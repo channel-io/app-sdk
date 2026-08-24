@@ -23,38 +23,40 @@ You need:
 - Git;
 - an HTTPS tunnel tool that can expose your local server, such as [ngrok](https://ngrok.com/).
 
-Open App Store from Channel settings and go to the app creation page.
+Open App Store from Channel settings. Expand **Advanced features**, then select **Create app** to open the Channel Developer Portal.
 
 ![Open App Store from Channel settings](../../assets/first-app/app-store-entry.png)
 
-Enter a development name, accept the terms, and create a private app. A private app can be installed only in test Channels you select, which makes it suitable for initial development.
+Enter a development name, keep **Legacy token** as the authentication method, accept the terms, and create the app. This tutorial uses the Legacy token Native Function permissions.
 
 ![Create a development app](../../assets/first-app/create-app.png)
 
-**Success:** Continue when the new app's General settings page opens.
+**Success:** Continue when the new app's **Basic Information** page opens.
 
-**First check if it fails:** If you cannot see the app creation option, confirm that you have permission to create an app in that Channel.
+**First check if it fails:** If Advanced features or Create app is absent, confirm that you have permission to create an app in that Channel.
 
 ## 2. Configure the app and permissions
 
-Find the App ID in General settings.
+Find the Application ID under **Basic Information**.
 
-![Find the App ID](../../assets/first-app/app-id.png)
+![Find the Application ID](../../assets/first-app/app-id.png)
 
-Issue an App Secret under Auth and Access and a Signing Key under Server Settings.
+Issue a Secret under **Authentication & Permissions → Legacy token** and a Signing Key under **Basic Information → Server Settings**.
 
-![Issue the App Secret](../../assets/first-app/app-secret.png)
+![Issue the Legacy token Secret](../../assets/first-app/app-secret.png)
 
-The App ID is a public identifier. The App Secret and Signing Key are server-only secrets and may be shown only once. Store them safely and never put them in Git, documentation, WAM code, or logs.
+The Application ID is a public identifier. The Secret and Signing Key are server-only secrets shown only once after they are generated. Store them safely and never put them in Git, documentation, WAM code, or logs.
 
-Under Authentication and permissions, enable only the permissions used by this tutorial:
+Under **Authentication & Permissions → Legacy token**, enable only the permissions used by this tutorial:
 
 - Channel: `writeGroupMessage`
-- Manager: `writeGroupMessageAsManager`
+- Team Member: `writeGroupMessageAsManager`
 
-![Configure tutorial permissions](../../assets/first-app/permissions.png)
+![Find writeGroupMessage under Channel permissions](../../assets/first-app/permissions.png)
 
-**Success:** Continue after you have the App ID, App Secret, and Signing Key and both permissions are enabled.
+![Find writeGroupMessageAsManager under Team Member permissions](../../assets/first-app/permission-team-member.png)
+
+**Success:** Continue after you have the Application ID, Secret, and Signing Key and both permissions are enabled.
 
 **First check if it fails:** If you lose a secret or Signing Key, issue a new one in the developer portal instead of guessing or reusing another value.
 
@@ -106,7 +108,7 @@ ngrok http 3000
 
 Copy the HTTPS address shown next to `Forwarding`. We call that address `https://YOUR_HOST` below.
 
-Enter these two addresses in Server Settings in the developer portal:
+Enter these two addresses under **Basic Information → Server Settings** in the developer portal:
 
 | Setting           | Value                            |
 | ----------------- | -------------------------------- |
@@ -119,7 +121,7 @@ Do not append `/v1` to the Function Endpoint or `/tutorial` to the WAM Endpoint.
 
 **Success:** Confirm that Extension registration and the Function-list request succeed separately in the server log. Continue when the `/tutorial` Command metadata is accepted without an error.
 
-**First check if it fails:** Recheck the App ID, App Secret, and tunnel address. If the tunnel address changes, update both endpoints in the developer portal.
+**First check if it fails:** Recheck the Application ID, Secret, and tunnel address. If the tunnel address changes, update both endpoints in the developer portal.
 
 ## 5. Run it in a test Channel
 
@@ -193,14 +195,14 @@ Read [Concepts](concepts.md#authentication-signatures-and-tokens), [Function reg
 
 | Symptom                       | First check                                                                 |
 | ----------------------------- | --------------------------------------------------------------------------- |
-| Extension registration fails  | App ID and App Secret, public HTTPS address, and server restart             |
+| Extension registration fails  | Application ID and Secret, public HTTPS address, and server restart         |
 | `401` or signature error      | The Signing Key is entered as the original hex string                       |
 | `/functions/v1` returns `404` | The Function Endpoint in the portal ends with `/functions`                  |
 | WAM does not open             | The WAM Endpoint ends with `/resource/wam` and the WAM build passed         |
 | Manager message fails         | `writeGroupMessageAsManager`, group conversation, and current manager login |
 | Bot message fails             | `writeGroupMessage` and whether the app is installed in the current Channel |
 
-Use `SKIP_SIGNATURE_VERIFICATION=true` only for isolated local debugging. Never paste the App Secret, Signing Key, or access/refresh tokens into an issue or log.
+Use `SKIP_SIGNATURE_VERIFICATION=true` only for isolated local debugging. Never paste the Secret, Signing Key, or access/refresh tokens into an issue or log.
 
 ## Where to go next
 
