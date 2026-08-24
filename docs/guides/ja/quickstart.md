@@ -23,38 +23,40 @@ Function リクエストの署名検証、Extension の登録、WAM とサーバ
 - Git
 - ローカルサーバーを公開できる HTTPS tunnel ツール（例: [ngrok](https://ngrok.com/)）
 
-Channel settings から App Store を開き、アプリ作成画面に進みます。
+Channel settings から App Store を開きます。**Advanced features** を展開して **Create app** を選ぶと、Channel Developer Portal が開きます。
 
 ![Channel settings から App Store を開く](../../assets/first-app/app-store-entry.png)
 
-開発用の名前を入力し、規約に同意して private app を作成します。Private app は選択したテスト Channel にだけインストールできるため、最初の開発と確認に適しています。
+開発用の名前を入力し、規約に同意してアプリを作成してください。
 
 ![開発用 app を作成](../../assets/first-app/create-app.png)
 
-**完了の目安:** 作成したアプリの General settings 画面が開いたら次へ進みます。
+**完了の目安:** 作成したアプリの **Basic Information** 画面が開いたら次へ進みます。
 
-**失敗時の最初の確認:** アプリ作成メニューが表示されない場合は、その Channel でアプリを作成する権限があるか確認してください。
+**失敗時の最初の確認:** Advanced features または Create app が表示されない場合は、その Channel でアプリを作成する権限があるか確認してください。
 
 ## 2. アプリ情報と権限を設定する
 
-General settings で App ID を確認します。
+**Basic Information** で Application ID を確認します。
 
-![App ID を確認](../../assets/first-app/app-id.png)
+![Application ID を確認](../../assets/first-app/app-id.png)
 
-Auth and Access で App Secret を発行し、Server Settings で Signing Key を発行します。
+**Authentication & Permissions** で Secret を発行し、**Basic Information → Server Settings** で Signing Key を発行します。
 
-![App Secret を発行](../../assets/first-app/app-secret.png)
+![Secret を発行](../../assets/first-app/app-secret.png)
 
-App ID は公開してもよい識別子です。App Secret と Signing Key はサーバーだけで使う秘密情報で、再表示されない場合があります。安全な場所に保存し、Git、ドキュメント、WAM コード、ログに残さないでください。
+Application ID は公開してもよい識別子です。Secret と Signing Key はサーバーだけで使う秘密情報で、生成直後に一度だけ表示されます。安全な場所に保存し、Git、ドキュメント、WAM コード、ログに残さないでください。
 
-Authentication and permissions では、このチュートリアルで使う権限だけを有効にします。
+**Authentication & Permissions** では、このチュートリアルで使う権限だけを有効にします。
 
 - Channel: `writeGroupMessage`
-- Manager: `writeGroupMessageAsManager`
+- Team Member: `writeGroupMessageAsManager`
 
-![Tutorial permission を設定](../../assets/first-app/permissions.png)
+![Channel permission の writeGroupMessage を確認](../../assets/first-app/permissions.png)
 
-**完了の目安:** App ID、App Secret、Signing Key の 3 つを用意し、2 つの権限を有効にしたら次へ進みます。
+![Team Member permission の writeGroupMessageAsManager を確認](../../assets/first-app/permission-team-member.png)
+
+**完了の目安:** Application ID、Secret、Signing Key の 3 つを用意し、2 つの権限を有効にしたら次へ進みます。
 
 **失敗時の最初の確認:** Secret や Signing Key を紛失した場合は、推測した値を使わず developer portal で再発行してください。
 
@@ -106,7 +108,7 @@ ngrok http 3000
 
 ngrok の `Forwarding` に表示された HTTPS アドレスをコピーします。以下では、このアドレスを `https://YOUR_HOST` と表します。
 
-Developer portal の Server Settings に次の 2 つのアドレスを入力します。
+Developer portal の **Basic Information → Server Settings** に次の 2 つのアドレスを入力します。
 
 | Setting           | Value                            |
 | ----------------- | -------------------------------- |
@@ -119,7 +121,7 @@ Function Endpoint に `/v1`、WAM Endpoint に `/tutorial` を追加しないで
 
 **完了の目安:** サーバーログで Extension 登録と Function 一覧の取得がそれぞれ成功したことを確認します。`/tutorial` Command の情報がエラーなく検証されたら次へ進みます。
 
-**失敗時の最初の確認:** App ID、App Secret、tunnel アドレスを確認してください。Tunnel アドレスが変わった場合は developer portal の 2 つの Endpoint も更新します。
+**失敗時の最初の確認:** Application ID、Secret、tunnel アドレスを確認してください。Tunnel アドレスが変わった場合は developer portal の 2 つの Endpoint も更新します。
 
 ## 5. テスト Channel で実行する
 
@@ -193,14 +195,14 @@ TypeScript と同じく、developer portal の Function Endpoint に `https://YO
 
 | 症状                           | 最初の確認                                                               |
 | ------------------------------ | ------------------------------------------------------------------------ |
-| Extension 登録に失敗           | App ID と App Secret、公開 HTTPS アドレス、サーバーの再起動              |
+| Extension 登録に失敗           | Application ID と Secret、公開 HTTPS アドレス、サーバーの再起動          |
 | `401` または signature エラー  | Signing Key を元の hex 文字列のまま入力したか                            |
 | `/functions/v1` が `404`       | Portal の Function Endpoint が `/functions` で終わっているか             |
 | WAM が開かない                 | WAM Endpoint が `/resource/wam` で終わっているか、WAM build が成功したか |
 | Manager のメッセージ送信に失敗 | `writeGroupMessageAsManager`、グループ会話、現在の manager でのログイン  |
 | Bot のメッセージ送信に失敗     | `writeGroupMessage`、現在の Channel にアプリがインストール済みか         |
 
-`SKIP_SIGNATURE_VERIFICATION=true` は隔離したローカルデバッグ以外で使わないでください。App Secret、Signing Key、access/refresh token を issue やログに貼り付けないでください。
+`SKIP_SIGNATURE_VERIFICATION=true` は隔離したローカルデバッグ以外で使わないでください。Secret、Signing Key、access/refresh token を issue やログに貼り付けないでください。
 
 ## 次に読むドキュメント
 

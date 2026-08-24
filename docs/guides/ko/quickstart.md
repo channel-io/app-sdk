@@ -23,38 +23,40 @@ SDK가 Function 요청의 서명 확인, Extension 등록, WAM과 서버의 연�
 - Git
 - 로컬 서버를 외부에 공개할 HTTPS tunnel 도구(예: [ngrok](https://ngrok.com/))
 
-Channel 설정에서 App Store를 열고 앱 만들기 화면으로 이동합니다.
+Channel 설정에서 앱스토어를 엽니다. 왼쪽 아래 **고급 기능**을 펼친 다음 **앱 만들기**를 선택하면 Channel Developer Portal로 이동합니다.
 
 ![Channel 설정에서 App Store 열기](../../assets/first-app/app-store-entry.png)
 
-개발용 이름을 입력하고 약관에 동의한 뒤 private app을 만듭니다. Private app은 지정한 테스트 채널에만 설치할 수 있으므로 첫 개발과 검증에 적합합니다.
+개발용 이름을 입력하고 약관에 동의한 뒤 앱을 만드세요.
 
 ![개발용 앱 생성](../../assets/first-app/create-app.png)
 
-**완료 확인:** 만든 앱의 General settings 화면이 열리면 다음 단계로 이동합니다.
+**완료 확인:** 만든 앱의 **기본 정보** 화면이 열리면 다음 단계로 이동합니다.
 
-**먼저 확인할 것:** 앱 만들기 메뉴가 보이지 않으면 해당 Channel에서 앱을 만들 권한이 있는지 확인하세요.
+**먼저 확인할 것:** 고급 기능이나 앱 만들기가 보이지 않으면 해당 Channel에서 앱을 만들 권한이 있는지 확인하세요.
 
 ## 2. 앱 정보와 권한 설정
 
-General settings에서 App ID를 확인합니다.
+**기본 정보**에서 Application ID를 확인합니다.
 
-![App ID 확인](../../assets/first-app/app-id.png)
+![Application ID 확인](../../assets/first-app/app-id.png)
 
-Auth and Access에서 App Secret을 발급하고, Server Settings에서 Signing Key를 발급합니다.
+**인증 및 권한**에서 Secret을 발급하고, **기본 정보 → 서버 설정**에서 Signing Key를 발급합니다.
 
-![App Secret 발급](../../assets/first-app/app-secret.png)
+![Secret 발급](../../assets/first-app/app-secret.png)
 
-App ID는 앱을 구분하는 공개 값입니다. App Secret과 Signing Key는 서버에서만 사용하는 비밀 값이며 다시 표시되지 않을 수 있습니다. 안전한 곳에 보관하고 Git, 문서, WAM 코드, 로그에 남기지 마세요.
+Application ID는 앱을 구분하는 공개 값입니다. Secret과 Signing Key는 서버에서만 사용하는 비밀 값이며 생성 직후 한 번만 표시됩니다. 안전한 곳에 보관하고 Git, 문서, WAM 코드, 로그에 남기지 마세요.
 
-Authentication and permissions에서 이 튜토리얼에 필요한 권한만 켭니다.
+**인증 및 권한**에서 이 튜토리얼에 필요한 권한만 켭니다.
 
 - Channel: `writeGroupMessage`
-- Manager: `writeGroupMessageAsManager`
+- Team Member: `writeGroupMessageAsManager`
 
-![튜토리얼 permission 설정](../../assets/first-app/permissions.png)
+![Channel permission에서 writeGroupMessage 찾기](../../assets/first-app/permissions.png)
 
-**완료 확인:** App ID, App Secret, Signing Key 세 값을 준비하고 두 권한을 켰다면 다음 단계로 이동합니다.
+![Team Member permission에서 writeGroupMessageAsManager 찾기](../../assets/first-app/permission-team-member.png)
+
+**완료 확인:** Application ID, Secret, Signing Key 세 값을 준비하고 두 권한을 켰다면 다음 단계로 이동합니다.
 
 **먼저 확인할 것:** Secret이나 Signing Key를 잃어버렸다면 임의의 값을 사용하지 말고 개발자 포털에서 다시 발급하세요.
 
@@ -106,7 +108,7 @@ ngrok http 3000
 
 ngrok 화면의 `Forwarding` 항목에 표시된 HTTPS 주소를 복사합니다. 이 문서에서는 그 주소를 `https://YOUR_HOST`라고 부릅니다.
 
-개발자 포털의 Server Settings에 다음 두 주소를 입력합니다.
+개발자 포털의 **기본 정보 → 서버 설정**에 다음 두 주소를 입력합니다.
 
 | 설정              | 값                               |
 | ----------------- | -------------------------------- |
@@ -119,7 +121,7 @@ Function Endpoint 뒤에 `/v1`을 붙이거나 WAM Endpoint 뒤에 `/tutorial`�
 
 **완료 확인:** 서버 로그에서 Extension 등록과 Function 목록 조회가 각각 성공했는지 확인합니다. `/tutorial` Command 정보가 오류 없이 확인되면 다음 단계로 이동합니다.
 
-**먼저 확인할 것:** 등록에 실패하면 App ID와 App Secret, tunnel 주소를 다시 확인하세요. Tunnel 주소가 바뀌었다면 개발자 포털의 두 Endpoint도 갱신해야 합니다.
+**먼저 확인할 것:** 등록에 실패하면 Application ID와 Secret, tunnel 주소를 다시 확인하세요. Tunnel 주소가 바뀌었다면 개발자 포털의 두 Endpoint도 갱신해야 합니다.
 
 ## 5. 테스트 채널에서 실행
 
@@ -193,14 +195,14 @@ ngrok http 3022
 
 | 증상                      | 먼저 확인할 것                                                                |
 | ------------------------- | ----------------------------------------------------------------------------- |
-| Extension 등록 실패       | App ID와 App Secret, 공개 HTTPS 주소, 서버 재시작 여부                        |
+| Extension 등록 실패       | Application ID와 Secret, 공개 HTTPS 주소, 서버 재시작 여부                    |
 | `401` 또는 signature 오류 | Signing Key를 hex 문자열 그대로 입력했는지                                    |
 | `/functions/v1`이 `404`   | 포털의 Function Endpoint가 `/functions`로 끝나는지                            |
 | WAM이 열리지 않음         | WAM Endpoint가 `/resource/wam`으로 끝나는지, WAM build가 성공했는지           |
 | Manager 전송 실패         | `writeGroupMessageAsManager` 권한, 그룹 대화인지, 현재 manager로 로그인했는지 |
 | Bot 전송 실패             | `writeGroupMessage` 권한, 앱이 현재 채널에 설치되었는지                       |
 
-`SKIP_SIGNATURE_VERIFICATION=true`는 격리된 로컬 디버깅 외에는 사용하지 마세요. App Secret, Signing Key, access/refresh token을 이슈나 로그에 붙이지 마세요.
+`SKIP_SIGNATURE_VERIFICATION=true`는 격리된 로컬 디버깅 외에는 사용하지 마세요. Secret, Signing Key, access/refresh token을 이슈나 로그에 붙이지 마세요.
 
 ## 다음 문서
 
