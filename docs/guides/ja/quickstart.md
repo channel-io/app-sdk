@@ -25,11 +25,11 @@ Function リクエストの署名検証、Extension の登録、WAM とサーバ
 
 Channel settings から App Store を開き、アプリ作成画面に進みます。
 
-![Channel settings から App Store を開く](../../assets/first-app/app-store-entry.png)
+![Channel settings から App Store を開く](../../assets/first-app/ja/app-store-entry.png)
 
 開発用の名前を入力し、規約に同意して private app を作成します。Private app は選択したテスト Channel にだけインストールできるため、最初の開発と確認に適しています。
 
-![開発用 app を作成](../../assets/first-app/create-app.png)
+![開発用 app を作成](../../assets/first-app/ja/create-app.png)
 
 **完了の目安:** 作成したアプリの General settings 画面が開いたら次へ進みます。
 
@@ -39,11 +39,11 @@ Channel settings から App Store を開き、アプリ作成画面に進みま�
 
 General settings で App ID を確認します。
 
-![App ID を確認](../../assets/first-app/app-id.png)
+![App ID を確認](../../assets/first-app/ja/app-id.png)
 
 Auth and Access で App Secret を発行し、Server Settings で Signing Key を発行します。
 
-![App Secret を発行](../../assets/first-app/app-secret.png)
+![App Secret を発行](../../assets/first-app/ja/app-secret.png)
 
 App ID は公開してもよい識別子です。App Secret と Signing Key はサーバーだけで使う秘密情報で、再表示されない場合があります。安全な場所に保存し、Git、ドキュメント、WAM コード、ログに残さないでください。
 
@@ -52,7 +52,7 @@ Authentication and permissions では、このチュートリアルで使う権�
 - Channel: `writeGroupMessage`
 - Manager: `writeGroupMessageAsManager`
 
-![Tutorial permission を設定](../../assets/first-app/permissions.png)
+![Tutorial permission を設定](../../assets/first-app/ja/permissions.png)
 
 **完了の目安:** App ID、App Secret、Signing Key の 3 つを用意し、2 つの権限を有効にしたら次へ進みます。
 
@@ -113,7 +113,7 @@ Developer portal の Server Settings に次の 2 つのアドレスを入力し�
 | Function Endpoint | `https://YOUR_HOST/functions`    |
 | WAM Endpoint      | `https://YOUR_HOST/resource/wam` |
 
-![Function/WAM Endpoint を設定](../../assets/first-app/endpoints.png)
+![Function/WAM Endpoint を設定](../../assets/first-app/ja/endpoints.png)
 
 Function Endpoint に `/v1`、WAM Endpoint に `/tutorial` を追加しないでください。保存後、アプリサーバーを一度再起動します。
 

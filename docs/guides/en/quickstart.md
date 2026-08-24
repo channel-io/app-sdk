@@ -25,11 +25,11 @@ You need:
 
 Open App Store from Channel settings and go to the app creation page.
 
-![Open App Store from Channel settings](../../assets/first-app/app-store-entry.png)
+![Open App Store from Channel settings](../../assets/first-app/en/app-store-entry.png)
 
 Enter a development name, accept the terms, and create a private app. A private app can be installed only in test Channels you select, which makes it suitable for initial development.
 
-![Create a development app](../../assets/first-app/create-app.png)
+![Create a development app](../../assets/first-app/en/create-app.png)
 
 **Success:** Continue when the new app's General settings page opens.
 
@@ -39,11 +39,11 @@ Enter a development name, accept the terms, and create a private app. A private 
 
 Find the App ID in General settings.
 
-![Find the App ID](../../assets/first-app/app-id.png)
+![Find the App ID](../../assets/first-app/en/app-id.png)
 
 Issue an App Secret under Auth and Access and a Signing Key under Server Settings.
 
-![Issue the App Secret](../../assets/first-app/app-secret.png)
+![Issue the App Secret](../../assets/first-app/en/app-secret.png)
 
 The App ID is a public identifier. The App Secret and Signing Key are server-only secrets and may be shown only once. Store them safely and never put them in Git, documentation, WAM code, or logs.
 
@@ -52,7 +52,7 @@ Under Authentication and permissions, enable only the permissions used by this t
 - Channel: `writeGroupMessage`
 - Manager: `writeGroupMessageAsManager`
 
-![Configure tutorial permissions](../../assets/first-app/permissions.png)
+![Configure tutorial permissions](../../assets/first-app/en/permissions.png)
 
 **Success:** Continue after you have the App ID, App Secret, and Signing Key and both permissions are enabled.
 
@@ -113,7 +113,7 @@ Enter these two addresses in Server Settings in the developer portal:
 | Function Endpoint | `https://YOUR_HOST/functions`    |
 | WAM Endpoint      | `https://YOUR_HOST/resource/wam` |
 
-![Configure Function and WAM endpoints](../../assets/first-app/endpoints.png)
+![Configure Function and WAM endpoints](../../assets/first-app/en/endpoints.png)
 
 Do not append `/v1` to the Function Endpoint or `/tutorial` to the WAM Endpoint. Save the settings, then restart the app server once.
 
