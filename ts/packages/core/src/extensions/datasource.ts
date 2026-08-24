@@ -8,6 +8,7 @@ import type {
   DataSourceDescribeTableOutput as ProtoDescribeTableOutput,
   DataSourceListCatalogsInput as ProtoListCatalogsInput,
   DataSourceListCatalogsOutput as ProtoListCatalogsOutput,
+  DataSourceManagerPermission as ProtoDataSourceManagerPermission,
   DataSourceListTablesInput as ProtoListTablesInput,
   DataSourceListTablesOutput as ProtoListTablesOutput,
   DataSourceQueryFilter as ProtoDataSourceQueryFilter,
@@ -32,6 +33,17 @@ export type DataSourceTableType = z.infer<typeof DataSourceTableTypeSchema>;
 export const DataSourceManagerAccessSchema = z.enum(["all", "owner"]);
 export type DataSourceManagerAccess = z.infer<typeof DataSourceManagerAccessSchema>;
 
+export const DataSourceManagerPermissionSchema = z
+  .object({
+    action: DataSourceNonEmptyStringSchema,
+    scope: DataSourceNonEmptyStringSchema,
+  })
+  .strict();
+export type DataSourceManagerPermission = ProtoBacked<
+  z.infer<typeof DataSourceManagerPermissionSchema>,
+  ProtoDataSourceManagerPermission
+>;
+
 export const DataSourceCatalogSchema = z.object({
   alias: DataSourceNonEmptyStringSchema,
   displayName: z.string().optional(),
@@ -51,6 +63,7 @@ export const DataSourceTableSchema = z.object({
   updatedAt: z.number().int().nonnegative().optional(),
   tableType: DataSourceTableTypeSchema.optional(),
   managerAccess: DataSourceManagerAccessSchema.optional(),
+  permissions: z.array(DataSourceManagerPermissionSchema).optional(),
 });
 export type DataSourceTable = ProtoBacked<
   z.infer<typeof DataSourceTableSchema>,

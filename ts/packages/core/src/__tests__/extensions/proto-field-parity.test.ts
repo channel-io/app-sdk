@@ -47,6 +47,7 @@ import {
   AuthorizeQueryOutputSchema,
   DataSourceCatalogSchema,
   DataSourceColumnSchema,
+  DataSourceManagerPermissionSchema,
   DataSourceTableDefinitionSchema,
   DataSourceTableListingSchema,
   DataSourceTableSchema,
@@ -440,6 +441,12 @@ const contracts: Contract[] = [
   contract("GetStoreProfileInput", GetStoreProfileInputSchema, "extension", "StoreGetProfileInput"),
 
   contract("DataSourceCatalog", DataSourceCatalogSchema, "extension", "DataSourceCatalog"),
+  contract(
+    "DataSourceManagerPermission",
+    DataSourceManagerPermissionSchema,
+    "extension",
+    "DataSourceManagerPermission"
+  ),
   contract("DataSourceTable", DataSourceTableSchema, "extension", "DataSourceTable"),
   contract("DataSourceColumn", DataSourceColumnSchema, "extension", "DataSourceColumn"),
   contract(
