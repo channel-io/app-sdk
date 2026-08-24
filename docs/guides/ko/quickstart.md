@@ -25,11 +25,11 @@ SDK가 Function 요청의 서명 확인, Extension 등록, WAM과 서버의 연�
 
 Channel 설정에서 App Store를 열고 앱 만들기 화면으로 이동합니다.
 
-![Channel 설정에서 App Store 열기](../../assets/first-app/app-store-entry.png)
+![Channel 설정에서 App Store 열기](../../assets/first-app/ko/app-store-entry.png)
 
 개발용 이름을 입력하고 약관에 동의한 뒤 private app을 만듭니다. Private app은 지정한 테스트 채널에만 설치할 수 있으므로 첫 개발과 검증에 적합합니다.
 
-![개발용 앱 생성](../../assets/first-app/create-app.png)
+![개발용 앱 생성](../../assets/first-app/ko/create-app.png)
 
 **완료 확인:** 만든 앱의 General settings 화면이 열리면 다음 단계로 이동합니다.
 
@@ -39,11 +39,11 @@ Channel 설정에서 App Store를 열고 앱 만들기 화면으로 이동합니
 
 General settings에서 App ID를 확인합니다.
 
-![App ID 확인](../../assets/first-app/app-id.png)
+![App ID 확인](../../assets/first-app/ko/app-id.png)
 
 Auth and Access에서 App Secret을 발급하고, Server Settings에서 Signing Key를 발급합니다.
 
-![App Secret 발급](../../assets/first-app/app-secret.png)
+![App Secret 발급](../../assets/first-app/ko/app-secret.png)
 
 App ID는 앱을 구분하는 공개 값입니다. App Secret과 Signing Key는 서버에서만 사용하는 비밀 값이며 다시 표시되지 않을 수 있습니다. 안전한 곳에 보관하고 Git, 문서, WAM 코드, 로그에 남기지 마세요.
 
@@ -52,7 +52,7 @@ Authentication and permissions에서 이 튜토리얼에 필요한 권한만 켭
 - Channel: `writeGroupMessage`
 - Manager: `writeGroupMessageAsManager`
 
-![튜토리얼 permission 설정](../../assets/first-app/permissions.png)
+![튜토리얼 permission 설정](../../assets/first-app/ko/permissions.png)
 
 **완료 확인:** App ID, App Secret, Signing Key 세 값을 준비하고 두 권한을 켰다면 다음 단계로 이동합니다.
 
@@ -113,7 +113,7 @@ ngrok 화면의 `Forwarding` 항목에 표시된 HTTPS 주소를 복사합니다
 | Function Endpoint | `https://YOUR_HOST/functions`    |
 | WAM Endpoint      | `https://YOUR_HOST/resource/wam` |
 
-![Function과 WAM Endpoint 설정](../../assets/first-app/endpoints.png)
+![Function과 WAM Endpoint 설정](../../assets/first-app/ko/endpoints.png)
 
 Function Endpoint 뒤에 `/v1`을 붙이거나 WAM Endpoint 뒤에 `/tutorial`을 붙이지 마세요. 저장한 뒤 앱 서버를 한 번 재시작합니다.
 
