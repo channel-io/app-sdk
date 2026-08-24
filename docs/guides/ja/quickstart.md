@@ -27,7 +27,7 @@ Channel settings から App Store を開きます。**Advanced features** を展
 
 ![Channel settings から App Store を開く](../../assets/first-app/app-store-entry.png)
 
-開発用の名前を入力し、認証方式は **Legacy token** のままにします。規約に同意してアプリを作成してください。このチュートリアルでは Legacy token の Native Function 権限を使います。
+開発用の名前を入力し、規約に同意してアプリを作成してください。
 
 ![開発用 app を作成](../../assets/first-app/create-app.png)
 
@@ -41,13 +41,13 @@ Channel settings から App Store を開きます。**Advanced features** を展
 
 ![Application ID を確認](../../assets/first-app/app-id.png)
 
-**Authentication & Permissions → Legacy token** で Secret を発行し、**Basic Information → Server Settings** で Signing Key を発行します。
+**Authentication & Permissions** で Secret を発行し、**Basic Information → Server Settings** で Signing Key を発行します。
 
-![Legacy token の Secret を発行](../../assets/first-app/app-secret.png)
+![Secret を発行](../../assets/first-app/app-secret.png)
 
 Application ID は公開してもよい識別子です。Secret と Signing Key はサーバーだけで使う秘密情報で、生成直後に一度だけ表示されます。安全な場所に保存し、Git、ドキュメント、WAM コード、ログに残さないでください。
 
-**Authentication & Permissions → Legacy token** では、このチュートリアルで使う権限だけを有効にします。
+**Authentication & Permissions** では、このチュートリアルで使う権限だけを有効にします。
 
 - Channel: `writeGroupMessage`
 - Team Member: `writeGroupMessageAsManager`

@@ -27,7 +27,7 @@ Open App Store from Channel settings. Expand **Advanced features**, then select 
 
 ![Open App Store from Channel settings](../../assets/first-app/app-store-entry.png)
 
-Enter a development name, keep **Legacy token** as the authentication method, accept the terms, and create the app. This tutorial uses the Legacy token Native Function permissions.
+Enter a development name, accept the terms, and create the app.
 
 ![Create a development app](../../assets/first-app/create-app.png)
 
@@ -41,13 +41,13 @@ Find the Application ID under **Basic Information**.
 
 ![Find the Application ID](../../assets/first-app/app-id.png)
 
-Issue a Secret under **Authentication & Permissions → Legacy token** and a Signing Key under **Basic Information → Server Settings**.
+Issue a Secret under **Authentication & Permissions** and a Signing Key under **Basic Information → Server Settings**.
 
-![Issue the Legacy token Secret](../../assets/first-app/app-secret.png)
+![Issue the Secret](../../assets/first-app/app-secret.png)
 
 The Application ID is a public identifier. The Secret and Signing Key are server-only secrets shown only once after they are generated. Store them safely and never put them in Git, documentation, WAM code, or logs.
 
-Under **Authentication & Permissions → Legacy token**, enable only the permissions used by this tutorial:
+Under **Authentication & Permissions**, enable only the permissions used by this tutorial:
 
 - Channel: `writeGroupMessage`
 - Team Member: `writeGroupMessageAsManager`

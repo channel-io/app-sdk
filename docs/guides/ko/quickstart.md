@@ -27,7 +27,7 @@ Channel 설정에서 앱스토어를 엽니다. 왼쪽 아래 **고급 기능**�
 
 ![Channel 설정에서 App Store 열기](../../assets/first-app/app-store-entry.png)
 
-개발용 이름을 입력하고 인증 방식은 **Legacy token**으로 둡니다. 약관에 동의한 뒤 앱을 만드세요. 이 튜토리얼은 Legacy token의 Native Function 권한을 사용합니다.
+개발용 이름을 입력하고 약관에 동의한 뒤 앱을 만드세요.
 
 ![개발용 앱 생성](../../assets/first-app/create-app.png)
 
@@ -41,13 +41,13 @@ Channel 설정에서 앱스토어를 엽니다. 왼쪽 아래 **고급 기능**�
 
 ![Application ID 확인](../../assets/first-app/app-id.png)
 
-**인증 및 권한 → Legacy token**에서 Secret을 발급하고, **기본 정보 → 서버 설정**에서 Signing Key를 발급합니다.
+**인증 및 권한**에서 Secret을 발급하고, **기본 정보 → 서버 설정**에서 Signing Key를 발급합니다.
 
-![Legacy token Secret 발급](../../assets/first-app/app-secret.png)
+![Secret 발급](../../assets/first-app/app-secret.png)
 
 Application ID는 앱을 구분하는 공개 값입니다. Secret과 Signing Key는 서버에서만 사용하는 비밀 값이며 생성 직후 한 번만 표시됩니다. 안전한 곳에 보관하고 Git, 문서, WAM 코드, 로그에 남기지 마세요.
 
-**인증 및 권한 → Legacy token**에서 이 튜토리얼에 필요한 권한만 켭니다.
+**인증 및 권한**에서 이 튜토리얼에 필요한 권한만 켭니다.
 
 - Channel: `writeGroupMessage`
 - Team Member: `writeGroupMessageAsManager`
