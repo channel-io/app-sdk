@@ -1,72 +1,66 @@
 # Build Your First Channel App
 
-Follow this page from creating a development private app through running the `/tutorial` Command,
-React WAM, and bot/manager message flows. Choose either TypeScript or Go for the server. Both paths
-use the official SDK and public tutorial repository instead of implementing token issuance,
-Extension registration, signature verification, or the WAM bridge by hand.
+In this tutorial, you will build an app that opens a small screen when someone runs `/tutorial` in a Channel conversation. Two buttons on that screen send test messages. We recommend the TypeScript path for your first run. If you use Go, skip to [Use Go instead](#6-use-go-instead).
 
-When finished, you will verify that:
+This is what the finished app looks like:
 
-- the SDK automatically registers the `command` Extension and Function schemas;
-- `/tutorial` opens a WAM inside a Channel client;
-- the WAM can send a test message as the app bot or current manager;
-- invalid signatures and missing permissions fail explicitly.
+![Tutorial WAM open inside the Channel client](../../assets/first-app/tutorial-wam.png)
 
-## 1. Prerequisites
+You only need three terms before you start:
 
-Both paths require:
+- **Function**: one task performed by your app server. Opening the screen and sending a message are Functions in this tutorial.
+- **Extension**: a configuration that connects your Functions to a Channel feature. Here it connects the `/tutorial` Command.
+- **WAM**: your app's screen inside Channel. This tutorial's WAM shows two message buttons.
 
-- an account that can access the Channel developer portal;
-- a stable public HTTPS address or tunnel for the local server;
-- Git.
+The SDK verifies signed Function requests, registers the Extension, and connects the WAM to your server. You do not need to implement that plumbing yourself.
 
-The TypeScript path requires Node.js 20.11 or newer and Corepack. The Go path requires Go 1.25 plus
-Node.js and Corepack for the WAM build.
+## 1. Before you start
 
-Open App Store from Channel settings and start the app creation flow. The layout may change, but
-the meanings of App Store, Create App, Auth and Access, Permissions, and Server Settings remain the
-same.
+You need:
+
+- an account with access to the Channel developer portal;
+- Node.js 20.11 or newer and Corepack;
+- Git;
+- an HTTPS tunnel tool that can expose your local server, such as [ngrok](https://ngrok.com/).
+
+Open App Store from Channel settings and go to the app creation page.
 
 ![Open App Store from Channel settings](../../assets/first-app/app-store-entry.png)
 
-Enter a development name, accept the terms, and create a private app.
+Enter a development name, accept the terms, and create a private app. A private app can be installed only in test Channels you select, which makes it suitable for initial development.
 
 ![Create a development app](../../assets/first-app/create-app.png)
 
-## 2. Configure credentials and permissions
+**Success:** Continue when the new app's General settings page opens.
 
-Find the App ID in General settings. The App ID is public identity; the App Secret and Signing Key
-are server secrets.
+**First check if it fails:** If you cannot see the app creation option, confirm that you have permission to create an app in that Channel.
+
+## 2. Configure the app and permissions
+
+Find the App ID in General settings.
 
 ![Find the App ID](../../assets/first-app/app-id.png)
 
-Issue the App Secret under Auth and Access and the Signing Key under Server Settings. These values
-may be shown only once. Store them in a secret manager and never put them in Git, documentation,
-WAM code, or logs.
+Issue an App Secret under Auth and Access and a Signing Key under Server Settings.
 
 ![Issue the App Secret](../../assets/first-app/app-secret.png)
 
-Enable only the permissions required by the tutorial:
+The App ID is a public identifier. The App Secret and Signing Key are server-only secrets and may be shown only once. Store them safely and never put them in Git, documentation, WAM code, or logs.
+
+Under Authentication and permissions, enable only the permissions used by this tutorial:
 
 - Channel: `writeGroupMessage`
 - Manager: `writeGroupMessageAsManager`
 
 ![Configure tutorial permissions](../../assets/first-app/permissions.png)
 
-This app uses four separate trust boundaries:
+**Success:** Continue after you have the App ID, App Secret, and Signing Key and both permissions are enabled.
 
-- incoming Functions: verify `x-signature` with the Signing Key;
-- server-to-AppStore calls: the SDK `TokenManager` owns app/channel tokens;
-- manager actions in a WAM: the Channel host authorizes the current manager;
-- external providers: OAuth uses `ctx.authToken`; API keys and `client_credentials` use Config.
+**First check if it fails:** If you lose a secret or Signing Key, issue a new one in the developer portal instead of guessing or reusing another value.
 
-Read [Concepts](concepts.md#authentication-and-tokens) for the detailed boundaries.
+## 3. Run the TypeScript tutorial
 
-## 3. Choose a server language and clone the tutorial
-
-Follow one path only.
-
-### TypeScript
+Clone the tutorial and create its environment file:
 
 ```bash
 git clone https://github.com/channel-io/app-tutorial-ts.git
@@ -75,7 +69,7 @@ corepack enable
 cp server/.env.example server/.env
 ```
 
-Fill `server/.env`:
+Put the values from the previous step in `server/.env`:
 
 ```dotenv
 APP_ID=your-app-id
@@ -83,65 +77,7 @@ APP_SECRET=your-app-secret
 SIGNING_KEY=your-hex-signing-key
 ```
 
-### Go
-
-```bash
-git clone https://github.com/channel-io/app-tutorial.git
-cd app-tutorial
-corepack enable
-cp .env.example .env
-```
-
-Fill `APP_ID`, `APP_SECRET`, and `SIGNING_KEY` in `.env`, then load it into the current shell:
-
-```bash
-set -a
-. ./.env
-set +a
-```
-
-The repository lockfile and Go module pin verified SDK versions. Do not replace them with arbitrary
-versions during the first run.
-
-## 4. Prepare HTTPS endpoints
-
-Prepare a stable HTTPS tunnel before starting the server.
-
-| Path       | Local port |
-| ---------- | ---------- |
-| TypeScript | `3000`     |
-| Go         | `3022`     |
-
-You may use any HTTPS tunnel tool, such as [ngrok](https://ngrok.com/). After installing and
-authenticating ngrok, expose the local port for the tutorial you selected:
-
-```bash
-# TypeScript tutorial
-ngrok http 3000
-
-# Go tutorial
-ngrok http 3022
-```
-
-Use the `Forwarding` HTTPS origin shown by ngrok as `YOUR_HOST`. If the tunnel address changes,
-update the endpoints in the developer portal and restart the server.
-
-If the public address is `https://YOUR_HOST`, save these roots in Server Settings:
-
-| Setting           | Value                            |
-| ----------------- | -------------------------------- |
-| Function Endpoint | `https://YOUR_HOST/functions`    |
-| WAM Endpoint      | `https://YOUR_HOST/resource/wam` |
-
-![Configure Function and WAM endpoints](../../assets/first-app/endpoints.png)
-
-Do not append `/v1` to the Function Endpoint or `/tutorial` to the WAM Endpoint. The SDK and
-AppStore add the system version and WAM name. Restart the server after changing credentials,
-permissions, or endpoints so startup auto-registration runs again.
-
-## 5. Install dependencies, build, and test
-
-### TypeScript
+Install dependencies, then build and verify the project:
 
 ```bash
 corepack pnpm install --frozen-lockfile
@@ -150,99 +86,129 @@ corepack pnpm test
 corepack pnpm typecheck
 ```
 
-### Go
-
-```bash
-make build
-make test
-```
-
-Every command must pass. Do not continue after a failed install or by disabling signature
-verification.
-
-## 6. Run the server
-
-### TypeScript
+Start the server after every command passes:
 
 ```bash
 corepack pnpm start
 ```
 
-### Go
+**Success:** The terminal should report that the server is listening on port `3000`. Keep this terminal running.
+
+**First check if it fails:** Check your Node.js version and the first reported error. Do not disable signature verification or skip a failed command.
+
+## 4. Connect the server to Channel
+
+Open another terminal and expose local port `3000` over HTTPS. This example uses ngrok:
 
 ```bash
-make run
+ngrok http 3000
 ```
 
-Confirm listener startup and successful Extension registration in the server logs. The SDK caches
-an app token, calls `registerExtension(appId, extensionName, systemVersion)` with a camelCase
-payload, and answers `extension.core.function.getFunctions` discovery.
+Copy the HTTPS address shown next to `Forwarding`. We call that address `https://YOUR_HOST` below.
 
-The tutorials expose:
+Enter these two addresses in Server Settings in the developer portal:
 
-| Path              | TypeScript                                    | Go                                            |
-| ----------------- | --------------------------------------------- | --------------------------------------------- |
-| Function Endpoint | `https://YOUR_HOST/functions`                 | `https://YOUR_HOST/functions`                 |
-| WAM Endpoint      | `https://YOUR_HOST/resource/wam`              | `https://YOUR_HOST/resource/wam`              |
-| Local WAM         | `http://localhost:3000/resource/wam/tutorial` | `http://localhost:3022/resource/wam/tutorial` |
-| Health check      | server listener                               | `http://localhost:3022/ping`                  |
+| Setting           | Value                            |
+| ----------------- | -------------------------------- |
+| Function Endpoint | `https://YOUR_HOST/functions`    |
+| WAM Endpoint      | `https://YOUR_HOST/resource/wam` |
 
-## 7. Run the app in a test Channel
+![Configure Function and WAM endpoints](../../assets/first-app/endpoints.png)
 
-Install the private app in a test Channel, or refresh an existing installation. Run `/tutorial` in
-a Channel group conversation. If the Command is absent, check Extension registration and Function
-discovery in the server logs first.
+Do not append `/v1` to the Function Endpoint or `/tutorial` to the WAM Endpoint. Save the settings, then restart the app server once.
 
-When the WAM opens, invoke both the app-bot and manager actions.
+**Success:** Confirm that Extension registration and the Function-list request succeed separately in the server log. Continue when the `/tutorial` Command metadata is accepted without an error.
 
-![Tutorial WAM open inside the Channel client](../../assets/first-app/tutorial-wam.png)
+**First check if it fails:** Recheck the App ID, App Secret, and tunnel address. If the tunnel address changes, update both endpoints in the developer portal.
 
-Both test messages should arrive.
+## 5. Run it in a test Channel
+
+Install the private app in a test Channel from the developer portal. Refresh the installation if the app is already installed.
+
+1. Open a Channel group conversation.
+2. Enter `/tutorial` in the message field and run the Command.
+3. When the WAM opens, select the app-bot button and then the manager button.
+
+You are done when both messages arrive:
 
 ![Test messages sent by the bot and manager](../../assets/first-app/tutorial-result.png)
 
-Also verify these failure paths:
+**Success:** You should see one message from the app bot and one from the current manager.
 
-- a non-group-chat surface renders an unsupported state;
-- removing the Manager permission makes the manager action fail explicitly;
-- a missing `x-signature` or wrong Signing Key is rejected;
-- duplicate submission is disabled while a request is in flight.
+**First check if it fails:** If `/tutorial` is absent, check Extension registration, the `extension.core.function.getFunctions` request, and Command metadata validation in the server log, then reinstall or refresh the app. If the WAM opens but sending fails, check the permissions in [Troubleshooting](#8-troubleshooting).
 
-## 8. Understand what just ran
+## 6. Use Go instead
 
-- **Extension**: `command:v1` publishes `/tutorial` metadata.
-- **Function**: `tutorial.open` and `tutorial.sendAsBot` are typed server operations.
-- **WAM**: the React UI is served from `/resource/wam/tutorial`.
-- **App Function call**: `useCallFunction` routes through AppStore to the app server.
-- **Native Function call**: `useNativeFunction` acts with the current manager's authorization.
-- **Token**: only the server-side `TokenManager` manages app/channel tokens.
+Follow this section instead of the TypeScript path if you use Go. You need Go 1.25 plus Node.js and Corepack for the WAM build.
 
-See each tutorial README's project map for the TypeScript and Go source locations.
+```bash
+git clone https://github.com/channel-io/app-tutorial.git
+cd app-tutorial
+corepack enable
+cp .env.example .env
+```
 
-## 9. Troubleshooting
+Enter `APP_ID`, `APP_SECRET`, and `SIGNING_KEY` in `.env`, then load them into the current shell:
 
-| Symptom                       | Check                                                                      |
-| ----------------------------- | -------------------------------------------------------------------------- |
-| Extension registration fails  | App ID/Secret, app token, public AppStore URL, server restart              |
-| `401` or signature failure    | hex Signing Key, raw-body preservation, `x-signature` verification         |
-| `/functions/v1` returns `404` | portal uses `/functions` root and ingress reaches the same SDK handler     |
-| WAM does not open             | WAM Endpoint is `/resource/wam` root and the WAM build passed              |
-| Manager action fails          | `writeGroupMessageAsManager`, group surface, current manager authorization |
-| Bot action fails              | `writeGroupMessage`, installed Channel, channel-token cache                |
+```bash
+set -a
+. ./.env
+set +a
+```
 
-Use `SKIP_SIGNATURE_VERIFICATION=true` only in isolated local debugging. Never paste the App
-Secret, Signing Key, access/refresh tokens, or provider credentials into an issue or log.
+Build and test the project, then start the server:
 
-## Continue in this order
+```bash
+make build
+make test
+make run
+```
 
-1. Complete this first-app Quickstart.
-2. Learn the Function, Extension, WAM, authentication, and token boundaries in [Concepts](concepts.md).
-3. Read the wire contract and define standalone typed app Functions with [Function registration](functions.md).
-4. Implement metadata, actions, and autocomplete with the [Command guide](extensions/command.md).
-5. Build the React UI, host authorization, and Function calls with the [WAM guide](wam.md).
-6. Understand registration, choose a capability, and follow its recipe in the [Extension guide](extensions.md).
-7. Before launch, verify security, reliability, operations, deployment, and rollback with the [production readiness guide](app-development.md).
-8. Use the [TypeScript reference map](../../reference/typescript/README.md) or
-   [Go reference](../../reference/go/README.md) for language-specific APIs.
-9. Keep the [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) or
-   [Go tutorial](https://github.com/channel-io/app-tutorial) open as a complete implementation.
+Expose port `3022` from another terminal:
+
+```bash
+ngrok http 3022
+```
+
+As in the TypeScript path, set the Function Endpoint to `https://YOUR_HOST/functions` and the WAM Endpoint to `https://YOUR_HOST/resource/wam`. You can also check the Go server at `http://localhost:3022/ping`. Then follow [Run it in a test Channel](#5-run-it-in-a-test-channel).
+
+**Success:** `make test` passes and the server log reports listener startup and successful Extension registration.
+
+**First check if it fails:** If `make run` exits immediately, confirm that all three values from `.env` are loaded in the current shell.
+
+## 7. What the SDK handled
+
+After your first successful run, you can understand the flow as four steps:
+
+1. The SDK registers the `command:v1` Extension so Channel knows about the `/tutorial` Command.
+2. Running the Command calls the `tutorial.open` Function, which opens the WAM.
+3. The app-bot button calls the app server's `tutorial.sendAsBot` Function.
+4. The manager button uses the WAM's `useNativeFunction` with the current manager's authorization.
+
+On the server, the SDK publishes Function schemas, verifies `x-signature`, and manages app and Channel tokens. More specifically, `TokenManager` reuses tokens while the SDK makes the `registerExtension(appId, extensionName, systemVersion)` call and answers Function discovery. In the WAM, `useCallFunction` routes an app Function call through AppStore to your server.
+
+Read [Concepts](concepts.md#authentication-signatures-and-tokens), [Function registration](functions.md), the [Command guide](extensions/command.md), and the [WAM guide](wam.md) when you need to change these internals.
+
+## 8. Troubleshooting
+
+| Symptom                       | First check                                                                 |
+| ----------------------------- | --------------------------------------------------------------------------- |
+| Extension registration fails  | App ID and App Secret, public HTTPS address, and server restart             |
+| `401` or signature error      | The Signing Key is entered as the original hex string                       |
+| `/functions/v1` returns `404` | The Function Endpoint in the portal ends with `/functions`                  |
+| WAM does not open             | The WAM Endpoint ends with `/resource/wam` and the WAM build passed         |
+| Manager message fails         | `writeGroupMessageAsManager`, group conversation, and current manager login |
+| Bot message fails             | `writeGroupMessage` and whether the app is installed in the current Channel |
+
+Use `SKIP_SIGNATURE_VERIFICATION=true` only for isolated local debugging. Never paste the App Secret, Signing Key, or access/refresh tokens into an issue or log.
+
+## Where to go next
+
+1. Learn how Function, Extension, and WAM fit together in [Concepts](concepts.md).
+2. Extend server behavior and the Command with [Function registration](functions.md) and the [Command guide](extensions/command.md).
+3. Extend the screen and Function calls with the [WAM guide](wam.md).
+4. Choose other capabilities in the [Extension guide](extensions.md).
+5. Use the [production readiness guide](app-development.md) before launch.
+6. Find language-specific APIs in the [TypeScript reference](../../reference/typescript/README.md) and [Go reference](../../reference/go/README.md).
+
+See the complete implementation in the [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) or [Go tutorial](https://github.com/channel-io/app-tutorial).
