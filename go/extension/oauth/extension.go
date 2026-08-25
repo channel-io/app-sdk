@@ -19,6 +19,7 @@ const (
 	AuthTypeOAuth = "oauth"
 	ScopeChannel  = "channel"
 	ScopeManager  = "manager"
+	ScopeCaller   = "caller"
 
 	ParameterCaseSnake = "snake"
 	ParameterCaseCamel = "camel"
