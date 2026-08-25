@@ -6,6 +6,22 @@ import {
 } from "../../extensions/index.js";
 
 describe("oauth extension schema", () => {
+  it.each(["channel", "manager", "caller"] as const)("accepts %s auth scope", (authScope) => {
+    const parsed = OAuthConfigSchema.parse({
+      authType: "oauth",
+      authScope,
+      oauthProvider: {
+        provider: "provider",
+        authorizationUrl: "https://provider.example/login",
+        tokenUrl: "https://provider.example/token",
+        scopes: ["read"],
+        providerName: "Provider",
+      },
+    });
+
+    expect(parsed.authScope).toBe(authScope);
+  });
+
   it("accepts SSOT getAuthConfig output with provider metadata", () => {
     const parsed = OAuthConfigSchema.parse({
       authType: "oauth",

@@ -15,7 +15,7 @@ shop별 secret은 [Config](config.md)에 둡니다.
 
 ## Metadata 모델
 
-- `authType: "oauth"`, `authScope: "channel" | "manager"`, `oauthProvider`를 반환합니다.
+- `authType: "oauth"`, `authScope: "channel" | "manager" | "caller"`, `oauthProvider`를 반환합니다.
 - Provider metadata에는 안정적인 provider key, authorization/token URL, scope, fallback provider
   name을 넣습니다. Client ID/secret은 이 Function 밖에서 관리합니다.
 - `parameterCase`는 표준 OAuth parameter case를, `authorizationOpenMode`는 popup/current-tab 동작을

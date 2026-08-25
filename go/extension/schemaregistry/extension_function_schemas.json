@@ -20950,7 +20950,8 @@
           "type": "string",
           "enum": [
             "channel",
-            "manager"
+            "manager",
+            "caller"
           ]
         },
         "oauthProvider": {

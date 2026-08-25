@@ -15,7 +15,7 @@ OAuth は外部 provider の Authorization Code flow にだけ使います。API
 
 ## Metadata model
 
-- `authType: "oauth"`、`authScope: "channel" | "manager"`、`oauthProvider` を返します。
+- `authType: "oauth"`、`authScope: "channel" | "manager" | "caller"`、`oauthProvider` を返します。
 - Provider metadata には stable provider key、authorization/token URL、scope、fallback provider
   name を含めます。Client ID/secret はこの Function の外で管理します。
 - `parameterCase` は標準 OAuth parameter case、`authorizationOpenMode` は popup/current-tab behavior
