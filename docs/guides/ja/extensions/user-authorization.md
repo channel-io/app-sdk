@@ -143,22 +143,26 @@ export class OrderFunctions {
     @Ctx() ctx: Context,
     @Input() input: z.infer<typeof CancelOrderInputSchema>,
   ) {
-    const canCancel = await this.orders.canCancel({
+    const cancelled = await this.orders.cancelIfOwned({
       channelId: ctx.channel.id,
       orderId: input.orderId,
       identifierType: input.authorization.type,
       identifierValue: input.authorization.value,
     });
 
-    if (!canCancel) {
+    if (!cancelled) {
       throw new Error("The caller cannot cancel this order");
     }
 
-    await this.orders.cancel(input.orderId);
     return { cancelled: true };
   }
 }
 ```
+
+`cancelIfOwned` は、所有者とキャンセル可能な状態を確認し、注文を変更する処理を同じ transaction
+または conditional update で実行する atomic mutation を表します。キャンセルによって返金などの
+外部 side effect が発生する場合は、idempotency key または永続的な deduplication record を使い、
+同時 call や retry で同じ side effect が 2 回実行されないようにしてください。
 
 1 種類の識別子だけに対応する Function では選択肢を絞れます。携帯電話番号だけを受け取る場合は
 次のように宣言します。
@@ -342,9 +346,9 @@ Channel でもすぐに保護が ON になる可能性があります。最初�
 `functionName` は SDK discovery の canonical Function name と完全に一致する必要があります。
 
 ```text
-Discovery: extension.orders.cancel
-Metadata:  extension.orders.cancel  ✅
-Metadata:  orders.cancel            ❌
+Discovery: orders.cancel
+Metadata:  orders.cancel            ✅
+Metadata:  extension.orders.cancel  ❌
 Metadata:  Extension.Orders.Cancel  ❌
 ```
 

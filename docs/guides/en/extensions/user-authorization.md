@@ -141,22 +141,26 @@ export class OrderFunctions {
     @Ctx() ctx: Context,
     @Input() input: z.infer<typeof CancelOrderInputSchema>,
   ) {
-    const canCancel = await this.orders.canCancel({
+    const cancelled = await this.orders.cancelIfOwned({
       channelId: ctx.channel.id,
       orderId: input.orderId,
       identifierType: input.authorization.type,
       identifierValue: input.authorization.value,
     });
 
-    if (!canCancel) {
+    if (!cancelled) {
       throw new Error("The caller cannot cancel this order");
     }
 
-    await this.orders.cancel(input.orderId);
     return { cancelled: true };
   }
 }
 ```
+
+`cancelIfOwned` represents one atomic mutation. It checks ownership and the cancellable state in
+the same transaction or conditional update that changes the order. If cancellation also triggers
+a refund or another external side effect, use an idempotency key or durable deduplication record so
+concurrent calls and retries cannot perform that side effect twice.
 
 Narrow the choices when a Function supports only one identifier. For example, use this schema for
 a Function that accepts only phone verification:
@@ -340,9 +344,9 @@ checks in the app server should always use the same rules.
 `functionName` must match the canonical Function name from SDK discovery exactly.
 
 ```text
-Discovery: extension.orders.cancel
-Metadata:  extension.orders.cancel  ✅
-Metadata:  orders.cancel            ❌
+Discovery: orders.cancel
+Metadata:  orders.cancel            ✅
+Metadata:  extension.orders.cancel  ❌
 Metadata:  Extension.Orders.Cancel  ❌
 ```
 

@@ -142,22 +142,26 @@ export class OrderFunctions {
     @Ctx() ctx: Context,
     @Input() input: z.infer<typeof CancelOrderInputSchema>,
   ) {
-    const canCancel = await this.orders.canCancel({
+    const cancelled = await this.orders.cancelIfOwned({
       channelId: ctx.channel.id,
       orderId: input.orderId,
       identifierType: input.authorization.type,
       identifierValue: input.authorization.value,
     });
 
-    if (!canCancel) {
+    if (!cancelled) {
       throw new Error("The caller cannot cancel this order");
     }
 
-    await this.orders.cancel(input.orderId);
     return { cancelled: true };
   }
 }
 ```
+
+`cancelIfOwned`는 소유권과 취소 가능 상태를 확인하고 주문을 변경하는 과정을 하나의 transaction이나
+조건부 update로 처리하는 원자적 mutation을 나타냅니다. 취소 과정에서 환불 같은 외부 side effect가
+발생한다면 idempotency key나 영구 deduplication record를 사용해 동시 호출과 재시도가 같은 작업을 두
+번 실행하지 않게 해야 합니다.
 
 한 가지 식별자만 지원한다면 선택지를 좁혀도 됩니다. 예를 들어 휴대폰 번호만 받는 Function은 다음과
 같이 선언할 수 있습니다.
@@ -342,9 +346,9 @@ Channel에서 저장한 ON/OFF 값이 있음
 `functionName`은 SDK discovery의 canonical Function 이름과 글자 하나까지 같아야 합니다.
 
 ```text
-Discovery: extension.orders.cancel
-Metadata:  extension.orders.cancel  ✅
-Metadata:  orders.cancel            ❌
+Discovery: orders.cancel
+Metadata:  orders.cancel            ✅
+Metadata:  extension.orders.cancel  ❌
 Metadata:  Extension.Orders.Cancel  ❌
 ```
 
@@ -419,18 +423,18 @@ identity를 사용해야 합니다.
 
 현재 지원되는 ALF Task User 호출은 다음처럼 처리됩니다.
 
-| 상태                                            | 결과                                                   |
-| ----------------------------------------------- | ------------------------------------------------------ |
-| 앱이 `userAuthorization`을 등록하지 않음        | 기존 method로 호출                                     |
-| 등록했지만 요청 이름이 discovery catalog에 없음 | `-32601`, 앱 Function 미호출                           |
-| Function은 catalog에 있지만 metadata에 없음     | 본인 확인 없이 canonical Function 호출                 |
-| 보호 metadata가 있지만 설정이 OFF               | 본인 확인 없이 canonical Function 호출                 |
-| 보호 설정 ON, 식별자 입력이 잘못됨              | `-32602`, 앱 Function 미호출                           |
-| 보호 설정 ON, 본인 확인이 필요함                | `-32801`, 앱 Function 미호출                           |
-| 보호 설정 ON, AppStore·Core·본인 확인 앱 장애   | `-32000`, 앱 Function 미호출                           |
-| 보호 설정 ON, 본인 확인 성공                    | 앱 Function 호출                                       |
-| ALF Task 요청이지만 신뢰된 User가 없음          | `userAuthorization`을 적용하지 않고 기존 method로 호출 |
-| ALF Task User가 아닌 호출                       | `userAuthorization`을 적용하지 않고 기존 method로 호출 |
+| 상태                                             | 결과                                                   |
+| ------------------------------------------------ | ------------------------------------------------------ |
+| 앱이 `userAuthorization`을 등록하지 않음         | 기존 method로 호출                                     |
+| 등록했지만 요청 이름이 discovery catalog에 없음  | `-32601`, 앱 Function 미호출                           |
+| Function은 catalog에 있지만 metadata에 없음      | 본인 확인 없이 canonical Function 호출                 |
+| 보호 metadata가 있지만 설정이 OFF                | 본인 확인 없이 canonical Function 호출                 |
+| 보호 설정 ON, 식별자 입력이 잘못됨               | `-32602`, 앱 Function 미호출                           |
+| 보호 설정 ON, 본인 확인이 필요함                 | `-32801`, 앱 Function 미호출                           |
+| 보호 설정 ON, AppStore·Core·DB·본인 확인 앱 장애 | `-32000`, 앱 Function 미호출                           |
+| 보호 설정 ON, 본인 확인 성공                     | 앱 Function 호출                                       |
+| ALF Task 요청이지만 신뢰된 User가 없음           | `userAuthorization`을 적용하지 않고 기존 method로 호출 |
+| ALF Task User가 아닌 호출                        | `userAuthorization`을 적용하지 않고 기존 method로 호출 |
 
 `userAuthorization` 정책에 들어온 뒤 실패하면 AppStore는 보호 대상 Function을 호출하지 않습니다.
 따라서 앱 서버에서 이 오류를 받아 처리하는 구조가 아니라, ALF 같은 Function 호출자가 오류를 받고

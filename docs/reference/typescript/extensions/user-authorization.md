@@ -74,8 +74,9 @@ export class UserAuthorizationExtension {
 
 The routed metadata Function name is
 `extension.userAuthorization.metadata.getConfig`. Register the decorated class as a NestJS
-provider and enable SDK auto-registration. For controlled registration, obtain an app token and
-call
+provider and enable SDK auto-registration. For controlled registration, first deploy a compatible
+Function Endpoint that can answer external discovery and metadata requests. AppStore may call
+`getFunctions` immediately after registration. Then obtain an app token and call
 `nativeClient.registerExtension(appId, "userAuthorization", "v1", appToken.accessToken)`.
 
 ## Contract Rules
