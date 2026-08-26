@@ -1767,6 +1767,24 @@ export interface ConfigOAuthClientCredentials {
   clientSecretFieldKey?: string | undefined;
 }
 
+export interface HookUserChatOpenedInput {
+  eventId?: string | undefined;
+  channelId?: string | undefined;
+  userChatId?: string | undefined;
+  state?: string | undefined;
+  previousState?: string | undefined;
+  openKind?: string | undefined;
+  actorKind?: string | undefined;
+  triggerMessageId?: string | undefined;
+  occurredAt?: string | undefined;
+  version?: number | undefined;
+}
+
+export interface HookUserChatOpenedResult {
+  hookHandlingResult?: string | undefined;
+  terminal?: boolean | undefined;
+}
+
 export interface DataSourceManagerPermission {
   action?: string | undefined;
   scope?: string | undefined;

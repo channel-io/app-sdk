@@ -2,6 +2,8 @@ import { z } from "zod";
 import type {
   HookConfig as ProtoHookConfig,
   HookGetHooksOutput as ProtoGetHooksOutput,
+  HookUserChatOpenedInput as ProtoUserChatOpenedHookInput,
+  HookUserChatOpenedResult as ProtoUserChatOpenedHookResult,
   HookWebhookConfig as ProtoWebhookConfig,
 } from "../gen/channel/app/sdk/v1/extension.js";
 
@@ -56,11 +58,17 @@ export const WebhookExecutionScopeSchema = z.enum(["app", "manager"]);
 
 export const UserChatOpenKindSchema = z.enum(["first_open", "reopen"]);
 
-export type UserChatOpenKind = z.infer<typeof UserChatOpenKindSchema>;
+export type UserChatOpenKind = ProtoBacked<
+  z.infer<typeof UserChatOpenKindSchema>,
+  ProtoUserChatOpenedHookInput["openKind"]
+>;
 
 export const UserChatOpenedActorKindSchema = z.enum(["customer", "manager", "auto"]);
 
-export type UserChatOpenedActorKind = z.infer<typeof UserChatOpenedActorKindSchema>;
+export type UserChatOpenedActorKind = ProtoBacked<
+  z.infer<typeof UserChatOpenedActorKindSchema>,
+  ProtoUserChatOpenedHookInput["actorKind"]
+>;
 
 const UserChatOpenedIdentifierSchema = z.string().min(1).max(255);
 
@@ -79,7 +87,10 @@ export const UserChatOpenedHookInputSchema = z
   })
   .strict();
 
-export type UserChatOpenedHookInput = z.infer<typeof UserChatOpenedHookInputSchema>;
+export type UserChatOpenedHookInput = ProtoBacked<
+  z.infer<typeof UserChatOpenedHookInputSchema>,
+  ProtoUserChatOpenedHookInput
+>;
 
 export const UserChatOpenedHookResultSchema = z.discriminatedUnion("hookHandlingResult", [
   z.object({ hookHandlingResult: z.literal("accepted"), terminal: z.literal(false) }).strict(),
@@ -104,7 +115,10 @@ export const UserChatOpenedHookResultSchema = z.discriminatedUnion("hookHandling
   z.object({ hookHandlingResult: z.literal("unknown"), terminal: z.literal(true) }).strict(),
 ]);
 
-export type UserChatOpenedHookResult = z.infer<typeof UserChatOpenedHookResultSchema>;
+export type UserChatOpenedHookResult = ProtoBacked<
+  z.infer<typeof UserChatOpenedHookResultSchema>,
+  ProtoUserChatOpenedHookResult
+>;
 
 const AppWebhookConfigSchema = z
   .object({
