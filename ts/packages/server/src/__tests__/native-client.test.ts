@@ -421,6 +421,45 @@ describe("NativeFunctionClient", () => {
       });
       expect(result).toEqual(expected);
     });
+
+    it("should call the Manager private-note method with its one-purpose credential", async () => {
+      const expected = { message: { id: "message-private-1" } };
+      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: expected }));
+
+      const result = await client.writeUserChatPrivateNoteByManager(
+        {
+          channelId: "ch-1",
+          userChatId: "user-chat-1",
+          requestId: "request-1",
+          lifecycleRevision: 7,
+          dto: {
+            plainText: "private note",
+            customPayload: { source: "synthetic-slack-reply" },
+          },
+        },
+        "manager-private-note-credential"
+      );
+
+      const body = parseFetchBody(mockFetch);
+      expect(body).toEqual({
+        method: "writeUserChatPrivateNoteByManager",
+        params: {
+          channelId: "ch-1",
+          userChatId: "user-chat-1",
+          requestId: "request-1",
+          lifecycleRevision: 7,
+          dto: {
+            plainText: "private note",
+            customPayload: { source: "synthetic-slack-reply" },
+          },
+        },
+      });
+      const init = getFetchInit(mockFetch);
+      expect((init.headers as Record<string, string>)["x-access-token"]).toBe(
+        "manager-private-note-credential"
+      );
+      expect(result).toEqual(expected);
+    });
   });
 
   // ============================================

@@ -243,6 +243,22 @@ export interface NativeWriteUserChatMessageAsManagerParams {
 
 export type NativeWriteUserChatMessageAsManagerResult = NativeWriteUserChatMessageResult;
 
+export interface NativeWritePrivateNoteDto {
+  blocks?: readonly NativeJsonObject[];
+  plainText?: string;
+  customPayload?: NativeJsonObject;
+}
+
+export interface NativeWriteUserChatPrivateNoteByManagerParams {
+  channelId: string;
+  userChatId: string;
+  requestId: string;
+  lifecycleRevision: number;
+  dto: NativeWritePrivateNoteDto;
+}
+
+export type NativeWriteUserChatPrivateNoteByManagerResult = NativeWriteUserChatMessageResult;
+
 export interface NativeWriteUserChatMessageAsUserParams {
   channelId: string;
   userChatId: string;
@@ -843,6 +859,10 @@ export interface NativeFunctionTypeMap {
   writeUserChatMessageAsManager: {
     params: NativeWriteUserChatMessageAsManagerParams;
     result: NativeWriteUserChatMessageAsManagerResult;
+  };
+  writeUserChatPrivateNoteByManager: {
+    params: NativeWriteUserChatPrivateNoteByManagerParams;
+    result: NativeWriteUserChatPrivateNoteByManagerResult;
   };
   writeDirectChatMessageAsManager: {
     params: NativeWriteDirectChatMessageAsManagerParams;

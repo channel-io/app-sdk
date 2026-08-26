@@ -18,6 +18,8 @@ export type {
   NativeWriteUserChatMessageResult as WriteUserChatMessageResult,
   NativeWriteUserChatMessageAsManagerParams as WriteUserChatMessageAsManagerRequest,
   NativeWriteUserChatMessageAsManagerResult as WriteUserChatMessageAsManagerResult,
+  NativeWriteUserChatPrivateNoteByManagerParams as WriteUserChatPrivateNoteByManagerRequest,
+  NativeWriteUserChatPrivateNoteByManagerResult as WriteUserChatPrivateNoteByManagerResult,
   NativeWriteUserChatMessageAsUserParams as WriteUserChatMessageAsUserRequest,
   NativeWriteUserChatMessageAsUserResult as WriteUserChatMessageAsUserResult,
   NativeWriteDirectChatMessageAsManagerParams as WriteDirectChatMessageAsManagerRequest,

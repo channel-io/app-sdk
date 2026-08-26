@@ -13,6 +13,8 @@ import type {
   NativeListActiveOAuthManagerTargetsResult,
   NativeUpsertAppDataTableRowsParams,
   NativeUpsertAppDataTableRowsResult,
+  NativeWriteUserChatPrivateNoteByManagerParams,
+  NativeWriteUserChatPrivateNoteByManagerResult,
 } from "@channel.io/app-sdk-core";
 import type {
   NativeFunctionClientConfig,
@@ -292,6 +294,24 @@ export class NativeFunctionClient {
       NativeListActiveOAuthManagerTargetsParams,
       NativeListActiveOAuthManagerTargetsResult
     >("listActiveOAuthManagerTargets", params, accessToken);
+  }
+
+  /**
+   * Write a private UserChat note as the exact Manager bound by a one-purpose credential.
+   *
+   * The credential is issued for one Channel, UserChat, Manager, request, and lifecycle
+   * revision. It is passed as the native bearer token and must not be replaced with an
+   * app- or Channel-scoped access token.
+   */
+  writeUserChatPrivateNoteByManager(
+    params: NativeWriteUserChatPrivateNoteByManagerParams,
+    managerCredential: string
+  ): Promise<NativeWriteUserChatPrivateNoteByManagerResult> {
+    return this.callNativeFunctionWithToken(
+      "writeUserChatPrivateNoteByManager",
+      params,
+      managerCredential
+    );
   }
 
   // ============================================
