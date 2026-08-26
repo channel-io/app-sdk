@@ -6,6 +6,8 @@ import {
   GetCustomTabsOutputSchema,
   HookConfigSchema,
   GetHooksOutputSchema,
+  UserChatOpenedHookInputSchema,
+  UserChatOpenedHookResultSchema,
   PollingPollerSchema,
   GetPollersOutputSchema,
   GetPollingTargetChannelsInputSchema,
@@ -96,6 +98,86 @@ describe("custom tab metadata schema", () => {
 });
 
 describe("hook metadata schema", () => {
+  const userChatOpenedInput = {
+    eventId: "event-1",
+    channelId: "channel-1",
+    userChatId: "user-chat-1",
+    openKind: "first_open",
+    actorKind: "customer",
+    triggerMessageId: "message-1",
+    occurredAt: "2026-08-26T05:30:00.000Z",
+    snapshotRevision: "revision-1",
+    snapshot: {
+      user: { id: "user-1", displayName: "External User" },
+      message: { id: "message-1", plainText: "Synthetic hello" },
+    },
+  } as const;
+
+  it("accepts a userChat.opened hook without targetId", () => {
+    expect(
+      HookConfigSchema.parse({
+        type: "userChat.opened",
+        actionFunctionName: "slack.userChatOpened.handle",
+      })
+    ).toEqual({
+      type: "userChat.opened",
+      actionFunctionName: "slack.userChatOpened.handle",
+    });
+  });
+
+  it("parses the bounded immutable userChat.opened input", () => {
+    expect(UserChatOpenedHookInputSchema.parse(userChatOpenedInput)).toEqual(userChatOpenedInput);
+  });
+
+  it("rejects an invalid userChat.opened openKind", () => {
+    expect(() =>
+      UserChatOpenedHookInputSchema.parse({ ...userChatOpenedInput, openKind: "created" })
+    ).toThrow();
+  });
+
+  it("rejects a userChat.opened input without eventId", () => {
+    const { eventId: _eventId, ...inputWithoutEventId } = userChatOpenedInput;
+
+    expect(() => UserChatOpenedHookInputSchema.parse(inputWithoutEventId)).toThrow();
+  });
+
+  it("rejects unbounded user fields from the userChat.opened snapshot", () => {
+    expect(() =>
+      UserChatOpenedHookInputSchema.parse({
+        ...userChatOpenedInput,
+        snapshot: {
+          ...userChatOpenedInput.snapshot,
+          user: { ...userChatOpenedInput.snapshot.user, email: "external@example.com" },
+        },
+      })
+    ).toThrow();
+  });
+
+  it.each([
+    ["accepted", false],
+    ["retrying", false],
+    ["succeeded", true],
+    ["skipped_reopen", true],
+    ["skipped_ineligible_actor", true],
+    ["skipped_disabled", true],
+    ["failed_retry_exhausted", true],
+    ["unknown", true],
+  ] as const)("accepts %s with terminal=%s", (hookHandlingResult, terminal) => {
+    expect(UserChatOpenedHookResultSchema.parse({ hookHandlingResult, terminal })).toEqual({
+      hookHandlingResult,
+      terminal,
+    });
+  });
+
+  it("rejects a mismatched userChat.opened terminal state", () => {
+    expect(() =>
+      UserChatOpenedHookResultSchema.parse({
+        hookHandlingResult: "accepted",
+        terminal: true,
+      })
+    ).toThrow();
+  });
+
   it.each(["oauth.connected", "oauth.disconnected"] as const)(
     "accepts %s hooks without targetId",
     (type) => {

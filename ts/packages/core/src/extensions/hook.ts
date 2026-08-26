@@ -21,6 +21,7 @@ export const HookTypeSchema = z.enum([
   "webhook.received",
   "oauth.connected",
   "oauth.disconnected",
+  "userChat.opened",
 ]);
 
 export type HookType = z.infer<typeof HookTypeSchema>;
@@ -52,6 +53,72 @@ const WebhookEndpointTokenSchema = z
   .regex(/^[A-Za-z0-9_-]+$/);
 
 export const WebhookExecutionScopeSchema = z.enum(["app", "manager"]);
+
+export const UserChatOpenKindSchema = z.enum(["first_open", "reopen"]);
+
+export type UserChatOpenKind = z.infer<typeof UserChatOpenKindSchema>;
+
+export const UserChatOpenedActorKindSchema = z.enum(["customer", "manager", "auto"]);
+
+export type UserChatOpenedActorKind = z.infer<typeof UserChatOpenedActorKindSchema>;
+
+const UserChatOpenedIdentifierSchema = z.string().min(1).max(255);
+
+export const UserChatOpenedHookInputSchema = z
+  .object({
+    eventId: UserChatOpenedIdentifierSchema,
+    channelId: UserChatOpenedIdentifierSchema,
+    userChatId: UserChatOpenedIdentifierSchema,
+    openKind: UserChatOpenKindSchema,
+    actorKind: UserChatOpenedActorKindSchema,
+    triggerMessageId: UserChatOpenedIdentifierSchema,
+    occurredAt: z.string().datetime({ offset: true }),
+    snapshotRevision: UserChatOpenedIdentifierSchema,
+    snapshot: z
+      .object({
+        user: z
+          .object({
+            id: UserChatOpenedIdentifierSchema,
+            displayName: z.string().nullable(),
+          })
+          .strict(),
+        message: z
+          .object({
+            id: UserChatOpenedIdentifierSchema,
+            plainText: z.string().nullable(),
+          })
+          .strict(),
+      })
+      .strict(),
+  })
+  .strict();
+
+export type UserChatOpenedHookInput = z.infer<typeof UserChatOpenedHookInputSchema>;
+
+export const UserChatOpenedHookResultSchema = z.discriminatedUnion("hookHandlingResult", [
+  z.object({ hookHandlingResult: z.literal("accepted"), terminal: z.literal(false) }).strict(),
+  z.object({ hookHandlingResult: z.literal("retrying"), terminal: z.literal(false) }).strict(),
+  z.object({ hookHandlingResult: z.literal("succeeded"), terminal: z.literal(true) }).strict(),
+  z.object({ hookHandlingResult: z.literal("skipped_reopen"), terminal: z.literal(true) }).strict(),
+  z
+    .object({
+      hookHandlingResult: z.literal("skipped_ineligible_actor"),
+      terminal: z.literal(true),
+    })
+    .strict(),
+  z
+    .object({ hookHandlingResult: z.literal("skipped_disabled"), terminal: z.literal(true) })
+    .strict(),
+  z
+    .object({
+      hookHandlingResult: z.literal("failed_retry_exhausted"),
+      terminal: z.literal(true),
+    })
+    .strict(),
+  z.object({ hookHandlingResult: z.literal("unknown"), terminal: z.literal(true) }).strict(),
+]);
+
+export type UserChatOpenedHookResult = z.infer<typeof UserChatOpenedHookResultSchema>;
 
 const AppWebhookConfigSchema = z
   .object({
@@ -117,6 +184,9 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.disconnected"),
+  }).strict(),
+  BaseHookConfigSchema.extend({
+    type: z.literal("userChat.opened"),
   }).strict(),
 ]);
 

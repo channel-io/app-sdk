@@ -22,6 +22,7 @@ Current SDK schema supports:
 - `webhook.received`
 - `oauth.connected`
 - `oauth.disconnected`
+- `userChat.opened`
 
 Widget hooks must include a `targetId` that matches the widget name. App,
 command, and config hooks must not include a `targetId`. Public webhook hooks
@@ -45,6 +46,38 @@ For a manager `oauth.connected` event, a separately declared manager-scoped
 fast path only. The URL can be absent and Hook delivery can fail, so reconcile
 manager targets by polling as the recovery path. Do not expect a webhook URL
 for channel OAuth or `oauth.disconnected`.
+
+## UserChat Open Lifecycle
+
+`userChat.opened` uses only `actionFunctionName` and optional `systemVersion`;
+it must not include a `targetId` or `webhook` configuration. AppStore delivers
+the hook at least once to each exact active installation that registered it.
+
+The handler receives a strict, immutable platform envelope:
+
+```ts
+interface UserChatOpenedHookInput {
+  eventId: string;
+  channelId: string;
+  userChatId: string;
+  openKind: "first_open" | "reopen";
+  actorKind: "customer" | "manager" | "auto";
+  triggerMessageId: string;
+  occurredAt: string; // ISO 8601 datetime
+  snapshotRevision: string;
+  snapshot: {
+    user: { id: string; displayName: string | null };
+    message: { id: string; plainText: string | null };
+  };
+}
+```
+
+The snapshot is limited to these declared fields and contains no provider-
+specific routing or credentials. Treat `eventId`, the installation identity,
+and the handler revision as the delivery idempotency boundary. A handler result
+uses `hookHandlingResult`; `accepted` and `retrying` are non-terminal, while
+`succeeded`, `skipped_reopen`, `skipped_ineligible_actor`, `skipped_disabled`,
+`failed_retry_exhausted`, and `unknown` are terminal.
 
 ## Public Webhook Ingress
 

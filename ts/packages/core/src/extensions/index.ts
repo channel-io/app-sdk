@@ -173,10 +173,16 @@ export {
   WebhookConfigSchema,
   HookConfigSchema,
   GetHooksOutputSchema,
+  UserChatOpenKindSchema,
+  UserChatOpenedActorKindSchema,
+  UserChatOpenedHookInputSchema,
+  UserChatOpenedHookResultSchema,
   type HookType,
   type WebhookConfig,
   type HookConfig,
   type GetHooksOutput,
+  type UserChatOpenKind,
+  type UserChatOpenedActorKind,
 } from "./hook.js";
 
 // Mail Relay Extension Schemas (v1)
