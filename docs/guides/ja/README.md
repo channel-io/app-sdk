@@ -9,12 +9,16 @@
 3. [Function 登録](functions.md): wire contract と standalone typed app Function を確認します。
 4. [Command ガイド](extensions/command.md): metadata、action、autocomplete を実装します。
 5. [WAM ガイド](wam.md): React UI、host authorization、app/native Function call を実装します。
-6. [Extension 完全ガイドと 16 の TypeScript/Go recipe](extensions.md): Extension registration を理解し、必要な capability と implementation contract を選択します。
+6. [Extension 完全ガイドと機能別 recipe](extensions.md): Extension registration を理解し、必要な capability と implementation contract を選択します。
 7. [本番運用準備ガイド](app-development.md): launch 前に security、reliability、operation、deployment、rollback を検証します。
 8. 言語別 API は [TypeScript reference](../../reference/typescript/README.md) または
    [Go reference](../../reference/go/README.md) で確認します。
 9. 実装中は完全な [TypeScript app tutorial](https://github.com/channel-io/app-tutorial-ts) または
    [Go app tutorial](https://github.com/channel-io/app-tutorial) を参照します。
+
+## 機能別ガイド
+
+- [`userAuthorization` Extension ガイド](extensions/user-authorization.md): ALF の本人確認と app resource authorization の責任を分けて説明します。
 
 ## SDK の選び方
 

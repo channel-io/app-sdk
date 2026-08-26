@@ -175,11 +175,11 @@ version, an npm or Go SDK package version, or a developer-defined Function API v
 default system contract is `v1`. For example, an AppStore system contract `v2` would identify a
 platform contract with those breaking changes; it would not be a v2 created by each app.
 
-| Where `systemVersion` appears                         | Meaning                                                                   |
-| ----------------------------------------------------- | ------------------------------------------------------------------------- |
-| `@Extension` or Go Extension registration             | The system contract that the app declares it implements to AppStore      |
-| An Extension metadata target `systemVersion`          | The same AppStore system contract to use when invoking that Function      |
-| Request `systemVersion` and `/functions/v1`            | Request and route representations of the same contract sent by AppStore   |
+| Where `systemVersion` appears                | Meaning                                                                 |
+| -------------------------------------------- | ----------------------------------------------------------------------- |
+| `@Extension` or Go Extension registration    | The system contract that the app declares it implements to AppStore     |
+| An Extension metadata target `systemVersion` | The same AppStore system contract to use when invoking that Function    |
+| Request `systemVersion` and `/functions/v1`  | Request and route representations of the same contract sent by AppStore |
 
 The current SDK does not create a separate handler set for each version. Developers therefore
 cannot operate their own Function v2 by setting `systemVersion: "v2"`. Use that value only after
@@ -248,6 +248,15 @@ injects the connected provider token as `ctx.authToken`. Do not use this Extensi
 `client_credentials`; those belong in Config.
 
 [OAuth recipe](extensions/oauth.md)
+
+## User Authorization
+
+`userAuthorization` verifies a phone number, email address, or member ID before an ALF Task calls a
+sensitive Function on behalf of a User. AppStore handles identity verification for supported
+invocations; the app server remains responsible for resource ownership and business authorization.
+Other Function invocation surfaces are currently outside this policy.
+
+[`userAuthorization` recipe](extensions/user-authorization.md)
 
 ## Command
 

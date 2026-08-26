@@ -174,11 +174,11 @@ SDK package version、developer が定義する Function API version とは異�
 system contract は `v1` です。たとえば AppStore system contract `v2` は、そのような breaking
 change が反映された platform version であり、各 app が作る v2 ではありません。
 
-| `systemVersion` が現れる場所                        | 意味                                                               |
-| --------------------------------------------------- | ------------------------------------------------------------------ |
-| `@Extension` または Go Extension registration       | App が実装すると AppStore に宣言する system contract               |
-| Extension metadata の target `systemVersion`        | その Function の呼び出しに使う同じ AppStore system contract        |
-| Request の `systemVersion` と `/functions/v1`        | AppStore が同じ contract を app server に渡す request と route の表現 |
+| `systemVersion` が現れる場所                  | 意味                                                                  |
+| --------------------------------------------- | --------------------------------------------------------------------- |
+| `@Extension` または Go Extension registration | App が実装すると AppStore に宣言する system contract                  |
+| Extension metadata の target `systemVersion`  | その Function の呼び出しに使う同じ AppStore system contract           |
+| Request の `systemVersion` と `/functions/v1` | AppStore が同じ contract を app server に渡す request と route の表現 |
 
 現在の SDK は version ごとに別の handler set を作りません。そのため、developer が
 `systemVersion: "v2"` を任意に指定して独自の Function v2 を運用することはできません。AppStore と
@@ -246,6 +246,15 @@ connection は AppStore が管理し、provider token は `ctx.authToken` に注
 `client_credentials` は OAuth ではなく Config に保存します。
 
 [OAuth 詳細](extensions/oauth.md)
+
+## User Authorization
+
+`userAuthorization` は、ALF Task が User の代わりに機密性の高い Function を call する前に、
+携帯電話番号、メールアドレス、会員 ID を確認します。対応する call の本人確認は AppStore が
+担当し、resource の所有権と business authorization は app server が最終確認します。現在、
+ほかの Function call surface はこの policy の対象外です。
+
+[`userAuthorization` 詳細](extensions/user-authorization.md)
 
 ## Command
 
