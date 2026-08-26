@@ -28,7 +28,15 @@ export type TokenRequestContentType = z.infer<typeof TokenRequestContentTypeSche
 export const AuthorizationOpenModeSchema = z.enum(["popup", "currentTab"]);
 export type AuthorizationOpenMode = z.infer<typeof AuthorizationOpenModeSchema>;
 
-export const OAuthAuthScopeSchema = z.enum(["channel", "manager"]);
+/**
+ * OAuth credential ownership and Function hydration policy.
+ *
+ * - channel: always use the shared channel credential
+ * - manager: only a manager caller can use that manager's credential
+ * - caller: use the manager credential for manager callers and the channel
+ *   credential for every other caller
+ */
+export const OAuthAuthScopeSchema = z.enum(["channel", "manager", "caller"]);
 export type OAuthAuthScope = z.infer<typeof OAuthAuthScopeSchema>;
 
 export const OAuthProviderSupportedLocaleSchema = z.enum(["ko", "ja", "en"]);

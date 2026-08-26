@@ -19,7 +19,7 @@ import type { Context } from "../../types/context.js";
  *   async getAuthConfig(ctx: Context): Promise<OAuthConfig> {
  *     return {
  *       authType: "oauth",
- *       authScope: "channel",
+ *       authScope: "caller",
  *       oauthProvider: {
  *         provider: "example",
  *         authorizationUrl: "https://example.com/oauth/authorize",

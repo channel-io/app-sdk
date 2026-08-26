@@ -1,6 +1,6 @@
 # OAuth Extension
 
-Use the OAuth extension when a channel or manager must connect a third-party account to a Channel app.
+Use the OAuth extension when a channel, manager, or both must connect a third-party account to a Channel app.
 
 ## Required Functions
 
@@ -57,10 +57,20 @@ const config = {
 OAuthConfigSchema.parse(config);
 ```
 
-`authScope` is either `channel` for a shared channel connection or `manager`
-for per-manager accounts. `oauthProvider.parameterCase` defaults to `snake`;
-set it to `camel` only for providers that require camelCase OAuth standard
-parameters.
+`authScope` supports:
+
+- `channel` for one shared channel connection
+- `manager` for per-manager accounts
+- `caller` when the same app needs both connection types
+
+For `caller`, AppStore injects the current manager's credential when the
+Function caller is a manager and the shared channel credential for every other
+caller. A missing or unusable manager credential never falls back to the
+channel credential. OAuth connection UI and native calls select a concrete
+`channel` or `manager` target; `caller` is not a stored credential scope.
+
+`oauthProvider.parameterCase` defaults to `snake`; set it to `camel` only for
+providers that require camelCase OAuth standard parameters.
 
 `oauthProvider.authorizationOpenMode` defaults to `popup`. Set it to
 `currentTab` only when the provider redirects to a full Desk/AppStore URL and
