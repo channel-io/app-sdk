@@ -294,7 +294,8 @@ extension.userAuthorization.metadata.getConfig
 
 ```ts
 import { Module } from "@nestjs/common";
-import { ChannelAppModule } from "@channel.io/app-sdk-server";
+import { APP_GUARD } from "@nestjs/core";
+import { ChannelAppModule, SignatureGuard } from "@channel.io/app-sdk-server";
 
 @Module({
   imports: [
@@ -305,10 +306,18 @@ import { ChannelAppModule } from "@channel.io/app-sdk-server";
       autoRegister: true,
     }),
   ],
-  providers: [OrderFunctions, UserAuthorizationExtension],
+  providers: [
+    OrderFunctions,
+    UserAuthorizationExtension,
+    { provide: APP_GUARD, useClass: SignatureGuard },
+  ],
 })
 export class AppModule {}
 ```
+
+NestJS app을 시작할 때도 bootstrap에 `{ rawBody: true }`를 설정해야 합니다. AppStore 서명을
+검증하려면 guard와 raw request body가 모두 필요합니다. `signingKey`만 설정하면 요청 검증이
+활성화되지 않습니다.
 
 개발 환경이나 단일 instance 앱에서는 자동 등록을 사용할 수 있습니다. 여러 instance를 순차 배포하는
 운영 환경에서는 모든 instance의 `getFunctions`와 `getConfig` 응답이 같아진 뒤 등록 요청을 한 번만

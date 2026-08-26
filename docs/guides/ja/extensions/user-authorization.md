@@ -294,7 +294,8 @@ discovery できません。
 
 ```ts
 import { Module } from "@nestjs/common";
-import { ChannelAppModule } from "@channel.io/app-sdk-server";
+import { APP_GUARD } from "@nestjs/core";
+import { ChannelAppModule, SignatureGuard } from "@channel.io/app-sdk-server";
 
 @Module({
   imports: [
@@ -305,10 +306,18 @@ import { ChannelAppModule } from "@channel.io/app-sdk-server";
       autoRegister: true,
     }),
   ],
-  providers: [OrderFunctions, UserAuthorizationExtension],
+  providers: [
+    OrderFunctions,
+    UserAuthorizationExtension,
+    { provide: APP_GUARD, useClass: SignatureGuard },
+  ],
 })
 export class AppModule {}
 ```
+
+NestJS app の bootstrap でも `{ rawBody: true }` を設定してください。AppStore signature の検証には
+guard と raw request body の両方が必要です。`signingKey` を設定するだけでは request verification
+は有効になりません。
 
 開発環境と single instance app では自動登録を使用できます。複数 instance を rolling deployment
 する production 環境では、すべての instance の `getFunctions` と `getConfig` response が同じに

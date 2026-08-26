@@ -292,7 +292,8 @@ provider.
 
 ```ts
 import { Module } from "@nestjs/common";
-import { ChannelAppModule } from "@channel.io/app-sdk-server";
+import { APP_GUARD } from "@nestjs/core";
+import { ChannelAppModule, SignatureGuard } from "@channel.io/app-sdk-server";
 
 @Module({
   imports: [
@@ -303,10 +304,18 @@ import { ChannelAppModule } from "@channel.io/app-sdk-server";
       autoRegister: true,
     }),
   ],
-  providers: [OrderFunctions, UserAuthorizationExtension],
+  providers: [
+    OrderFunctions,
+    UserAuthorizationExtension,
+    { provide: APP_GUARD, useClass: SignatureGuard },
+  ],
 })
 export class AppModule {}
 ```
+
+Also create the NestJS app with `{ rawBody: true }` in its bootstrap. Both the guard and raw request
+body are required to verify the AppStore signature. Setting `signingKey` alone does not activate
+request verification.
 
 Auto-registration is suitable for development and single-instance apps. In a production service
 with multiple instances and a rolling deployment, wait until every instance returns identical
