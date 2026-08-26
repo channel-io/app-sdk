@@ -60,22 +60,22 @@ interface UserChatOpenedHookInput {
   eventId: string;
   channelId: string;
   userChatId: string;
+  state: "opened";
+  previousState: string;
   openKind: "first_open" | "reopen";
   actorKind: "customer" | "manager" | "auto";
-  triggerMessageId: string;
+  triggerMessageId?: string;
   occurredAt: string; // ISO 8601 datetime
-  snapshotRevision: string;
-  snapshot: {
-    user: { id: string; displayName: string | null };
-    message: { id: string; plainText: string | null };
-  };
+  version: number;
 }
 ```
 
-The snapshot is limited to these declared fields and contains no provider-
-specific routing or credentials. Treat `eventId`, the installation identity,
-and the handler revision as the delivery idempotency boundary. A handler result
-uses `hookHandlingResult`; `accepted` and `retrying` are non-terminal, while
+The lifecycle envelope contains no customer or message snapshot. Read current
+UserChat data through an authorized native function only after deciding that the
+event is relevant, and tolerate that current data may have changed since
+`occurredAt`. Treat `eventId`, the installation identity, and the handler
+revision as the delivery idempotency boundary. A handler result uses
+`hookHandlingResult`; `accepted` and `retrying` are non-terminal, while
 `succeeded`, `skipped_reopen`, `skipped_ineligible_actor`, `skipped_disabled`,
 `failed_retry_exhausted`, and `unknown` are terminal.
 

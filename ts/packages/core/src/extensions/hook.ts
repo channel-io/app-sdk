@@ -69,27 +69,13 @@ export const UserChatOpenedHookInputSchema = z
     eventId: UserChatOpenedIdentifierSchema,
     channelId: UserChatOpenedIdentifierSchema,
     userChatId: UserChatOpenedIdentifierSchema,
+    state: z.literal("opened"),
+    previousState: UserChatOpenedIdentifierSchema,
     openKind: UserChatOpenKindSchema,
     actorKind: UserChatOpenedActorKindSchema,
-    triggerMessageId: UserChatOpenedIdentifierSchema,
+    triggerMessageId: UserChatOpenedIdentifierSchema.optional(),
     occurredAt: z.string().datetime({ offset: true }),
-    snapshotRevision: UserChatOpenedIdentifierSchema,
-    snapshot: z
-      .object({
-        user: z
-          .object({
-            id: UserChatOpenedIdentifierSchema,
-            displayName: z.string().nullable(),
-          })
-          .strict(),
-        message: z
-          .object({
-            id: UserChatOpenedIdentifierSchema,
-            plainText: z.string().nullable(),
-          })
-          .strict(),
-      })
-      .strict(),
+    version: z.number().int().nonnegative(),
   })
   .strict();
 

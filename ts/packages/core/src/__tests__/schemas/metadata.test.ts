@@ -102,15 +102,12 @@ describe("hook metadata schema", () => {
     eventId: "event-1",
     channelId: "channel-1",
     userChatId: "user-chat-1",
+    state: "opened",
+    previousState: "initial",
     openKind: "first_open",
     actorKind: "customer",
-    triggerMessageId: "message-1",
     occurredAt: "2026-08-26T05:30:00.000Z",
-    snapshotRevision: "revision-1",
-    snapshot: {
-      user: { id: "user-1", displayName: "External User" },
-      message: { id: "message-1", plainText: "Synthetic hello" },
-    },
+    version: 7,
   } as const;
 
   it("accepts a userChat.opened hook without targetId", () => {
@@ -125,8 +122,14 @@ describe("hook metadata schema", () => {
     });
   });
 
-  it("parses the bounded immutable userChat.opened input", () => {
+  it("parses the immutable userChat.opened input without a trigger message", () => {
     expect(UserChatOpenedHookInputSchema.parse(userChatOpenedInput)).toEqual(userChatOpenedInput);
+  });
+
+  it("parses an optional userChat.opened trigger message ID", () => {
+    const input = { ...userChatOpenedInput, triggerMessageId: "message-1" };
+
+    expect(UserChatOpenedHookInputSchema.parse(input)).toEqual(input);
   });
 
   it("rejects an invalid userChat.opened openKind", () => {
@@ -141,14 +144,32 @@ describe("hook metadata schema", () => {
     expect(() => UserChatOpenedHookInputSchema.parse(inputWithoutEventId)).toThrow();
   });
 
-  it("rejects unbounded user fields from the userChat.opened snapshot", () => {
+  it.each(["snapshot", "snapshotRevision"] as const)(
+    "rejects the obsolete %s field from userChat.opened input",
+    (field) => {
+      const value = field === "snapshot" ? {} : "revision-1";
+
+      expect(() =>
+        UserChatOpenedHookInputSchema.parse({ ...userChatOpenedInput, [field]: value })
+      ).toThrow();
+    }
+  );
+
+  it.each(["state", "previousState", "version"] as const)(
+    "rejects a userChat.opened input without %s",
+    (field) => {
+      const input = { ...userChatOpenedInput } as Record<string, unknown>;
+      delete input[field];
+
+      expect(() => UserChatOpenedHookInputSchema.parse(input)).toThrow();
+    }
+  );
+
+  it("rejects a non-opened lifecycle state", () => {
     expect(() =>
       UserChatOpenedHookInputSchema.parse({
         ...userChatOpenedInput,
-        snapshot: {
-          ...userChatOpenedInput.snapshot,
-          user: { ...userChatOpenedInput.snapshot.user, email: "external@example.com" },
-        },
+        state: "active",
       })
     ).toThrow();
   });

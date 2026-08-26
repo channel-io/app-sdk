@@ -3,4 +3,5 @@
 "@channel.io/app-sdk-server": minor
 ---
 
-Add the `userChat.opened` Hook contract and the one-purpose Manager private-note native call.
+Add the snapshot-free `userChat.opened` lifecycle Hook contract and the one-purpose Manager
+private-note native call.
