@@ -15,7 +15,7 @@ separately, and injects the connected provider access token as `ctx.authToken`.
 
 ## Metadata model
 
-- Return `authType: "oauth"`, `authScope: "channel" | "manager"`, and `oauthProvider`.
+- Return `authType: "oauth"`, `authScope: "channel" | "manager" | "caller"`, and `oauthProvider`.
 - Provider metadata includes a stable provider key, authorization/token URLs, scopes, and a fallback
   provider name. Keep client ID/secret outside this Function.
 - `parameterCase` controls standard OAuth parameter casing; `authorizationOpenMode` chooses popup or
