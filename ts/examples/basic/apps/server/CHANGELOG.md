@@ -1,5 +1,15 @@
 # @basic-example/server
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies [cd0e937]
+- Updated dependencies [4b31e78]
+- Updated dependencies [2794296]
+  - @channel.io/app-sdk-core@0.22.0
+  - @channel.io/app-sdk-server@0.22.0
+
 ## 0.0.12
 
 ### Patch Changes
