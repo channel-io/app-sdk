@@ -1,6 +1,6 @@
 {
   "name": "@channel.io/app-sdk-core",
-  "version": "0.21.1",
+  "version": "0.22.0",
   "description": "Core types and utilities for Channel.io App SDK",
   "type": "module",
   "main": "./dist/index.js",
