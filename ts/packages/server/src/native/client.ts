@@ -18,6 +18,7 @@ import type {
 } from "@channel.io/app-sdk-core";
 import type {
   NativeFunctionClientConfig,
+  NativeFunctionCallOptions,
   NativeFunctionRequest,
   NativeFunctionResponse,
   IssueTokenParams,
@@ -39,6 +40,7 @@ import { sanitizeForLogging } from "../utils/sanitize-for-logging.js";
  * Default AppStore API URL
  */
 const DEFAULT_APPSTORE_URL = "https://app-store.channel.io";
+const CONTENT_SENSITIVE_NATIVE_METHODS = new Set(["writeUserChatPrivateNoteWithManagerCredential"]);
 
 /**
  * HTTP transport client for Channel App platform native functions.
@@ -392,17 +394,20 @@ export class NativeFunctionClient {
   async callNativeFunctionWithToken<TMethod extends NativeFunctionMethod>(
     method: TMethod,
     params: NativeFunctionParams<TMethod>,
-    accessToken: string
+    accessToken: string,
+    options?: NativeFunctionCallOptions
   ): Promise<NativeFunctionResult<TMethod>>;
   async callNativeFunctionWithToken<TParams, TResult>(
     method: string,
     params: TParams,
-    accessToken: string
+    accessToken: string,
+    options?: NativeFunctionCallOptions
   ): Promise<TResult>;
   async callNativeFunctionWithToken<TParams, TResult>(
     method: string,
     params: TParams,
-    accessToken: string
+    accessToken: string,
+    options: NativeFunctionCallOptions = {}
   ): Promise<TResult> {
     const url = `${this.appStoreUrl}/general/v1/native/functions`;
 
@@ -411,7 +416,10 @@ export class NativeFunctionClient {
       params,
     };
 
-    this.log(`Calling native function with token: ${method}`, params);
+    this.log(
+      `Calling native function with token: ${method}`,
+      CONTENT_SENSITIVE_NATIVE_METHODS.has(method) ? undefined : params
+    );
 
     const response = await fetch(url, {
       method: "PUT",
@@ -420,6 +428,7 @@ export class NativeFunctionClient {
         "x-access-token": accessToken,
       },
       body: JSON.stringify(request),
+      ...(options.signal && { signal: options.signal }),
     });
 
     return this.handleResponse<TResult>(response, method);
@@ -490,7 +499,10 @@ export class NativeFunctionClient {
       );
     }
 
-    this.log(`${method} response`, jsonResponse.result);
+    this.log(
+      `${method} response`,
+      CONTENT_SENSITIVE_NATIVE_METHODS.has(method) ? undefined : jsonResponse.result
+    );
 
     return jsonResponse.result as TResult;
   }
