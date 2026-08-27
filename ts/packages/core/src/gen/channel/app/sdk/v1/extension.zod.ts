@@ -1857,7 +1857,7 @@ export const HookUserChatOpenedInputProtoSchema = z.object({
   actorKind: z.string().optional(),
   triggerMessageId: z.string().optional(),
   occurredAt: z.string().optional(),
-  version: z.number().int().optional(),
+  version: z.string().optional(),
 }) satisfies z.ZodType<pb.HookUserChatOpenedInput>;
 export type HookUserChatOpenedInputProto = z.infer<typeof HookUserChatOpenedInputProtoSchema>;
 

@@ -66,7 +66,7 @@ interface UserChatOpenedHookInput {
   actorKind: "customer" | "manager" | "auto";
   triggerMessageId?: string;
   occurredAt: string; // ISO 8601 datetime
-  version: number;
+  version: string; // canonical non-negative signed-int64 decimal
 }
 ```
 
@@ -169,7 +169,7 @@ Hooks register through:
 
 AppStore currently backs this with app-level install, command toggle, config
 lifecycle, widget installation, OAuth connection lifecycle, and app- or
-manager-scoped public webhook registrations.
+manager-scoped public webhook registrations, plus the UserChat open lifecycle.
 
 ## Good Fit
 

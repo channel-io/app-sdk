@@ -1777,7 +1777,7 @@ export interface HookUserChatOpenedInput {
   actorKind?: string | undefined;
   triggerMessageId?: string | undefined;
   occurredAt?: string | undefined;
-  version?: number | undefined;
+  version?: string | undefined;
 }
 
 export interface HookUserChatOpenedResult {

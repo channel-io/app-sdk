@@ -426,7 +426,7 @@ describe("NativeFunctionClient", () => {
       const expected = { message: { id: "message-private-1" } };
       mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: expected }));
 
-      const result = await client.writeUserChatPrivateNoteByManager(
+      const result = await client.writeUserChatPrivateNoteWithManagerCredential(
         {
           channelId: "ch-1",
           userChatId: "user-chat-1",
@@ -442,7 +442,7 @@ describe("NativeFunctionClient", () => {
 
       const body = parseFetchBody(mockFetch);
       expect(body).toEqual({
-        method: "writeUserChatPrivateNoteByManager",
+        method: "writeUserChatPrivateNoteWithManagerCredential",
         params: {
           channelId: "ch-1",
           userChatId: "user-chat-1",

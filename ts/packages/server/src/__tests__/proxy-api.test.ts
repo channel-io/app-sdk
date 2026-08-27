@@ -8,8 +8,8 @@ import type {
   WriteUserChatMessageAsManagerRequest,
   WriteUserChatMessageAsUserRequest,
   WriteDirectChatMessageAsManagerRequest,
-  WriteUserChatPrivateNoteByManagerRequest,
-  WriteUserChatPrivateNoteByManagerResult,
+  WriteUserChatPrivateNoteWithManagerCredentialRequest,
+  WriteUserChatPrivateNoteWithManagerCredentialResult,
   PatchMessageRequest,
   GetManagerRequest,
   BatchGetManagersRequest,
@@ -57,14 +57,14 @@ describe("ProxyApi", () => {
 
   describe("Message API", () => {
     it("exports the narrow Manager private-note request and result aliases", () => {
-      expectTypeOf<WriteUserChatPrivateNoteByManagerRequest>().toMatchTypeOf<{
+      expectTypeOf<WriteUserChatPrivateNoteWithManagerCredentialRequest>().toMatchTypeOf<{
         channelId: string;
         userChatId: string;
         requestId: string;
         lifecycleRevision: number;
         dto: { blocks?: readonly object[]; plainText?: string; customPayload?: object };
       }>();
-      expectTypeOf<WriteUserChatPrivateNoteByManagerResult>().toMatchTypeOf<{
+      expectTypeOf<WriteUserChatPrivateNoteWithManagerCredentialResult>().toMatchTypeOf<{
         message: object;
       }>();
     });

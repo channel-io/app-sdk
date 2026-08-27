@@ -13,8 +13,8 @@ import type {
   NativeListActiveOAuthManagerTargetsParams,
   NativeListActiveOAuthManagerTargetsResult,
   NativeWritePrivateNoteDto,
-  NativeWriteUserChatPrivateNoteByManagerParams,
-  NativeWriteUserChatPrivateNoteByManagerResult,
+  NativeWriteUserChatPrivateNoteWithManagerCredentialParams,
+  NativeWriteUserChatPrivateNoteWithManagerCredentialResult,
 } from "../../types/native.js";
 
 describe("native function schemas", () => {
@@ -131,11 +131,11 @@ describe("native function schemas", () => {
   });
 
   it("maps the Manager private-note method to its narrow credential-bound types", () => {
-    type Params = NativeFunctionParams<"writeUserChatPrivateNoteByManager">;
-    type Result = NativeFunctionResult<"writeUserChatPrivateNoteByManager">;
+    type Params = NativeFunctionParams<"writeUserChatPrivateNoteWithManagerCredential">;
+    type Result = NativeFunctionResult<"writeUserChatPrivateNoteWithManagerCredential">;
 
-    expectTypeOf<Params>().toEqualTypeOf<NativeWriteUserChatPrivateNoteByManagerParams>();
-    expectTypeOf<Result>().toEqualTypeOf<NativeWriteUserChatPrivateNoteByManagerResult>();
+    expectTypeOf<Params>().toEqualTypeOf<NativeWriteUserChatPrivateNoteWithManagerCredentialParams>();
+    expectTypeOf<Result>().toEqualTypeOf<NativeWriteUserChatPrivateNoteWithManagerCredentialResult>();
     expectTypeOf<keyof Params>().toEqualTypeOf<
       "channelId" | "userChatId" | "requestId" | "lifecycleRevision" | "dto"
     >();

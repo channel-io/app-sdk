@@ -15889,7 +15889,7 @@ type HookUserChatOpenedInput struct {
 	ActorKind        string                 `protobuf:"bytes,7,opt,name=actor_kind,json=actorKind,proto3" json:"actor_kind,omitempty"`
 	TriggerMessageId *string                `protobuf:"bytes,8,opt,name=trigger_message_id,json=triggerMessageId,proto3,oneof" json:"trigger_message_id,omitempty"`
 	OccurredAt       string                 `protobuf:"bytes,9,opt,name=occurred_at,json=occurredAt,proto3" json:"occurred_at,omitempty"`
-	Version          uint32                 `protobuf:"varint,10,opt,name=version,proto3" json:"version,omitempty"`
+	Version          int64                  `protobuf:"varint,10,opt,name=version,proto3" json:"version,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -15987,7 +15987,7 @@ func (x *HookUserChatOpenedInput) GetOccurredAt() string {
 	return ""
 }
 
-func (x *HookUserChatOpenedInput) GetVersion() uint32 {
+func (x *HookUserChatOpenedInput) GetVersion() int64 {
 	if x != nil {
 		return x.Version
 	}
@@ -17508,7 +17508,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\voccurred_at\x18\t \x01(\tR\n" +
 	"occurredAt\x12\x18\n" +
 	"\aversion\x18\n" +
-	" \x01(\rR\aversionB\x15\n" +
+	" \x01(\x03R\aversionB\x15\n" +
 	"\x13_trigger_message_id\"h\n" +
 	"\x18HookUserChatOpenedResult\x120\n" +
 	"\x14hook_handling_result\x18\x01 \x01(\tR\x12hookHandlingResult\x12\x1a\n" +

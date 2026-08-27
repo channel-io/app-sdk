@@ -13,8 +13,8 @@ import type {
   NativeListActiveOAuthManagerTargetsResult,
   NativeUpsertAppDataTableRowsParams,
   NativeUpsertAppDataTableRowsResult,
-  NativeWriteUserChatPrivateNoteByManagerParams,
-  NativeWriteUserChatPrivateNoteByManagerResult,
+  NativeWriteUserChatPrivateNoteWithManagerCredentialParams,
+  NativeWriteUserChatPrivateNoteWithManagerCredentialResult,
 } from "@channel.io/app-sdk-core";
 import type {
   NativeFunctionClientConfig,
@@ -303,12 +303,12 @@ export class NativeFunctionClient {
    * revision. It is passed as the native bearer token and must not be replaced with an
    * app- or Channel-scoped access token.
    */
-  writeUserChatPrivateNoteByManager(
-    params: NativeWriteUserChatPrivateNoteByManagerParams,
+  writeUserChatPrivateNoteWithManagerCredential(
+    params: NativeWriteUserChatPrivateNoteWithManagerCredentialParams,
     managerCredential: string
-  ): Promise<NativeWriteUserChatPrivateNoteByManagerResult> {
+  ): Promise<NativeWriteUserChatPrivateNoteWithManagerCredentialResult> {
     return this.callNativeFunctionWithToken(
-      "writeUserChatPrivateNoteByManager",
+      "writeUserChatPrivateNoteWithManagerCredential",
       params,
       managerCredential
     );

@@ -1639,7 +1639,7 @@ message HookUserChatOpenedInput {
   string actor_kind = 7;
   optional string trigger_message_id = 8;
   string occurred_at = 9;
-  uint32 version = 10;
+  int64 version = 10;
 }
 
 message HookUserChatOpenedResult {

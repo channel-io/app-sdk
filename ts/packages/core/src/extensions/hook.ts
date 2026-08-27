@@ -71,6 +71,11 @@ export type UserChatOpenedActorKind = ProtoBacked<
 >;
 
 const UserChatOpenedIdentifierSchema = z.string().min(1).max(255);
+const MAX_SIGNED_INT64 = 9_223_372_036_854_775_807n;
+const UserChatOpenedVersionSchema = z
+  .string()
+  .regex(/^(0|[1-9]\d*)$/)
+  .refine((value) => BigInt(value) <= MAX_SIGNED_INT64, "version exceeds signed int64");
 
 export const UserChatOpenedHookInputSchema = z
   .object({
@@ -83,7 +88,7 @@ export const UserChatOpenedHookInputSchema = z
     actorKind: UserChatOpenedActorKindSchema,
     triggerMessageId: UserChatOpenedIdentifierSchema.optional(),
     occurredAt: z.string().datetime({ offset: true }),
-    version: z.number().int().nonnegative(),
+    version: UserChatOpenedVersionSchema,
   })
   .strict();
 

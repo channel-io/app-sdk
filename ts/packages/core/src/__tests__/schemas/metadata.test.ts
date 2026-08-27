@@ -107,7 +107,7 @@ describe("hook metadata schema", () => {
     openKind: "first_open",
     actorKind: "customer",
     occurredAt: "2026-08-26T05:30:00.000Z",
-    version: 7,
+    version: "9223372036854775807",
   } as const;
 
   it("accepts a userChat.opened hook without targetId", () => {
@@ -173,6 +173,18 @@ describe("hook metadata schema", () => {
       })
     ).toThrow();
   });
+
+  it.each([7, "01", "9223372036854775808"])(
+    "rejects the non-canonical userChat.opened version %s",
+    (version) => {
+      expect(() =>
+        UserChatOpenedHookInputSchema.parse({
+          ...userChatOpenedInput,
+          version,
+        })
+      ).toThrow();
+    }
+  );
 
   it.each([
     ["accepted", false],
