@@ -956,7 +956,15 @@ export interface DataSourceTable {
   description?: string | undefined;
   estimatedRowCount?: number | undefined;
   updatedAt?: number | undefined;
-  tableType?: string | undefined;
+  tableType?:
+    | string
+    | undefined;
+  /**
+   * Deprecated: Use permissions instead. Retained for backward compatibility when permissions
+   * is not declared.
+   *
+   * @deprecated
+   */
   managerAccess?: string | undefined;
   permissions?: DataSourceManagerPermission[] | undefined;
 }

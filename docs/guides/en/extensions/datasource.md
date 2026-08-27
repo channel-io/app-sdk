@@ -19,9 +19,10 @@ limits separate from `/functions`.
 
 - Use `ListCatalogsInput/Output`, `ListTablesInput/Output`, and `DescribeTableInput/Output` with
   camelCase JSON fields. Catalog aliases and table names remain stable identifiers.
-- `managerAccess: "owner"` limits discovery/query authorization to channel owners; `"all"` or an
-  omitted value allows all channel managers. Keep the same or stricter rule in the local query
-  allowlist.
+- Declare `permissions` on each table with the accepted manager permission `action`/`scope` pairs.
+  Owners are always allowed; other managers are allowed when any declared pair matches. The
+  deprecated `managerAccess` field remains a compatibility fallback only when `permissions` is not
+  declared. Keep the same or stricter rule in the local query allowlist.
 - Description samples are optional and bounded to 10 rows and 64 KiB with keys matching declared
   columns.
 - The gRPC handler receives a verified access-token identity. When one endpoint serves several apps,
