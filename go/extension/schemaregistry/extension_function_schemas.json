@@ -16356,6 +16356,27 @@
                     "all",
                     "owner"
                   ]
+                },
+                "permissions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "scope": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "scope"
+                    ],
+                    "additionalProperties": false
+                  }
                 }
               },
               "required": [
@@ -16550,6 +16571,27 @@
                       "all",
                       "owner"
                     ]
+                  },
+                  "permissions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "action": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "scope": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "action",
+                        "scope"
+                      ],
+                      "additionalProperties": false
+                    }
                   }
                 },
                 "required": [

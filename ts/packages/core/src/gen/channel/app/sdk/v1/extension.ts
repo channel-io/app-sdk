@@ -958,6 +958,7 @@ export interface DataSourceTable {
   updatedAt?: number | undefined;
   tableType?: string | undefined;
   managerAccess?: string | undefined;
+  permissions?: DataSourceManagerPermission[] | undefined;
 }
 
 export interface DataSourceColumn {
@@ -1764,4 +1765,9 @@ export interface DataSourceAuthorizeQueryOutput {
 export interface ConfigOAuthClientCredentials {
   clientIdFieldKey?: string | undefined;
   clientSecretFieldKey?: string | undefined;
+}
+
+export interface DataSourceManagerPermission {
+  action?: string | undefined;
+  scope?: string | undefined;
 }

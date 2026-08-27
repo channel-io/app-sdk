@@ -939,6 +939,7 @@ export const DataSourceTableProtoSchema = z.object({
   updatedAt: z.number().optional(),
   tableType: z.string().optional(),
   managerAccess: z.string().optional(),
+  permissions: z.array(z.lazy(() => DataSourceManagerPermissionProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.DataSourceTable>;
 export type DataSourceTableProto = z.infer<typeof DataSourceTableProtoSchema>;
 
@@ -1845,3 +1846,9 @@ export const ConfigOAuthClientCredentialsProtoSchema = z.object({
   clientSecretFieldKey: z.string().optional(),
 }) satisfies z.ZodType<pb.ConfigOAuthClientCredentials>;
 export type ConfigOAuthClientCredentialsProto = z.infer<typeof ConfigOAuthClientCredentialsProtoSchema>;
+
+export const DataSourceManagerPermissionProtoSchema = z.object({
+  action: z.string().optional(),
+  scope: z.string().optional(),
+}) satisfies z.ZodType<pb.DataSourceManagerPermission>;
+export type DataSourceManagerPermissionProto = z.infer<typeof DataSourceManagerPermissionProtoSchema>;

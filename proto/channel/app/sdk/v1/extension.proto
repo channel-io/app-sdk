@@ -834,6 +834,7 @@ message DataSourceTable {
   optional double updated_at = 5;
   optional string table_type = 6;
   string manager_access = 7;
+  repeated DataSourceManagerPermission permissions = 8;
 }
 
 message DataSourceColumn {
@@ -1626,4 +1627,9 @@ message DataSourceAuthorizeQueryOutput {
 message ConfigOAuthClientCredentials {
   string client_id_field_key = 1;
   string client_secret_field_key = 2;
+}
+
+message DataSourceManagerPermission {
+  string action = 1;
+  string scope = 2;
 }

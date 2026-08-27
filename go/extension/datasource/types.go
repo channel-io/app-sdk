@@ -26,12 +26,14 @@ type Column = sdkv1.DataSourceColumn
 type TableDefinition = sdkv1.DataSourceTableDefinition
 type TableListing = sdkv1.DataSourceTableListing
 type SearchedTable = sdkv1.DataSourceTableListing
+type ManagerPermission = sdkv1.DataSourceManagerPermission
 
 type ProtoCatalog = sdkv1.DataSourceCatalog
 type ProtoTable = sdkv1.DataSourceTable
 type ProtoColumn = sdkv1.DataSourceColumn
 type ProtoTableDefinition = sdkv1.DataSourceTableDefinition
 type ProtoTableListing = sdkv1.DataSourceTableListing
+type ProtoManagerPermission = sdkv1.DataSourceManagerPermission
 type ProtoListCatalogsInput = sdkv1.DataSourceListCatalogsInput
 type ProtoListCatalogsOutput = sdkv1.DataSourceListCatalogsOutput
 type ProtoListTablesInput = sdkv1.DataSourceListTablesInput
