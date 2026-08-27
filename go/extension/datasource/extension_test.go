@@ -100,7 +100,7 @@ func TestStaticMetadataListsAndDescribesTables(t *testing.T) {
 		"tableType": "table",
 		"managerAccess": "owner",
 		"permissions": [
-			{"action": "financeUpdate", "scope": "none"},
+			{"action": "userChatRead", "scope": "all"},
 			{"action": "futureProtoAction", "scope": "futureProtoScope"}
 		]
 	}`), ordersTable); err != nil {
@@ -147,7 +147,7 @@ func TestStaticMetadataListsAndDescribesTables(t *testing.T) {
 	}
 	permissions := listOut.Tables[0].GetTable().GetPermissions()
 	if len(permissions) != 2 ||
-		permissions[0].GetAction() != "financeUpdate" || permissions[0].GetScope() != "none" ||
+		permissions[0].GetAction() != "userChatRead" || permissions[0].GetScope() != "all" ||
 		permissions[1].GetAction() != "futureProtoAction" || permissions[1].GetScope() != "futureProtoScope" {
 		t.Fatalf("unexpected permissions: %v", permissions)
 	}

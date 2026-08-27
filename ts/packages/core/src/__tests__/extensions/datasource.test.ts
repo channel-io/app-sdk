@@ -29,7 +29,7 @@ const tableDefinition = {
     tableType: "table" as const,
     managerAccess: "owner" as const,
     permissions: [
-      { action: "financeUpdate", scope: "none" },
+      { action: "userChatRead", scope: "all" },
       { action: "futureProtoAction", scope: "futureProtoScope" },
     ],
   },
@@ -61,7 +61,7 @@ describe("datasource extension schemas", () => {
     expect(protoDescribed.definition?.primaryKey).toEqual(["channel_id", "order_id"]);
     expect(protoDescribed.definition?.table?.managerAccess).toBe("owner");
     expect(protoDescribed.definition?.table?.permissions).toEqual([
-      { action: "financeUpdate", scope: "none" },
+      { action: "userChatRead", scope: "all" },
       { action: "futureProtoAction", scope: "futureProtoScope" },
     ]);
   });
