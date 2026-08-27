@@ -6,6 +6,8 @@ import {
   GetCustomTabsOutputSchema,
   HookConfigSchema,
   GetHooksOutputSchema,
+  UserChatOpenedHookInputSchema,
+  UserChatOpenedHookResultSchema,
   PollingPollerSchema,
   GetPollersOutputSchema,
   GetPollingTargetChannelsInputSchema,
@@ -96,6 +98,119 @@ describe("custom tab metadata schema", () => {
 });
 
 describe("hook metadata schema", () => {
+  const userChatOpenedInput = {
+    eventId: "event-1",
+    channelId: "channel-1",
+    userChatId: "user-chat-1",
+    state: "opened",
+    previousState: "initial",
+    openKind: "first_open",
+    actorKind: "customer",
+    occurredAt: "2026-08-26T05:30:00.000Z",
+    version: "9223372036854775807",
+  } as const;
+
+  it("accepts a userChat.opened hook without targetId", () => {
+    expect(
+      HookConfigSchema.parse({
+        type: "userChat.opened",
+        actionFunctionName: "slack.userChatOpened.handle",
+      })
+    ).toEqual({
+      type: "userChat.opened",
+      actionFunctionName: "slack.userChatOpened.handle",
+    });
+  });
+
+  it("parses the immutable userChat.opened input without a trigger message", () => {
+    expect(UserChatOpenedHookInputSchema.parse(userChatOpenedInput)).toEqual(userChatOpenedInput);
+  });
+
+  it("parses an optional userChat.opened trigger message ID", () => {
+    const input = { ...userChatOpenedInput, triggerMessageId: "message-1" };
+
+    expect(UserChatOpenedHookInputSchema.parse(input)).toEqual(input);
+  });
+
+  it("rejects an invalid userChat.opened openKind", () => {
+    expect(() =>
+      UserChatOpenedHookInputSchema.parse({ ...userChatOpenedInput, openKind: "created" })
+    ).toThrow();
+  });
+
+  it("rejects a userChat.opened input without eventId", () => {
+    const { eventId: _eventId, ...inputWithoutEventId } = userChatOpenedInput;
+
+    expect(() => UserChatOpenedHookInputSchema.parse(inputWithoutEventId)).toThrow();
+  });
+
+  it.each(["snapshot", "snapshotRevision"] as const)(
+    "rejects the obsolete %s field from userChat.opened input",
+    (field) => {
+      const value = field === "snapshot" ? {} : "revision-1";
+
+      expect(() =>
+        UserChatOpenedHookInputSchema.parse({ ...userChatOpenedInput, [field]: value })
+      ).toThrow();
+    }
+  );
+
+  it.each(["state", "previousState", "version"] as const)(
+    "rejects a userChat.opened input without %s",
+    (field) => {
+      const input = { ...userChatOpenedInput } as Record<string, unknown>;
+      delete input[field];
+
+      expect(() => UserChatOpenedHookInputSchema.parse(input)).toThrow();
+    }
+  );
+
+  it("rejects a non-opened lifecycle state", () => {
+    expect(() =>
+      UserChatOpenedHookInputSchema.parse({
+        ...userChatOpenedInput,
+        state: "active",
+      })
+    ).toThrow();
+  });
+
+  it.each([7, "01", "9223372036854775808"])(
+    "rejects the non-canonical userChat.opened version %s",
+    (version) => {
+      expect(() =>
+        UserChatOpenedHookInputSchema.parse({
+          ...userChatOpenedInput,
+          version,
+        })
+      ).toThrow();
+    }
+  );
+
+  it.each([
+    ["accepted", false],
+    ["retrying", false],
+    ["succeeded", true],
+    ["skipped_reopen", true],
+    ["skipped_ineligible_actor", true],
+    ["skipped_disabled", true],
+    ["failed_retry_exhausted", true],
+    ["unknown", true],
+  ] as const)("accepts %s with terminal=%s", (hookHandlingResult, terminal) => {
+    expect(UserChatOpenedHookResultSchema.parse({ hookHandlingResult, terminal })).toEqual({
+      hookHandlingResult,
+      terminal,
+    });
+  });
+
+  it("rejects a mismatched userChat.opened terminal state", () => {
+    expect(() =>
+      UserChatOpenedHookResultSchema.parse({
+        hookHandlingResult: "accepted",
+        terminal: true,
+      })
+    ).toThrow();
+  });
+
   it.each(["oauth.connected", "oauth.disconnected"] as const)(
     "accepts %s hooks without targetId",
     (type) => {

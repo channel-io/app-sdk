@@ -1847,6 +1847,26 @@ export const ConfigOAuthClientCredentialsProtoSchema = z.object({
 }) satisfies z.ZodType<pb.ConfigOAuthClientCredentials>;
 export type ConfigOAuthClientCredentialsProto = z.infer<typeof ConfigOAuthClientCredentialsProtoSchema>;
 
+export const HookUserChatOpenedInputProtoSchema = z.object({
+  eventId: z.string().optional(),
+  channelId: z.string().optional(),
+  userChatId: z.string().optional(),
+  state: z.string().optional(),
+  previousState: z.string().optional(),
+  openKind: z.string().optional(),
+  actorKind: z.string().optional(),
+  triggerMessageId: z.string().optional(),
+  occurredAt: z.string().optional(),
+  version: z.string().optional(),
+}) satisfies z.ZodType<pb.HookUserChatOpenedInput>;
+export type HookUserChatOpenedInputProto = z.infer<typeof HookUserChatOpenedInputProtoSchema>;
+
+export const HookUserChatOpenedResultProtoSchema = z.object({
+  hookHandlingResult: z.string().optional(),
+  terminal: z.boolean().optional(),
+}) satisfies z.ZodType<pb.HookUserChatOpenedResult>;
+export type HookUserChatOpenedResultProto = z.infer<typeof HookUserChatOpenedResultProtoSchema>;
+
 export const DataSourceManagerPermissionProtoSchema = z.object({
   action: z.string().optional(),
   scope: z.string().optional(),

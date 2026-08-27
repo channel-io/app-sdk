@@ -2,6 +2,8 @@ import { z } from "zod";
 import type {
   HookConfig as ProtoHookConfig,
   HookGetHooksOutput as ProtoGetHooksOutput,
+  HookUserChatOpenedInput as ProtoUserChatOpenedHookInput,
+  HookUserChatOpenedResult as ProtoUserChatOpenedHookResult,
   HookWebhookConfig as ProtoWebhookConfig,
 } from "../gen/channel/app/sdk/v1/extension.js";
 
@@ -21,6 +23,7 @@ export const HookTypeSchema = z.enum([
   "webhook.received",
   "oauth.connected",
   "oauth.disconnected",
+  "userChat.opened",
 ]);
 
 export type HookType = z.infer<typeof HookTypeSchema>;
@@ -52,6 +55,75 @@ const WebhookEndpointTokenSchema = z
   .regex(/^[A-Za-z0-9_-]+$/);
 
 export const WebhookExecutionScopeSchema = z.enum(["app", "manager"]);
+
+export const UserChatOpenKindSchema = z.enum(["first_open", "reopen"]);
+
+export type UserChatOpenKind = ProtoBacked<
+  z.infer<typeof UserChatOpenKindSchema>,
+  ProtoUserChatOpenedHookInput["openKind"]
+>;
+
+export const UserChatOpenedActorKindSchema = z.enum(["customer", "manager", "auto"]);
+
+export type UserChatOpenedActorKind = ProtoBacked<
+  z.infer<typeof UserChatOpenedActorKindSchema>,
+  ProtoUserChatOpenedHookInput["actorKind"]
+>;
+
+const UserChatOpenedIdentifierSchema = z.string().min(1).max(255);
+const MAX_SIGNED_INT64 = 9_223_372_036_854_775_807n;
+const UserChatOpenedVersionSchema = z
+  .string()
+  .regex(/^(0|[1-9]\d*)$/)
+  .refine((value) => BigInt(value) <= MAX_SIGNED_INT64, "version exceeds signed int64");
+
+export const UserChatOpenedHookInputSchema = z
+  .object({
+    eventId: UserChatOpenedIdentifierSchema,
+    channelId: UserChatOpenedIdentifierSchema,
+    userChatId: UserChatOpenedIdentifierSchema,
+    state: z.literal("opened"),
+    previousState: UserChatOpenedIdentifierSchema,
+    openKind: UserChatOpenKindSchema,
+    actorKind: UserChatOpenedActorKindSchema,
+    triggerMessageId: UserChatOpenedIdentifierSchema.optional(),
+    occurredAt: z.string().datetime({ offset: true }),
+    version: UserChatOpenedVersionSchema,
+  })
+  .strict();
+
+export type UserChatOpenedHookInput = ProtoBacked<
+  z.infer<typeof UserChatOpenedHookInputSchema>,
+  ProtoUserChatOpenedHookInput
+>;
+
+export const UserChatOpenedHookResultSchema = z.discriminatedUnion("hookHandlingResult", [
+  z.object({ hookHandlingResult: z.literal("accepted"), terminal: z.literal(false) }).strict(),
+  z.object({ hookHandlingResult: z.literal("retrying"), terminal: z.literal(false) }).strict(),
+  z.object({ hookHandlingResult: z.literal("succeeded"), terminal: z.literal(true) }).strict(),
+  z.object({ hookHandlingResult: z.literal("skipped_reopen"), terminal: z.literal(true) }).strict(),
+  z
+    .object({
+      hookHandlingResult: z.literal("skipped_ineligible_actor"),
+      terminal: z.literal(true),
+    })
+    .strict(),
+  z
+    .object({ hookHandlingResult: z.literal("skipped_disabled"), terminal: z.literal(true) })
+    .strict(),
+  z
+    .object({
+      hookHandlingResult: z.literal("failed_retry_exhausted"),
+      terminal: z.literal(true),
+    })
+    .strict(),
+  z.object({ hookHandlingResult: z.literal("unknown"), terminal: z.literal(true) }).strict(),
+]);
+
+export type UserChatOpenedHookResult = ProtoBacked<
+  z.infer<typeof UserChatOpenedHookResultSchema>,
+  ProtoUserChatOpenedHookResult
+>;
 
 const AppWebhookConfigSchema = z
   .object({
@@ -117,6 +189,9 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.disconnected"),
+  }).strict(),
+  BaseHookConfigSchema.extend({
+    type: z.literal("userChat.opened"),
   }).strict(),
 ]);
 

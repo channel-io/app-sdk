@@ -15,6 +15,12 @@ export interface NativeFunctionClientConfig {
   debug?: boolean | undefined;
 }
 
+/** Per-call transport controls for a native function invocation. */
+export interface NativeFunctionCallOptions {
+  /** Cancels the underlying HTTP request when aborted. */
+  signal?: AbortSignal | undefined;
+}
+
 import type { Context } from "@channel.io/app-sdk-core";
 
 /**

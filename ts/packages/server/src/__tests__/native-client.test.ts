@@ -421,6 +421,86 @@ describe("NativeFunctionClient", () => {
       });
       expect(result).toEqual(expected);
     });
+
+    it("should call the Manager private-note method with its one-purpose credential", async () => {
+      const expected = { message: { id: "message-private-1" } };
+      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: expected }));
+
+      const result = await client.writeUserChatPrivateNoteWithManagerCredential(
+        {
+          channelId: "ch-1",
+          userChatId: "user-chat-1",
+          requestId: "request-1",
+          lifecycleRevision: 7,
+          dto: {
+            plainText: "private note",
+            customPayload: { source: "synthetic-slack-reply" },
+          },
+        },
+        "manager-private-note-credential"
+      );
+
+      const body = parseFetchBody(mockFetch);
+      expect(body).toEqual({
+        method: "writeUserChatPrivateNoteWithManagerCredential",
+        params: {
+          channelId: "ch-1",
+          userChatId: "user-chat-1",
+          requestId: "request-1",
+          lifecycleRevision: 7,
+          dto: {
+            plainText: "private note",
+            customPayload: { source: "synthetic-slack-reply" },
+          },
+        },
+      });
+      const init = getFetchInit(mockFetch);
+      expect((init.headers as Record<string, string>)["x-access-token"]).toBe(
+        "manager-private-note-credential"
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it("should forward an abort signal to authenticated native reads", async () => {
+      const controller = new AbortController();
+      mockFetch.mockResolvedValueOnce(
+        mockFetchResponse({ result: { userChat: { id: "user-chat-1", channelId: "ch-1" } } })
+      );
+
+      await client.callNativeFunctionWithToken(
+        "getUserChat",
+        { channelId: "ch-1", userChatId: "user-chat-1" },
+        "test-token",
+        { signal: controller.signal }
+      );
+
+      expect(getFetchInit(mockFetch).signal).toBe(controller.signal);
+    });
+
+    it("should not debug-log Manager private-note request or response content", async () => {
+      const debugClient = createDebugClient();
+      const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => undefined);
+      mockFetch.mockResolvedValueOnce(
+        mockFetchResponse({
+          result: { message: { id: "message-private-1", plainText: "core-private-response" } },
+        })
+      );
+
+      await debugClient.writeUserChatPrivateNoteWithManagerCredential(
+        {
+          channelId: "ch-1",
+          userChatId: "user-chat-1",
+          requestId: "request-1",
+          lifecycleRevision: 7,
+          dto: { plainText: "slack-private-request" },
+        },
+        "manager-private-note-credential"
+      );
+
+      const debugOutput = JSON.stringify(debugSpy.mock.calls);
+      expect(debugOutput).not.toContain("slack-private-request");
+      expect(debugOutput).not.toContain("core-private-response");
+    });
   });
 
   // ============================================

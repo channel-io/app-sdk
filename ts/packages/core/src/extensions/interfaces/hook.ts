@@ -1,4 +1,5 @@
 import type { GetHooksOutput } from "../hook.js";
+export type { UserChatOpenedHookInput, UserChatOpenedHookResult } from "../hook.js";
 import type { Context } from "../../types/context.js";
 import type { HookGetHooksInput as ProtoGetHooksInput } from "../../gen/channel/app/sdk/v1/extension.js";
 

@@ -84,6 +84,8 @@ import {
   GetWmsSupportedCommercesInputSchema,
   GetWmsSupportedCommercesOutputSchema,
   HookConfigSchema,
+  UserChatOpenedHookInputSchema,
+  UserChatOpenedHookResultSchema,
   InboxGetCustomEditorWamInputSchema,
   InboxGetMediumMessageErrorReasonInputSchema,
   InboxGetMediumMessageErrorReasonOutputSchema,
@@ -372,6 +374,18 @@ const contracts: Contract[] = [
   contract("WebhookConfig", WebhookConfigSchema, "extension", "HookWebhookConfig"),
   contract("HookConfig", HookConfigSchema, "extension", "HookConfig"),
   contract("GetHooksOutput", GetHooksOutputSchema, "extension", "HookGetHooksOutput"),
+  contract(
+    "UserChatOpenedHookInput",
+    UserChatOpenedHookInputSchema,
+    "extension",
+    "HookUserChatOpenedInput"
+  ),
+  contract(
+    "UserChatOpenedHookResult",
+    UserChatOpenedHookResultSchema,
+    "extension",
+    "HookUserChatOpenedResult"
+  ),
 
   contract("PollingPoller", PollingPollerSchema, "extension", "PollingPoller"),
   contract("GetPollersOutput", GetPollersOutputSchema, "extension", "PollingGetPollersOutput"),
