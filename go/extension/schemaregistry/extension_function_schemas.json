@@ -2911,15 +2911,15 @@
               {
                 "type": "object",
                 "properties": {
-                  "hidden": {
-                    "type": "boolean"
-                  },
                   "id": {
                     "type": "string"
                   },
                   "type": {
                     "type": "string",
                     "const": "section"
+                  },
+                  "hidden": {
+                    "type": "boolean"
                   },
                   "title": {
                     "type": "string"
@@ -3065,15 +3065,15 @@
               {
                 "type": "object",
                 "properties": {
-                  "hidden": {
-                    "type": "boolean"
-                  },
                   "id": {
                     "type": "string"
                   },
                   "type": {
                     "type": "string",
                     "const": "description"
+                  },
+                  "hidden": {
+                    "type": "boolean"
                   },
                   "text": {
                     "type": "string"
@@ -3319,15 +3319,15 @@
               {
                 "type": "object",
                 "properties": {
-                  "hidden": {
-                    "type": "boolean"
-                  },
                   "id": {
                     "type": "string"
                   },
                   "type": {
                     "type": "string",
                     "const": "divider"
+                  },
+                  "hidden": {
+                    "type": "boolean"
                   },
                   "visibleWhen": {
                     "type": "array",
@@ -3366,15 +3366,15 @@
               {
                 "type": "object",
                 "properties": {
-                  "hidden": {
-                    "type": "boolean"
-                  },
                   "id": {
                     "type": "string"
                   },
                   "type": {
                     "type": "string",
                     "const": "banner"
+                  },
+                  "hidden": {
+                    "type": "boolean"
                   },
                   "tone": {
                     "type": "string",
@@ -3520,15 +3520,15 @@
               {
                 "type": "object",
                 "properties": {
-                  "hidden": {
-                    "type": "boolean"
-                  },
                   "id": {
                     "type": "string"
                   },
                   "type": {
                     "type": "string",
                     "const": "group"
+                  },
+                  "hidden": {
+                    "type": "boolean"
                   },
                   "title": {
                     "type": "string"
@@ -9474,15 +9474,15 @@
               {
                 "type": "object",
                 "properties": {
-                  "hidden": {
-                    "type": "boolean"
-                  },
                   "id": {
                     "type": "string"
                   },
                   "type": {
                     "type": "string",
                     "const": "native"
+                  },
+                  "hidden": {
+                    "type": "boolean"
                   },
                   "renderer": {
                     "type": "string"
@@ -9501,15 +9501,15 @@
               {
                 "type": "object",
                 "properties": {
-                  "hidden": {
-                    "type": "boolean"
-                  },
                   "id": {
                     "type": "string"
                   },
                   "type": {
                     "type": "string",
                     "const": "action"
+                  },
+                  "hidden": {
+                    "type": "boolean"
                   },
                   "label": {
                     "type": "string"

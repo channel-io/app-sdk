@@ -400,13 +400,10 @@ const ConfigFieldSchemas = [
 export const ConfigFieldSchema = z.discriminatedUnion("type", ConfigFieldSchemas);
 export type ConfigField = ProtoBacked<z.infer<typeof ConfigFieldSchema>, ProtoConfigField>;
 
-const BaseConfigBlockSchema = z.object({
-  hidden: z.boolean().optional(),
-});
-
-const ConfigSectionBlockSchema = BaseConfigBlockSchema.extend({
+const ConfigSectionBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("section"),
+  hidden: z.boolean().optional(),
   title: z.string(),
   description: z.string().optional(),
   menuLabel: z.string().optional(),
@@ -415,24 +412,27 @@ const ConfigSectionBlockSchema = BaseConfigBlockSchema.extend({
   i18nMap: ConfigI18nMapSchema.optional(),
 });
 
-const ConfigDescriptionBlockSchema = BaseConfigBlockSchema.extend({
+const ConfigDescriptionBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("description"),
+  hidden: z.boolean().optional(),
   text: z.string(),
   helperLinks: z.array(ConfigInlineLinkSchema).optional(),
   visibleWhen: z.array(ConfigConditionSchema).optional(),
   i18nMap: ConfigI18nMapSchema.optional(),
 });
 
-const ConfigDividerBlockSchema = BaseConfigBlockSchema.extend({
+const ConfigDividerBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("divider"),
+  hidden: z.boolean().optional(),
   visibleWhen: z.array(ConfigConditionSchema).optional(),
 });
 
-const ConfigBannerBlockSchema = BaseConfigBlockSchema.extend({
+const ConfigBannerBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("banner"),
+  hidden: z.boolean().optional(),
   tone: z.enum(["info", "success", "warning", "danger"]).default("info"),
   title: z.string().optional(),
   description: z.string(),
@@ -440,9 +440,10 @@ const ConfigBannerBlockSchema = BaseConfigBlockSchema.extend({
   i18nMap: ConfigI18nMapSchema.optional(),
 });
 
-const ConfigGroupBlockSchema = BaseConfigBlockSchema.extend({
+const ConfigGroupBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("group"),
+  hidden: z.boolean().optional(),
   title: z.string().optional(),
   description: z.string().optional(),
   layout: z.enum(["column", "row", "grid"]).default("column"),
@@ -451,16 +452,18 @@ const ConfigGroupBlockSchema = BaseConfigBlockSchema.extend({
   i18nMap: ConfigI18nMapSchema.optional(),
 });
 
-const ConfigNativeBlockSchema = BaseConfigBlockSchema.extend({
+const ConfigNativeBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("native"),
+  hidden: z.boolean().optional(),
   renderer: z.string(),
   props: z.record(z.string(), z.unknown()).optional(),
 });
 
-const ConfigActionBlockSchema = BaseConfigBlockSchema.extend({
+const ConfigActionBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("action"),
+  hidden: z.boolean().optional(),
   label: z.string(),
   description: z.string().optional(),
   functionName: z.string(),
