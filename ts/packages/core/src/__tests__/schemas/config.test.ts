@@ -8,6 +8,36 @@ import {
 } from "../../extensions/index.js";
 
 describe("config extension schema", () => {
+  it("preserves hidden metadata on non-field config blocks", () => {
+    const parsed = GetConfigSchemaOutputSchema.parse({
+      schemaVersion: "v1",
+      configScope: "channel",
+      providerName: "Example Provider",
+      blocks: [
+        { type: "section", title: "Section", hidden: true },
+        { type: "description", text: "Description", hidden: true },
+        { type: "divider", hidden: true },
+        { type: "banner", description: "Banner", hidden: true },
+        {
+          type: "group",
+          fields: [{ type: "text", key: "groupField", label: "Group Field" }],
+          hidden: true,
+        },
+        { type: "native", renderer: "custom", hidden: true },
+        {
+          type: "action",
+          label: "Run",
+          functionName: "run",
+          hidden: true,
+        },
+      ],
+    });
+
+    for (const block of parsed.blocks) {
+      expect(block).toMatchObject({ hidden: true });
+    }
+  });
+
   it("preserves hidden config fields at the top level and inside groups", () => {
     const parsed = GetConfigSchemaOutputSchema.parse({
       schemaVersion: "v1",

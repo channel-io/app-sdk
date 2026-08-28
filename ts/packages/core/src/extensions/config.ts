@@ -400,7 +400,11 @@ const ConfigFieldSchemas = [
 export const ConfigFieldSchema = z.discriminatedUnion("type", ConfigFieldSchemas);
 export type ConfigField = ProtoBacked<z.infer<typeof ConfigFieldSchema>, ProtoConfigField>;
 
-const ConfigSectionBlockSchema = z.object({
+const BaseConfigBlockSchema = z.object({
+  hidden: z.boolean().optional(),
+});
+
+const ConfigSectionBlockSchema = BaseConfigBlockSchema.extend({
   id: z.string().optional(),
   type: z.literal("section"),
   title: z.string(),
@@ -411,7 +415,7 @@ const ConfigSectionBlockSchema = z.object({
   i18nMap: ConfigI18nMapSchema.optional(),
 });
 
-const ConfigDescriptionBlockSchema = z.object({
+const ConfigDescriptionBlockSchema = BaseConfigBlockSchema.extend({
   id: z.string().optional(),
   type: z.literal("description"),
   text: z.string(),
@@ -420,13 +424,13 @@ const ConfigDescriptionBlockSchema = z.object({
   i18nMap: ConfigI18nMapSchema.optional(),
 });
 
-const ConfigDividerBlockSchema = z.object({
+const ConfigDividerBlockSchema = BaseConfigBlockSchema.extend({
   id: z.string().optional(),
   type: z.literal("divider"),
   visibleWhen: z.array(ConfigConditionSchema).optional(),
 });
 
-const ConfigBannerBlockSchema = z.object({
+const ConfigBannerBlockSchema = BaseConfigBlockSchema.extend({
   id: z.string().optional(),
   type: z.literal("banner"),
   tone: z.enum(["info", "success", "warning", "danger"]).default("info"),
@@ -436,7 +440,7 @@ const ConfigBannerBlockSchema = z.object({
   i18nMap: ConfigI18nMapSchema.optional(),
 });
 
-const ConfigGroupBlockSchema = z.object({
+const ConfigGroupBlockSchema = BaseConfigBlockSchema.extend({
   id: z.string().optional(),
   type: z.literal("group"),
   title: z.string().optional(),
@@ -447,14 +451,14 @@ const ConfigGroupBlockSchema = z.object({
   i18nMap: ConfigI18nMapSchema.optional(),
 });
 
-const ConfigNativeBlockSchema = z.object({
+const ConfigNativeBlockSchema = BaseConfigBlockSchema.extend({
   id: z.string().optional(),
   type: z.literal("native"),
   renderer: z.string(),
   props: z.record(z.string(), z.unknown()).optional(),
 });
 
-const ConfigActionBlockSchema = z.object({
+const ConfigActionBlockSchema = BaseConfigBlockSchema.extend({
   id: z.string().optional(),
   type: z.literal("action"),
   label: z.string(),
