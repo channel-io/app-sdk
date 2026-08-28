@@ -300,6 +300,7 @@ export interface ConfigField {
   overviewFeature?: boolean | undefined;
   overviewLabel?: string | undefined;
   overviewDescription?: string | undefined;
+  hidden?: boolean | undefined;
 }
 
 export interface ConfigField_I18nMapEntry {
@@ -372,6 +373,7 @@ export interface ConfigBlock {
   afterSuccess?: string[] | undefined;
   successMessage?: string | undefined;
   showInOverviewMenu?: boolean | undefined;
+  hidden?: boolean | undefined;
 }
 
 export interface ConfigBlock_I18nMapEntry {

@@ -76,6 +76,7 @@ Store client secrets as password fields with `storageClass: "credential"` and a 
 ## Implementation Notes
 
 - use `storageClass: "credential"` for encrypted or masked fields
+- use `hidden: true` to keep a field in the schema without rendering it in the standard setup UI; this is not a security boundary, so secrets still require `storageClass: "credential"`
 - use `storageClass: "transient"` for draft-only values, such as images that a hook processes and clears before save
 - use `storageClass: "media"` for image fields that should upload to the media server and persist only a media reference
 - use `resolvesTo` when a transient input should produce a different stored config or credential key

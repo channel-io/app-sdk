@@ -8,6 +8,40 @@ import {
 } from "../../extensions/index.js";
 
 describe("config extension schema", () => {
+  it("preserves hidden config fields at the top level and inside groups", () => {
+    const parsed = GetConfigSchemaOutputSchema.parse({
+      schemaVersion: "v1",
+      configScope: "channel",
+      providerName: "Example Provider",
+      blocks: [
+        {
+          type: "text",
+          key: "session",
+          label: "Session",
+          storageClass: "credential",
+          hidden: true,
+        },
+        {
+          type: "group",
+          fields: [
+            {
+              type: "text",
+              key: "internalId",
+              label: "Internal ID",
+              hidden: true,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(parsed.blocks[0]).toMatchObject({ key: "session", hidden: true });
+    expect(parsed.blocks[1]).toMatchObject({
+      type: "group",
+      fields: [{ key: "internalId", hidden: true }],
+    });
+  });
+
   it("preserves dynamic multi-config metadata", () => {
     const parsed = GetConfigSchemaOutputSchema.parse({
       schemaVersion: "v1",

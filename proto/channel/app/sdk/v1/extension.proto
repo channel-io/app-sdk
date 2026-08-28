@@ -253,6 +253,7 @@ message ConfigField {
   bool overview_feature = 44;
   string overview_label = 45;
   string overview_description = 46;
+  bool hidden = 47;
 }
 
 message ConfigBlock {
@@ -322,6 +323,7 @@ message ConfigBlock {
   repeated string after_success = 64;
   string success_message = 65;
   bool show_in_overview_menu = 66;
+  bool hidden = 67;
 }
 
 message ConfigGetConfigSchemaInput {}

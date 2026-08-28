@@ -3693,6 +3693,9 @@
                             "required": {
                               "type": "boolean"
                             },
+                            "hidden": {
+                              "type": "boolean"
+                            },
                             "placeholder": {
                               "type": "string"
                             },
@@ -4112,6 +4115,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "hidden": {
                               "type": "boolean"
                             },
                             "placeholder": {
@@ -4539,6 +4545,9 @@
                             "required": {
                               "type": "boolean"
                             },
+                            "hidden": {
+                              "type": "boolean"
+                            },
                             "placeholder": {
                               "type": "string"
                             },
@@ -4961,6 +4970,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "hidden": {
                               "type": "boolean"
                             },
                             "placeholder": {
@@ -5391,6 +5403,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "hidden": {
                               "type": "boolean"
                             },
                             "placeholder": {
@@ -5931,6 +5946,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "hidden": {
                               "type": "boolean"
                             },
                             "placeholder": {
@@ -6481,6 +6499,9 @@
                             "required": {
                               "type": "boolean"
                             },
+                            "hidden": {
+                              "type": "boolean"
+                            },
                             "placeholder": {
                               "type": "string"
                             },
@@ -7021,6 +7042,9 @@
                             "required": {
                               "type": "boolean"
                             },
+                            "hidden": {
+                              "type": "boolean"
+                            },
                             "placeholder": {
                               "type": "string"
                             },
@@ -7442,6 +7466,9 @@
                             "required": {
                               "type": "boolean"
                             },
+                            "hidden": {
+                              "type": "boolean"
+                            },
                             "placeholder": {
                               "type": "string"
                             },
@@ -7861,6 +7888,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "hidden": {
                               "type": "boolean"
                             },
                             "placeholder": {
@@ -8426,6 +8456,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "hidden": {
                               "type": "boolean"
                             },
                             "placeholder": {
@@ -9014,6 +9047,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "hidden": {
                               "type": "boolean"
                             },
                             "placeholder": {
@@ -9799,6 +9835,9 @@
                   "required": {
                     "type": "boolean"
                   },
+                  "hidden": {
+                    "type": "boolean"
+                  },
                   "placeholder": {
                     "type": "string"
                   },
@@ -10218,6 +10257,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "hidden": {
                     "type": "boolean"
                   },
                   "placeholder": {
@@ -10645,6 +10687,9 @@
                   "required": {
                     "type": "boolean"
                   },
+                  "hidden": {
+                    "type": "boolean"
+                  },
                   "placeholder": {
                     "type": "string"
                   },
@@ -11067,6 +11112,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "hidden": {
                     "type": "boolean"
                   },
                   "placeholder": {
@@ -11497,6 +11545,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "hidden": {
                     "type": "boolean"
                   },
                   "placeholder": {
@@ -12037,6 +12088,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "hidden": {
                     "type": "boolean"
                   },
                   "placeholder": {
@@ -12587,6 +12641,9 @@
                   "required": {
                     "type": "boolean"
                   },
+                  "hidden": {
+                    "type": "boolean"
+                  },
                   "placeholder": {
                     "type": "string"
                   },
@@ -13127,6 +13184,9 @@
                   "required": {
                     "type": "boolean"
                   },
+                  "hidden": {
+                    "type": "boolean"
+                  },
                   "placeholder": {
                     "type": "string"
                   },
@@ -13548,6 +13608,9 @@
                   "required": {
                     "type": "boolean"
                   },
+                  "hidden": {
+                    "type": "boolean"
+                  },
                   "placeholder": {
                     "type": "string"
                   },
@@ -13967,6 +14030,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "hidden": {
                     "type": "boolean"
                   },
                   "placeholder": {
@@ -14532,6 +14598,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "hidden": {
                     "type": "boolean"
                   },
                   "placeholder": {
@@ -15120,6 +15189,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "hidden": {
                     "type": "boolean"
                   },
                   "placeholder": {
