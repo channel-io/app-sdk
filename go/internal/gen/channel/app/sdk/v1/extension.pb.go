@@ -9941,6 +9941,7 @@ type OrderClaimItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Quantity      int32                  `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	FulfillmentId string                 `protobuf:"bytes,3,opt,name=fulfillment_id,json=fulfillmentId,proto3" json:"fulfillment_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -9987,6 +9988,13 @@ func (x *OrderClaimItem) GetQuantity() int32 {
 		return x.Quantity
 	}
 	return 0
+}
+
+func (x *OrderClaimItem) GetFulfillmentId() string {
+	if x != nil {
+		return x.FulfillmentId
+	}
+	return ""
 }
 
 type OrderCancelOrderInput struct {
@@ -17016,10 +17024,11 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x06orders\x18\x01 \x03(\v2\x19.channel.app.sdk.v1.OrderR\x06orders\"\x19\n" +
 	"\x17OrderGetAppConfigsInput\"o\n" +
 	"\x18OrderGetAppConfigsOutput\x12S\n" +
-	"\x10app_capabilities\x18\x01 \x01(\v2(.channel.app.sdk.v1.OrderAppCapabilitiesR\x0fappCapabilities\"<\n" +
+	"\x10app_capabilities\x18\x01 \x01(\v2(.channel.app.sdk.v1.OrderAppCapabilitiesR\x0fappCapabilities\"c\n" +
 	"\x0eOrderClaimItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x05R\bquantity\"\x8d\x02\n" +
+	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12%\n" +
+	"\x0efulfillment_id\x18\x03 \x01(\tR\rfulfillmentId\"\x8d\x02\n" +
 	"\x15OrderCancelOrderInput\x12\x19\n" +
 	"\border_id\x18\x01 \x01(\tR\aorderId\x12E\n" +
 	"\fcancel_items\x18\x02 \x03(\v2\".channel.app.sdk.v1.OrderClaimItemR\vcancelItems\x12<\n" +

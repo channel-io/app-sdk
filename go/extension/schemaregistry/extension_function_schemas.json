@@ -1595,6 +1595,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -1815,6 +1818,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -2281,6 +2287,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -2390,6 +2399,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -2580,6 +2592,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -21214,6 +21229,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -22060,6 +22078,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -22214,6 +22235,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -22326,6 +22350,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
