@@ -106,6 +106,7 @@ export type OrderItem = ProtoBacked<z.infer<typeof OrderItemSchema>, ProtoOrderI
 export const OrderClaimItemSchema = z.object({
   id: z.string().optional(),
   quantity: z.number().int().optional(),
+  fulfillmentId: z.string().optional(),
 });
 export type OrderClaimItem = ProtoBacked<z.infer<typeof OrderClaimItemSchema>, ProtoOrderClaimItem>;
 

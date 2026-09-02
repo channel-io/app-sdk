@@ -834,6 +834,7 @@ message DataSourceTable {
   optional double updated_at = 5;
   optional string table_type = 6;
   string manager_access = 7;
+  repeated DataSourceManagerPermission permissions = 8;
 }
 
 message DataSourceColumn {
@@ -1030,6 +1031,7 @@ message OrderGetAppConfigsOutput {
 message OrderClaimItem {
   string id = 1;
   int32 quantity = 2;
+  string fulfillment_id = 3;
 }
 
 message OrderCancelOrderInput {
@@ -1626,4 +1628,27 @@ message DataSourceAuthorizeQueryOutput {
 message ConfigOAuthClientCredentials {
   string client_id_field_key = 1;
   string client_secret_field_key = 2;
+}
+
+message HookUserChatOpenedInput {
+  string event_id = 1;
+  string channel_id = 2;
+  string user_chat_id = 3;
+  string state = 4;
+  string previous_state = 5;
+  string open_kind = 6;
+  string actor_kind = 7;
+  optional string trigger_message_id = 8;
+  string occurred_at = 9;
+  int64 version = 10;
+}
+
+message HookUserChatOpenedResult {
+  string hook_handling_result = 1;
+  bool terminal = 2;
+}
+
+message DataSourceManagerPermission {
+  string action = 1;
+  string scope = 2;
 }

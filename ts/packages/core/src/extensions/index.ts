@@ -173,10 +173,16 @@ export {
   WebhookConfigSchema,
   HookConfigSchema,
   GetHooksOutputSchema,
+  UserChatOpenKindSchema,
+  UserChatOpenedActorKindSchema,
+  UserChatOpenedHookInputSchema,
+  UserChatOpenedHookResultSchema,
   type HookType,
   type WebhookConfig,
   type HookConfig,
   type GetHooksOutput,
+  type UserChatOpenKind,
+  type UserChatOpenedActorKind,
 } from "./hook.js";
 
 // Mail Relay Extension Schemas (v1)
@@ -247,6 +253,7 @@ export {
   DataSourceDialectSchema,
   DataSourceTableTypeSchema,
   DataSourceManagerAccessSchema,
+  DataSourceManagerPermissionSchema,
   DataSourceCatalogSchema,
   DataSourceTableSchema,
   DataSourceColumnSchema,
@@ -273,6 +280,7 @@ export {
   type DataSourceDialect,
   type DataSourceTableType,
   type DataSourceManagerAccess,
+  type DataSourceManagerPermission,
   type DataSourceCatalog,
   type DataSourceTable,
   type DataSourceColumn,

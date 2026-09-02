@@ -958,6 +958,7 @@ export interface DataSourceTable {
   updatedAt?: number | undefined;
   tableType?: string | undefined;
   managerAccess?: string | undefined;
+  permissions?: DataSourceManagerPermission[] | undefined;
 }
 
 export interface DataSourceColumn {
@@ -1163,6 +1164,7 @@ export interface OrderGetAppConfigsOutput {
 export interface OrderClaimItem {
   id?: string | undefined;
   quantity?: number | undefined;
+  fulfillmentId?: string | undefined;
 }
 
 export interface OrderCancelOrderInput {
@@ -1764,4 +1766,27 @@ export interface DataSourceAuthorizeQueryOutput {
 export interface ConfigOAuthClientCredentials {
   clientIdFieldKey?: string | undefined;
   clientSecretFieldKey?: string | undefined;
+}
+
+export interface HookUserChatOpenedInput {
+  eventId?: string | undefined;
+  channelId?: string | undefined;
+  userChatId?: string | undefined;
+  state?: string | undefined;
+  previousState?: string | undefined;
+  openKind?: string | undefined;
+  actorKind?: string | undefined;
+  triggerMessageId?: string | undefined;
+  occurredAt?: string | undefined;
+  version?: string | undefined;
+}
+
+export interface HookUserChatOpenedResult {
+  hookHandlingResult?: string | undefined;
+  terminal?: boolean | undefined;
+}
+
+export interface DataSourceManagerPermission {
+  action?: string | undefined;
+  scope?: string | undefined;
 }

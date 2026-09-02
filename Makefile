@@ -41,6 +41,7 @@ help:
 	@printf "  make proto-generate   Generate proto code and Zod schemas\n"
 	@printf "  make proto-check      Verify generated code is up to date\n"
 	@printf "  make proto-ssot-check Verify public extension DTOs are proto-backed\n"
+	@printf "  make schema-fixture   Regenerate the Go extension function schema fixture\n"
 	@printf "  make verify           Run lint, format, proto, build, and test checks\n"
 
 .PHONY: install
@@ -101,7 +102,7 @@ format-check-ts:
 format-check-go:
 	cd $(GO_DIR) && test -z "$$($(GOFMT) -l .)"
 
-.PHONY: install-proto-tools proto-lint proto-generate proto-check proto-ssot-check
+.PHONY: install-proto-tools proto-lint proto-generate proto-check proto-ssot-check schema-fixture
 install-proto-tools:
 	@if ! command -v $(BUF) >/dev/null 2>&1; then \
 		$(GO) install github.com/bufbuild/buf/cmd/buf@$(BUF_VERSION); \
@@ -126,6 +127,10 @@ proto-check: proto-generate
 
 proto-ssot-check:
 	$(NODE) scripts/check-proto-ssot.mjs
+
+schema-fixture:
+	$(PNPM) --dir $(TS_DIR) --filter @channel.io/app-sdk-core build
+	$(NODE) scripts/generate-function-schema-fixture.mjs
 
 .PHONY: docs-check
 docs-check:

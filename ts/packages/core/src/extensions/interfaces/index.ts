@@ -23,7 +23,13 @@ export * from "./calendar.js";
 export * from "./command.js";
 export * from "./widget.js";
 export * from "./customtab.js";
-export * from "./hook.js";
+export {
+  HookFunctionNames,
+  type GetHooksInput,
+  type HookExtensionInterface,
+  type UserChatOpenedHookInput,
+  type UserChatOpenedHookResult,
+} from "./hook.js";
 export * from "./polling.js";
 export * from "./store.js";
 export * from "./datasource.js";

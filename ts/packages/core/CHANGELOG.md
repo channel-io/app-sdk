@@ -1,5 +1,16 @@
 # @channel.io/app-sdk-core
 
+## 0.22.0
+
+### Minor Changes
+
+- 4b31e78: Add caller-scoped OAuth authentication support.
+
+### Patch Changes
+
+- cd0e937: Accept MySQL as a DataSource catalog dialect.
+- 2794296: Support manager permission metadata on individual DataSource tables.
+
 ## 0.21.1
 
 ### Patch Changes

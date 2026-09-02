@@ -93,15 +93,28 @@ func TestFromProviderRegistersOptionalQueryAuthorizer(t *testing.T) {
 func TestStaticMetadataListsAndDescribesTables(t *testing.T) {
 	app := appsdk.New(appsdk.Options{AppID: "app"})
 	tt := datasource.TableTypeTable
+	ordersTable := &datasource.Table{}
+	if err := protojson.Unmarshal([]byte(`{
+		"name": "orders",
+		"localCatalogAlias": "bigquery",
+		"tableType": "table",
+		"managerAccess": "owner",
+		"permissions": [
+			{"action": "userChatRead", "scope": "all"},
+			{"action": "futureProtoAction", "scope": "futureProtoScope"}
+		]
+	}`), ordersTable); err != nil {
+		t.Fatal(err)
+	}
 	err := app.Use(datasource.StaticMetadata(datasource.Metadata{
 		Catalogs: []*datasource.Catalog{{Alias: "bigquery", Dialect: datasource.DialectBigQuery}},
 		Tables: []*datasource.TableListing{
-			{Table: &datasource.Table{Name: "orders", LocalCatalogAlias: "bigquery", TableType: &tt, ManagerAccess: datasource.ManagerAccessOwner}},
+			{Table: ordersTable},
 			{Table: &datasource.Table{Name: "products", LocalCatalogAlias: "bigquery", TableType: &tt}},
 		},
 		Definitions: []*datasource.TableDefinition{
 			{
-				Table:      &datasource.Table{Name: "orders", LocalCatalogAlias: "bigquery", TableType: &tt},
+				Table:      ordersTable,
 				Columns:    []*datasource.Column{{Name: "order_id", Type: "STRING", Nullable: false}},
 				PrimaryKey: []string{"order_id"},
 			},
@@ -131,6 +144,12 @@ func TestStaticMetadataListsAndDescribesTables(t *testing.T) {
 	}
 	if listOut.Tables[0].GetTable().GetManagerAccess() != datasource.ManagerAccessOwner {
 		t.Fatalf("unexpected manager access: %q", listOut.Tables[0].GetTable().GetManagerAccess())
+	}
+	permissions := listOut.Tables[0].GetTable().GetPermissions()
+	if len(permissions) != 2 ||
+		permissions[0].GetAction() != "userChatRead" || permissions[0].GetScope() != "all" ||
+		permissions[1].GetAction() != "futureProtoAction" || permissions[1].GetScope() != "futureProtoScope" {
+		t.Fatalf("unexpected permissions: %v", permissions)
 	}
 
 	includeSample := true

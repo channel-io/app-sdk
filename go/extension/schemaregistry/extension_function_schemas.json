@@ -1595,6 +1595,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -1815,6 +1818,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -2281,6 +2287,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -2390,6 +2399,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -2580,6 +2592,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -16356,6 +16371,27 @@
                     "all",
                     "owner"
                   ]
+                },
+                "permissions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "scope": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "scope"
+                    ],
+                    "additionalProperties": false
+                  }
                 }
               },
               "required": [
@@ -16550,6 +16586,27 @@
                       "all",
                       "owner"
                     ]
+                  },
+                  "permissions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "action": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "scope": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "action",
+                        "scope"
+                      ],
+                      "additionalProperties": false
+                    }
                   }
                 },
                 "required": [
@@ -16999,6 +17056,32 @@
                   "type": {
                     "type": "string",
                     "const": "oauth.disconnected"
+                  }
+                },
+                "required": [
+                  "actionFunctionName",
+                  "type"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "actionFunctionName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "pattern": "^[a-zA-Z_][a-zA-Z0-9._]*$"
+                  },
+                  "systemVersion": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50,
+                    "pattern": "^[A-Za-z0-9._-]+$"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "userChat.opened"
                   }
                 },
                 "required": [
@@ -21146,6 +21229,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -21992,6 +22078,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -22146,6 +22235,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -22258,6 +22350,9 @@
               },
               "quantity": {
                 "type": "integer"
+              },
+              "fulfillmentId": {
+                "type": "string"
               }
             },
             "additionalProperties": false

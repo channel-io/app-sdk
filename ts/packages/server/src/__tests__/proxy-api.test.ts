@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, expectTypeOf, vi, beforeEach } from "vitest";
 import { NativeFunctionClient } from "../native/client.js";
 import { ProxyApi } from "../native/proxy-api.js";
 import type {
@@ -8,6 +8,8 @@ import type {
   WriteUserChatMessageAsManagerRequest,
   WriteUserChatMessageAsUserRequest,
   WriteDirectChatMessageAsManagerRequest,
+  WriteUserChatPrivateNoteWithManagerCredentialRequest,
+  WriteUserChatPrivateNoteWithManagerCredentialResult,
   PatchMessageRequest,
   GetManagerRequest,
   BatchGetManagersRequest,
@@ -54,6 +56,19 @@ describe("ProxyApi", () => {
   // ============================================
 
   describe("Message API", () => {
+    it("exports the narrow Manager private-note request and result aliases", () => {
+      expectTypeOf<WriteUserChatPrivateNoteWithManagerCredentialRequest>().toMatchTypeOf<{
+        channelId: string;
+        userChatId: string;
+        requestId: string;
+        lifecycleRevision: number;
+        dto: { blocks?: readonly object[]; plainText?: string; customPayload?: object };
+      }>();
+      expectTypeOf<WriteUserChatPrivateNoteWithManagerCredentialResult>().toMatchTypeOf<{
+        message: object;
+      }>();
+    });
+
     it("writeGroupMessage should call with correct method and params", async () => {
       const params: WriteGroupMessageRequest = {
         channelId: "ch-1",

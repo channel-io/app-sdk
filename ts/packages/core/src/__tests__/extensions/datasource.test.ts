@@ -28,6 +28,10 @@ const tableDefinition = {
     description: "Cafe24 orders synced to BigQuery.",
     tableType: "table" as const,
     managerAccess: "owner" as const,
+    permissions: [
+      { action: "userChatRead", scope: "all" },
+      { action: "futureProtoAction", scope: "futureProtoScope" },
+    ],
   },
   columns: [
     { name: "channel_id", type: "STRING", nullable: false, partitionKey: true },
@@ -42,7 +46,7 @@ describe("datasource extension schemas", () => {
     expect(DataSourceDialectSchema.parse("mysql")).toBe("mysql");
   });
 
-  it("accepts datasource catalog and describe table outputs", () => {
+  it("preserves table permission metadata in describe output", () => {
     const catalogs = ListCatalogsOutputSchema.parse({
       catalogs: [{ alias: "bigquery", dialect: "bigquery", displayName: "Cafe24 BigQuery" }],
     });
@@ -56,6 +60,10 @@ describe("datasource extension schemas", () => {
     expect(protoCatalogs.catalogs?.[0]?.dialect).toBe("bigquery");
     expect(protoDescribed.definition?.primaryKey).toEqual(["channel_id", "order_id"]);
     expect(protoDescribed.definition?.table?.managerAccess).toBe("owner");
+    expect(protoDescribed.definition?.table?.permissions).toEqual([
+      { action: "userChatRead", scope: "all" },
+      { action: "futureProtoAction", scope: "futureProtoScope" },
+    ]);
   });
 
   it("accepts all and owner manager access while keeping it optional", () => {
@@ -79,7 +87,7 @@ describe("datasource extension schemas", () => {
         catalogs: [{ alias: "bigquery", dialect: "bigquery" }],
       }),
       listTables: async () => ({
-        tables: [{ table: { name: "orders", localCatalogAlias: "bigquery" } }],
+        tables: [{ table: tableDefinition.table }],
       }),
       describeTable: async () => ({ definition: tableDefinition }),
     });
@@ -91,6 +99,17 @@ describe("datasource extension schemas", () => {
       "catalog.listTables",
       "catalog.describeTable",
     ]);
+    const listTables = registered.functions.find(
+      (fn) => fn.name === DataSourceFunctionNames.listTables
+    );
+    await expect(
+      listTables?.handler(
+        { caller: { type: "system" }, channel: { id: "" }, app: { id: "app-1" } },
+        {}
+      )
+    ).resolves.toMatchObject({
+      tables: [{ table: { permissions: tableDefinition.table.permissions } }],
+    });
   });
 
   it("registers query authorization only when the provider implements it", async () => {
@@ -173,6 +192,7 @@ describe("datasource extension schemas", () => {
             name: "orders",
             localCatalogAlias: "bigquery",
             managerAccess: "owner",
+            permissions: tableDefinition.table.permissions,
           },
         },
         { table: { name: "products", localCatalogAlias: "bigquery" } },
@@ -196,7 +216,15 @@ describe("datasource extension schemas", () => {
     );
 
     expect(listResult).toMatchObject({
-      tables: [{ table: { name: "orders", managerAccess: "owner" } }],
+      tables: [
+        {
+          table: {
+            name: "orders",
+            managerAccess: "owner",
+            permissions: tableDefinition.table.permissions,
+          },
+        },
+      ],
       nextPageToken: "1",
     });
     expect(describeResult).toMatchObject({

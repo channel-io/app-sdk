@@ -939,6 +939,7 @@ export const DataSourceTableProtoSchema = z.object({
   updatedAt: z.number().optional(),
   tableType: z.string().optional(),
   managerAccess: z.string().optional(),
+  permissions: z.array(z.lazy(() => DataSourceManagerPermissionProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.DataSourceTable>;
 export type DataSourceTableProto = z.infer<typeof DataSourceTableProtoSchema>;
 
@@ -1160,6 +1161,7 @@ export type OrderGetAppConfigsOutputProto = z.infer<typeof OrderGetAppConfigsOut
 export const OrderClaimItemProtoSchema = z.object({
   id: z.string().optional(),
   quantity: z.number().int().optional(),
+  fulfillmentId: z.string().optional(),
 }) satisfies z.ZodType<pb.OrderClaimItem>;
 export type OrderClaimItemProto = z.infer<typeof OrderClaimItemProtoSchema>;
 
@@ -1845,3 +1847,29 @@ export const ConfigOAuthClientCredentialsProtoSchema = z.object({
   clientSecretFieldKey: z.string().optional(),
 }) satisfies z.ZodType<pb.ConfigOAuthClientCredentials>;
 export type ConfigOAuthClientCredentialsProto = z.infer<typeof ConfigOAuthClientCredentialsProtoSchema>;
+
+export const HookUserChatOpenedInputProtoSchema = z.object({
+  eventId: z.string().optional(),
+  channelId: z.string().optional(),
+  userChatId: z.string().optional(),
+  state: z.string().optional(),
+  previousState: z.string().optional(),
+  openKind: z.string().optional(),
+  actorKind: z.string().optional(),
+  triggerMessageId: z.string().optional(),
+  occurredAt: z.string().optional(),
+  version: z.string().optional(),
+}) satisfies z.ZodType<pb.HookUserChatOpenedInput>;
+export type HookUserChatOpenedInputProto = z.infer<typeof HookUserChatOpenedInputProtoSchema>;
+
+export const HookUserChatOpenedResultProtoSchema = z.object({
+  hookHandlingResult: z.string().optional(),
+  terminal: z.boolean().optional(),
+}) satisfies z.ZodType<pb.HookUserChatOpenedResult>;
+export type HookUserChatOpenedResultProto = z.infer<typeof HookUserChatOpenedResultProtoSchema>;
+
+export const DataSourceManagerPermissionProtoSchema = z.object({
+  action: z.string().optional(),
+  scope: z.string().optional(),
+}) satisfies z.ZodType<pb.DataSourceManagerPermission>;
+export type DataSourceManagerPermissionProto = z.infer<typeof DataSourceManagerPermissionProtoSchema>;
