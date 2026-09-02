@@ -275,6 +275,7 @@ export const ConfigFieldProtoSchema = z.object({
   overviewFeature: z.boolean().optional(),
   overviewLabel: z.string().optional(),
   overviewDescription: z.string().optional(),
+  hidden: z.boolean().optional(),
 }) satisfies z.ZodType<pb.ConfigField>;
 export type ConfigFieldProto = z.infer<typeof ConfigFieldProtoSchema>;
 
@@ -343,6 +344,7 @@ export const ConfigBlockProtoSchema = z.object({
   afterSuccess: z.array(z.string()).optional(),
   successMessage: z.string().optional(),
   showInOverviewMenu: z.boolean().optional(),
+  hidden: z.boolean().optional(),
 }) satisfies z.ZodType<pb.ConfigBlock>;
 export type ConfigBlockProto = z.infer<typeof ConfigBlockProtoSchema>;
 

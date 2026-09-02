@@ -289,6 +289,7 @@ const BaseConfigFieldSchema = z.object({
   helperText: z.string().optional(),
   helperLinks: z.array(ConfigInlineLinkSchema).optional(),
   required: z.boolean().optional(),
+  hidden: z.boolean().optional(),
   placeholder: z.string().optional(),
   validationRegex: z.string().optional(),
   storageClass: ConfigStorageClassSchema.optional(),
@@ -402,6 +403,7 @@ export type ConfigField = ProtoBacked<z.infer<typeof ConfigFieldSchema>, ProtoCo
 const ConfigSectionBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("section"),
+  hidden: z.boolean().optional(),
   title: z.string(),
   description: z.string().optional(),
   menuLabel: z.string().optional(),
@@ -413,6 +415,7 @@ const ConfigSectionBlockSchema = z.object({
 const ConfigDescriptionBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("description"),
+  hidden: z.boolean().optional(),
   text: z.string(),
   helperLinks: z.array(ConfigInlineLinkSchema).optional(),
   visibleWhen: z.array(ConfigConditionSchema).optional(),
@@ -422,12 +425,14 @@ const ConfigDescriptionBlockSchema = z.object({
 const ConfigDividerBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("divider"),
+  hidden: z.boolean().optional(),
   visibleWhen: z.array(ConfigConditionSchema).optional(),
 });
 
 const ConfigBannerBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("banner"),
+  hidden: z.boolean().optional(),
   tone: z.enum(["info", "success", "warning", "danger"]).default("info"),
   title: z.string().optional(),
   description: z.string(),
@@ -438,6 +443,7 @@ const ConfigBannerBlockSchema = z.object({
 const ConfigGroupBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("group"),
+  hidden: z.boolean().optional(),
   title: z.string().optional(),
   description: z.string().optional(),
   layout: z.enum(["column", "row", "grid"]).default("column"),
@@ -449,6 +455,7 @@ const ConfigGroupBlockSchema = z.object({
 const ConfigNativeBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("native"),
+  hidden: z.boolean().optional(),
   renderer: z.string(),
   props: z.record(z.string(), z.unknown()).optional(),
 });
@@ -456,6 +463,7 @@ const ConfigNativeBlockSchema = z.object({
 const ConfigActionBlockSchema = z.object({
   id: z.string().optional(),
   type: z.literal("action"),
+  hidden: z.boolean().optional(),
   label: z.string(),
   description: z.string().optional(),
   functionName: z.string(),
