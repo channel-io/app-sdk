@@ -1,5 +1,5 @@
 ---
-"@channel.io/app-sdk-core": minor
+"@channel.io/app-sdk-core": patch
 ---
 
 Add `fulfillmentId` to `OrderClaimItem`. A single line item can be shipped across several
