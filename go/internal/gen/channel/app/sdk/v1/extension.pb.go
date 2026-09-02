@@ -8007,17 +8007,21 @@ func (x *DataSourceCatalog) GetActive() bool {
 }
 
 type DataSourceTable struct {
-	state             protoimpl.MessageState         `protogen:"open.v1"`
-	Name              string                         `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	LocalCatalogAlias string                         `protobuf:"bytes,2,opt,name=local_catalog_alias,json=localCatalogAlias,proto3" json:"local_catalog_alias,omitempty"`
-	Description       string                         `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	EstimatedRowCount *float64                       `protobuf:"fixed64,4,opt,name=estimated_row_count,json=estimatedRowCount,proto3,oneof" json:"estimated_row_count,omitempty"`
-	UpdatedAt         *float64                       `protobuf:"fixed64,5,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
-	TableType         *string                        `protobuf:"bytes,6,opt,name=table_type,json=tableType,proto3,oneof" json:"table_type,omitempty"`
-	ManagerAccess     string                         `protobuf:"bytes,7,opt,name=manager_access,json=managerAccess,proto3" json:"manager_access,omitempty"`
-	Permissions       []*DataSourceManagerPermission `protobuf:"bytes,8,rep,name=permissions,proto3" json:"permissions,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Name              string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	LocalCatalogAlias string                 `protobuf:"bytes,2,opt,name=local_catalog_alias,json=localCatalogAlias,proto3" json:"local_catalog_alias,omitempty"`
+	Description       string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	EstimatedRowCount *float64               `protobuf:"fixed64,4,opt,name=estimated_row_count,json=estimatedRowCount,proto3,oneof" json:"estimated_row_count,omitempty"`
+	UpdatedAt         *float64               `protobuf:"fixed64,5,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
+	TableType         *string                `protobuf:"bytes,6,opt,name=table_type,json=tableType,proto3,oneof" json:"table_type,omitempty"`
+	// Deprecated: Use permissions instead. Retained for backward compatibility when permissions
+	// is not declared.
+	//
+	// Deprecated: Marked as deprecated in channel/app/sdk/v1/extension.proto.
+	ManagerAccess string                         `protobuf:"bytes,7,opt,name=manager_access,json=managerAccess,proto3" json:"manager_access,omitempty"`
+	Permissions   []*DataSourceManagerPermission `protobuf:"bytes,8,rep,name=permissions,proto3" json:"permissions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DataSourceTable) Reset() {
@@ -8092,6 +8096,7 @@ func (x *DataSourceTable) GetTableType() string {
 	return ""
 }
 
+// Deprecated: Marked as deprecated in channel/app/sdk/v1/extension.proto.
 func (x *DataSourceTable) GetManagerAccess() string {
 	if x != nil {
 		return x.ManagerAccess
@@ -16861,7 +16866,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x18\n" +
 	"\adialect\x18\x03 \x01(\tR\adialect\x12\x1b\n" +
 	"\x06active\x18\x04 \x01(\bH\x00R\x06active\x88\x01\x01B\t\n" +
-	"\a_active\"\xa4\x03\n" +
+	"\a_active\"\xa8\x03\n" +
 	"\x0fDataSourceTable\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12.\n" +
 	"\x13local_catalog_alias\x18\x02 \x01(\tR\x11localCatalogAlias\x12 \n" +
@@ -16870,8 +16875,8 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\x05 \x01(\x01H\x01R\tupdatedAt\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"table_type\x18\x06 \x01(\tH\x02R\ttableType\x88\x01\x01\x12%\n" +
-	"\x0emanager_access\x18\a \x01(\tR\rmanagerAccess\x12Q\n" +
+	"table_type\x18\x06 \x01(\tH\x02R\ttableType\x88\x01\x01\x12)\n" +
+	"\x0emanager_access\x18\a \x01(\tB\x02\x18\x01R\rmanagerAccess\x12Q\n" +
 	"\vpermissions\x18\b \x03(\v2/.channel.app.sdk.v1.DataSourceManagerPermissionR\vpermissionsB\x16\n" +
 	"\x14_estimated_row_countB\r\n" +
 	"\v_updated_atB\r\n" +
