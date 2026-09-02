@@ -9,7 +9,7 @@ import type {
 import { InMemoryTokenCache } from "./cache.js";
 
 const DEFAULT_REFRESH_BUFFER_MS = 5 * 60 * 1000;
-const DEFAULT_APPSTORE_URL = "https://app-store.channel.io";
+const DEFAULT_APPSTORE_URL = "https://app-store-api.channel.io";
 const DEFAULT_REQUEST_TIMEOUT_MS = 10_000;
 const MAX_TOKEN_INVALIDATION_RETRIES = 2;
 
