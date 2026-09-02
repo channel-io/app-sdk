@@ -788,6 +788,23 @@ export interface NativeGetAppNotebookVersionsResult {
   notebooks: NativeAppNotebookVersion[];
 }
 
+export interface NativePrepareAppMediaUploadParams {
+  managerId?: string;
+  fileName: string;
+  contentType?: string;
+  size?: number;
+}
+
+export interface NativeAppMediaUploadTarget {
+  uploadUrl: string;
+  uploadMethod: string;
+  headers: Record<string, string>;
+  bodyType?: string;
+  fileField?: string;
+  fileName?: string;
+  formFields: Record<string, string>;
+}
+
 export interface NativeActiveOAuthManagerTarget {
   channelId: string;
   managerId: string;
@@ -1024,6 +1041,10 @@ export interface NativeFunctionTypeMap {
   getAppNotebookVersions: {
     params: NativeGetAppNotebookVersionsParams;
     result: NativeGetAppNotebookVersionsResult;
+  };
+  prepareAppMediaUpload: {
+    params: NativePrepareAppMediaUploadParams;
+    result: NativeAppMediaUploadTarget;
   };
   listActiveOAuthManagerTargets: {
     params: NativeListActiveOAuthManagerTargetsParams;

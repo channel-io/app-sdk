@@ -11,6 +11,8 @@ import type {
   NativeGetAppDataTableSchemaResult,
   NativeListActiveOAuthManagerTargetsParams,
   NativeListActiveOAuthManagerTargetsResult,
+  NativeAppMediaUploadTarget,
+  NativePrepareAppMediaUploadParams,
   NativeUpsertAppDataTableRowsParams,
   NativeUpsertAppDataTableRowsResult,
   NativeWriteUserChatPrivateNoteWithManagerCredentialParams,
@@ -212,6 +214,19 @@ export class NativeFunctionClient {
       GetAppNotebookVersionsParams,
       GetAppNotebookVersionsResult
     >("getAppNotebookVersions", params, accessToken);
+  }
+
+  /**
+   * Prepare a public Media upload for an app-owned file.
+   *
+   * Use a channel-scoped token. The returned target describes the authenticated
+   * upload request that the caller must send directly to the Media service.
+   */
+  prepareAppMediaUpload(
+    params: NativePrepareAppMediaUploadParams,
+    accessToken: string
+  ): Promise<NativeAppMediaUploadTarget> {
+    return this.callNativeFunctionWithToken("prepareAppMediaUpload", params, accessToken);
   }
 
   // ============================================
