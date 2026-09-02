@@ -1031,6 +1031,7 @@ message OrderGetAppConfigsOutput {
 message OrderClaimItem {
   string id = 1;
   int32 quantity = 2;
+  string fulfillment_id = 3;
 }
 
 message OrderCancelOrderInput {

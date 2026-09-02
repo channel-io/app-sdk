@@ -1164,6 +1164,7 @@ export interface OrderGetAppConfigsOutput {
 export interface OrderClaimItem {
   id?: string | undefined;
   quantity?: number | undefined;
+  fulfillmentId?: string | undefined;
 }
 
 export interface OrderCancelOrderInput {

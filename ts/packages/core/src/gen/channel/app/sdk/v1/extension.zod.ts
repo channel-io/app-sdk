@@ -1161,6 +1161,7 @@ export type OrderGetAppConfigsOutputProto = z.infer<typeof OrderGetAppConfigsOut
 export const OrderClaimItemProtoSchema = z.object({
   id: z.string().optional(),
   quantity: z.number().int().optional(),
+  fulfillmentId: z.string().optional(),
 }) satisfies z.ZodType<pb.OrderClaimItem>;
 export type OrderClaimItemProto = z.infer<typeof OrderClaimItemProtoSchema>;
 
