@@ -34,8 +34,7 @@ export interface ChannelAppModuleOptions {
    */
   autoRegisterMaxBackoffMs?: number;
   /**
-   * AppStore API URL (default: https://app-store.channel.io)
-   * Only used when autoRegister is true
+   * AppStore API URL (default: https://app-store-api.channel.io)
    */
   appStoreUrl?: string;
   /**

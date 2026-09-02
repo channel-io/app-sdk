@@ -9,7 +9,7 @@
  * Native function client configuration
  */
 export interface NativeFunctionClientConfig {
-  /** AppStore API base URL (default: https://app-store.channel.io) */
+  /** AppStore API base URL (default: https://app-store-api.channel.io) */
   appStoreUrl?: string | undefined;
   /** Enable debug logging */
   debug?: boolean | undefined;

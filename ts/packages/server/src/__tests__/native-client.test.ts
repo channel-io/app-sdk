@@ -66,6 +66,25 @@ describe("NativeFunctionClient", () => {
   // ============================================
 
   describe("issueToken", () => {
+    it("uses the AppStore API host by default", async () => {
+      const defaultClient = new NativeFunctionClient();
+      mockFetch.mockResolvedValueOnce(
+        mockFetchResponse({
+          result: {
+            accessToken: "access-123",
+            refreshToken: "refresh-456",
+            expiresIn: 3600,
+          },
+        })
+      );
+
+      await defaultClient.issueToken(APP_SECRET);
+
+      expect(getFetchUrl(mockFetch)).toBe(
+        "https://app-store-api.channel.io/general/v1/native/functions"
+      );
+    });
+
     it("should call issueToken with secret only (app-scoped)", async () => {
       const tokenResult = {
         accessToken: "access-123",

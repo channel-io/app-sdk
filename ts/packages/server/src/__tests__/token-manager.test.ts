@@ -201,7 +201,7 @@ describe("TokenManager", () => {
     });
 
     const calls = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls;
-    expect(calls[0]![0]).toBe("https://app-store.channel.io/general/v1/native/functions");
+    expect(calls[0]![0]).toBe("https://app-store-api.channel.io/general/v1/native/functions");
     expect((calls[0]![1] as RequestInit).method).toBe("PUT");
     expect(getRequest(0)).toEqual({
       method: "issueToken",
