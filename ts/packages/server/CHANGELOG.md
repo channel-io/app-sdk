@@ -1,5 +1,21 @@
 # @channel.io/app-sdk-server
 
+## 0.23.0
+
+### Minor Changes
+
+- 2e304e0: Add the snapshot-free `userChat.opened` lifecycle Hook contract and the one-purpose Manager
+  private-note native call. Authenticated native calls accept an optional abort signal, and Manager
+  private-note debug logs omit request and response content.
+
+### Patch Changes
+
+- f6141fc: Use the AppStore API host by default for native function and token requests.
+- Updated dependencies [49eb8be]
+- Updated dependencies [3db1aac]
+- Updated dependencies [2e304e0]
+  - @channel.io/app-sdk-core@0.23.0
+
 ## 0.22.0
 
 ### Patch Changes
