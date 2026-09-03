@@ -1,5 +1,12 @@
 # @channel.io/app-sdk-wam
 
+## 0.23.1
+
+### Patch Changes
+
+- Updated dependencies [186ad95]
+  - @channel.io/app-sdk-core@0.23.1
+
 ## 0.23.0
 
 ### Patch Changes
