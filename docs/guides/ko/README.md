@@ -9,12 +9,16 @@
 3. [Function 등록](functions.md): wire contract와 standalone typed app Function을 정의합니다.
 4. [Command 가이드](extensions/command.md): metadata, action, autocomplete를 구현합니다.
 5. [WAM 가이드](wam.md): React UI, host authorization, app/native Function 호출을 구현합니다.
-6. [Extension 전체 가이드와 16개 TypeScript/Go 상세 문서](extensions.md): Extension의 등록 흐름을 이해하고 필요한 기능과 구현 계약을 선택합니다.
+6. [Extension 전체 가이드와 기능별 상세 문서](extensions.md): Extension의 등록 흐름을 이해하고 필요한 기능과 구현 계약을 선택합니다.
 7. [프로덕션 준비 가이드](app-development.md): 출시 전 보안, 신뢰성, 운영, 배포, rollback을 검증합니다.
 8. 언어별 API는 [TypeScript 레퍼런스](../../reference/typescript/README.md) 또는
    [Go 레퍼런스](../../reference/go/README.md)에서 확인합니다.
 9. 구현 중에는 완성된 [TypeScript 앱 튜토리얼](https://github.com/channel-io/app-tutorial-ts) 또는
    [Go 앱 튜토리얼](https://github.com/channel-io/app-tutorial)을 함께 봅니다.
+
+## 기능별 가이드
+
+- [`userAuthorization` Extension 가이드](extensions/user-authorization.md): ALF Function의 본인 확인과 앱의 리소스 권한 검사를 구분합니다.
 
 ## 선택 기준
 

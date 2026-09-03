@@ -170,11 +170,11 @@ Channel이 올립니다. 앱의 배포 버전, npm/Go SDK package 버전, 개발
 다릅니다. 현재 기본 시스템 계약은 `v1`입니다. 예를 들어 AppStore 시스템 계약 `v2`는 이러한
 breaking change가 반영된 플랫폼 버전이지, 각 앱이 만드는 v2가 아닙니다.
 
-| `systemVersion`이 나타나는 위치                        | 의미                                                                 |
-| ------------------------------------------------------ | -------------------------------------------------------------------- |
-| `@Extension` 또는 Go Extension 등록                    | 앱이 구현한다고 AppStore에 등록하는 시스템 계약                      |
-| Extension metadata의 target `systemVersion`            | 해당 Function을 호출할 때 사용할 동일한 AppStore 시스템 계약         |
-| Function request의 `systemVersion`과 `/functions/v1`   | AppStore가 같은 시스템 계약을 앱 서버에 전달하는 request와 route 표현 |
+| `systemVersion`이 나타나는 위치                      | 의미                                                                  |
+| ---------------------------------------------------- | --------------------------------------------------------------------- |
+| `@Extension` 또는 Go Extension 등록                  | 앱이 구현한다고 AppStore에 등록하는 시스템 계약                       |
+| Extension metadata의 target `systemVersion`          | 해당 Function을 호출할 때 사용할 동일한 AppStore 시스템 계약          |
+| Function request의 `systemVersion`과 `/functions/v1` | AppStore가 같은 시스템 계약을 앱 서버에 전달하는 request와 route 표현 |
 
 현재 SDK는 version별 handler 집합을 만들지 않습니다. 따라서 개발자가 `systemVersion: "v2"`를
 임의로 지정해 자체 Function v2를 운영할 수 없습니다. AppStore와 SDK가 공식 v2 계약을 제공할 때만
@@ -239,6 +239,15 @@ TypeScript는 일반적으로 `@Extension`과 `@Func`를 사용합니다. Go는
 `client_credentials`는 OAuth가 아니라 Config에 저장합니다.
 
 [OAuth 상세](extensions/oauth.md)
+
+## User Authorization
+
+`userAuthorization`은 ALF Task가 User를 대신해 민감한 Function을 호출할 때 휴대폰 번호, 이메일,
+회원 ID를 확인합니다. AppStore는 지원되는 호출에서 Function 실행 전 본인 확인을 맡고, 앱 서버는
+주문·예약·계정 같은 리소스의 소유권과 작업 권한을 최종 확인합니다. 현재 다른 Function 호출 경로는
+이 정책의 적용 대상이 아닙니다.
+
+[`userAuthorization` 상세](extensions/user-authorization.md)
 
 ## Command
 
