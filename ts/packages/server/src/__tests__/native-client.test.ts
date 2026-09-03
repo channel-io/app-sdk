@@ -286,6 +286,45 @@ describe("NativeFunctionClient", () => {
     });
   });
 
+  describe("prepareAppMediaUpload", () => {
+    it("should prepare a public Media upload with a channel-scoped token", async () => {
+      const uploadTarget = {
+        uploadUrl: "https://media.example.com/v1/app-store/media/file",
+        uploadMethod: "POST",
+        headers: { Accept: "application/json" },
+        bodyType: "multipart",
+        fileField: "file",
+        fileName: "guide.pdf",
+        formFields: { managerId: "manager-1" },
+      };
+      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: uploadTarget }));
+
+      const result = await client.prepareAppMediaUpload(
+        {
+          managerId: "manager-1",
+          fileName: "guide.pdf",
+          contentType: "application/pdf",
+          size: 1024,
+        },
+        "channel-token"
+      );
+
+      expect(parseFetchBody(mockFetch)).toEqual({
+        method: "prepareAppMediaUpload",
+        params: {
+          managerId: "manager-1",
+          fileName: "guide.pdf",
+          contentType: "application/pdf",
+          size: 1024,
+        },
+      });
+      const init = getFetchInit(mockFetch);
+      expect((init.headers as Record<string, string>)["x-access-token"]).toBe("channel-token");
+      expect(result).toEqual(uploadTarget);
+      expectTypeOf(result.formFields).toEqualTypeOf<Record<string, string>>();
+    });
+  });
+
   // ============================================
   // AppDataTable Functions
   // ============================================
