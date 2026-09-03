@@ -63,7 +63,7 @@ export interface TokenManagerConfig {
   appId: string;
   /** App secret */
   appSecret: string;
-  /** AppStore API base URL (default: https://app-store.channel.io) */
+  /** AppStore API base URL (default: https://app-store-api.channel.io) */
   appStoreUrl?: string;
   /** Custom cache storage (default: in-memory) */
   cacheStorage?: TokenCacheStorage;

@@ -2004,6 +2004,7 @@ type ConfigField struct {
 	OverviewFeature        bool                            `protobuf:"varint,44,opt,name=overview_feature,json=overviewFeature,proto3" json:"overview_feature,omitempty"`
 	OverviewLabel          string                          `protobuf:"bytes,45,opt,name=overview_label,json=overviewLabel,proto3" json:"overview_label,omitempty"`
 	OverviewDescription    string                          `protobuf:"bytes,46,opt,name=overview_description,json=overviewDescription,proto3" json:"overview_description,omitempty"`
+	Hidden                 bool                            `protobuf:"varint,47,opt,name=hidden,proto3" json:"hidden,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -2346,6 +2347,13 @@ func (x *ConfigField) GetOverviewDescription() string {
 	return ""
 }
 
+func (x *ConfigField) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
 type ConfigBlock struct {
 	state                  protoimpl.MessageState          `protogen:"open.v1"`
 	Type                   string                          `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
@@ -2412,6 +2420,7 @@ type ConfigBlock struct {
 	AfterSuccess           []string                        `protobuf:"bytes,64,rep,name=after_success,json=afterSuccess,proto3" json:"after_success,omitempty"`
 	SuccessMessage         string                          `protobuf:"bytes,65,opt,name=success_message,json=successMessage,proto3" json:"success_message,omitempty"`
 	ShowInOverviewMenu     bool                            `protobuf:"varint,66,opt,name=show_in_overview_menu,json=showInOverviewMenu,proto3" json:"show_in_overview_menu,omitempty"`
+	Hidden                 bool                            `protobuf:"varint,67,opt,name=hidden,proto3" json:"hidden,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -2890,6 +2899,13 @@ func (x *ConfigBlock) GetSuccessMessage() string {
 func (x *ConfigBlock) GetShowInOverviewMenu() bool {
 	if x != nil {
 		return x.ShowInOverviewMenu
+	}
+	return false
+}
+
+func (x *ConfigBlock) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
 	}
 	return false
 }
@@ -16298,7 +16314,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x05phone\x18\x03 \x01(\tR\x05phone\x12\x1a\n" +
 	"\bpostcode\x18\x04 \x01(\tR\bpostcode\x12\x1a\n" +
 	"\baddress1\x18\x05 \x01(\tR\baddress1\x12\x1a\n" +
-	"\baddress2\x18\x06 \x01(\tR\baddress2\"\xab\x10\n" +
+	"\baddress2\x18\x06 \x01(\tR\baddress2\"\xc3\x10\n" +
 	"\vConfigField\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x10\n" +
 	"\x03key\x18\x02 \x01(\tR\x03key\x12\x14\n" +
@@ -16346,10 +16362,11 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x10overview_summary\x18+ \x01(\bR\x0foverviewSummary\x12)\n" +
 	"\x10overview_feature\x18, \x01(\bR\x0foverviewFeature\x12%\n" +
 	"\x0eoverview_label\x18- \x01(\tR\roverviewLabel\x121\n" +
-	"\x14overview_description\x18. \x01(\tR\x13overviewDescription\x1ac\n" +
+	"\x14overview_description\x18. \x01(\tR\x13overviewDescription\x12\x16\n" +
+	"\x06hidden\x18/ \x01(\bR\x06hidden\x1ac\n" +
 	"\fI18nMapEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
-	"\x05value\x18\x02 \x01(\v2'.channel.app.sdk.v1.ConfigLocalizedTextR\x05value:\x028\x01J\x04\b\x1b\x10\x1cJ\x04\b\x1c\x10\x1d\"\xee\x15\n" +
+	"\x05value\x18\x02 \x01(\v2'.channel.app.sdk.v1.ConfigLocalizedTextR\x05value:\x028\x01J\x04\b\x1b\x10\x1cJ\x04\b\x1c\x10\x1d\"\x86\x16\n" +
 	"\vConfigBlock\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x14\n" +
@@ -16418,7 +16435,8 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x0fsave_before_run\x18? \x01(\bR\rsaveBeforeRun\x12#\n" +
 	"\rafter_success\x18@ \x03(\tR\fafterSuccess\x12'\n" +
 	"\x0fsuccess_message\x18A \x01(\tR\x0esuccessMessage\x121\n" +
-	"\x15show_in_overview_menu\x18B \x01(\bR\x12showInOverviewMenu\x1ac\n" +
+	"\x15show_in_overview_menu\x18B \x01(\bR\x12showInOverviewMenu\x12\x16\n" +
+	"\x06hidden\x18C \x01(\bR\x06hidden\x1ac\n" +
 	"\fI18nMapEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.channel.app.sdk.v1.ConfigLocalizedTextR\x05value:\x028\x01J\x04\b\r\x10\x0eJ\x04\b\x11\x10\x12\"\x1c\n" +

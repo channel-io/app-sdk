@@ -39,7 +39,7 @@ import { sanitizeForLogging } from "../utils/sanitize-for-logging.js";
 /**
  * Default AppStore API URL
  */
-const DEFAULT_APPSTORE_URL = "https://app-store.channel.io";
+const DEFAULT_APPSTORE_URL = "https://app-store-api.channel.io";
 const CONTENT_SENSITIVE_NATIVE_METHODS = new Set(["writeUserChatPrivateNoteWithManagerCredential"]);
 
 /**

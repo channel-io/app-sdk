@@ -1,5 +1,20 @@
 # @channel.io/app-sdk-core
 
+## 0.23.0
+
+### Minor Changes
+
+- 2e304e0: Add the snapshot-free `userChat.opened` lifecycle Hook contract and the one-purpose Manager
+  private-note native call. Authenticated native calls accept an optional abort signal, and Manager
+  private-note debug logs omit request and response content.
+
+### Patch Changes
+
+- 49eb8be: Preserve `hidden` metadata on Config fields so AppStore can omit them from the standard setup UI.
+- 3db1aac: Add `fulfillmentId` to `OrderClaimItem`. A single line item can be shipped across several
+  fulfillments, so returning one requires naming the fulfillment alongside the item. The field is
+  optional and only meaningful for returns; cancel and exchange inputs may leave it unset.
+
 ## 0.22.0
 
 ### Minor Changes
