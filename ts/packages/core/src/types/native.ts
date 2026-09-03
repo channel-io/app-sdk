@@ -795,7 +795,7 @@ export interface NativePrepareAppMediaUploadParams {
   size?: number;
 }
 
-export interface NativeAppMediaUploadTarget {
+export interface NativePrepareAppMediaUploadResult {
   uploadUrl: string;
   uploadMethod: string;
   headers: Record<string, string>;
@@ -1044,7 +1044,7 @@ export interface NativeFunctionTypeMap {
   };
   prepareAppMediaUpload: {
     params: NativePrepareAppMediaUploadParams;
-    result: NativeAppMediaUploadTarget;
+    result: NativePrepareAppMediaUploadResult;
   };
   listActiveOAuthManagerTargets: {
     params: NativeListActiveOAuthManagerTargetsParams;

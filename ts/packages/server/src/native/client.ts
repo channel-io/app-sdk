@@ -11,8 +11,8 @@ import type {
   NativeGetAppDataTableSchemaResult,
   NativeListActiveOAuthManagerTargetsParams,
   NativeListActiveOAuthManagerTargetsResult,
-  NativeAppMediaUploadTarget,
   NativePrepareAppMediaUploadParams,
+  NativePrepareAppMediaUploadResult,
   NativeUpsertAppDataTableRowsParams,
   NativeUpsertAppDataTableRowsResult,
   NativeWriteUserChatPrivateNoteWithManagerCredentialParams,
@@ -225,7 +225,7 @@ export class NativeFunctionClient {
   prepareAppMediaUpload(
     params: NativePrepareAppMediaUploadParams,
     accessToken: string
-  ): Promise<NativeAppMediaUploadTarget> {
+  ): Promise<NativePrepareAppMediaUploadResult> {
     return this.callNativeFunctionWithToken("prepareAppMediaUpload", params, accessToken);
   }
 
