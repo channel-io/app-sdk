@@ -1,5 +1,12 @@
 # @channel.io/app-sdk-core
 
+## 0.23.1
+
+### Patch Changes
+
+- 186ad95: Expose the typed `prepareAppMediaUpload` native function and server client helper for app-owned
+  public Media uploads.
+
 ## 0.23.0
 
 ### Minor Changes
