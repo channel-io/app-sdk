@@ -927,10 +927,13 @@ message OrderClaimReason {
 }
 
 message OrderClaimability {
-  bool cancelable = 1;
-  bool returnable = 2;
-  bool exchangeable = 3;
-  bool shipping_address_changeable = 4;
+  // 네 값 모두 optional 이다. proto3 plain bool 은 false 와 미설정이 구별되지 않아
+  // protojson 이 false 를 생략하고, 전부 불가한 아이템이 claimability: {} 로 나간다.
+  // 명시적 presence 를 주면 false 도 그대로 실려 "판정했고 불가" 와 "판정 못 함" 이 갈린다.
+  optional bool cancelable = 1;
+  optional bool returnable = 2;
+  optional bool exchangeable = 3;
+  optional bool shipping_address_changeable = 4;
 }
 
 message OrderClaim {
@@ -967,6 +970,7 @@ message OrderPayment {
   double discount_amount = 6;
   repeated string methods = 7;
   bool require_refund_bank_account = 8;
+  double tax_amount = 9;
 }
 
 message OrderFulfillment {
@@ -977,6 +981,53 @@ message OrderFulfillment {
   string tracking_company = 5;
   string tracking_url = 6;
   double estimated_delivery_date = 7;
+}
+
+// 세금 한 줄. 주문·배송수단·아이템 어디에도 붙을 수 있다.
+message OrderTaxLine {
+  double rate = 1;
+  double rate_percentage = 2;
+  string title = 3;
+  double amount = 4;
+}
+
+// 몰이 주문·아이템에 붙인 자유 키-값(선물 메시지, 각인 문구 등).
+message OrderAttribute {
+  string key = 1;
+  string value = 2;
+}
+
+// 주문에 적용된 배송수단 한 건.
+message OrderShippingLine {
+  string id = 1;
+  string title = 2;
+  string code = 3;
+  string carrier_identifier = 4;
+  repeated OrderTaxLine tax_lines = 5;
+}
+
+// 결제·환불 트랜잭션 한 건. payment.methods 는 게이트웨이 이름만 담아 착불·후불을
+// 구분하지 못하므로, kind/status/gateway/manual_payment_gateway 를 그대로 보존한다.
+message OrderTransaction {
+  string id = 1;
+  // 환불·취소가 어느 결제에 붙은 건지 추적할 때 쓴다.
+  string parent_id = 2;
+  string kind = 3;
+  string status = 4;
+  string gateway = 5;
+  // 착불·후불(무통장·대금교환) 판정의 핵심 신호라, false 와 미설정을 구별해야 한다.
+  optional bool manual_payment_gateway = 6;
+  double amount = 7;
+  string currency = 8;
+  double created_at = 9;
+}
+
+// 몰이 붙인 확장 속성. value 는 type 에 따라 문자열·JSON 문자열 등 형태가 달라 해석하지 않는다.
+message OrderMetafield {
+  string namespace = 1;
+  string key = 2;
+  string value = 3;
+  string type = 4;
 }
 
 message Order {
@@ -1114,6 +1165,15 @@ message CommerceOrderItem {
   double delivered_at = 11;
   double estimated_ship_date = 12;
   OrderClaimability claimability = 13;
+  string sku = 14;
+  // 아직 출하되지 않은 수량. 0(전량 출하됨)과 미제공을 구별해야 해서 optional 이다.
+  optional double unfulfilled_quantity = 15;
+  optional bool requires_shipping = 16;
+  // 정기구독 주문일 때만 채워진다.
+  string selling_plan_name = 17;
+  string selling_plan_id = 18;
+  repeated OrderAttribute custom_attributes = 19;
+  repeated OrderTaxLine tax_lines = 20;
 }
 
 message CommerceOrder {
@@ -1126,6 +1186,26 @@ message CommerceOrder {
   repeated OrderFulfillment fulfillments = 7;
   OrderAddress shipping_address = 8;
   repeated OrderClaim claims = 9;
+  // 매니저가 몰 어드민의 해당 주문으로 바로 이동할 수 있는 링크.
+  string admin_url = 10;
+  string note = 11;
+  // payment.state 하나로는 부분환불·부분출하가 구분되지 않아 몰의 원문 상태를 함께 싣는다.
+  string display_financial_status = 12;
+  string display_fulfillment_status = 13;
+  // 아래 bool 들은 false 와 미제공이 다른 의미라 optional 이다.
+  optional bool test = 14;
+  optional bool first_order = 15;
+  optional bool closed = 16;
+  optional bool confirmed = 17;
+  optional bool taxes_included = 18;
+  optional double total_weight = 19;
+  // 주문이 생성된 경로(예: Online Store).
+  string app_name = 20;
+  OrderAddress billing_address = 21;
+  repeated OrderAttribute custom_attributes = 22;
+  repeated OrderShippingLine shipping_lines = 23;
+  repeated OrderTransaction transactions = 24;
+  repeated OrderMetafield metafields = 25;
 }
 
 message CommerceGetOrdersInput {

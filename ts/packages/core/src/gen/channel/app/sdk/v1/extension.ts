@@ -1054,6 +1054,11 @@ export interface OrderClaimReason {
 }
 
 export interface OrderClaimability {
+  /**
+   * 네 값 모두 optional 이다. proto3 plain bool 은 false 와 미설정이 구별되지 않아
+   * protojson 이 false 를 생략하고, 전부 불가한 아이템이 claimability: {} 로 나간다.
+   * 명시적 presence 를 주면 false 도 그대로 실려 "판정했고 불가" 와 "판정 못 함" 이 갈린다.
+   */
   cancelable?: boolean | undefined;
   returnable?: boolean | undefined;
   exchangeable?: boolean | undefined;
@@ -1094,6 +1099,7 @@ export interface OrderPayment {
   discountAmount?: number | undefined;
   methods?: string[] | undefined;
   requireRefundBankAccount?: boolean | undefined;
+  taxAmount?: number | undefined;
 }
 
 export interface OrderFulfillment {
@@ -1104,6 +1110,59 @@ export interface OrderFulfillment {
   trackingCompany?: string | undefined;
   trackingUrl?: string | undefined;
   estimatedDeliveryDate?: number | undefined;
+}
+
+/** 세금 한 줄. 주문·배송수단·아이템 어디에도 붙을 수 있다. */
+export interface OrderTaxLine {
+  rate?: number | undefined;
+  ratePercentage?: number | undefined;
+  title?: string | undefined;
+  amount?: number | undefined;
+}
+
+/** 몰이 주문·아이템에 붙인 자유 키-값(선물 메시지, 각인 문구 등). */
+export interface OrderAttribute {
+  key?: string | undefined;
+  value?: string | undefined;
+}
+
+/** 주문에 적용된 배송수단 한 건. */
+export interface OrderShippingLine {
+  id?: string | undefined;
+  title?: string | undefined;
+  code?: string | undefined;
+  carrierIdentifier?: string | undefined;
+  taxLines?: OrderTaxLine[] | undefined;
+}
+
+/**
+ * 결제·환불 트랜잭션 한 건. payment.methods 는 게이트웨이 이름만 담아 착불·후불을
+ * 구분하지 못하므로, kind/status/gateway/manual_payment_gateway 를 그대로 보존한다.
+ */
+export interface OrderTransaction {
+  id?:
+    | string
+    | undefined;
+  /** 환불·취소가 어느 결제에 붙은 건지 추적할 때 쓴다. */
+  parentId?: string | undefined;
+  kind?: string | undefined;
+  status?: string | undefined;
+  gateway?:
+    | string
+    | undefined;
+  /** 착불·후불(무통장·대금교환) 판정의 핵심 신호라, false 와 미설정을 구별해야 한다. */
+  manualPaymentGateway?: boolean | undefined;
+  amount?: number | undefined;
+  currency?: string | undefined;
+  createdAt?: number | undefined;
+}
+
+/** 몰이 붙인 확장 속성. value 는 type 에 따라 문자열·JSON 문자열 등 형태가 달라 해석하지 않는다. */
+export interface OrderMetafield {
+  namespace?: string | undefined;
+  key?: string | undefined;
+  value?: string | undefined;
+  type?: string | undefined;
 }
 
 export interface Order {
@@ -1244,6 +1303,19 @@ export interface CommerceOrderItem {
   deliveredAt?: number | undefined;
   estimatedShipDate?: number | undefined;
   claimability?: OrderClaimability | undefined;
+  sku?:
+    | string
+    | undefined;
+  /** 아직 출하되지 않은 수량. 0(전량 출하됨)과 미제공을 구별해야 해서 optional 이다. */
+  unfulfilledQuantity?: number | undefined;
+  requiresShipping?:
+    | boolean
+    | undefined;
+  /** 정기구독 주문일 때만 채워진다. */
+  sellingPlanName?: string | undefined;
+  sellingPlanId?: string | undefined;
+  customAttributes?: OrderAttribute[] | undefined;
+  taxLines?: OrderTaxLine[] | undefined;
 }
 
 export interface CommerceOrder {
@@ -1255,7 +1327,35 @@ export interface CommerceOrder {
   payment?: OrderPayment | undefined;
   fulfillments?: OrderFulfillment[] | undefined;
   shippingAddress?: OrderAddress | undefined;
-  claims?: OrderClaim[] | undefined;
+  claims?:
+    | OrderClaim[]
+    | undefined;
+  /** 매니저가 몰 어드민의 해당 주문으로 바로 이동할 수 있는 링크. */
+  adminUrl?: string | undefined;
+  note?:
+    | string
+    | undefined;
+  /** payment.state 하나로는 부분환불·부분출하가 구분되지 않아 몰의 원문 상태를 함께 싣는다. */
+  displayFinancialStatus?: string | undefined;
+  displayFulfillmentStatus?:
+    | string
+    | undefined;
+  /** 아래 bool 들은 false 와 미제공이 다른 의미라 optional 이다. */
+  test?: boolean | undefined;
+  firstOrder?: boolean | undefined;
+  closed?: boolean | undefined;
+  confirmed?: boolean | undefined;
+  taxesIncluded?: boolean | undefined;
+  totalWeight?:
+    | number
+    | undefined;
+  /** 주문이 생성된 경로(예: Online Store). */
+  appName?: string | undefined;
+  billingAddress?: OrderAddress | undefined;
+  customAttributes?: OrderAttribute[] | undefined;
+  shippingLines?: OrderShippingLine[] | undefined;
+  transactions?: OrderTransaction[] | undefined;
+  metafields?: OrderMetafield[] | undefined;
 }
 
 export interface CommerceGetOrdersInput {
