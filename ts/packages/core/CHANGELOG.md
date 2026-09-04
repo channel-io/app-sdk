@@ -1,5 +1,32 @@
 # @channel.io/app-sdk-core
 
+## 0.24.0
+
+### Minor Changes
+
+- 3e4e4b1: Widen the commerce order contract with fields malls already return but the contract could not
+  carry — `payment.taxAmount`, item `sku`/`taxLines`/`unfulfilledQuantity`/`requiresShipping`/selling
+  plan, and order `adminUrl`/`note`/display statuses/`billingAddress`/`shippingLines`/`transactions`/
+  `metafields`/`customAttributes`. `OrderTransaction` exists so cash-on-delivery and deferred payment
+  can be told apart, which `payment.methods` alone cannot express.
+
+  `OrderClaimability`'s four booleans now carry explicit presence. A proto3 plain bool cannot tell
+  `false` from unset, so JSON serialization dropped every `false` and an item that allowed no claim
+  at all was emitted as `claimability: {}`, contradicting the schema that advertises those fields as
+  required. Generated field types change from `bool` to an optional boolean, so code that builds
+  `OrderClaimability` through struct literals needs updating; accessors are unchanged.
+
+### Patch Changes
+
+- 0ff5a85: Export Go aliases for the commerce order value types added alongside the widened order contract —
+  `TaxLine`, `Attribute`, `ShippingLine`, `Transaction`, and `Metafield`. Their generated code lives
+  under an internal package, so without an alias an app could see the fields in the schema but had no
+  way to construct the values.
+
+  A test walks the proto descriptors reachable from the order contract and fails when one of those
+  messages has no alias in the commerce package, so adding a message without exporting it is caught
+  rather than discovered by the first app that needs the value.
+
 ## 0.23.1
 
 ### Patch Changes
