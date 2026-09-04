@@ -1086,6 +1086,7 @@ export const OrderPaymentProtoSchema = z.object({
   discountAmount: z.number().optional(),
   methods: z.array(z.string()).optional(),
   requireRefundBankAccount: z.boolean().optional(),
+  taxAmount: z.number().optional(),
 }) satisfies z.ZodType<pb.OrderPayment>;
 export type OrderPaymentProto = z.infer<typeof OrderPaymentProtoSchema>;
 
@@ -1099,6 +1100,50 @@ export const OrderFulfillmentProtoSchema = z.object({
   estimatedDeliveryDate: z.number().optional(),
 }) satisfies z.ZodType<pb.OrderFulfillment>;
 export type OrderFulfillmentProto = z.infer<typeof OrderFulfillmentProtoSchema>;
+
+export const OrderTaxLineProtoSchema = z.object({
+  rate: z.number().optional(),
+  ratePercentage: z.number().optional(),
+  title: z.string().optional(),
+  amount: z.number().optional(),
+}) satisfies z.ZodType<pb.OrderTaxLine>;
+export type OrderTaxLineProto = z.infer<typeof OrderTaxLineProtoSchema>;
+
+export const OrderAttributeProtoSchema = z.object({
+  key: z.string().optional(),
+  value: z.string().optional(),
+}) satisfies z.ZodType<pb.OrderAttribute>;
+export type OrderAttributeProto = z.infer<typeof OrderAttributeProtoSchema>;
+
+export const OrderShippingLineProtoSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().optional(),
+  code: z.string().optional(),
+  carrierIdentifier: z.string().optional(),
+  taxLines: z.array(z.lazy(() => OrderTaxLineProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.OrderShippingLine>;
+export type OrderShippingLineProto = z.infer<typeof OrderShippingLineProtoSchema>;
+
+export const OrderTransactionProtoSchema = z.object({
+  id: z.string().optional(),
+  parentId: z.string().optional(),
+  kind: z.string().optional(),
+  status: z.string().optional(),
+  gateway: z.string().optional(),
+  manualPaymentGateway: z.boolean().optional(),
+  amount: z.number().optional(),
+  currency: z.string().optional(),
+  createdAt: z.number().optional(),
+}) satisfies z.ZodType<pb.OrderTransaction>;
+export type OrderTransactionProto = z.infer<typeof OrderTransactionProtoSchema>;
+
+export const OrderMetafieldProtoSchema = z.object({
+  namespace: z.string().optional(),
+  key: z.string().optional(),
+  value: z.string().optional(),
+  type: z.string().optional(),
+}) satisfies z.ZodType<pb.OrderMetafield>;
+export type OrderMetafieldProto = z.infer<typeof OrderMetafieldProtoSchema>;
 
 export const OrderProtoSchema = z.object({
   id: z.string().optional(),
@@ -1251,6 +1296,13 @@ export const CommerceOrderItemProtoSchema = z.object({
   deliveredAt: z.number().optional(),
   estimatedShipDate: z.number().optional(),
   claimability: z.lazy(() => OrderClaimabilityProtoSchema).optional(),
+  sku: z.string().optional(),
+  unfulfilledQuantity: z.number().optional(),
+  requiresShipping: z.boolean().optional(),
+  sellingPlanName: z.string().optional(),
+  sellingPlanId: z.string().optional(),
+  customAttributes: z.array(z.lazy(() => OrderAttributeProtoSchema)).optional(),
+  taxLines: z.array(z.lazy(() => OrderTaxLineProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.CommerceOrderItem>;
 export type CommerceOrderItemProto = z.infer<typeof CommerceOrderItemProtoSchema>;
 
@@ -1264,6 +1316,22 @@ export const CommerceOrderProtoSchema = z.object({
   fulfillments: z.array(z.lazy(() => OrderFulfillmentProtoSchema)).optional(),
   shippingAddress: z.lazy(() => OrderAddressProtoSchema).optional(),
   claims: z.array(z.lazy(() => OrderClaimProtoSchema)).optional(),
+  adminUrl: z.string().optional(),
+  note: z.string().optional(),
+  displayFinancialStatus: z.string().optional(),
+  displayFulfillmentStatus: z.string().optional(),
+  test: z.boolean().optional(),
+  firstOrder: z.boolean().optional(),
+  closed: z.boolean().optional(),
+  confirmed: z.boolean().optional(),
+  taxesIncluded: z.boolean().optional(),
+  totalWeight: z.number().optional(),
+  appName: z.string().optional(),
+  billingAddress: z.lazy(() => OrderAddressProtoSchema).optional(),
+  customAttributes: z.array(z.lazy(() => OrderAttributeProtoSchema)).optional(),
+  shippingLines: z.array(z.lazy(() => OrderShippingLineProtoSchema)).optional(),
+  transactions: z.array(z.lazy(() => OrderTransactionProtoSchema)).optional(),
+  metafields: z.array(z.lazy(() => OrderMetafieldProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.CommerceOrder>;
 export type CommerceOrderProto = z.infer<typeof CommerceOrderProtoSchema>;
 

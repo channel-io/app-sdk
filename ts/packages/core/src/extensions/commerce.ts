@@ -26,9 +26,14 @@ import {
   DefectInfoSchema,
   FulfillmentSchema,
   OperationOptionsSchema,
+  MetafieldSchema,
+  OrderAttributeSchema,
   OrderClaimItemSchema,
   OrderExchangeItemSchema,
   PaymentSchema,
+  ShippingLineSchema,
+  TaxLineSchema,
+  TransactionSchema,
 } from "./order.js";
 
 type ProtoBacked<T, Proto> = T & Proto;
@@ -50,6 +55,15 @@ export const CommerceOrderItemSchema = z.object({
   deliveredAt: z.number().optional(),
   estimatedShipDate: z.number().optional(),
   claimability: ClaimabilitySchema,
+  sku: z.string().optional(),
+  // 0(전량 출하됨)과 미제공은 다른 뜻이라 optional 이다.
+  unfulfilledQuantity: z.number().optional(),
+  requiresShipping: z.boolean().optional(),
+  // 정기구독 주문일 때만 채워진다.
+  sellingPlanName: z.string().optional(),
+  sellingPlanId: z.string().optional(),
+  customAttributes: z.array(OrderAttributeSchema).optional(),
+  taxLines: z.array(TaxLineSchema).optional(),
 });
 export type CommerceOrderItem = ProtoBacked<
   z.infer<typeof CommerceOrderItemSchema>,
@@ -66,6 +80,25 @@ export const CommerceOrderSchema = z.object({
   fulfillments: z.array(FulfillmentSchema),
   shippingAddress: AddressSchema.optional(),
   claims: z.array(ClaimSchema),
+  // 매니저가 몰 어드민의 해당 주문으로 바로 이동할 수 있는 링크.
+  adminUrl: z.string().optional(),
+  note: z.string().optional(),
+  // payment.state 하나로는 부분환불·부분출하가 구분되지 않아 몰의 원문 상태를 함께 싣는다.
+  displayFinancialStatus: z.string().optional(),
+  displayFulfillmentStatus: z.string().optional(),
+  test: z.boolean().optional(),
+  firstOrder: z.boolean().optional(),
+  closed: z.boolean().optional(),
+  confirmed: z.boolean().optional(),
+  taxesIncluded: z.boolean().optional(),
+  totalWeight: z.number().optional(),
+  // 주문이 생성된 경로(예: Online Store).
+  appName: z.string().optional(),
+  billingAddress: AddressSchema.optional(),
+  customAttributes: z.array(OrderAttributeSchema).optional(),
+  shippingLines: z.array(ShippingLineSchema).optional(),
+  transactions: z.array(TransactionSchema).optional(),
+  metafields: z.array(MetafieldSchema).optional(),
 });
 export type CommerceOrder = ProtoBacked<z.infer<typeof CommerceOrderSchema>, ProtoCommerceOrder>;
 
