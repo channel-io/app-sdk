@@ -49,3 +49,10 @@ type DefectInfo = sdkv1.OrderDefectInfo
 type OperationOptions = sdkv1.OrderOperationOptions
 type FieldConfig = sdkv1.OrderFieldConfig
 type AllowedValue = sdkv1.OrderAllowedValue
+
+// 주문에 딸린 값 타입. 생성 코드는 internal 이라 별칭 없이는 앱이 만들 수 없다.
+type TaxLine = sdkv1.OrderTaxLine
+type Attribute = sdkv1.OrderAttribute
+type ShippingLine = sdkv1.OrderShippingLine
+type Transaction = sdkv1.OrderTransaction
+type Metafield = sdkv1.OrderMetafield
