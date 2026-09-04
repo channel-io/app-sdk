@@ -1900,6 +1900,60 @@
                   "shippingAddressChangeable"
                 ],
                 "additionalProperties": false
+              },
+              "sku": {
+                "type": "string"
+              },
+              "unfulfilledQuantity": {
+                "type": "number"
+              },
+              "requiresShipping": {
+                "type": "boolean"
+              },
+              "sellingPlanName": {
+                "type": "string"
+              },
+              "sellingPlanId": {
+                "type": "string"
+              },
+              "customAttributes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "taxLines": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "rate": {
+                      "type": "number"
+                    },
+                    "ratePercentage": {
+                      "type": "number"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "amount": {
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false
+                }
               }
             },
             "required": [
@@ -2054,6 +2108,60 @@
                         "shippingAddressChangeable"
                       ],
                       "additionalProperties": false
+                    },
+                    "sku": {
+                      "type": "string"
+                    },
+                    "unfulfilledQuantity": {
+                      "type": "number"
+                    },
+                    "requiresShipping": {
+                      "type": "boolean"
+                    },
+                    "sellingPlanName": {
+                      "type": "string"
+                    },
+                    "sellingPlanId": {
+                      "type": "string"
+                    },
+                    "customAttributes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "key": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "key"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "taxLines": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "rate": {
+                            "type": "number"
+                          },
+                          "ratePercentage": {
+                            "type": "number"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "number"
+                          }
+                        },
+                        "additionalProperties": false
+                      }
                     }
                   },
                   "required": [
@@ -2096,6 +2204,9 @@
                   },
                   "requireRefundBankAccount": {
                     "type": "boolean"
+                  },
+                  "taxAmount": {
+                    "type": "number"
                   }
                 },
                 "required": [
@@ -2223,6 +2334,201 @@
                     "state",
                     "itemIds",
                     "createdAt"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "adminUrl": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              },
+              "displayFinancialStatus": {
+                "type": "string"
+              },
+              "displayFulfillmentStatus": {
+                "type": "string"
+              },
+              "test": {
+                "type": "boolean"
+              },
+              "firstOrder": {
+                "type": "boolean"
+              },
+              "closed": {
+                "type": "boolean"
+              },
+              "confirmed": {
+                "type": "boolean"
+              },
+              "taxesIncluded": {
+                "type": "boolean"
+              },
+              "totalWeight": {
+                "type": "number"
+              },
+              "appName": {
+                "type": "string"
+              },
+              "billingAddress": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "cellPhoneNumber": {
+                    "type": "string"
+                  },
+                  "zipcode": {
+                    "type": "string"
+                  },
+                  "address1": {
+                    "type": "string"
+                  },
+                  "address2": {
+                    "type": "string"
+                  },
+                  "shippingMessage": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "province": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "customAttributes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "shippingLines": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "carrierIdentifier": {
+                      "type": "string"
+                    },
+                    "taxLines": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "rate": {
+                            "type": "number"
+                          },
+                          "ratePercentage": {
+                            "type": "number"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "number"
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "transactions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "parentId": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "gateway": {
+                      "type": "string"
+                    },
+                    "manualPaymentGateway": {
+                      "type": "boolean"
+                    },
+                    "amount": {
+                      "type": "number"
+                    },
+                    "currency": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "metafields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "namespace": {
+                      "type": "string"
+                    },
+                    "key": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key"
                   ],
                   "additionalProperties": false
                 }
@@ -21939,6 +22245,9 @@
                   },
                   "requireRefundBankAccount": {
                     "type": "boolean"
+                  },
+                  "taxAmount": {
+                    "type": "number"
                   }
                 },
                 "required": [

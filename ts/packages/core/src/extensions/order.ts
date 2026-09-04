@@ -14,8 +14,13 @@ import type {
   OrderFieldConfig as ProtoFieldConfig,
   OrderFulfillment as ProtoFulfillment,
   OrderItem as ProtoOrderItem,
+  OrderAttribute as ProtoOrderAttribute,
+  OrderMetafield as ProtoOrderMetafield,
   OrderOperationOptions as ProtoOperationOptions,
   OrderPayment as ProtoPayment,
+  OrderShippingLine as ProtoOrderShippingLine,
+  OrderTaxLine as ProtoOrderTaxLine,
+  OrderTransaction as ProtoOrderTransaction,
 } from "../gen/channel/app/sdk/v1/extension.js";
 
 type ProtoBacked<T, Proto> = T & Proto;
@@ -129,6 +134,7 @@ export const PaymentSchema = z.object({
   discountAmount: z.number(),
   methods: z.array(z.string()),
   requireRefundBankAccount: z.boolean(),
+  taxAmount: z.number().optional(),
 });
 export type Payment = ProtoBacked<z.infer<typeof PaymentSchema>, ProtoPayment>;
 
@@ -142,6 +148,56 @@ export const FulfillmentSchema = z.object({
   estimatedDeliveryDate: z.number().optional(),
 });
 export type Fulfillment = ProtoBacked<z.infer<typeof FulfillmentSchema>, ProtoFulfillment>;
+
+// 세금 한 줄. 주문·배송수단·아이템 어디에도 붙을 수 있다.
+export const TaxLineSchema = z.object({
+  rate: z.number().optional(),
+  ratePercentage: z.number().optional(),
+  title: z.string().optional(),
+  amount: z.number().optional(),
+});
+export type TaxLine = ProtoBacked<z.infer<typeof TaxLineSchema>, ProtoOrderTaxLine>;
+
+// 몰이 주문·아이템에 붙인 자유 키-값(선물 메시지, 각인 문구 등).
+export const OrderAttributeSchema = z.object({
+  key: z.string(),
+  value: z.string().optional(),
+});
+export type OrderAttribute = ProtoBacked<z.infer<typeof OrderAttributeSchema>, ProtoOrderAttribute>;
+
+// 주문에 적용된 배송수단 한 건.
+export const ShippingLineSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().optional(),
+  code: z.string().optional(),
+  carrierIdentifier: z.string().optional(),
+  taxLines: z.array(TaxLineSchema).optional(),
+});
+export type ShippingLine = ProtoBacked<z.infer<typeof ShippingLineSchema>, ProtoOrderShippingLine>;
+
+// 결제·환불 트랜잭션 한 건. payment.methods 는 게이트웨이 이름만 담아 착불·후불을 구분하지
+// 못하므로 kind/status/gateway/manualPaymentGateway 를 그대로 보존한다.
+export const TransactionSchema = z.object({
+  id: z.string().optional(),
+  parentId: z.string().optional(),
+  kind: z.string().optional(),
+  status: z.string().optional(),
+  gateway: z.string().optional(),
+  manualPaymentGateway: z.boolean().optional(),
+  amount: z.number().optional(),
+  currency: z.string().optional(),
+  createdAt: z.number().optional(),
+});
+export type Transaction = ProtoBacked<z.infer<typeof TransactionSchema>, ProtoOrderTransaction>;
+
+// 몰이 붙인 확장 속성. value 는 type 에 따라 형태가 달라 해석하지 않는다.
+export const MetafieldSchema = z.object({
+  namespace: z.string().optional(),
+  key: z.string(),
+  value: z.string().optional(),
+  type: z.string().optional(),
+});
+export type Metafield = ProtoBacked<z.infer<typeof MetafieldSchema>, ProtoOrderMetafield>;
 
 export const OrderSchema = z.object({
   id: z.string(),
