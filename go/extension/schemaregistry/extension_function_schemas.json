@@ -1893,12 +1893,6 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "cancelable",
-                  "returnable",
-                  "exchangeable",
-                  "shippingAddressChangeable"
-                ],
                 "additionalProperties": false
               },
               "sku": {
@@ -2101,12 +2095,6 @@
                           "type": "boolean"
                         }
                       },
-                      "required": [
-                        "cancelable",
-                        "returnable",
-                        "exchangeable",
-                        "shippingAddressChangeable"
-                      ],
                       "additionalProperties": false
                     },
                     "sku": {
@@ -22196,12 +22184,6 @@
                           "type": "boolean"
                         }
                       },
-                      "required": [
-                        "cancelable",
-                        "returnable",
-                        "exchangeable",
-                        "shippingAddressChangeable"
-                      ],
                       "additionalProperties": false
                     }
                   },
@@ -22709,12 +22691,6 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "cancelable",
-                  "returnable",
-                  "exchangeable",
-                  "shippingAddressChangeable"
-                ],
                 "additionalProperties": false
               }
             },

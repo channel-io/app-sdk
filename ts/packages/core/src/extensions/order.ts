@@ -73,11 +73,14 @@ export const ClaimReasonSchema = z.object({
 });
 export type ClaimReason = ProtoBacked<z.infer<typeof ClaimReasonSchema>, ProtoClaimReason>;
 
+// 네 값 모두 optional 이다. proto 가 presence 를 쓰므로 일부 또는 전부가 없는 payload 도
+// 계약상 유효하다 — 전부 없으면 "판정 못 함" 이라는 뜻이다. 여기서 필수로 두면 그 상태를
+// 표현할 수 없고, TS 앱의 출력 검증(outputSchema.parse)이 유효한 응답을 거부한다.
 export const ClaimabilitySchema = z.object({
-  cancelable: z.boolean(),
-  returnable: z.boolean(),
-  exchangeable: z.boolean(),
-  shippingAddressChangeable: z.boolean(),
+  cancelable: z.boolean().optional(),
+  returnable: z.boolean().optional(),
+  exchangeable: z.boolean().optional(),
+  shippingAddressChangeable: z.boolean().optional(),
 });
 export type Claimability = ProtoBacked<z.infer<typeof ClaimabilitySchema>, ProtoClaimability>;
 
