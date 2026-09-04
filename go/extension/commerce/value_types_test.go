@@ -2,12 +2,18 @@ package commerce_test
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/channel-io/app-sdk/go/extension/commerce"
+	sdkv1 "github.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1"
 )
+
+// sdkProtoPackage 밖의 메시지는 별칭 대상이 아니다. google.protobuf.Value 같은 well-known
+// 타입까지 요구하면 이 검사가 정상 변경을 막는다.
+const sdkProtoPackage = "channel.app.sdk.v1"
 
 // 주문 계약에서 도달 가능한 모든 메시지는 이 패키지에 별칭이 있어야 한다.
 //
@@ -69,8 +75,36 @@ func TestOrderValueTypesAreAliased(t *testing.T) {
 	}
 }
 
-// collectMessages 는 메시지 필드를 따라 도달 가능한 메시지 디스크립터를 모은다.
+// map 필드에서 FieldDescriptor.Message() 는 synthetic map-entry 를 돌려준다. 그걸 그대로
+// 수집하면 별칭이 있을 수 없는 XxxEntry 를 요구해, 주문 계약에 map 을 추가하는 정상 변경이
+// 이 검사에 막힌다. 실제 값 타입은 MapValue().Message() 다.
+//
+// 주문 계약에는 아직 map 이 없어 위 테스트로는 이 처리가 검증되지 않는다. map 을 가진
+// 다른 메시지로 확인한다 — 그래서 여기서만 생성 패키지를 직접 참조한다.
+func TestCollectMessagesSkipsMapEntries(t *testing.T) {
+	seen := map[string]protoreflect.MessageDescriptor{}
+	collectMessages((&sdkv1.ConfigChoice{}).ProtoReflect().Descriptor(), seen)
+
+	// i18n_map 은 map<string, ConfigLocalizedText> 다.
+	if _, ok := seen["I18nMapEntry"]; ok {
+		t.Error("synthetic map-entry 가 수집됐다 — 별칭을 요구할 수 없는 타입이다")
+	}
+	if _, ok := seen["ConfigLocalizedText"]; !ok {
+		t.Error("map 값 타입이 수집되지 않았다 — MapValue().Message() 를 따라가야 한다")
+	}
+
+	// google.protobuf.Value 는 SDK 패키지 밖이라 대상이 아니다.
+	if _, ok := seen["Value"]; ok {
+		t.Error("well-known 타입이 수집됐다 — 별칭 대상이 아니다")
+	}
+}
+
+// collectMessages 는 메시지 필드를 따라 도달 가능한 SDK 메시지 디스크립터를 모은다.
 func collectMessages(desc protoreflect.MessageDescriptor, seen map[string]protoreflect.MessageDescriptor) {
+	if !strings.HasPrefix(string(desc.FullName()), sdkProtoPackage+".") {
+		return
+	}
+
 	name := string(desc.Name())
 	if _, ok := seen[name]; ok {
 		return
@@ -80,6 +114,16 @@ func collectMessages(desc protoreflect.MessageDescriptor, seen map[string]protor
 	fields := desc.Fields()
 	for i := range fields.Len() {
 		field := fields.Get(i)
+
+		// map 은 Message() 가 synthetic entry 라 값 타입을 직접 따라간다. 스칼라 값 map 은
+		// 따라갈 메시지가 없다.
+		if field.IsMap() {
+			if field.MapValue().Kind() == protoreflect.MessageKind {
+				collectMessages(field.MapValue().Message(), seen)
+			}
+			continue
+		}
+
 		if field.Kind() != protoreflect.MessageKind && field.Kind() != protoreflect.GroupKind {
 			continue
 		}
