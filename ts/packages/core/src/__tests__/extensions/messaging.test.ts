@@ -9,6 +9,7 @@ import {
   MessagingUserChatStateSchema,
   MessagingWritingTypeSchema,
   OnMediumMessageCreatedInputSchema,
+  OnMediumMessageCreatedOutputSchema,
   PrebuiltBuildMediumTopicsOutputSchema,
 } from "../../extensions/index.js";
 import type { Context } from "../../types/context.js";
@@ -151,11 +152,23 @@ describe("messaging extension schemas", () => {
     expect(parsed.mediumProfile.mediumSenderId).toBe("sender-1");
   });
 
+  it("enforces the signed int32 range for message send error codes", () => {
+    const parseErrorCode = (errorCode: number) =>
+      OnMediumMessageCreatedOutputSchema.parse({
+        sendResult: { sendState: "failed", errorCode },
+      }).sendResult.errorCode;
+
+    expect(parseErrorCode(-2_147_483_648)).toBe(-2_147_483_648);
+    expect(parseErrorCode(2_147_483_647)).toBe(2_147_483_647);
+    expect(() => parseErrorCode(-2_147_483_649)).toThrow();
+    expect(() => parseErrorCode(2_147_483_648)).toThrow();
+  });
+
   it("builds schema-validated inbox and prebuilt function groups", async () => {
     const extension = createMessagingExtension({
       inbox: {
-        onMediumMessageCreated: (_ctx, input) => ({
-          sendResult: { sendState: input.message.id ?? "sent" },
+        onMediumMessageCreated: () => ({
+          sendResult: { sendState: "failed", errorCode: 91999 },
         }),
         getWritingTypes: () => ({
           writingTypeMap: { standard: { state: "available" } },
@@ -194,6 +207,7 @@ describe("messaging extension schemas", () => {
       },
     });
 
-    expect(result.sendResult.sendState).toBe("message-1");
+    expect(result.sendResult.sendState).toBe("failed");
+    expect(result.sendResult.errorCode).toBe(91999);
   });
 });

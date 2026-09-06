@@ -52,6 +52,12 @@ Implement only the optional Functions your enabled product flow requires. The in
 `onMediumMessageCreated` handler is the core delivery Function and is required by
 `MessagingInboxExtensionInterface`.
 
+When delivery fails, return `sendState: "failed"` with a stable numeric `errorCode`. The Channel
+runtime persists that code on the failed message and passes the message to
+`getMediumMessageErrorReason`, when implemented, so the app can return a safe user-facing
+`errorMessage`. Leave `errorCode` unset for successful or pending results; an asynchronous sender
+must attach the code when it reports the terminal failure.
+
 ## Registration and permissions
 
 Normal SDK auto-registration publishes the `messaging` Extension and its Function schemas.

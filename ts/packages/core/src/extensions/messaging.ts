@@ -588,6 +588,7 @@ export const OnMediumMessageCreatedOutputSchema = z
       .object({
         sendState: z.string(),
         message: z.string().optional(),
+        errorCode: z.number().int().min(-2_147_483_648).max(2_147_483_647).optional(),
       })
       .passthrough(),
   })
