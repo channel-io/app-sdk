@@ -1,5 +1,5 @@
 ---
-"@channel.io/app-sdk-core": minor
+"@channel.io/app-sdk-core": patch
 ---
 
 Add the optional numeric `errorCode` field to `MessagingSendResult` so messaging apps can return a
