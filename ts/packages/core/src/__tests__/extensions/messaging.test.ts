@@ -154,8 +154,8 @@ describe("messaging extension schemas", () => {
   it("builds schema-validated inbox and prebuilt function groups", async () => {
     const extension = createMessagingExtension({
       inbox: {
-        onMediumMessageCreated: (_ctx, input) => ({
-          sendResult: { sendState: input.message.id ?? "sent" },
+        onMediumMessageCreated: () => ({
+          sendResult: { sendState: "failed", errorCode: 91999 },
         }),
         getWritingTypes: () => ({
           writingTypeMap: { standard: { state: "available" } },
@@ -194,6 +194,7 @@ describe("messaging extension schemas", () => {
       },
     });
 
-    expect(result.sendResult.sendState).toBe("message-1");
+    expect(result.sendResult.sendState).toBe("failed");
+    expect(result.sendResult.errorCode).toBe(91999);
   });
 });

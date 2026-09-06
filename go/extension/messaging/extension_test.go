@@ -22,8 +22,9 @@ func TestExtensionRegistersProtoHandlers(t *testing.T) {
 			if got := in.GetMessage().GetOptions(); len(got) != 1 || got[0] != messaging.MessageOptionPrivate {
 				t.Fatalf("unexpected message options: %v", got)
 			}
+			errorCode := int32(91999)
 			return &messaging.OnMediumMessageCreatedOutput{
-				SendResult: &messaging.SendResult{SendState: "sent"},
+				SendResult: &messaging.SendResult{SendState: "failed", ErrorCode: &errorCode},
 			}, nil
 		}),
 	); err != nil {
@@ -76,7 +77,10 @@ func TestExtensionRegistersProtoHandlers(t *testing.T) {
 		t.Fatal(err)
 	}
 	sendResult := out["sendResult"].(map[string]any)
-	if sendResult["sendState"] != "sent" {
+	if sendResult["sendState"] != "failed" {
+		t.Fatalf("unexpected result: %s", string(res.Result))
+	}
+	if sendResult["errorCode"] != float64(91999) {
 		t.Fatalf("unexpected result: %s", string(res.Result))
 	}
 }

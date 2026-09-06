@@ -20182,6 +20182,9 @@
             },
             "message": {
               "type": "string"
+            },
+            "errorCode": {
+              "type": "integer"
             }
           },
           "required": [

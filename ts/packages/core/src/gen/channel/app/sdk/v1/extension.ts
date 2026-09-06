@@ -1679,7 +1679,14 @@ export interface MessagingOnMediumMessageCreatedInput {
 
 export interface MessagingSendResult {
   sendState?: string | undefined;
-  message?: string | undefined;
+  message?:
+    | string
+    | undefined;
+  /**
+   * Stable app-owned error code for a failed send. The runtime persists this
+   * value on the Channel message for getMediumMessageErrorReason lookups.
+   */
+  errorCode?: number | undefined;
 }
 
 export interface MessagingOnMediumMessageCreatedOutput {

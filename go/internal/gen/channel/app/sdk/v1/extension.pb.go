@@ -14515,9 +14515,12 @@ func (x *MessagingOnMediumMessageCreatedInput) GetMessage() *ChannelMessage {
 }
 
 type MessagingSendResult struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SendState     string                 `protobuf:"bytes,1,opt,name=send_state,json=sendState,proto3" json:"send_state,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	SendState string                 `protobuf:"bytes,1,opt,name=send_state,json=sendState,proto3" json:"send_state,omitempty"`
+	Message   string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	// Stable app-owned error code for a failed send. The runtime persists this
+	// value on the Channel message for getMediumMessageErrorReason lookups.
+	ErrorCode     *int32 `protobuf:"varint,3,opt,name=error_code,json=errorCode,proto3,oneof" json:"error_code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -14564,6 +14567,13 @@ func (x *MessagingSendResult) GetMessage() string {
 		return x.Message
 	}
 	return ""
+}
+
+func (x *MessagingSendResult) GetErrorCode() int32 {
+	if x != nil && x.ErrorCode != nil {
+		return *x.ErrorCode
+	}
+	return 0
 }
 
 type MessagingOnMediumMessageCreatedOutput struct {
@@ -18041,11 +18051,14 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x10app_capabilities\x18\x01 \x01(\v2&.channel.app.sdk.v1.WmsAppCapabilitiesR\x0fappCapabilities\"\xa6\x01\n" +
 	"$MessagingOnMediumMessageCreatedInput\x12@\n" +
 	"\tuser_chat\x18\x01 \x01(\v2#.channel.app.sdk.v1.ChannelUserChatR\buserChat\x12<\n" +
-	"\amessage\x18\x02 \x01(\v2\".channel.app.sdk.v1.ChannelMessageR\amessage\"N\n" +
+	"\amessage\x18\x02 \x01(\v2\".channel.app.sdk.v1.ChannelMessageR\amessage\"\x81\x01\n" +
 	"\x13MessagingSendResult\x12\x1d\n" +
 	"\n" +
 	"send_state\x18\x01 \x01(\tR\tsendState\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"q\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\"\n" +
+	"\n" +
+	"error_code\x18\x03 \x01(\x05H\x00R\terrorCode\x88\x01\x01B\r\n" +
+	"\v_error_code\"q\n" +
 	"%MessagingOnMediumMessageCreatedOutput\x12H\n" +
 	"\vsend_result\x18\x01 \x01(\v2'.channel.app.sdk.v1.MessagingSendResultR\n" +
 	"sendResult\"m\n" +
@@ -18792,6 +18805,7 @@ func file_channel_app_sdk_v1_extension_proto_init() {
 	file_channel_app_sdk_v1_extension_proto_msgTypes[134].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[155].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[156].OneofWrappers = []any{}
+	file_channel_app_sdk_v1_extension_proto_msgTypes[204].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[240].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

@@ -1696,6 +1696,7 @@ export type MessagingOnMediumMessageCreatedInputProto = z.infer<typeof Messaging
 export const MessagingSendResultProtoSchema = z.object({
   sendState: z.string().optional(),
   message: z.string().optional(),
+  errorCode: z.number().int().optional(),
 }) satisfies z.ZodType<pb.MessagingSendResult>;
 export type MessagingSendResultProto = z.infer<typeof MessagingSendResultProtoSchema>;
 
