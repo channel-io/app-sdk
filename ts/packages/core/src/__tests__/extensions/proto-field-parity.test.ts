@@ -211,6 +211,9 @@ import {
   CommerceExchangeOrderInputSchema,
   CommerceGetExchangeableItemsInputSchema,
   CommerceGetExchangeableItemsOutputSchema,
+  CommerceExchangeableItemSchema,
+  CommerceExchangeableVariantSchema,
+  CommerceVariantOptionSchema,
   CommerceChangeShippingAddressInputSchema,
 } from "../../extensions/commerce.js";
 
@@ -616,6 +619,24 @@ const contracts: Contract[] = [
     CommerceGetExchangeableItemsOutputSchema,
     "extension",
     "CommerceGetExchangeableItemsOutput"
+  ),
+  contract(
+    "CommerceExchangeableItem",
+    CommerceExchangeableItemSchema,
+    "extension",
+    "CommerceExchangeableItem"
+  ),
+  contract(
+    "CommerceExchangeableVariant",
+    CommerceExchangeableVariantSchema,
+    "extension",
+    "CommerceExchangeableVariant"
+  ),
+  contract(
+    "CommerceVariantOption",
+    CommerceVariantOptionSchema,
+    "extension",
+    "CommerceVariantOption"
   ),
   contract(
     "CommerceChangeShippingAddressInput",

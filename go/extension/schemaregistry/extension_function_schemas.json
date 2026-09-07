@@ -1960,6 +1960,74 @@
             ],
             "additionalProperties": false
           }
+        },
+        "exchangeableItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "productId": {
+                "type": "string"
+              },
+              "variants": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "additionalAmount": {
+                      "type": "number"
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "stockQuantity": {
+                      "type": "number"
+                    },
+                    "useInventory": {
+                      "type": "boolean"
+                    },
+                    "selling": {
+                      "type": "boolean"
+                    },
+                    "display": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "additionalAmount"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false,

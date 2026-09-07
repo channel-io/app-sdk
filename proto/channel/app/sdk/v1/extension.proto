@@ -1295,6 +1295,39 @@ message CommerceGetExchangeableItemsInput {
 
 message CommerceGetExchangeableItemsOutput {
   repeated CommerceOrderItem items = 1;
+  // 아이템별 교환 후보. items 는 "교환 가능한 주문 아이템"만 알려주므로, 그 아이템을 어떤
+  // variant 로 바꿀 수 있고 추가금이 얼마인지는 여기서 준다 — requestExchangeOrder 의
+  // after_exchange_items(variant_id) 를 채우려면 이 목록이 필요하다.
+  repeated CommerceExchangeableItem exchangeable_items = 2;
+}
+
+message CommerceExchangeableItem {
+  // 주문 아이템 id (CommerceOrderItem.id 와 같다).
+  string id = 1;
+  string product_id = 2;
+  repeated CommerceExchangeableVariant variants = 3;
+}
+
+message CommerceExchangeableVariant {
+  // 교환 대상 variant id. requestExchangeOrder 의 after_exchange_items.variant_id 로 그대로 쓴다.
+  string id = 1;
+  // 원래 아이템 대비 추가 결제 금액.
+  double additional_amount = 2;
+  repeated CommerceVariantOption options = 3;
+  // 재고 수량. 재고 관리를 쓰지 않는 variant 는 수량 개념이 없어 비워 둔다 — 0(품절)과
+  // 미제공(무제한)을 구별해야 해서 optional 이다.
+  optional double stock_quantity = 4;
+  // 재고 관리 사용 여부. false 면 stock_quantity 는 의미가 없다.
+  optional bool use_inventory = 5;
+  optional bool selling = 6;
+  optional bool display = 7;
+}
+
+message CommerceVariantOption {
+  // 옵션명(예: 색상).
+  string name = 1;
+  // 옵션값(예: 블랙).
+  string value = 2;
 }
 
 message CommerceChangeShippingAddressInput {
