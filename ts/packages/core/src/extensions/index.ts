@@ -475,6 +475,9 @@ export {
   CommerceExchangeOrderInputSchema,
   CommerceGetExchangeableItemsInputSchema,
   CommerceGetExchangeableItemsOutputSchema,
+  CommerceExchangeableItemSchema,
+  CommerceExchangeableVariantSchema,
+  CommerceVariantOptionSchema,
   CommerceChangeShippingAddressInputSchema,
   type CommerceOrderItem,
   type CommerceOrder,
@@ -490,6 +493,9 @@ export {
   type CommerceExchangeOrderInput,
   type CommerceGetExchangeableItemsInput,
   type CommerceGetExchangeableItemsOutput,
+  type CommerceExchangeableItem,
+  type CommerceExchangeableVariant,
+  type CommerceVariantOption,
   type CommerceChangeShippingAddressInput,
 } from "./commerce.js";
 
