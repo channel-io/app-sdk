@@ -272,8 +272,6 @@ export type CommerceExchangeableItem = ProtoBacked<
 >;
 
 export const CommerceGetExchangeableItemsOutputSchema = z.object({
-  items: z.array(CommerceOrderItemSchema).optional(),
-  // items 는 교환 가능한 주문 아이템만 알려준다. 무엇으로 바꿀 수 있는지는 여기서 준다.
   exchangeableItems: z.array(CommerceExchangeableItemSchema).optional(),
 });
 export type CommerceGetExchangeableItemsOutput = ProtoBacked<

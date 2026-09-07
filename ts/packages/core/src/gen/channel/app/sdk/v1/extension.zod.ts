@@ -1437,7 +1437,6 @@ export const CommerceGetExchangeableItemsInputProtoSchema = z.object({
 export type CommerceGetExchangeableItemsInputProto = z.infer<typeof CommerceGetExchangeableItemsInputProtoSchema>;
 
 export const CommerceGetExchangeableItemsOutputProtoSchema = z.object({
-  items: z.array(z.lazy(() => CommerceOrderItemProtoSchema)).optional(),
   exchangeableItems: z.array(z.lazy(() => CommerceExchangeableItemProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.CommerceGetExchangeableItemsOutput>;
 export type CommerceGetExchangeableItemsOutputProto = z.infer<typeof CommerceGetExchangeableItemsOutputProtoSchema>;

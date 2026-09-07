@@ -1455,13 +1455,9 @@ export interface CommerceGetExchangeableItemsInput {
 }
 
 export interface CommerceGetExchangeableItemsOutput {
-  items?:
-    | CommerceOrderItem[]
-    | undefined;
   /**
-   * 아이템별 교환 후보. items 는 "교환 가능한 주문 아이템"만 알려주므로, 그 아이템을 어떤
-   * variant 로 바꿀 수 있고 추가금이 얼마인지는 여기서 준다 — requestExchangeOrder 의
-   * after_exchange_items(variant_id) 를 채우려면 이 목록이 필요하다.
+   * 아이템별 교환 후보. 어떤 주문 아이템을 어떤 variant 로 바꿀 수 있고 추가금이 얼마인지 준다 —
+   * requestExchangeOrder 의 after_exchange_items(variant_id) 를 채우려면 이 목록이 필요하다.
    */
   exchangeableItems?: CommerceExchangeableItem[] | undefined;
 }
