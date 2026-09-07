@@ -934,6 +934,12 @@ message OrderClaimability {
   optional bool returnable = 2;
   optional bool exchangeable = 3;
   optional bool shipping_address_changeable = 4;
+  // 불가 사유. 위 플래그가 false 일 때 "왜 불가한지"를 사용자에게 안내할 수 있게 채운다.
+  // 판정하지 않았거나 사유를 제공하지 않는 커머스는 비워 둔다.
+  string non_cancelable_reason = 5;
+  string non_returnable_reason = 6;
+  string non_exchangeable_reason = 7;
+  string non_shipping_address_changeable_reason = 8;
 }
 
 message OrderClaim {

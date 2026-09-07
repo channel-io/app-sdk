@@ -1891,6 +1891,18 @@
                   },
                   "shippingAddressChangeable": {
                     "type": "boolean"
+                  },
+                  "nonCancelableReason": {
+                    "type": "string"
+                  },
+                  "nonReturnableReason": {
+                    "type": "string"
+                  },
+                  "nonExchangeableReason": {
+                    "type": "string"
+                  },
+                  "nonShippingAddressChangeableReason": {
+                    "type": "string"
                   }
                 },
                 "additionalProperties": false
@@ -2161,6 +2173,18 @@
                         },
                         "shippingAddressChangeable": {
                           "type": "boolean"
+                        },
+                        "nonCancelableReason": {
+                          "type": "string"
+                        },
+                        "nonReturnableReason": {
+                          "type": "string"
+                        },
+                        "nonExchangeableReason": {
+                          "type": "string"
+                        },
+                        "nonShippingAddressChangeableReason": {
+                          "type": "string"
                         }
                       },
                       "additionalProperties": false
@@ -22255,6 +22279,18 @@
                         },
                         "shippingAddressChangeable": {
                           "type": "boolean"
+                        },
+                        "nonCancelableReason": {
+                          "type": "string"
+                        },
+                        "nonReturnableReason": {
+                          "type": "string"
+                        },
+                        "nonExchangeableReason": {
+                          "type": "string"
+                        },
+                        "nonShippingAddressChangeableReason": {
+                          "type": "string"
                         }
                       },
                       "additionalProperties": false
@@ -22762,6 +22798,18 @@
                   },
                   "shippingAddressChangeable": {
                     "type": "boolean"
+                  },
+                  "nonCancelableReason": {
+                    "type": "string"
+                  },
+                  "nonReturnableReason": {
+                    "type": "string"
+                  },
+                  "nonExchangeableReason": {
+                    "type": "string"
+                  },
+                  "nonShippingAddressChangeableReason": {
+                    "type": "string"
                   }
                 },
                 "additionalProperties": false

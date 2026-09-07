@@ -1062,7 +1062,17 @@ export interface OrderClaimability {
   cancelable?: boolean | undefined;
   returnable?: boolean | undefined;
   exchangeable?: boolean | undefined;
-  shippingAddressChangeable?: boolean | undefined;
+  shippingAddressChangeable?:
+    | boolean
+    | undefined;
+  /**
+   * 불가 사유. 위 플래그가 false 일 때 "왜 불가한지"를 사용자에게 안내할 수 있게 채운다.
+   * 판정하지 않았거나 사유를 제공하지 않는 커머스는 비워 둔다.
+   */
+  nonCancelableReason?: string | undefined;
+  nonReturnableReason?: string | undefined;
+  nonExchangeableReason?: string | undefined;
+  nonShippingAddressChangeableReason?: string | undefined;
 }
 
 export interface OrderClaim {

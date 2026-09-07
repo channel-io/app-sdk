@@ -1047,6 +1047,10 @@ export const OrderClaimabilityProtoSchema = z.object({
   returnable: z.boolean().optional(),
   exchangeable: z.boolean().optional(),
   shippingAddressChangeable: z.boolean().optional(),
+  nonCancelableReason: z.string().optional(),
+  nonReturnableReason: z.string().optional(),
+  nonExchangeableReason: z.string().optional(),
+  nonShippingAddressChangeableReason: z.string().optional(),
 }) satisfies z.ZodType<pb.OrderClaimability>;
 export type OrderClaimabilityProto = z.infer<typeof OrderClaimabilityProtoSchema>;
 

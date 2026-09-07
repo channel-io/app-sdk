@@ -8954,8 +8954,14 @@ type OrderClaimability struct {
 	Returnable                *bool `protobuf:"varint,2,opt,name=returnable,proto3,oneof" json:"returnable,omitempty"`
 	Exchangeable              *bool `protobuf:"varint,3,opt,name=exchangeable,proto3,oneof" json:"exchangeable,omitempty"`
 	ShippingAddressChangeable *bool `protobuf:"varint,4,opt,name=shipping_address_changeable,json=shippingAddressChangeable,proto3,oneof" json:"shipping_address_changeable,omitempty"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	// 불가 사유. 위 플래그가 false 일 때 "왜 불가한지"를 사용자에게 안내할 수 있게 채운다.
+	// 판정하지 않았거나 사유를 제공하지 않는 커머스는 비워 둔다.
+	NonCancelableReason                string `protobuf:"bytes,5,opt,name=non_cancelable_reason,json=nonCancelableReason,proto3" json:"non_cancelable_reason,omitempty"`
+	NonReturnableReason                string `protobuf:"bytes,6,opt,name=non_returnable_reason,json=nonReturnableReason,proto3" json:"non_returnable_reason,omitempty"`
+	NonExchangeableReason              string `protobuf:"bytes,7,opt,name=non_exchangeable_reason,json=nonExchangeableReason,proto3" json:"non_exchangeable_reason,omitempty"`
+	NonShippingAddressChangeableReason string `protobuf:"bytes,8,opt,name=non_shipping_address_changeable_reason,json=nonShippingAddressChangeableReason,proto3" json:"non_shipping_address_changeable_reason,omitempty"`
+	unknownFields                      protoimpl.UnknownFields
+	sizeCache                          protoimpl.SizeCache
 }
 
 func (x *OrderClaimability) Reset() {
@@ -9014,6 +9020,34 @@ func (x *OrderClaimability) GetShippingAddressChangeable() bool {
 		return *x.ShippingAddressChangeable
 	}
 	return false
+}
+
+func (x *OrderClaimability) GetNonCancelableReason() string {
+	if x != nil {
+		return x.NonCancelableReason
+	}
+	return ""
+}
+
+func (x *OrderClaimability) GetNonReturnableReason() string {
+	if x != nil {
+		return x.NonReturnableReason
+	}
+	return ""
+}
+
+func (x *OrderClaimability) GetNonExchangeableReason() string {
+	if x != nil {
+		return x.NonExchangeableReason
+	}
+	return ""
+}
+
+func (x *OrderClaimability) GetNonShippingAddressChangeableReason() string {
+	if x != nil {
+		return x.NonShippingAddressChangeableReason
+	}
+	return ""
 }
 
 type OrderClaim struct {
@@ -17764,7 +17798,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"image_urls\x18\x02 \x03(\tR\timageUrls\"H\n" +
 	"\x10OrderClaimReason\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\"\x9a\x02\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\"\x8e\x04\n" +
 	"\x11OrderClaimability\x12#\n" +
 	"\n" +
 	"cancelable\x18\x01 \x01(\bH\x00R\n" +
@@ -17773,7 +17807,11 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"returnable\x18\x02 \x01(\bH\x01R\n" +
 	"returnable\x88\x01\x01\x12'\n" +
 	"\fexchangeable\x18\x03 \x01(\bH\x02R\fexchangeable\x88\x01\x01\x12C\n" +
-	"\x1bshipping_address_changeable\x18\x04 \x01(\bH\x03R\x19shippingAddressChangeable\x88\x01\x01B\r\n" +
+	"\x1bshipping_address_changeable\x18\x04 \x01(\bH\x03R\x19shippingAddressChangeable\x88\x01\x01\x122\n" +
+	"\x15non_cancelable_reason\x18\x05 \x01(\tR\x13nonCancelableReason\x122\n" +
+	"\x15non_returnable_reason\x18\x06 \x01(\tR\x13nonReturnableReason\x126\n" +
+	"\x17non_exchangeable_reason\x18\a \x01(\tR\x15nonExchangeableReason\x12R\n" +
+	"&non_shipping_address_changeable_reason\x18\b \x01(\tR\"nonShippingAddressChangeableReasonB\r\n" +
 	"\v_cancelableB\r\n" +
 	"\v_returnableB\x0f\n" +
 	"\r_exchangeableB\x1e\n" +
