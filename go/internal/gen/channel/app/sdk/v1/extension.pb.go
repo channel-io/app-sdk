@@ -12352,8 +12352,11 @@ func (x *CommerceGetExchangeableItemsOutput) GetExchangeableItems() []*CommerceE
 
 type CommerceExchangeableItem struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// 주문 아이템 id (CommerceOrderItem.id 와 같다).
-	Id            string                         `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// 교환 후보의 대상이 되는 주문 아이템 id — getOrders 의 items[].id, 이 함수 입력의
+	// items[].id 와 같은 값이다. 응답에 여러 아이템이 섞여 오므로 호출자는 이 키로 입력과
+	// 짝을 맞추고, requestExchangeOrder 의 before_exchange_items[].id 로 그대로 넘긴다.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// 주문 아이템의 상품 id (CommerceOrderItem.product_id 와 같다).
 	ProductId     string                         `protobuf:"bytes,2,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
 	Variants      []*CommerceExchangeableVariant `protobuf:"bytes,3,rep,name=variants,proto3" json:"variants,omitempty"`
 	unknownFields protoimpl.UnknownFields

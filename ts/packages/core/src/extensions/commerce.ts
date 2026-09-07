@@ -262,6 +262,8 @@ export type CommerceExchangeableVariant = ProtoBacked<
 >;
 
 export const CommerceExchangeableItemSchema = z.object({
+  // 교환 후보의 대상이 되는 주문 아이템 id. 입력 items[].id 와 같은 값이고,
+  // requestExchangeOrder 의 beforeExchangeItems[].id 로 그대로 넘긴다.
   id: z.string(),
   productId: z.string().optional(),
   variants: z.array(CommerceExchangeableVariantSchema).optional(),
