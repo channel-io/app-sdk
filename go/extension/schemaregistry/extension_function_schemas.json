@@ -1836,7 +1836,7 @@
     "outputSchema": {
       "type": "object",
       "properties": {
-        "items": {
+        "exchangeableItems": {
           "type": "array",
           "items": {
             "type": "object",
@@ -1844,119 +1844,62 @@
               "id": {
                 "type": "string"
               },
-              "name": {
-                "type": "string"
-              },
-              "imageUrl": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number"
-              },
-              "quantity": {
-                "type": "number"
-              },
-              "option": {
-                "type": "string"
-              },
               "productId": {
                 "type": "string"
               },
-              "variantId": {
-                "type": "string"
-              },
-              "state": {
-                "type": "string"
-              },
-              "shippedAt": {
-                "type": "number"
-              },
-              "deliveredAt": {
-                "type": "number"
-              },
-              "estimatedShipDate": {
-                "type": "number"
-              },
-              "claimability": {
-                "type": "object",
-                "properties": {
-                  "cancelable": {
-                    "type": "boolean"
-                  },
-                  "returnable": {
-                    "type": "boolean"
-                  },
-                  "exchangeable": {
-                    "type": "boolean"
-                  },
-                  "shippingAddressChangeable": {
-                    "type": "boolean"
-                  }
-                },
-                "additionalProperties": false
-              },
-              "sku": {
-                "type": "string"
-              },
-              "unfulfilledQuantity": {
-                "type": "number"
-              },
-              "requiresShipping": {
-                "type": "boolean"
-              },
-              "sellingPlanName": {
-                "type": "string"
-              },
-              "sellingPlanId": {
-                "type": "string"
-              },
-              "customAttributes": {
+              "variants": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "key": {
+                    "id": {
                       "type": "string"
                     },
-                    "value": {
-                      "type": "string"
+                    "additionalAmount": {
+                      "type": "number"
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "stockQuantity": {
+                      "type": "number"
+                    },
+                    "useInventory": {
+                      "type": "boolean"
+                    },
+                    "selling": {
+                      "type": "boolean"
+                    },
+                    "display": {
+                      "type": "boolean"
                     }
                   },
                   "required": [
-                    "key"
+                    "id",
+                    "additionalAmount"
                   ],
-                  "additionalProperties": false
-                }
-              },
-              "taxLines": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "rate": {
-                      "type": "number"
-                    },
-                    "ratePercentage": {
-                      "type": "number"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "amount": {
-                      "type": "number"
-                    }
-                  },
                   "additionalProperties": false
                 }
               }
             },
             "required": [
-              "id",
-              "name",
-              "amount",
-              "quantity",
-              "state",
-              "claimability"
+              "id"
             ],
             "additionalProperties": false
           }
@@ -2093,6 +2036,18 @@
                         },
                         "shippingAddressChangeable": {
                           "type": "boolean"
+                        },
+                        "nonCancelableReason": {
+                          "type": "string"
+                        },
+                        "nonReturnableReason": {
+                          "type": "string"
+                        },
+                        "nonExchangeableReason": {
+                          "type": "string"
+                        },
+                        "nonShippingAddressChangeableReason": {
+                          "type": "string"
                         }
                       },
                       "additionalProperties": false
@@ -22187,6 +22142,18 @@
                         },
                         "shippingAddressChangeable": {
                           "type": "boolean"
+                        },
+                        "nonCancelableReason": {
+                          "type": "string"
+                        },
+                        "nonReturnableReason": {
+                          "type": "string"
+                        },
+                        "nonExchangeableReason": {
+                          "type": "string"
+                        },
+                        "nonShippingAddressChangeableReason": {
+                          "type": "string"
                         }
                       },
                       "additionalProperties": false
@@ -22694,6 +22661,18 @@
                   },
                   "shippingAddressChangeable": {
                     "type": "boolean"
+                  },
+                  "nonCancelableReason": {
+                    "type": "string"
+                  },
+                  "nonReturnableReason": {
+                    "type": "string"
+                  },
+                  "nonExchangeableReason": {
+                    "type": "string"
+                  },
+                  "nonShippingAddressChangeableReason": {
+                    "type": "string"
                   }
                 },
                 "additionalProperties": false

@@ -1047,6 +1047,10 @@ export const OrderClaimabilityProtoSchema = z.object({
   returnable: z.boolean().optional(),
   exchangeable: z.boolean().optional(),
   shippingAddressChangeable: z.boolean().optional(),
+  nonCancelableReason: z.string().optional(),
+  nonReturnableReason: z.string().optional(),
+  nonExchangeableReason: z.string().optional(),
+  nonShippingAddressChangeableReason: z.string().optional(),
 }) satisfies z.ZodType<pb.OrderClaimability>;
 export type OrderClaimabilityProto = z.infer<typeof OrderClaimabilityProtoSchema>;
 
@@ -1433,9 +1437,33 @@ export const CommerceGetExchangeableItemsInputProtoSchema = z.object({
 export type CommerceGetExchangeableItemsInputProto = z.infer<typeof CommerceGetExchangeableItemsInputProtoSchema>;
 
 export const CommerceGetExchangeableItemsOutputProtoSchema = z.object({
-  items: z.array(z.lazy(() => CommerceOrderItemProtoSchema)).optional(),
+  exchangeableItems: z.array(z.lazy(() => CommerceExchangeableItemProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.CommerceGetExchangeableItemsOutput>;
 export type CommerceGetExchangeableItemsOutputProto = z.infer<typeof CommerceGetExchangeableItemsOutputProtoSchema>;
+
+export const CommerceExchangeableItemProtoSchema = z.object({
+  id: z.string().optional(),
+  productId: z.string().optional(),
+  variants: z.array(z.lazy(() => CommerceExchangeableVariantProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.CommerceExchangeableItem>;
+export type CommerceExchangeableItemProto = z.infer<typeof CommerceExchangeableItemProtoSchema>;
+
+export const CommerceExchangeableVariantProtoSchema = z.object({
+  id: z.string().optional(),
+  additionalAmount: z.number().optional(),
+  options: z.array(z.lazy(() => CommerceVariantOptionProtoSchema)).optional(),
+  stockQuantity: z.number().optional(),
+  useInventory: z.boolean().optional(),
+  selling: z.boolean().optional(),
+  display: z.boolean().optional(),
+}) satisfies z.ZodType<pb.CommerceExchangeableVariant>;
+export type CommerceExchangeableVariantProto = z.infer<typeof CommerceExchangeableVariantProtoSchema>;
+
+export const CommerceVariantOptionProtoSchema = z.object({
+  name: z.string().optional(),
+  value: z.string().optional(),
+}) satisfies z.ZodType<pb.CommerceVariantOption>;
+export type CommerceVariantOptionProto = z.infer<typeof CommerceVariantOptionProtoSchema>;
 
 export const CommerceChangeShippingAddressInputProtoSchema = z.object({
   identifier: z.lazy(() => CommerceIdentifierProtoSchema).optional(),

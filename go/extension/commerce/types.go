@@ -56,3 +56,8 @@ type Attribute = sdkv1.OrderAttribute
 type ShippingLine = sdkv1.OrderShippingLine
 type Transaction = sdkv1.OrderTransaction
 type Metafield = sdkv1.OrderMetafield
+
+// 교환 후보. getExchangeableItems 응답에서만 채워진다.
+type ExchangeableItem = sdkv1.CommerceExchangeableItem
+type ExchangeableVariant = sdkv1.CommerceExchangeableVariant
+type VariantOption = sdkv1.CommerceVariantOption

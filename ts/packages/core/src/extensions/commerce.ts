@@ -8,6 +8,9 @@ import type {
   CommerceGetAppConfigsOutput as ProtoCommerceGetAppConfigsOutput,
   CommerceGetExchangeableItemsInput as ProtoCommerceGetExchangeableItemsInput,
   CommerceGetExchangeableItemsOutput as ProtoCommerceGetExchangeableItemsOutput,
+  CommerceExchangeableItem as ProtoCommerceExchangeableItem,
+  CommerceExchangeableVariant as ProtoCommerceExchangeableVariant,
+  CommerceVariantOption as ProtoCommerceVariantOption,
   CommerceGetOrdersInput as ProtoCommerceGetOrdersInput,
   CommerceGetOrdersOutput as ProtoCommerceGetOrdersOutput,
   CommerceIdentifier as ProtoCommerceIdentifier,
@@ -234,8 +237,44 @@ export type CommerceGetExchangeableItemsInput = ProtoBacked<
   ProtoCommerceGetExchangeableItemsInput
 >;
 
+export const CommerceVariantOptionSchema = z.object({
+  name: z.string(),
+  value: z.string(),
+});
+export type CommerceVariantOption = ProtoBacked<
+  z.infer<typeof CommerceVariantOptionSchema>,
+  ProtoCommerceVariantOption
+>;
+
+export const CommerceExchangeableVariantSchema = z.object({
+  id: z.string(),
+  additionalAmount: z.number(),
+  options: z.array(CommerceVariantOptionSchema).optional(),
+  // 재고 관리를 쓰지 않으면 수량 개념이 없어 비운다 — 0(품절)과 미제공(무제한)은 다른 뜻이다.
+  stockQuantity: z.number().optional(),
+  useInventory: z.boolean().optional(),
+  selling: z.boolean().optional(),
+  display: z.boolean().optional(),
+});
+export type CommerceExchangeableVariant = ProtoBacked<
+  z.infer<typeof CommerceExchangeableVariantSchema>,
+  ProtoCommerceExchangeableVariant
+>;
+
+export const CommerceExchangeableItemSchema = z.object({
+  // 교환 후보의 대상이 되는 주문 아이템 id. 입력 items[].id 와 같은 값이고,
+  // requestExchangeOrder 의 beforeExchangeItems[].id 로 그대로 넘긴다.
+  id: z.string(),
+  productId: z.string().optional(),
+  variants: z.array(CommerceExchangeableVariantSchema).optional(),
+});
+export type CommerceExchangeableItem = ProtoBacked<
+  z.infer<typeof CommerceExchangeableItemSchema>,
+  ProtoCommerceExchangeableItem
+>;
+
 export const CommerceGetExchangeableItemsOutputSchema = z.object({
-  items: z.array(CommerceOrderItemSchema).optional(),
+  exchangeableItems: z.array(CommerceExchangeableItemSchema).optional(),
 });
 export type CommerceGetExchangeableItemsOutput = ProtoBacked<
   z.infer<typeof CommerceGetExchangeableItemsOutputSchema>,

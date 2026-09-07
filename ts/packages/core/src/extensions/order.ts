@@ -81,6 +81,11 @@ export const ClaimabilitySchema = z.object({
   returnable: z.boolean().optional(),
   exchangeable: z.boolean().optional(),
   shippingAddressChangeable: z.boolean().optional(),
+  // 불가 사유. 플래그가 false 일 때 안내 문구로 쓴다. 사유를 주지 않는 커머스는 비운다.
+  nonCancelableReason: z.string().optional(),
+  nonReturnableReason: z.string().optional(),
+  nonExchangeableReason: z.string().optional(),
+  nonShippingAddressChangeableReason: z.string().optional(),
 });
 export type Claimability = ProtoBacked<z.infer<typeof ClaimabilitySchema>, ProtoClaimability>;
 

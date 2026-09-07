@@ -1062,7 +1062,17 @@ export interface OrderClaimability {
   cancelable?: boolean | undefined;
   returnable?: boolean | undefined;
   exchangeable?: boolean | undefined;
-  shippingAddressChangeable?: boolean | undefined;
+  shippingAddressChangeable?:
+    | boolean
+    | undefined;
+  /**
+   * 불가 사유. 위 플래그가 false 일 때 "왜 불가한지"를 사용자에게 안내할 수 있게 채운다.
+   * 판정하지 않았거나 사유를 제공하지 않는 커머스는 비워 둔다.
+   */
+  nonCancelableReason?: string | undefined;
+  nonReturnableReason?: string | undefined;
+  nonExchangeableReason?: string | undefined;
+  nonShippingAddressChangeableReason?: string | undefined;
 }
 
 export interface OrderClaim {
@@ -1445,7 +1455,57 @@ export interface CommerceGetExchangeableItemsInput {
 }
 
 export interface CommerceGetExchangeableItemsOutput {
-  items?: CommerceOrderItem[] | undefined;
+  /**
+   * 아이템별 교환 후보. 어떤 주문 아이템을 어떤 variant 로 바꿀 수 있고 추가금이 얼마인지 준다 —
+   * requestExchangeOrder 의 after_exchange_items(variant_id) 를 채우려면 이 목록이 필요하다.
+   */
+  exchangeableItems?: CommerceExchangeableItem[] | undefined;
+}
+
+export interface CommerceExchangeableItem {
+  /**
+   * 교환 후보의 대상이 되는 주문 아이템 id — getOrders 의 items[].id, 이 함수 입력의
+   * items[].id 와 같은 값이다. 응답에 여러 아이템이 섞여 오므로 호출자는 이 키로 입력과
+   * 짝을 맞추고, requestExchangeOrder 의 before_exchange_items[].id 로 그대로 넘긴다.
+   */
+  id?:
+    | string
+    | undefined;
+  /** 주문 아이템의 상품 id (CommerceOrderItem.product_id 와 같다). */
+  productId?: string | undefined;
+  variants?: CommerceExchangeableVariant[] | undefined;
+}
+
+export interface CommerceExchangeableVariant {
+  /** 교환 대상 variant id. requestExchangeOrder 의 after_exchange_items.variant_id 로 그대로 쓴다. */
+  id?:
+    | string
+    | undefined;
+  /** 원래 아이템 대비 추가 결제 금액. */
+  additionalAmount?: number | undefined;
+  options?:
+    | CommerceVariantOption[]
+    | undefined;
+  /**
+   * 재고 수량. 재고 관리를 쓰지 않는 variant 는 수량 개념이 없어 비워 둔다 — 0(품절)과
+   * 미제공(무제한)을 구별해야 해서 optional 이다.
+   */
+  stockQuantity?:
+    | number
+    | undefined;
+  /** 재고 관리 사용 여부. false 면 stock_quantity 는 의미가 없다. */
+  useInventory?: boolean | undefined;
+  selling?: boolean | undefined;
+  display?: boolean | undefined;
+}
+
+export interface CommerceVariantOption {
+  /** 옵션명(예: 색상). */
+  name?:
+    | string
+    | undefined;
+  /** 옵션값(예: 블랙). */
+  value?: string | undefined;
 }
 
 export interface CommerceChangeShippingAddressInput {
