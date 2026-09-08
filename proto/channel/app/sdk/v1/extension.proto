@@ -970,12 +970,15 @@ message OrderItem {
 message OrderPayment {
   string state = 1;
   string currency = 2;
-  double total_amount = 3;
-  double items_amount = 4;
-  double shipping_amount = 5;
-  double discount_amount = 6;
+  // 금액 필드는 0 이 정상 값이라(전액 할인, 무료배송, 할인 없음) presence 가 필요하다.
+  // presence 가 없으면 protojson 이 0 을 지워 "무료배송"과 "배송비 미제공"을 구별할 수 없다.
+  optional double total_amount = 3;
+  optional double items_amount = 4;
+  optional double shipping_amount = 5;
+  optional double discount_amount = 6;
   repeated string methods = 7;
-  bool require_refund_bank_account = 8;
+  // false 가 정상 값이라 optional 이다(위 금액 필드와 같은 이유).
+  optional bool require_refund_bank_account = 8;
   double tax_amount = 9;
 }
 
@@ -1161,7 +1164,8 @@ message CommerceOrderItem {
   string id = 1;
   string name = 2;
   string image_url = 3;
-  double amount = 4;
+  // 0 원 상품(사은품)이 정상이라 presence 가 필요하다.
+  optional double amount = 4;
   double quantity = 5;
   string option = 6;
   string product_id = 7;
@@ -1242,7 +1246,9 @@ message CommerceGetAppConfigsOutput {
 }
 
 message CommerceResultBody {
-  bool success = 1;
+  // 성공 여부. 실패(false)도 정상 응답이라 반드시 값이 실려야 해서 optional 이다 —
+  // presence 가 없으면 protojson 이 false 를 지워 실패 응답에서 키가 사라진다.
+  optional bool success = 1;
   string error_message = 2;
 }
 
@@ -1318,8 +1324,9 @@ message CommerceExchangeableItem {
 message CommerceExchangeableVariant {
   // 교환 대상 variant id. requestExchangeOrder 의 after_exchange_items.variant_id 로 그대로 쓴다.
   string id = 1;
-  // 원래 아이템 대비 추가 결제 금액.
-  double additional_amount = 2;
+  // 원래 아이템 대비 추가 결제 금액. 추가금 없는 variant 가 대부분이라 0 이 정상 값이고,
+  // presence 가 없으면 그 경우 키가 사라진다.
+  optional double additional_amount = 2;
   repeated CommerceVariantOption options = 3;
   // 재고 수량. 재고 관리를 쓰지 않는 variant 는 수량 개념이 없어 비워 둔다 — 0(품절)과
   // 미제공(무제한)을 구별해야 해서 optional 이다.

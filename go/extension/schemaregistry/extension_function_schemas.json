@@ -1147,10 +1147,6 @@
                   }
                 }
               },
-              "required": [
-                "required",
-                "optional"
-              ],
               "additionalProperties": false
             },
             "requestCancelOrderOptions": {
@@ -1226,10 +1222,6 @@
                   }
                 }
               },
-              "required": [
-                "required",
-                "optional"
-              ],
               "additionalProperties": false
             },
             "requestReturnOrderOptions": {
@@ -1305,10 +1297,6 @@
                   }
                 }
               },
-              "required": [
-                "required",
-                "optional"
-              ],
               "additionalProperties": false
             },
             "acceptReturnOrderOptions": {
@@ -1384,10 +1372,6 @@
                   }
                 }
               },
-              "required": [
-                "required",
-                "optional"
-              ],
               "additionalProperties": false
             },
             "requestExchangeOrderOptions": {
@@ -1463,10 +1447,6 @@
                   }
                 }
               },
-              "required": [
-                "required",
-                "optional"
-              ],
               "additionalProperties": false
             },
             "changeShippingAddressOptions": {
@@ -1542,10 +1522,6 @@
                   }
                 }
               },
-              "required": [
-                "required",
-                "optional"
-              ],
               "additionalProperties": false
             }
           },
@@ -2159,7 +2135,6 @@
                   "itemsAmount",
                   "shippingAmount",
                   "discountAmount",
-                  "methods",
                   "requireRefundBankAccount"
                 ],
                 "additionalProperties": false
@@ -2482,9 +2457,7 @@
               "title",
               "orderedAt",
               "items",
-              "payment",
-              "fulfillments",
-              "claims"
+              "payment"
             ],
             "additionalProperties": false
           }
@@ -21718,10 +21691,6 @@
                   }
                 }
               },
-              "required": [
-                "required",
-                "optional"
-              ],
               "additionalProperties": false
             },
             "cancelOrderOptions": {
@@ -21797,10 +21766,6 @@
                   }
                 }
               },
-              "required": [
-                "required",
-                "optional"
-              ],
               "additionalProperties": false
             },
             "returnOrderOptions": {
@@ -21876,10 +21841,6 @@
                   }
                 }
               },
-              "required": [
-                "required",
-                "optional"
-              ],
               "additionalProperties": false
             },
             "exchangeOrderOptions": {
@@ -21955,10 +21916,6 @@
                   }
                 }
               },
-              "required": [
-                "required",
-                "optional"
-              ],
               "additionalProperties": false
             },
             "changeAddressOptions": {
@@ -22034,10 +21991,6 @@
                   }
                 }
               },
-              "required": [
-                "required",
-                "optional"
-              ],
               "additionalProperties": false
             }
           },
@@ -22211,7 +22164,6 @@
                   "itemsAmount",
                   "shippingAmount",
                   "discountAmount",
-                  "methods",
                   "requireRefundBankAccount"
                 ],
                 "additionalProperties": false
@@ -22339,9 +22291,7 @@
               "title",
               "createdAt",
               "items",
-              "payment",
-              "fulfillments",
-              "claims"
+              "payment"
             ],
             "additionalProperties": false
           }
