@@ -1102,12 +1102,21 @@ export interface OrderItem {
 
 export interface OrderPayment {
   state?: string | undefined;
-  currency?: string | undefined;
+  currency?:
+    | string
+    | undefined;
+  /**
+   * 금액 필드는 0 이 정상 값이라(전액 할인, 무료배송, 할인 없음) presence 가 필요하다.
+   * presence 가 없으면 protojson 이 0 을 지워 "무료배송"과 "배송비 미제공"을 구별할 수 없다.
+   */
   totalAmount?: number | undefined;
   itemsAmount?: number | undefined;
   shippingAmount?: number | undefined;
   discountAmount?: number | undefined;
-  methods?: string[] | undefined;
+  methods?:
+    | string[]
+    | undefined;
+  /** false 가 정상 값이라 optional 이다(위 금액 필드와 같은 이유). */
   requireRefundBankAccount?: boolean | undefined;
   taxAmount?: number | undefined;
 }
@@ -1302,7 +1311,10 @@ export interface CommerceIdentifier {
 export interface CommerceOrderItem {
   id?: string | undefined;
   name?: string | undefined;
-  imageUrl?: string | undefined;
+  imageUrl?:
+    | string
+    | undefined;
+  /** 0 원 상품(사은품)이 정상이라 presence 가 필요하다. */
   amount?: number | undefined;
   quantity?: number | undefined;
   option?: string | undefined;
@@ -1397,6 +1409,10 @@ export interface CommerceGetAppConfigsOutput {
 }
 
 export interface CommerceResultBody {
+  /**
+   * 성공 여부. 실패(false)도 정상 응답이라 반드시 값이 실려야 해서 optional 이다 —
+   * presence 가 없으면 protojson 이 false 를 지워 실패 응답에서 키가 사라진다.
+   */
   success?: boolean | undefined;
   errorMessage?: string | undefined;
 }
@@ -1481,7 +1497,10 @@ export interface CommerceExchangeableVariant {
   id?:
     | string
     | undefined;
-  /** 원래 아이템 대비 추가 결제 금액. */
+  /**
+   * 원래 아이템 대비 추가 결제 금액. 추가금 없는 variant 가 대부분이라 0 이 정상 값이고,
+   * presence 가 없으면 그 경우 키가 사라진다.
+   */
   additionalAmount?: number | undefined;
   options?:
     | CommerceVariantOption[]

@@ -80,9 +80,11 @@ export const CommerceOrderSchema = z.object({
   buyer: BuyerSchema.optional(),
   items: z.array(CommerceOrderItemSchema),
   payment: PaymentSchema,
-  fulfillments: z.array(FulfillmentSchema),
+  // 클레임/배송은 없는 게 정상인데 repeated 라 비면 protojson 이 키를 지운다.
+  // protobuf 가 repeated 에 presence 를 주지 못해 계약에서 필수를 뗀다.
+  fulfillments: z.array(FulfillmentSchema).optional(),
   shippingAddress: AddressSchema.optional(),
-  claims: z.array(ClaimSchema),
+  claims: z.array(ClaimSchema).optional(),
   // 매니저가 몰 어드민의 해당 주문으로 바로 이동할 수 있는 링크.
   adminUrl: z.string().optional(),
   note: z.string().optional(),

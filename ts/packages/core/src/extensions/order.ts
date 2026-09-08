@@ -140,7 +140,9 @@ export const PaymentSchema = z.object({
   itemsAmount: z.number(),
   shippingAmount: z.number(),
   discountAmount: z.number(),
-  methods: z.array(z.string()),
+  // repeated 필드는 비면 protojson 이 키를 지운다. protobuf 는 repeated 에 presence 를
+  // 줄 수 없어(optional 금지) 계약에서 필수를 뗀다 — 빈 목록과 미제공을 구별하지 않는다.
+  methods: z.array(z.string()).optional(),
   requireRefundBankAccount: z.boolean(),
   taxAmount: z.number().optional(),
 });
@@ -213,9 +215,11 @@ export const OrderSchema = z.object({
   createdAt: z.number(),
   items: z.array(OrderItemSchema),
   payment: PaymentSchema,
-  fulfillments: z.array(FulfillmentSchema),
+  // 클레임/배송은 없는 게 정상인데 repeated 라 비면 protojson 이 키를 지운다.
+  // protobuf 가 repeated 에 presence 를 주지 못해 계약에서 필수를 뗀다.
+  fulfillments: z.array(FulfillmentSchema).optional(),
   shippingAddress: AddressSchema.optional(),
-  claims: z.array(ClaimSchema),
+  claims: z.array(ClaimSchema).optional(),
 });
 export type Order = ProtoBacked<z.infer<typeof OrderSchema>, ProtoOrder>;
 
@@ -238,8 +242,10 @@ export const FieldConfigSchema = z.discriminatedUnion("type", [
 export type FieldConfig = ProtoBacked<z.infer<typeof FieldConfigSchema>, ProtoFieldConfig>;
 
 export const OperationOptionsSchema = z.object({
-  required: z.array(z.string()),
-  optional: z.array(z.string()),
+  // repeated 필드는 비면 protojson 이 키를 지운다. protobuf 는 repeated 에 presence 를
+  // 줄 수 없어(optional 금지) 계약에서 필수를 뗀다 — 빈 목록과 미제공을 구별하지 않는다.
+  required: z.array(z.string()).optional(),
+  optional: z.array(z.string()).optional(),
   fieldConfigs: z.record(z.string(), FieldConfigSchema).optional(),
 });
 export type OperationOptions = ProtoBacked<

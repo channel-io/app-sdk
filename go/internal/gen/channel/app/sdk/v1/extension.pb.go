@@ -9275,16 +9275,19 @@ func (x *OrderItem) GetClaimability() *OrderClaimability {
 }
 
 type OrderPayment struct {
-	state                    protoimpl.MessageState `protogen:"open.v1"`
-	State                    string                 `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
-	Currency                 string                 `protobuf:"bytes,2,opt,name=currency,proto3" json:"currency,omitempty"`
-	TotalAmount              float64                `protobuf:"fixed64,3,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
-	ItemsAmount              float64                `protobuf:"fixed64,4,opt,name=items_amount,json=itemsAmount,proto3" json:"items_amount,omitempty"`
-	ShippingAmount           float64                `protobuf:"fixed64,5,opt,name=shipping_amount,json=shippingAmount,proto3" json:"shipping_amount,omitempty"`
-	DiscountAmount           float64                `protobuf:"fixed64,6,opt,name=discount_amount,json=discountAmount,proto3" json:"discount_amount,omitempty"`
-	Methods                  []string               `protobuf:"bytes,7,rep,name=methods,proto3" json:"methods,omitempty"`
-	RequireRefundBankAccount bool                   `protobuf:"varint,8,opt,name=require_refund_bank_account,json=requireRefundBankAccount,proto3" json:"require_refund_bank_account,omitempty"`
-	TaxAmount                float64                `protobuf:"fixed64,9,opt,name=tax_amount,json=taxAmount,proto3" json:"tax_amount,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	State    string                 `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
+	Currency string                 `protobuf:"bytes,2,opt,name=currency,proto3" json:"currency,omitempty"`
+	// 금액 필드는 0 이 정상 값이라(전액 할인, 무료배송, 할인 없음) presence 가 필요하다.
+	// presence 가 없으면 protojson 이 0 을 지워 "무료배송"과 "배송비 미제공"을 구별할 수 없다.
+	TotalAmount    *float64 `protobuf:"fixed64,3,opt,name=total_amount,json=totalAmount,proto3,oneof" json:"total_amount,omitempty"`
+	ItemsAmount    *float64 `protobuf:"fixed64,4,opt,name=items_amount,json=itemsAmount,proto3,oneof" json:"items_amount,omitempty"`
+	ShippingAmount *float64 `protobuf:"fixed64,5,opt,name=shipping_amount,json=shippingAmount,proto3,oneof" json:"shipping_amount,omitempty"`
+	DiscountAmount *float64 `protobuf:"fixed64,6,opt,name=discount_amount,json=discountAmount,proto3,oneof" json:"discount_amount,omitempty"`
+	Methods        []string `protobuf:"bytes,7,rep,name=methods,proto3" json:"methods,omitempty"`
+	// false 가 정상 값이라 optional 이다(위 금액 필드와 같은 이유).
+	RequireRefundBankAccount *bool   `protobuf:"varint,8,opt,name=require_refund_bank_account,json=requireRefundBankAccount,proto3,oneof" json:"require_refund_bank_account,omitempty"`
+	TaxAmount                float64 `protobuf:"fixed64,9,opt,name=tax_amount,json=taxAmount,proto3" json:"tax_amount,omitempty"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
@@ -9334,29 +9337,29 @@ func (x *OrderPayment) GetCurrency() string {
 }
 
 func (x *OrderPayment) GetTotalAmount() float64 {
-	if x != nil {
-		return x.TotalAmount
+	if x != nil && x.TotalAmount != nil {
+		return *x.TotalAmount
 	}
 	return 0
 }
 
 func (x *OrderPayment) GetItemsAmount() float64 {
-	if x != nil {
-		return x.ItemsAmount
+	if x != nil && x.ItemsAmount != nil {
+		return *x.ItemsAmount
 	}
 	return 0
 }
 
 func (x *OrderPayment) GetShippingAmount() float64 {
-	if x != nil {
-		return x.ShippingAmount
+	if x != nil && x.ShippingAmount != nil {
+		return *x.ShippingAmount
 	}
 	return 0
 }
 
 func (x *OrderPayment) GetDiscountAmount() float64 {
-	if x != nil {
-		return x.DiscountAmount
+	if x != nil && x.DiscountAmount != nil {
+		return *x.DiscountAmount
 	}
 	return 0
 }
@@ -9369,8 +9372,8 @@ func (x *OrderPayment) GetMethods() []string {
 }
 
 func (x *OrderPayment) GetRequireRefundBankAccount() bool {
-	if x != nil {
-		return x.RequireRefundBankAccount
+	if x != nil && x.RequireRefundBankAccount != nil {
+		return *x.RequireRefundBankAccount
 	}
 	return false
 }
@@ -11035,21 +11038,22 @@ func (x *CommerceIdentifier) GetValue() string {
 }
 
 type CommerceOrderItem struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	Id                string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name              string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	ImageUrl          string                 `protobuf:"bytes,3,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
-	Amount            float64                `protobuf:"fixed64,4,opt,name=amount,proto3" json:"amount,omitempty"`
-	Quantity          float64                `protobuf:"fixed64,5,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	Option            string                 `protobuf:"bytes,6,opt,name=option,proto3" json:"option,omitempty"`
-	ProductId         string                 `protobuf:"bytes,7,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	VariantId         string                 `protobuf:"bytes,8,opt,name=variant_id,json=variantId,proto3" json:"variant_id,omitempty"`
-	State             string                 `protobuf:"bytes,9,opt,name=state,proto3" json:"state,omitempty"`
-	ShippedAt         float64                `protobuf:"fixed64,10,opt,name=shipped_at,json=shippedAt,proto3" json:"shipped_at,omitempty"`
-	DeliveredAt       float64                `protobuf:"fixed64,11,opt,name=delivered_at,json=deliveredAt,proto3" json:"delivered_at,omitempty"`
-	EstimatedShipDate float64                `protobuf:"fixed64,12,opt,name=estimated_ship_date,json=estimatedShipDate,proto3" json:"estimated_ship_date,omitempty"`
-	Claimability      *OrderClaimability     `protobuf:"bytes,13,opt,name=claimability,proto3" json:"claimability,omitempty"`
-	Sku               string                 `protobuf:"bytes,14,opt,name=sku,proto3" json:"sku,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Id       string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name     string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	ImageUrl string                 `protobuf:"bytes,3,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
+	// 0 원 상품(사은품)이 정상이라 presence 가 필요하다.
+	Amount            *float64           `protobuf:"fixed64,4,opt,name=amount,proto3,oneof" json:"amount,omitempty"`
+	Quantity          float64            `protobuf:"fixed64,5,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Option            string             `protobuf:"bytes,6,opt,name=option,proto3" json:"option,omitempty"`
+	ProductId         string             `protobuf:"bytes,7,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	VariantId         string             `protobuf:"bytes,8,opt,name=variant_id,json=variantId,proto3" json:"variant_id,omitempty"`
+	State             string             `protobuf:"bytes,9,opt,name=state,proto3" json:"state,omitempty"`
+	ShippedAt         float64            `protobuf:"fixed64,10,opt,name=shipped_at,json=shippedAt,proto3" json:"shipped_at,omitempty"`
+	DeliveredAt       float64            `protobuf:"fixed64,11,opt,name=delivered_at,json=deliveredAt,proto3" json:"delivered_at,omitempty"`
+	EstimatedShipDate float64            `protobuf:"fixed64,12,opt,name=estimated_ship_date,json=estimatedShipDate,proto3" json:"estimated_ship_date,omitempty"`
+	Claimability      *OrderClaimability `protobuf:"bytes,13,opt,name=claimability,proto3" json:"claimability,omitempty"`
+	Sku               string             `protobuf:"bytes,14,opt,name=sku,proto3" json:"sku,omitempty"`
 	// 아직 출하되지 않은 수량. 0(전량 출하됨)과 미제공을 구별해야 해서 optional 이다.
 	UnfulfilledQuantity *float64 `protobuf:"fixed64,15,opt,name=unfulfilled_quantity,json=unfulfilledQuantity,proto3,oneof" json:"unfulfilled_quantity,omitempty"`
 	RequiresShipping    *bool    `protobuf:"varint,16,opt,name=requires_shipping,json=requiresShipping,proto3,oneof" json:"requires_shipping,omitempty"`
@@ -11114,8 +11118,8 @@ func (x *CommerceOrderItem) GetImageUrl() string {
 }
 
 func (x *CommerceOrderItem) GetAmount() float64 {
-	if x != nil {
-		return x.Amount
+	if x != nil && x.Amount != nil {
+		return *x.Amount
 	}
 	return 0
 }
@@ -11757,9 +11761,11 @@ func (x *CommerceGetAppConfigsOutput) GetAppCapabilities() *CommerceAppCapabilit
 }
 
 type CommerceResultBody struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	ErrorMessage  string                 `protobuf:"bytes,2,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 성공 여부. 실패(false)도 정상 응답이라 반드시 값이 실려야 해서 optional 이다 —
+	// presence 가 없으면 protojson 이 false 를 지워 실패 응답에서 키가 사라진다.
+	Success       *bool  `protobuf:"varint,1,opt,name=success,proto3,oneof" json:"success,omitempty"`
+	ErrorMessage  string `protobuf:"bytes,2,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -11795,8 +11801,8 @@ func (*CommerceResultBody) Descriptor() ([]byte, []int) {
 }
 
 func (x *CommerceResultBody) GetSuccess() bool {
-	if x != nil {
-		return x.Success
+	if x != nil && x.Success != nil {
+		return *x.Success
 	}
 	return false
 }
@@ -12418,8 +12424,9 @@ type CommerceExchangeableVariant struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// 교환 대상 variant id. requestExchangeOrder 의 after_exchange_items.variant_id 로 그대로 쓴다.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	// 원래 아이템 대비 추가 결제 금액.
-	AdditionalAmount float64                  `protobuf:"fixed64,2,opt,name=additional_amount,json=additionalAmount,proto3" json:"additional_amount,omitempty"`
+	// 원래 아이템 대비 추가 결제 금액. 추가금 없는 variant 가 대부분이라 0 이 정상 값이고,
+	// presence 가 없으면 그 경우 키가 사라진다.
+	AdditionalAmount *float64                 `protobuf:"fixed64,2,opt,name=additional_amount,json=additionalAmount,proto3,oneof" json:"additional_amount,omitempty"`
 	Options          []*CommerceVariantOption `protobuf:"bytes,3,rep,name=options,proto3" json:"options,omitempty"`
 	// 재고 수량. 재고 관리를 쓰지 않는 variant 는 수량 개념이 없어 비워 둔다 — 0(품절)과
 	// 미제공(무제한)을 구별해야 해서 optional 이다.
@@ -12470,8 +12477,8 @@ func (x *CommerceExchangeableVariant) GetId() string {
 }
 
 func (x *CommerceExchangeableVariant) GetAdditionalAmount() float64 {
-	if x != nil {
-		return x.AdditionalAmount
+	if x != nil && x.AdditionalAmount != nil {
+		return *x.AdditionalAmount
 	}
 	return 0
 }
@@ -17837,18 +17844,23 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	" \x01(\x01R\tshippedAt\x12!\n" +
 	"\fdelivered_at\x18\v \x01(\x01R\vdeliveredAt\x12.\n" +
 	"\x13estimated_ship_date\x18\f \x01(\x01R\x11estimatedShipDate\x12I\n" +
-	"\fclaimability\x18\r \x01(\v2%.channel.app.sdk.v1.OrderClaimabilityR\fclaimability\"\xd0\x02\n" +
+	"\fclaimability\x18\r \x01(\v2%.channel.app.sdk.v1.OrderClaimabilityR\fclaimability\"\xd3\x03\n" +
 	"\fOrderPayment\x12\x14\n" +
 	"\x05state\x18\x01 \x01(\tR\x05state\x12\x1a\n" +
-	"\bcurrency\x18\x02 \x01(\tR\bcurrency\x12!\n" +
-	"\ftotal_amount\x18\x03 \x01(\x01R\vtotalAmount\x12!\n" +
-	"\fitems_amount\x18\x04 \x01(\x01R\vitemsAmount\x12'\n" +
-	"\x0fshipping_amount\x18\x05 \x01(\x01R\x0eshippingAmount\x12'\n" +
-	"\x0fdiscount_amount\x18\x06 \x01(\x01R\x0ediscountAmount\x12\x18\n" +
-	"\amethods\x18\a \x03(\tR\amethods\x12=\n" +
-	"\x1brequire_refund_bank_account\x18\b \x01(\bR\x18requireRefundBankAccount\x12\x1d\n" +
+	"\bcurrency\x18\x02 \x01(\tR\bcurrency\x12&\n" +
+	"\ftotal_amount\x18\x03 \x01(\x01H\x00R\vtotalAmount\x88\x01\x01\x12&\n" +
+	"\fitems_amount\x18\x04 \x01(\x01H\x01R\vitemsAmount\x88\x01\x01\x12,\n" +
+	"\x0fshipping_amount\x18\x05 \x01(\x01H\x02R\x0eshippingAmount\x88\x01\x01\x12,\n" +
+	"\x0fdiscount_amount\x18\x06 \x01(\x01H\x03R\x0ediscountAmount\x88\x01\x01\x12\x18\n" +
+	"\amethods\x18\a \x03(\tR\amethods\x12B\n" +
+	"\x1brequire_refund_bank_account\x18\b \x01(\bH\x04R\x18requireRefundBankAccount\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"tax_amount\x18\t \x01(\x01R\ttaxAmount\"\x82\x02\n" +
+	"tax_amount\x18\t \x01(\x01R\ttaxAmountB\x0f\n" +
+	"\r_total_amountB\x0f\n" +
+	"\r_items_amountB\x12\n" +
+	"\x10_shipping_amountB\x12\n" +
+	"\x10_discount_amountB\x1e\n" +
+	"\x1c_require_refund_bank_account\"\x82\x02\n" +
 	"\x10OrderFulfillment\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05state\x18\x02 \x01(\tR\x05state\x12\x19\n" +
@@ -17978,12 +17990,12 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\">\n" +
 	"\x12CommerceIdentifier\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value\"\xc0\x06\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value\"\xd0\x06\n" +
 	"\x11CommerceOrderItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1b\n" +
-	"\timage_url\x18\x03 \x01(\tR\bimageUrl\x12\x16\n" +
-	"\x06amount\x18\x04 \x01(\x01R\x06amount\x12\x1a\n" +
+	"\timage_url\x18\x03 \x01(\tR\bimageUrl\x12\x1b\n" +
+	"\x06amount\x18\x04 \x01(\x01H\x00R\x06amount\x88\x01\x01\x12\x1a\n" +
 	"\bquantity\x18\x05 \x01(\x01R\bquantity\x12\x16\n" +
 	"\x06option\x18\x06 \x01(\tR\x06option\x12\x1d\n" +
 	"\n" +
@@ -17998,12 +18010,13 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x13estimated_ship_date\x18\f \x01(\x01R\x11estimatedShipDate\x12I\n" +
 	"\fclaimability\x18\r \x01(\v2%.channel.app.sdk.v1.OrderClaimabilityR\fclaimability\x12\x10\n" +
 	"\x03sku\x18\x0e \x01(\tR\x03sku\x126\n" +
-	"\x14unfulfilled_quantity\x18\x0f \x01(\x01H\x00R\x13unfulfilledQuantity\x88\x01\x01\x120\n" +
-	"\x11requires_shipping\x18\x10 \x01(\bH\x01R\x10requiresShipping\x88\x01\x01\x12*\n" +
+	"\x14unfulfilled_quantity\x18\x0f \x01(\x01H\x01R\x13unfulfilledQuantity\x88\x01\x01\x120\n" +
+	"\x11requires_shipping\x18\x10 \x01(\bH\x02R\x10requiresShipping\x88\x01\x01\x12*\n" +
 	"\x11selling_plan_name\x18\x11 \x01(\tR\x0fsellingPlanName\x12&\n" +
 	"\x0fselling_plan_id\x18\x12 \x01(\tR\rsellingPlanId\x12O\n" +
 	"\x11custom_attributes\x18\x13 \x03(\v2\".channel.app.sdk.v1.OrderAttributeR\x10customAttributes\x12=\n" +
-	"\ttax_lines\x18\x14 \x03(\v2 .channel.app.sdk.v1.OrderTaxLineR\btaxLinesB\x17\n" +
+	"\ttax_lines\x18\x14 \x03(\v2 .channel.app.sdk.v1.OrderTaxLineR\btaxLinesB\t\n" +
+	"\a_amountB\x17\n" +
 	"\x15_unfulfilled_quantityB\x14\n" +
 	"\x12_requires_shipping\"\xb2\n" +
 	"\n" +
@@ -18064,10 +18077,12 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x1fchange_shipping_address_options\x18\x06 \x01(\v2).channel.app.sdk.v1.OrderOperationOptionsR\x1cchangeShippingAddressOptions\"\x1c\n" +
 	"\x1aCommerceGetAppConfigsInput\"u\n" +
 	"\x1bCommerceGetAppConfigsOutput\x12V\n" +
-	"\x10app_capabilities\x18\x01 \x01(\v2+.channel.app.sdk.v1.CommerceAppCapabilitiesR\x0fappCapabilities\"S\n" +
-	"\x12CommerceResultBody\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12#\n" +
-	"\rerror_message\x18\x02 \x01(\tR\ferrorMessage\"V\n" +
+	"\x10app_capabilities\x18\x01 \x01(\v2+.channel.app.sdk.v1.CommerceAppCapabilitiesR\x0fappCapabilities\"d\n" +
+	"\x12CommerceResultBody\x12\x1d\n" +
+	"\asuccess\x18\x01 \x01(\bH\x00R\asuccess\x88\x01\x01\x12#\n" +
+	"\rerror_message\x18\x02 \x01(\tR\ferrorMessageB\n" +
+	"\n" +
+	"\b_success\"V\n" +
 	"\x14CommerceActionResult\x12>\n" +
 	"\x06result\x18\x01 \x01(\v2&.channel.app.sdk.v1.CommerceResultBodyR\x06result\"\xd8\x02\n" +
 	"\x18CommerceCancelOrderInput\x12F\n" +
@@ -18128,15 +18143,16 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x02 \x01(\tR\tproductId\x12K\n" +
-	"\bvariants\x18\x03 \x03(\v2/.channel.app.sdk.v1.CommerceExchangeableVariantR\bvariants\"\xf0\x02\n" +
+	"\bvariants\x18\x03 \x03(\v2/.channel.app.sdk.v1.CommerceExchangeableVariantR\bvariants\"\x8b\x03\n" +
 	"\x1bCommerceExchangeableVariant\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12+\n" +
-	"\x11additional_amount\x18\x02 \x01(\x01R\x10additionalAmount\x12C\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x120\n" +
+	"\x11additional_amount\x18\x02 \x01(\x01H\x00R\x10additionalAmount\x88\x01\x01\x12C\n" +
 	"\aoptions\x18\x03 \x03(\v2).channel.app.sdk.v1.CommerceVariantOptionR\aoptions\x12*\n" +
-	"\x0estock_quantity\x18\x04 \x01(\x01H\x00R\rstockQuantity\x88\x01\x01\x12(\n" +
-	"\ruse_inventory\x18\x05 \x01(\bH\x01R\fuseInventory\x88\x01\x01\x12\x1d\n" +
-	"\aselling\x18\x06 \x01(\bH\x02R\aselling\x88\x01\x01\x12\x1d\n" +
-	"\adisplay\x18\a \x01(\bH\x03R\adisplay\x88\x01\x01B\x11\n" +
+	"\x0estock_quantity\x18\x04 \x01(\x01H\x01R\rstockQuantity\x88\x01\x01\x12(\n" +
+	"\ruse_inventory\x18\x05 \x01(\bH\x02R\fuseInventory\x88\x01\x01\x12\x1d\n" +
+	"\aselling\x18\x06 \x01(\bH\x03R\aselling\x88\x01\x01\x12\x1d\n" +
+	"\adisplay\x18\a \x01(\bH\x04R\adisplay\x88\x01\x01B\x14\n" +
+	"\x12_additional_amountB\x11\n" +
 	"\x0f_stock_quantityB\x10\n" +
 	"\x0e_use_inventoryB\n" +
 	"\n" +
@@ -19084,9 +19100,11 @@ func file_channel_app_sdk_v1_extension_proto_init() {
 	file_channel_app_sdk_v1_extension_proto_msgTypes[118].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[120].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[126].OneofWrappers = []any{}
+	file_channel_app_sdk_v1_extension_proto_msgTypes[129].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[134].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[155].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[156].OneofWrappers = []any{}
+	file_channel_app_sdk_v1_extension_proto_msgTypes[162].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[171].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[207].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[243].OneofWrappers = []any{}
