@@ -1,5 +1,117 @@
 # @channel.io/app-sdk-core
 
+## 0.24.0
+
+### Minor Changes
+
+- 494c902: Replace the `getExchangeableItems` output with `exchangeableItems`, which carries the variants an
+  order item can be exchanged for. The previous `items` only listed which order items were
+  exchangeable, so there was no way to learn the `variantId` that `requestExchangeOrder`'s
+  `afterExchangeItems` requires — the exchange flow could not be implemented from the contract alone.
+  Each variant carries its `additionalAmount`, human-readable `options`, and stock: `stockQuantity` is
+  left unset when a variant does not track inventory, so `0` (sold out) stays distinguishable from
+  unlimited, with `useInventory` telling the two apart.
+
+  `items` is removed rather than kept alongside: no app implements commerce `getExchangeableItems` in
+  either production or exp, and no task calls it, so nothing consumes the field today.
+
+  `OrderClaimability` gains four reason fields — `nonCancelableReason`, `nonReturnableReason`,
+  `nonExchangeableReason`, `nonShippingAddressChangeableReason`. The booleans alone cannot explain
+  _why_ a claim is unavailable, which malls do report and tasks need in order to tell the customer.
+  Commerce and order extensions share the type, so both `getOrders` outputs carry them.
+
+- 836c817: commerce·order 계약에 몰 공통 필드를 추가한다.
+
+  표준 모델이 담지 못해 각 앱이 자기 확장으로 따로 실어 나르던 값들이다. 카페24를 commerce
+  extension 으로 옮기며 드러났지만 카페24만의 문제가 아니라, 같은 값을 shopby·godomall 도
+  지금 버리고 있다.
+
+  CommerceOrder
+  market_id / market_order_no — 외부 마켓(네이버·쿠팡 등) 유입 주문의 마켓과 그 마켓 주문번호.
+  shopby channelId, godomall channelId·mall 이 같은 개념이다.
+
+  CommerceOrderItem
+  status_code / status_text — 몰이 준 진행 상태 원문 코드와 표시 문구. state 는 정규화 값이라
+  몰 고유 상태로 분기하려면 원문이 필요하다. shopby orderStatusType, godomall currentStatus.
+  claim_status_code — 클레임 성격(정상·취소·반품·교환) 코드. 진행 상태와 축이 다르다.
+  shopby 도 orderStatusType 과 claimStatusType 을 따로 둔다.
+  supplier_id / supplier_name — 상품 공급사.
+  option_amount — 옵션 추가금. amount 에 합산돼 있으나 분리해 보여줘야 하는 몰이 있다.
+  bundle / bundle_id / bundle_name / bundle_type / bundle_items — 세트(번들) 상품과 그 구성품.
+
+  OrderPayment (order·commerce 공유)
+  point_amount / credit_amount / coupon_discount_amount — discount_amount 는 이 셋의 합이라
+  무엇으로 깎였는지 안내할 수 없었다. godomall mileage, colorme point_discount,
+  shopby 쿠폰 할인 3종이 같은 개념이다.
+  due_amount — 아직 결제되지 않은 잔액(무통장 입금 대기 등).
+
+  OrderAddress (order·commerce 공유)
+  country_code — ISO 3166-1 alpha-2. country 는 표시용 국가명이라 코드 비교에 쓸 수 없다.
+  shopby·godomall 은 이미 이 값을 갖고 있고 ch-dropwizard 의 주소 모델에도 있다.
+
+  OrderFulfillment (order·commerce 공유)
+  tracking_company_name — tracking_company 에 택배사 "코드" 가 들어가는 몰이 있어 사람이 읽을
+  수 없었다(shopby DeliveryCompanyType, 카페24 shippingCompanyCode). 표시용 이름을 따로 둔다.
+  items — 한 배송 안에서 항목별로 상태가 갈리는 몰이 있다. state 는 배송 단위 상태다.
+
+  전부 추가 필드이고 기존 필드의 타입·필수 여부는 건드리지 않는다. 새 필드는 모두 optional 이라
+  채우지 않는 앱은 영향이 없다.
+
+- 3e4e4b1: Widen the commerce order contract with fields malls already return but the contract could not
+  carry — `payment.taxAmount`, item `sku`/`taxLines`/`unfulfilledQuantity`/`requiresShipping`/selling
+  plan, and order `adminUrl`/`note`/display statuses/`billingAddress`/`shippingLines`/`transactions`/
+  `metafields`/`customAttributes`. `OrderTransaction` exists so cash-on-delivery and deferred payment
+  can be told apart, which `payment.methods` alone cannot express.
+
+  `OrderClaimability`'s four booleans now carry explicit presence. A proto3 plain bool cannot tell
+  `false` from unset, so JSON serialization dropped every `false` and an item that allowed no claim
+  at all was emitted as `claimability: {}`, contradicting the schema that advertises those fields as
+  required. Generated field types change from `bool` to an optional boolean, so code that builds
+  `OrderClaimability` through struct literals needs updating; accessors are unchanged.
+
+- 65d4196: Stop dropping order-contract fields whose zero value is a real value. protojson omits a field
+  without presence when it holds the zero value, so fields the contract declares as required went
+  missing in common situations — `claims` on an order with no claims, `shippingAmount` on free
+  shipping, `success: false` on a failed action. The declaration and the wire format disagreed, and
+  consumers read `undefined` where the contract promised a value.
+
+  **Given presence so the value is emitted** (still required) — zero and `false` are real values here:
+
+  - `CommerceResultBody.success`
+  - `OrderPayment.totalAmount` / `itemsAmount` / `shippingAmount` / `discountAmount` /
+    `requireRefundBankAccount`
+  - `CommerceOrderItem.amount`
+  - `CommerceExchangeableVariant.additionalAmount`
+
+  The Go types change from `float64`/`bool` to `*float64`/`*bool`, so an app that fills these must
+  set them through a pointer. Leaving one unset omits the key exactly as before.
+
+  **Dropped from required** — these are repeated fields, and protobuf does not allow `optional` on
+  them, so an empty list is indistinguishable from an absent one:
+
+  - `Order.claims` / `Order.fulfillments`
+  - `OrderPayment.methods`
+  - `OperationOptions.required` / `OperationOptions.optional`
+
+  The last two are shared by the `order` and `commerce` extensions, so both contracts change.
+
+### Patch Changes
+
+- 0ff5a85: Export Go aliases for the commerce order value types added alongside the widened order contract —
+  `TaxLine`, `Attribute`, `ShippingLine`, `Transaction`, and `Metafield`. Their generated code lives
+  under an internal package, so without an alias an app could see the fields in the schema but had no
+  way to construct the values.
+
+  A test walks the proto descriptors reachable from the order contract and fails when one of those
+  messages has no alias in the commerce package, so adding a message without exporting it is caught
+  rather than discovered by the first app that needs the value.
+
+- 2862b3d: Add the optional numeric `errorCode` field to `MessagingSendResult` so messaging apps can return a
+  stable failure reason from `onMediumMessageCreated`. The runtime can persist the code on the failed
+  Channel message and pass it to `getMediumMessageErrorReason` for a safe user-facing explanation.
+- 8354525: Add the `teamChat.messageCreated` Hook type and proto-backed bounded input and terminal result
+  schemas for committed TeamChat message delivery.
+
 ## 0.23.1
 
 ### Patch Changes
