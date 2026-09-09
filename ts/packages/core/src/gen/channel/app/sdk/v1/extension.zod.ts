@@ -1020,6 +1020,7 @@ export const OrderAddressProtoSchema = z.object({
   country: z.string().optional(),
   city: z.string().optional(),
   province: z.string().optional(),
+  countryCode: z.string().optional(),
 }) satisfies z.ZodType<pb.OrderAddress>;
 export type OrderAddressProto = z.infer<typeof OrderAddressProtoSchema>;
 
@@ -1091,6 +1092,10 @@ export const OrderPaymentProtoSchema = z.object({
   methods: z.array(z.string()).optional(),
   requireRefundBankAccount: z.boolean().optional(),
   taxAmount: z.number().optional(),
+  pointAmount: z.number().optional(),
+  creditAmount: z.number().optional(),
+  couponDiscountAmount: z.number().optional(),
+  dueAmount: z.number().optional(),
 }) satisfies z.ZodType<pb.OrderPayment>;
 export type OrderPaymentProto = z.infer<typeof OrderPaymentProtoSchema>;
 
@@ -1102,8 +1107,16 @@ export const OrderFulfillmentProtoSchema = z.object({
   trackingCompany: z.string().optional(),
   trackingUrl: z.string().optional(),
   estimatedDeliveryDate: z.number().optional(),
+  trackingCompanyName: z.string().optional(),
+  items: z.array(z.lazy(() => OrderFulfillmentItemProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.OrderFulfillment>;
 export type OrderFulfillmentProto = z.infer<typeof OrderFulfillmentProtoSchema>;
+
+export const OrderFulfillmentItemProtoSchema = z.object({
+  itemId: z.string().optional(),
+  state: z.string().optional(),
+}) satisfies z.ZodType<pb.OrderFulfillmentItem>;
+export type OrderFulfillmentItemProto = z.infer<typeof OrderFulfillmentItemProtoSchema>;
 
 export const OrderTaxLineProtoSchema = z.object({
   rate: z.number().optional(),
@@ -1307,8 +1320,32 @@ export const CommerceOrderItemProtoSchema = z.object({
   sellingPlanId: z.string().optional(),
   customAttributes: z.array(z.lazy(() => OrderAttributeProtoSchema)).optional(),
   taxLines: z.array(z.lazy(() => OrderTaxLineProtoSchema)).optional(),
+  statusCode: z.string().optional(),
+  statusText: z.string().optional(),
+  claimStatusCode: z.string().optional(),
+  supplierId: z.string().optional(),
+  supplierName: z.string().optional(),
+  optionAmount: z.number().optional(),
+  bundle: z.boolean().optional(),
+  bundleId: z.string().optional(),
+  bundleName: z.string().optional(),
+  bundleType: z.string().optional(),
+  bundleItems: z.array(z.lazy(() => CommerceOrderBundleItemProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.CommerceOrderItem>;
 export type CommerceOrderItemProto = z.infer<typeof CommerceOrderItemProtoSchema>;
+
+export const CommerceOrderBundleItemProtoSchema = z.object({
+  productId: z.string().optional(),
+  variantId: z.string().optional(),
+  name: z.string().optional(),
+  sku: z.string().optional(),
+  option: z.string().optional(),
+  quantity: z.number().optional(),
+  amount: z.number().optional(),
+  optionAmount: z.number().optional(),
+  supplierId: z.string().optional(),
+}) satisfies z.ZodType<pb.CommerceOrderBundleItem>;
+export type CommerceOrderBundleItemProto = z.infer<typeof CommerceOrderBundleItemProtoSchema>;
 
 export const CommerceOrderProtoSchema = z.object({
   id: z.string().optional(),
@@ -1336,6 +1373,8 @@ export const CommerceOrderProtoSchema = z.object({
   shippingLines: z.array(z.lazy(() => OrderShippingLineProtoSchema)).optional(),
   transactions: z.array(z.lazy(() => OrderTransactionProtoSchema)).optional(),
   metafields: z.array(z.lazy(() => OrderMetafieldProtoSchema)).optional(),
+  marketId: z.string().optional(),
+  marketOrderNo: z.string().optional(),
 }) satisfies z.ZodType<pb.CommerceOrder>;
 export type CommerceOrderProto = z.infer<typeof CommerceOrderProtoSchema>;
 

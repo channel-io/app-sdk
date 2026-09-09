@@ -19,6 +19,7 @@ const (
 // commerce 전용 타입
 type Order = sdkv1.CommerceOrder
 type OrderItem = sdkv1.CommerceOrderItem
+type OrderBundleItem = sdkv1.CommerceOrderBundleItem
 type Identifier = sdkv1.CommerceIdentifier
 type AppCapabilities = sdkv1.CommerceAppCapabilities
 type GetOrdersInput = sdkv1.CommerceGetOrdersInput
@@ -44,6 +45,7 @@ type Claimability = sdkv1.OrderClaimability
 type Claim = sdkv1.OrderClaim
 type Payment = sdkv1.OrderPayment
 type Fulfillment = sdkv1.OrderFulfillment
+type FulfillmentItem = sdkv1.OrderFulfillmentItem
 type ExchangeItem = sdkv1.OrderExchangeItem
 type DefectInfo = sdkv1.OrderDefectInfo
 type OperationOptions = sdkv1.OrderOperationOptions

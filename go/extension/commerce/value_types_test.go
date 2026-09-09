@@ -26,19 +26,21 @@ const sdkProtoPackage = "channel.app.sdk.v1"
 // 값은 별칭 자체를 참조하므로 별칭이 없으면 컴파일도 되지 않는다.
 func TestOrderValueTypesAreAliased(t *testing.T) {
 	aliases := map[string]any{
-		"CommerceOrder":     commerce.Order{},
-		"CommerceOrderItem": commerce.OrderItem{},
-		"Buyer":             commerce.Buyer{},
-		"OrderAddress":      commerce.Address{},
-		"OrderPayment":      commerce.Payment{},
-		"OrderFulfillment":  commerce.Fulfillment{},
-		"OrderClaim":        commerce.Claim{},
-		"OrderClaimability": commerce.Claimability{},
-		"OrderTaxLine":      commerce.TaxLine{},
-		"OrderAttribute":    commerce.Attribute{},
-		"OrderShippingLine": commerce.ShippingLine{},
-		"OrderTransaction":  commerce.Transaction{},
-		"OrderMetafield":    commerce.Metafield{},
+		"CommerceOrder":           commerce.Order{},
+		"CommerceOrderItem":       commerce.OrderItem{},
+		"CommerceOrderBundleItem": commerce.OrderBundleItem{},
+		"Buyer":                   commerce.Buyer{},
+		"OrderAddress":            commerce.Address{},
+		"OrderPayment":            commerce.Payment{},
+		"OrderFulfillment":        commerce.Fulfillment{},
+		"OrderFulfillmentItem":    commerce.FulfillmentItem{},
+		"OrderClaim":              commerce.Claim{},
+		"OrderClaimability":       commerce.Claimability{},
+		"OrderTaxLine":            commerce.TaxLine{},
+		"OrderAttribute":          commerce.Attribute{},
+		"OrderShippingLine":       commerce.ShippingLine{},
+		"OrderTransaction":        commerce.Transaction{},
+		"OrderMetafield":          commerce.Metafield{},
 	}
 
 	reachable := map[string]protoreflect.MessageDescriptor{}

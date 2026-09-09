@@ -1034,7 +1034,11 @@ export interface OrderAddress {
   shippingMessage?: string | undefined;
   country?: string | undefined;
   city?: string | undefined;
-  province?: string | undefined;
+  province?:
+    | string
+    | undefined;
+  /** ISO 3166-1 alpha-2 국가 코드. country 는 표시용 국가명이라 코드 비교에는 쓸 수 없다. */
+  countryCode?: string | undefined;
 }
 
 export interface OrderBankAccount {
@@ -1118,7 +1122,23 @@ export interface OrderPayment {
     | undefined;
   /** false 가 정상 값이라 optional 이다(위 금액 필드와 같은 이유). */
   requireRefundBankAccount?: boolean | undefined;
-  taxAmount?: number | undefined;
+  taxAmount?:
+    | number
+    | undefined;
+  /**
+   * discount_amount 는 아래 세 값의 합이다. 무엇으로 깎였는지 안내하려면 개별 값이 필요하다.
+   * 금액 필드라 0 이 정상 값이고, 따라서 presence 가 필요하다.
+   */
+  pointAmount?: number | undefined;
+  creditAmount?: number | undefined;
+  couponDiscountAmount?:
+    | number
+    | undefined;
+  /**
+   * 아직 결제되지 않은 잔액(무통장 입금 대기, 부분 결제 등). state 만으로는 얼마가 남았는지
+   * 알 수 없다. 0(완납)이 정상 값이라 presence 가 필요하다.
+   */
+  dueAmount?: number | undefined;
 }
 
 export interface OrderFulfillment {
@@ -1128,7 +1148,28 @@ export interface OrderFulfillment {
   trackingNumber?: string | undefined;
   trackingCompany?: string | undefined;
   trackingUrl?: string | undefined;
-  estimatedDeliveryDate?: number | undefined;
+  estimatedDeliveryDate?:
+    | number
+    | undefined;
+  /**
+   * tracking_company 에는 몰의 택배사 코드가 들어가는 몰이 있어 사람이 읽을 수 없다.
+   * 표시용 이름을 따로 싣는다.
+   */
+  trackingCompanyName?:
+    | string
+    | undefined;
+  /**
+   * 한 배송 안에서도 항목별로 상태가 갈리는 몰이 있다(부분 출하·부분 반품).
+   * state 는 배송 단위 상태이고, 항목별 상태는 이쪽이다. item_ids 와 중복되지만
+   * 상태를 붙일 자리가 없어 별도 목록으로 둔다.
+   */
+  items?: OrderFulfillmentItem[] | undefined;
+}
+
+/** 배송에 포함된 항목 하나와 그 항목의 상태. */
+export interface OrderFulfillmentItem {
+  itemId?: string | undefined;
+  state?: string | undefined;
 }
 
 /** 세금 한 줄. 주문·배송수단·아이템 어디에도 붙을 수 있다. */
@@ -1337,7 +1378,59 @@ export interface CommerceOrderItem {
   sellingPlanName?: string | undefined;
   sellingPlanId?: string | undefined;
   customAttributes?: OrderAttribute[] | undefined;
-  taxLines?: OrderTaxLine[] | undefined;
+  taxLines?:
+    | OrderTaxLine[]
+    | undefined;
+  /**
+   * state 는 몰마다 다른 상태를 공통 값으로 정규화한 것이라, 몰 고유 상태로 분기해야 하는
+   * 태스크는 원문이 필요하다. status_code 는 진행 상태(접수·배송준비·배송중 등) 코드,
+   * status_text 는 그 표시 문구다.
+   */
+  statusCode?: string | undefined;
+  statusText?:
+    | string
+    | undefined;
+  /** 클레임 성격(정상·취소·반품·교환) 코드. 진행 상태와 축이 달라 따로 싣는다. */
+  claimStatusCode?:
+    | string
+    | undefined;
+  /** 상품 공급사. 위탁·입점 구조인 몰에서 CS 안내에 쓰인다. */
+  supplierId?: string | undefined;
+  supplierName?:
+    | string
+    | undefined;
+  /**
+   * 옵션 추가금. amount 에 이미 합산돼 있으나 분리해 보여줘야 하는 몰이 있다.
+   * 0(추가금 없음)이 정상 값이라 presence 가 필요하다.
+   */
+  optionAmount?:
+    | number
+    | undefined;
+  /** 세트(번들) 상품 정보. 번들이 아니면 비어 있다. false 와 미제공이 다른 뜻이라 optional 이다. */
+  bundle?: boolean | undefined;
+  bundleId?: string | undefined;
+  bundleName?:
+    | string
+    | undefined;
+  /** 번들 구성 방식(고정 구성·선택 구성 등) 원문 코드. */
+  bundleType?: string | undefined;
+  bundleItems?: CommerceOrderBundleItem[] | undefined;
+}
+
+/** 세트(번들) 상품의 구성품 한 줄. CommerceOrderItem 의 부분집합이라 이름·수량·금액 규약이 같다. */
+export interface CommerceOrderBundleItem {
+  productId?: string | undefined;
+  variantId?: string | undefined;
+  name?: string | undefined;
+  sku?: string | undefined;
+  option?: string | undefined;
+  quantity?:
+    | number
+    | undefined;
+  /** 0 원 구성품(사은품)이 정상이라 presence 가 필요하다. */
+  amount?: number | undefined;
+  optionAmount?: number | undefined;
+  supplierId?: string | undefined;
 }
 
 export interface CommerceOrder {
@@ -1377,7 +1470,15 @@ export interface CommerceOrder {
   customAttributes?: OrderAttribute[] | undefined;
   shippingLines?: OrderShippingLine[] | undefined;
   transactions?: OrderTransaction[] | undefined;
-  metafields?: OrderMetafield[] | undefined;
+  metafields?:
+    | OrderMetafield[]
+    | undefined;
+  /** 외부 마켓(네이버·쿠팡 등)에서 유입된 주문이 어느 마켓 것인지. 자사몰 주문이면 빈 값이다. */
+  marketId?:
+    | string
+    | undefined;
+  /** 그 마켓이 발번한 주문번호. 몰 주문번호(id)와 달라 CS 조회 키로 쓰인다. */
+  marketOrderNo?: string | undefined;
 }
 
 export interface CommerceGetOrdersInput {
