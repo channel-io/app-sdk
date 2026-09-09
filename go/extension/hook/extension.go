@@ -15,14 +15,24 @@ const (
 
 	FunctionGetHooks = "extension.hook.metadata.getHooks"
 
-	TypeAppInstalled      = "app.installed"
-	TypeAppUninstalled    = "app.uninstalled"
-	TypeCommandToggle     = "command.toggle"
-	TypeConfigSaved       = "config.saved"
-	TypeConfigDeleted     = "config.deleted"
-	TypeWidgetInstalled   = "widget.installed"
-	TypeWidgetUninstalled = "widget.uninstalled"
-	TypeWebhookReceived   = "webhook.received"
+	TypeAppInstalled           = "app.installed"
+	TypeAppUninstalled         = "app.uninstalled"
+	TypeCommandToggle          = "command.toggle"
+	TypeConfigSaved            = "config.saved"
+	TypeConfigDeleted          = "config.deleted"
+	TypeWidgetInstalled        = "widget.installed"
+	TypeWidgetUninstalled      = "widget.uninstalled"
+	TypeWebhookReceived        = "webhook.received"
+	TypeTeamChatMessageCreated = "teamChat.messageCreated"
+
+	TeamChatMessageCreatedResultSucceeded                   = "succeeded"
+	TeamChatMessageCreatedResultSkippedSourceApp            = "skipped_source_app"
+	TeamChatMessageCreatedResultSkippedUnlinked             = "skipped_unlinked"
+	TeamChatMessageCreatedResultSkippedIneligibleWriter     = "skipped_ineligible_writer"
+	TeamChatMessageCreatedResultSkippedEmpty                = "skipped_empty"
+	TeamChatMessageCreatedResultSkippedOAuthUnavailable     = "skipped_oauth_unavailable"
+	TeamChatMessageCreatedResultSkippedOrganizationMismatch = "skipped_organization_mismatch"
+	TeamChatMessageCreatedResultUnknown                     = "unknown"
 
 	WebhookExecutionScopeApp     = "app"
 	WebhookExecutionScopeManager = "manager"
@@ -65,3 +75,7 @@ type GetHooksRequest = sdkv1.HookGetHooksInput
 type GetHooksResponse = sdkv1.HookGetHooksOutput
 type Config = sdkv1.HookConfig
 type WebhookConfig = sdkv1.HookWebhookConfig
+type TeamChatMessageCreatedWriter = sdkv1.HookTeamChatMessageCreatedWriter
+type TeamChatMessageCreatedLink = sdkv1.HookTeamChatMessageCreatedLink
+type TeamChatMessageCreatedInput = sdkv1.HookTeamChatMessageCreatedInput
+type TeamChatMessageCreatedResult = sdkv1.HookTeamChatMessageCreatedResult

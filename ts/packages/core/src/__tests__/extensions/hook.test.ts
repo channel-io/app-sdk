@@ -42,6 +42,28 @@ describe("HookConfigSchema", () => {
     );
   });
 
+  it("accepts a teamChat.messageCreated hook without target metadata", () => {
+    expect(
+      HookConfigSchema.parse({
+        type: "teamChat.messageCreated",
+        actionFunctionName: "linear.teamChatMessageCreated.handle",
+      })
+    ).toEqual({
+      type: "teamChat.messageCreated",
+      actionFunctionName: "linear.teamChatMessageCreated.handle",
+    });
+  });
+
+  it("rejects target metadata on teamChat.messageCreated hooks", () => {
+    expect(() =>
+      HookConfigSchema.parse({
+        type: "teamChat.messageCreated",
+        targetId: "linear.comments",
+        actionFunctionName: "linear.teamChatMessageCreated.handle",
+      })
+    ).toThrow();
+  });
+
   it("accepts an app-level public webhook hook", () => {
     expect(
       HookConfigSchema.parse({

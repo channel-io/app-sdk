@@ -59,3 +59,37 @@ func TestStaticManagerWebhookHooks(t *testing.T) {
 		t.Fatalf("unexpected manager webhook config: %#v", webhook)
 	}
 }
+
+func TestStaticTeamChatMessageCreatedHook(t *testing.T) {
+	handler := StaticHooks(&Config{
+		Type:               TypeTeamChatMessageCreated,
+		ActionFunctionName: "linear.teamChatMessageCreated.handle",
+		SystemVersion:      "v1",
+	})
+
+	response, err := handler(context.Background(), appsdk.Context{}, &GetHooksRequest{})
+	if err != nil {
+		t.Fatalf("StaticHooks returned an error: %v", err)
+	}
+	if len(response.Hooks) != 1 || response.Hooks[0].Type != TypeTeamChatMessageCreated {
+		t.Fatalf("unexpected TeamChat message hook: %#v", response.Hooks)
+	}
+
+	input := &TeamChatMessageCreatedInput{
+		EventId:       "event-1",
+		ChannelId:     "channel-1",
+		GroupId:       "group-1",
+		RootMessageId: "root-message-1",
+		MessageId:     "message-1",
+		OccurredAt:    "2026-09-09T10:30:00Z",
+		Writer:        &TeamChatMessageCreatedWriter{Type: "manager", Id: "manager-1"},
+		Links:         []*TeamChatMessageCreatedLink{{Url: "https://linear.app/channel/issue/AS-3305"}},
+	}
+	result := &TeamChatMessageCreatedResult{
+		HookHandlingResult: TeamChatMessageCreatedResultSucceeded,
+		Terminal:           true,
+	}
+	if input.Writer.Id != "manager-1" || result.HookHandlingResult != "succeeded" || !result.Terminal {
+		t.Fatalf("unexpected TeamChat hook contract: input=%#v result=%#v", input, result)
+	}
+}

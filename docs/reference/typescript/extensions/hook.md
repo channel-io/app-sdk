@@ -23,6 +23,7 @@ Current SDK schema supports:
 - `oauth.connected`
 - `oauth.disconnected`
 - `userChat.opened`
+- `teamChat.messageCreated`
 
 Widget hooks must include a `targetId` that matches the widget name. App,
 command, and config hooks must not include a `targetId`. Public webhook hooks
@@ -78,6 +79,41 @@ revision as the delivery idempotency boundary. A handler result uses
 `hookHandlingResult`; `accepted` and `retrying` are non-terminal, while
 `succeeded`, `skipped_reopen`, `skipped_ineligible_actor`, `skipped_disabled`,
 `failed_retry_exhausted`, and `unknown` are terminal.
+
+## TeamChat Message Created
+
+`teamChat.messageCreated` declares an ordinary Function that receives a bounded,
+immutable event after a TeamChat message is committed. It uses only
+`actionFunctionName` and optional `systemVersion`; `targetId` and `webhook` are
+not allowed.
+
+```ts
+interface TeamChatMessageCreatedHookInput {
+  eventId: string;
+  channelId: string;
+  groupId: string;
+  rootMessageId: string;
+  messageId: string;
+  occurredAt: string; // ISO 8601 datetime
+  sourceAppId?: string;
+  writer: { type: string; id: string };
+  plainText?: string; // at most 20,000 characters
+  links: Array<{ url: string; title?: string }>; // at most 20 links
+}
+```
+
+Identifiers are non-empty strings of at most 255 characters. Writer types are
+bounded to 50 characters, link URLs to 2,048 characters, and link titles to 255
+characters. Empty content is valid input so a handler can return
+`skipped_empty` as a terminal result. The envelope intentionally omits the full
+message snapshot, files, reactions, and message history.
+
+All result states are terminal: `succeeded`, `skipped_source_app`,
+`skipped_unlinked`, `skipped_ineligible_writer`, `skipped_empty`,
+`skipped_oauth_unavailable`, `skipped_organization_mismatch`, and `unknown`.
+Use `eventId` as the delivery idempotency boundary and `sourceAppId` as one
+layer of loop prevention. A compatible AppStore and TeamChat publisher must be
+deployed before this Hook is delivered.
 
 ## Public Webhook Ingress
 
@@ -169,7 +205,8 @@ Hooks register through:
 
 AppStore currently backs this with app-level install, command toggle, config
 lifecycle, widget installation, OAuth connection lifecycle, and app- or
-manager-scoped public webhook registrations, plus the UserChat open lifecycle.
+manager-scoped public webhook registrations, plus the UserChat open and
+TeamChat message-created lifecycle contracts.
 
 ## Good Fit
 

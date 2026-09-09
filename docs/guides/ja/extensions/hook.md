@@ -8,13 +8,17 @@ Hook metadata が参照する handler は standalone app Function で、新し�
 
 `extension.hook.metadata.getHooks` が必須です。対応 type は `app.installed`、`app.uninstalled`、
 `command.toggle`、`config.saved`、`config.deleted`、`widget.installed`、`widget.uninstalled`、
-`webhook.received` です。
+`webhook.received`、`oauth.connected`、`oauth.disconnected`、`userChat.opened`、
+`teamChat.messageCreated` です。
 
 Widget hook には widget name と一致する `targetId` が必要です。App、command、Config hook には
 target を設定しません。Public webhook target は 1-64 文字の URL-safe identifier です。
 `executionScope` の default は `app` で、32-128 文字の高 entropy `endpointToken` が必要です。
 Manager scope では AppStore が installation、Channel、manager に binding した URL を発行するため、
 token は指定しません。他の hook type に webhook object は使えません。
+`teamChat.messageCreated` には target metadata がなく、サイズ制限された message identifier、
+writer identity、plain text、link metadata だけが渡されます。正確な DTO は TypeScript reference
+を参照してください。
 
 ## TypeScript
 

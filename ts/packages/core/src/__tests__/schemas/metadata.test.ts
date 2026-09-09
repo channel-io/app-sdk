@@ -8,6 +8,8 @@ import {
   GetHooksOutputSchema,
   UserChatOpenedHookInputSchema,
   UserChatOpenedHookResultSchema,
+  TeamChatMessageCreatedHookInputSchema,
+  TeamChatMessageCreatedHookResultSchema,
   PollingPollerSchema,
   GetPollersOutputSchema,
   GetPollingTargetChannelsInputSchema,
@@ -110,6 +112,19 @@ describe("hook metadata schema", () => {
     version: "9223372036854775807",
   } as const;
 
+  const teamChatMessageCreatedInput = {
+    eventId: "event-1",
+    channelId: "channel-1",
+    groupId: "group-1",
+    rootMessageId: "root-message-1",
+    messageId: "message-1",
+    occurredAt: "2026-09-09T10:30:00.000Z",
+    sourceAppId: "app-linear",
+    writer: { type: "manager", id: "manager-1" },
+    plainText: "Ship the webhook path.",
+    links: [{ url: "https://linear.app/channel/issue/AS-3305", title: "AS-3305" }],
+  } as const;
+
   it("accepts a userChat.opened hook without targetId", () => {
     expect(
       HookConfigSchema.parse({
@@ -207,6 +222,67 @@ describe("hook metadata schema", () => {
       UserChatOpenedHookResultSchema.parse({
         hookHandlingResult: "accepted",
         terminal: true,
+      })
+    ).toThrow();
+  });
+
+  it("parses a bounded teamChat.messageCreated event", () => {
+    expect(TeamChatMessageCreatedHookInputSchema.parse(teamChatMessageCreatedInput)).toEqual(
+      teamChatMessageCreatedInput
+    );
+  });
+
+  it("parses a content-empty teamChat.messageCreated event for terminal skip handling", () => {
+    const {
+      sourceAppId: _sourceAppId,
+      plainText: _plainText,
+      ...withoutOptionalContent
+    } = teamChatMessageCreatedInput;
+
+    expect(
+      TeamChatMessageCreatedHookInputSchema.parse({ ...withoutOptionalContent, links: [] })
+    ).toEqual({ ...withoutOptionalContent, links: [] });
+  });
+
+  it.each([
+    ["plainText", "a".repeat(20_001)],
+    ["links", Array.from({ length: 21 }, (_, index) => ({ url: `https://example.com/${index}` }))],
+  ] as const)("rejects an oversized teamChat.messageCreated %s field", (field, value) => {
+    expect(() =>
+      TeamChatMessageCreatedHookInputSchema.parse({
+        ...teamChatMessageCreatedInput,
+        [field]: value,
+      })
+    ).toThrow();
+  });
+
+  it("rejects a teamChat.messageCreated event without a root message ID", () => {
+    const input = { ...teamChatMessageCreatedInput } as Record<string, unknown>;
+    delete input.rootMessageId;
+
+    expect(() => TeamChatMessageCreatedHookInputSchema.parse(input)).toThrow();
+  });
+
+  it.each([
+    "succeeded",
+    "skipped_source_app",
+    "skipped_unlinked",
+    "skipped_ineligible_writer",
+    "skipped_empty",
+    "skipped_oauth_unavailable",
+    "skipped_organization_mismatch",
+    "unknown",
+  ] as const)("accepts terminal teamChat.messageCreated result %s", (hookHandlingResult) => {
+    expect(
+      TeamChatMessageCreatedHookResultSchema.parse({ hookHandlingResult, terminal: true })
+    ).toEqual({ hookHandlingResult, terminal: true });
+  });
+
+  it("rejects a non-terminal teamChat.messageCreated result", () => {
+    expect(() =>
+      TeamChatMessageCreatedHookResultSchema.parse({
+        hookHandlingResult: "succeeded",
+        terminal: false,
       })
     ).toThrow();
   });
