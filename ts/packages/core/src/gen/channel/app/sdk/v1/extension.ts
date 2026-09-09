@@ -1414,7 +1414,31 @@ export interface CommerceOrderItem {
     | undefined;
   /** 번들 구성 방식(고정 구성·선택 구성 등) 원문 코드. */
   bundleType?: string | undefined;
-  bundleItems?: CommerceOrderBundleItem[] | undefined;
+  bundleItems?:
+    | CommerceOrderBundleItem[]
+    | undefined;
+  /** 몰이 주문 안에서 이 상품 줄에 부여한 번호. id 와 달리 사람이 읽는 순번이라 안내 문구에 쓰인다. */
+  itemNo?:
+    | string
+    | undefined;
+  /** 옵션 구성 방식(조합형·독립형·연동형 등) 원문 코드. 방식에 따라 교환·옵션변경 가능 여부가 갈린다. */
+  optionType?:
+    | string
+    | undefined;
+  /**
+   * 배송 정보를 항목 단위로도 싣는다. fulfillments 는 배송 건 단위라 "이 상품의 송장번호" 를
+   * 알려면 item_ids 로 되짚어야 하는데, 몰에 따라 항목이 배송 건보다 잘게 갈린다.
+   */
+  trackingNumber?:
+    | string
+    | undefined;
+  /** 택배사 코드와 표시명. 코드만으로는 사람이 읽을 수 없다(fulfillment 쪽과 같은 이유). */
+  trackingCompany?: string | undefined;
+  trackingCompanyName?:
+    | string
+    | undefined;
+  /** 이 항목이 속한 배송 건 코드. fulfillments[].id 와 대응한다. */
+  shippingCode?: string | undefined;
 }
 
 /** 세트(번들) 상품의 구성품 한 줄. CommerceOrderItem 의 부분집합이라 이름·수량·금액 규약이 같다. */

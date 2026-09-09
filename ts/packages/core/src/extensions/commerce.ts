@@ -102,6 +102,17 @@ export const CommerceOrderItemSchema = z.object({
   bundleName: z.string().optional(),
   bundleType: z.string().optional(),
   bundleItems: z.array(CommerceOrderBundleItemSchema).optional(),
+  // 몰이 주문 안에서 이 상품 줄에 부여한 번호. id 와 달리 사람이 읽는 순번이다.
+  itemNo: z.string().optional(),
+  // 옵션 구성 방식(조합형·독립형·연동형 등) 원문 코드.
+  optionType: z.string().optional(),
+  // 배송 정보를 항목 단위로도 싣는다. fulfillments 는 배송 건 단위라 "이 상품의 송장번호" 를
+  // 알려면 itemIds 로 되짚어야 한다.
+  trackingNumber: z.string().optional(),
+  trackingCompany: z.string().optional(),
+  trackingCompanyName: z.string().optional(),
+  // 이 항목이 속한 배송 건 코드. fulfillments[].id 와 대응한다.
+  shippingCode: z.string().optional(),
 });
 export type CommerceOrderItem = ProtoBacked<
   z.infer<typeof CommerceOrderItemSchema>,

@@ -1331,6 +1331,12 @@ export const CommerceOrderItemProtoSchema = z.object({
   bundleName: z.string().optional(),
   bundleType: z.string().optional(),
   bundleItems: z.array(z.lazy(() => CommerceOrderBundleItemProtoSchema)).optional(),
+  itemNo: z.string().optional(),
+  optionType: z.string().optional(),
+  trackingNumber: z.string().optional(),
+  trackingCompany: z.string().optional(),
+  trackingCompanyName: z.string().optional(),
+  shippingCode: z.string().optional(),
 }) satisfies z.ZodType<pb.CommerceOrderItem>;
 export type CommerceOrderItemProto = z.infer<typeof CommerceOrderItemProtoSchema>;
 

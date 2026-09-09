@@ -2150,6 +2150,24 @@
                         },
                         "additionalProperties": false
                       }
+                    },
+                    "itemNo": {
+                      "type": "string"
+                    },
+                    "optionType": {
+                      "type": "string"
+                    },
+                    "trackingNumber": {
+                      "type": "string"
+                    },
+                    "trackingCompany": {
+                      "type": "string"
+                    },
+                    "trackingCompanyName": {
+                      "type": "string"
+                    },
+                    "shippingCode": {
+                      "type": "string"
                     }
                   },
                   "required": [

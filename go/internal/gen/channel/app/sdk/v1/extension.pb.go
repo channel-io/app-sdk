@@ -11199,8 +11199,20 @@ type CommerceOrderItem struct {
 	BundleId   string `protobuf:"bytes,28,opt,name=bundle_id,json=bundleId,proto3" json:"bundle_id,omitempty"`
 	BundleName string `protobuf:"bytes,29,opt,name=bundle_name,json=bundleName,proto3" json:"bundle_name,omitempty"`
 	// 번들 구성 방식(고정 구성·선택 구성 등) 원문 코드.
-	BundleType    string                     `protobuf:"bytes,30,opt,name=bundle_type,json=bundleType,proto3" json:"bundle_type,omitempty"`
-	BundleItems   []*CommerceOrderBundleItem `protobuf:"bytes,31,rep,name=bundle_items,json=bundleItems,proto3" json:"bundle_items,omitempty"`
+	BundleType  string                     `protobuf:"bytes,30,opt,name=bundle_type,json=bundleType,proto3" json:"bundle_type,omitempty"`
+	BundleItems []*CommerceOrderBundleItem `protobuf:"bytes,31,rep,name=bundle_items,json=bundleItems,proto3" json:"bundle_items,omitempty"`
+	// 몰이 주문 안에서 이 상품 줄에 부여한 번호. id 와 달리 사람이 읽는 순번이라 안내 문구에 쓰인다.
+	ItemNo string `protobuf:"bytes,32,opt,name=item_no,json=itemNo,proto3" json:"item_no,omitempty"`
+	// 옵션 구성 방식(조합형·독립형·연동형 등) 원문 코드. 방식에 따라 교환·옵션변경 가능 여부가 갈린다.
+	OptionType string `protobuf:"bytes,33,opt,name=option_type,json=optionType,proto3" json:"option_type,omitempty"`
+	// 배송 정보를 항목 단위로도 싣는다. fulfillments 는 배송 건 단위라 "이 상품의 송장번호" 를
+	// 알려면 item_ids 로 되짚어야 하는데, 몰에 따라 항목이 배송 건보다 잘게 갈린다.
+	TrackingNumber string `protobuf:"bytes,34,opt,name=tracking_number,json=trackingNumber,proto3" json:"tracking_number,omitempty"`
+	// 택배사 코드와 표시명. 코드만으로는 사람이 읽을 수 없다(fulfillment 쪽과 같은 이유).
+	TrackingCompany     string `protobuf:"bytes,35,opt,name=tracking_company,json=trackingCompany,proto3" json:"tracking_company,omitempty"`
+	TrackingCompanyName string `protobuf:"bytes,36,opt,name=tracking_company_name,json=trackingCompanyName,proto3" json:"tracking_company_name,omitempty"`
+	// 이 항목이 속한 배송 건 코드. fulfillments[].id 와 대응한다.
+	ShippingCode  string `protobuf:"bytes,37,opt,name=shipping_code,json=shippingCode,proto3" json:"shipping_code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -11450,6 +11462,48 @@ func (x *CommerceOrderItem) GetBundleItems() []*CommerceOrderBundleItem {
 		return x.BundleItems
 	}
 	return nil
+}
+
+func (x *CommerceOrderItem) GetItemNo() string {
+	if x != nil {
+		return x.ItemNo
+	}
+	return ""
+}
+
+func (x *CommerceOrderItem) GetOptionType() string {
+	if x != nil {
+		return x.OptionType
+	}
+	return ""
+}
+
+func (x *CommerceOrderItem) GetTrackingNumber() string {
+	if x != nil {
+		return x.TrackingNumber
+	}
+	return ""
+}
+
+func (x *CommerceOrderItem) GetTrackingCompany() string {
+	if x != nil {
+		return x.TrackingCompany
+	}
+	return ""
+}
+
+func (x *CommerceOrderItem) GetTrackingCompanyName() string {
+	if x != nil {
+		return x.TrackingCompanyName
+	}
+	return ""
+}
+
+func (x *CommerceOrderItem) GetShippingCode() string {
+	if x != nil {
+		return x.ShippingCode
+	}
+	return ""
 }
 
 // 세트(번들) 상품의 구성품 한 줄. CommerceOrderItem 의 부분집합이라 이름·수량·금액 규약이 같다.
@@ -18350,8 +18404,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\">\n" +
 	"\x12CommerceIdentifier\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value\"\x97\n" +
-	"\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value\"\xfe\v\n" +
 	"\x11CommerceOrderItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1b\n" +
@@ -18392,7 +18445,14 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"bundleName\x12\x1f\n" +
 	"\vbundle_type\x18\x1e \x01(\tR\n" +
 	"bundleType\x12N\n" +
-	"\fbundle_items\x18\x1f \x03(\v2+.channel.app.sdk.v1.CommerceOrderBundleItemR\vbundleItemsB\t\n" +
+	"\fbundle_items\x18\x1f \x03(\v2+.channel.app.sdk.v1.CommerceOrderBundleItemR\vbundleItems\x12\x17\n" +
+	"\aitem_no\x18  \x01(\tR\x06itemNo\x12\x1f\n" +
+	"\voption_type\x18! \x01(\tR\n" +
+	"optionType\x12'\n" +
+	"\x0ftracking_number\x18\" \x01(\tR\x0etrackingNumber\x12)\n" +
+	"\x10tracking_company\x18# \x01(\tR\x0ftrackingCompany\x122\n" +
+	"\x15tracking_company_name\x18$ \x01(\tR\x13trackingCompanyName\x12#\n" +
+	"\rshipping_code\x18% \x01(\tR\fshippingCodeB\t\n" +
 	"\a_amountB\x17\n" +
 	"\x15_unfulfilled_quantityB\x14\n" +
 	"\x12_requires_shippingB\x10\n" +
