@@ -1717,6 +1717,9 @@
             },
             "province": {
               "type": "string"
+            },
+            "countryCode": {
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -2081,6 +2084,96 @@
                         },
                         "additionalProperties": false
                       }
+                    },
+                    "statusCode": {
+                      "type": "string"
+                    },
+                    "statusText": {
+                      "type": "string"
+                    },
+                    "claimStatusCode": {
+                      "type": "string"
+                    },
+                    "supplierId": {
+                      "type": "string"
+                    },
+                    "supplierName": {
+                      "type": "string"
+                    },
+                    "optionAmount": {
+                      "type": "number"
+                    },
+                    "bundle": {
+                      "type": "boolean"
+                    },
+                    "bundleId": {
+                      "type": "string"
+                    },
+                    "bundleName": {
+                      "type": "string"
+                    },
+                    "bundleType": {
+                      "type": "string"
+                    },
+                    "bundleItems": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "productId": {
+                            "type": "string"
+                          },
+                          "variantId": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "sku": {
+                            "type": "string"
+                          },
+                          "option": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "number"
+                          },
+                          "amount": {
+                            "type": "number"
+                          },
+                          "optionAmount": {
+                            "type": "number"
+                          },
+                          "supplierId": {
+                            "type": "string"
+                          },
+                          "productCode": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "itemNo": {
+                      "type": "string"
+                    },
+                    "optionType": {
+                      "type": "string"
+                    },
+                    "trackingNumber": {
+                      "type": "string"
+                    },
+                    "trackingCompany": {
+                      "type": "string"
+                    },
+                    "trackingCompanyName": {
+                      "type": "string"
+                    },
+                    "shippingCode": {
+                      "type": "string"
+                    },
+                    "productCode": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -2126,6 +2219,18 @@
                   },
                   "taxAmount": {
                     "type": "number"
+                  },
+                  "pointAmount": {
+                    "type": "number"
+                  },
+                  "creditAmount": {
+                    "type": "number"
+                  },
+                  "couponDiscountAmount": {
+                    "type": "number"
+                  },
+                  "dueAmount": {
+                    "type": "number"
                   }
                 },
                 "required": [
@@ -2167,6 +2272,27 @@
                     },
                     "estimatedDeliveryDate": {
                       "type": "number"
+                    },
+                    "trackingCompanyName": {
+                      "type": "string"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "itemId": {
+                            "type": "string"
+                          },
+                          "state": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "itemId"
+                        ],
+                        "additionalProperties": false
+                      }
                     }
                   },
                   "required": [
@@ -2214,6 +2340,9 @@
                     "type": "string"
                   },
                   "province": {
+                    "type": "string"
+                  },
+                  "countryCode": {
                     "type": "string"
                   }
                 },
@@ -2326,6 +2455,9 @@
                     "type": "string"
                   },
                   "province": {
+                    "type": "string"
+                  },
+                  "countryCode": {
                     "type": "string"
                   }
                 },
@@ -2450,6 +2582,12 @@
                   ],
                   "additionalProperties": false
                 }
+              },
+              "marketId": {
+                "type": "string"
+              },
+              "marketOrderNo": {
+                "type": "string"
               }
             },
             "required": [
@@ -2700,6 +2838,9 @@
             },
             "province": {
               "type": "string"
+            },
+            "countryCode": {
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -2874,6 +3015,9 @@
               "type": "string"
             },
             "province": {
+              "type": "string"
+            },
+            "countryCode": {
               "type": "string"
             }
           },
@@ -22155,6 +22299,18 @@
                   },
                   "taxAmount": {
                     "type": "number"
+                  },
+                  "pointAmount": {
+                    "type": "number"
+                  },
+                  "creditAmount": {
+                    "type": "number"
+                  },
+                  "couponDiscountAmount": {
+                    "type": "number"
+                  },
+                  "dueAmount": {
+                    "type": "number"
                   }
                 },
                 "required": [
@@ -22196,6 +22352,27 @@
                     },
                     "estimatedDeliveryDate": {
                       "type": "number"
+                    },
+                    "trackingCompanyName": {
+                      "type": "string"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "itemId": {
+                            "type": "string"
+                          },
+                          "state": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "itemId"
+                        ],
+                        "additionalProperties": false
+                      }
                     }
                   },
                   "required": [
@@ -22243,6 +22420,9 @@
                     "type": "string"
                   },
                   "province": {
+                    "type": "string"
+                  },
+                  "countryCode": {
                     "type": "string"
                   }
                 },
@@ -22346,6 +22526,9 @@
               "type": "string"
             },
             "province": {
+              "type": "string"
+            },
+            "countryCode": {
               "type": "string"
             }
           },
@@ -22462,6 +22645,9 @@
               "type": "string"
             },
             "province": {
+              "type": "string"
+            },
+            "countryCode": {
               "type": "string"
             }
           },
@@ -22722,6 +22908,9 @@
               "type": "string"
             },
             "province": {
+              "type": "string"
+            },
+            "countryCode": {
               "type": "string"
             }
           },
@@ -24689,6 +24878,9 @@
               "type": "string"
             },
             "province": {
+              "type": "string"
+            },
+            "countryCode": {
               "type": "string"
             }
           },

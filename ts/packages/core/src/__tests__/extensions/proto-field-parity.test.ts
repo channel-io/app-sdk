@@ -58,6 +58,7 @@ import {
   DescribeTableOutputSchema,
   EventTypeSchema,
   FieldConfigSchema,
+  FulfillmentItemSchema,
   FulfillmentSchema,
   GetAlfTasksInputSchema,
   GetAlfTasksResponseSchema,
@@ -197,6 +198,7 @@ import {
   WmsOrderV2Schema,
 } from "../../extensions/wms.js";
 import {
+  CommerceOrderBundleItemSchema,
   CommerceOrderItemSchema,
   CommerceOrderSchema,
   CommerceIdentifierSchema,
@@ -550,6 +552,7 @@ const contracts: Contract[] = [
   contract("Transaction", TransactionSchema, "extension", "OrderTransaction"),
   contract("Metafield", MetafieldSchema, "extension", "OrderMetafield"),
   contract("Fulfillment", FulfillmentSchema, "extension", "OrderFulfillment"),
+  contract("FulfillmentItem", FulfillmentItemSchema, "extension", "OrderFulfillmentItem"),
   contract("Order", OrderSchema, "extension", "Order"),
   contract("FieldConfig", FieldConfigSchema, "extension", "OrderFieldConfig"),
   contract("OperationOptions", OperationOptionsSchema, "extension", "OrderOperationOptions"),
@@ -557,6 +560,12 @@ const contracts: Contract[] = [
 
   contract("Buyer", BuyerSchema, "extension", "Buyer"),
   contract("CommerceOrderItem", CommerceOrderItemSchema, "extension", "CommerceOrderItem"),
+  contract(
+    "CommerceOrderBundleItem",
+    CommerceOrderBundleItemSchema,
+    "extension",
+    "CommerceOrderBundleItem"
+  ),
   contract("CommerceOrder", CommerceOrderSchema, "extension", "CommerceOrder"),
   contract("CommerceIdentifier", CommerceIdentifierSchema, "extension", "CommerceIdentifier"),
   contract(

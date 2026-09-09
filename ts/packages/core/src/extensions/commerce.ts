@@ -10,6 +10,7 @@ import type {
   CommerceGetExchangeableItemsOutput as ProtoCommerceGetExchangeableItemsOutput,
   CommerceExchangeableItem as ProtoCommerceExchangeableItem,
   CommerceExchangeableVariant as ProtoCommerceExchangeableVariant,
+  CommerceOrderBundleItem as ProtoCommerceOrderBundleItem,
   CommerceVariantOption as ProtoCommerceVariantOption,
   CommerceGetOrdersInput as ProtoCommerceGetOrdersInput,
   CommerceGetOrdersOutput as ProtoCommerceGetOrdersOutput,
@@ -44,6 +45,25 @@ type ProtoBacked<T, Proto> = T & Proto;
 // commerce = order 재설계: buyer 추가, createdAt→orderedAt, 액션 result 래핑.
 // 변경 없는 값 타입(Buyer/Address/Payment/Fulfillment/Claim/Claimability)은 order 스키마 재사용.
 
+// 세트(번들) 상품의 구성품 한 줄. CommerceOrderItem 의 부분집합이라 규약이 같다.
+export const CommerceOrderBundleItemSchema = z.object({
+  productId: z.string().optional(),
+  variantId: z.string().optional(),
+  name: z.string().optional(),
+  sku: z.string().optional(),
+  option: z.string().optional(),
+  quantity: z.number().optional(),
+  amount: z.number().optional(),
+  optionAmount: z.number().optional(),
+  supplierId: z.string().optional(),
+  // 상위 항목의 productCode 와 같은 뜻(품목 단위 sku 와 다른 축).
+  productCode: z.string().optional(),
+});
+export type CommerceOrderBundleItem = ProtoBacked<
+  z.infer<typeof CommerceOrderBundleItemSchema>,
+  ProtoCommerceOrderBundleItem
+>;
+
 export const CommerceOrderItemSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -67,6 +87,36 @@ export const CommerceOrderItemSchema = z.object({
   sellingPlanId: z.string().optional(),
   customAttributes: z.array(OrderAttributeSchema).optional(),
   taxLines: z.array(TaxLineSchema).optional(),
+  // state 는 몰마다 다른 상태를 공통 값으로 정규화한 것이라, 몰 고유 상태로 분기해야 하는
+  // 태스크는 원문이 필요하다. statusCode 는 진행 상태 코드, statusText 는 그 표시 문구다.
+  statusCode: z.string().optional(),
+  statusText: z.string().optional(),
+  // 클레임 성격(정상·취소·반품·교환) 코드. 진행 상태와 축이 다르다.
+  claimStatusCode: z.string().optional(),
+  // 상품 공급사. 위탁·입점 구조인 몰에서 CS 안내에 쓰인다.
+  supplierId: z.string().optional(),
+  supplierName: z.string().optional(),
+  // 옵션 추가금. amount 에 이미 합산돼 있으나 분리해 보여줘야 하는 몰이 있다.
+  optionAmount: z.number().optional(),
+  // 세트(번들) 상품 정보. 번들이 아니면 비어 있다.
+  bundle: z.boolean().optional(),
+  bundleId: z.string().optional(),
+  bundleName: z.string().optional(),
+  bundleType: z.string().optional(),
+  bundleItems: z.array(CommerceOrderBundleItemSchema).optional(),
+  // 몰이 주문 안에서 이 상품 줄에 부여한 번호. id 와 달리 사람이 읽는 순번이다.
+  itemNo: z.string().optional(),
+  // 옵션 구성 방식(조합형·독립형·연동형 등) 원문 코드.
+  optionType: z.string().optional(),
+  // 배송 정보를 항목 단위로도 싣는다. fulfillments 는 배송 건 단위라 "이 상품의 송장번호" 를
+  // 알려면 itemIds 로 되짚어야 한다.
+  trackingNumber: z.string().optional(),
+  trackingCompany: z.string().optional(),
+  trackingCompanyName: z.string().optional(),
+  // 이 항목이 속한 배송 건 코드. fulfillments[].id 와 대응한다.
+  shippingCode: z.string().optional(),
+  // 몰이 상품에 부여한 코드. productId(내부 식별자)·sku(품목 단위 재고 코드)와 다른 축이다.
+  productCode: z.string().optional(),
 });
 export type CommerceOrderItem = ProtoBacked<
   z.infer<typeof CommerceOrderItemSchema>,
@@ -104,6 +154,10 @@ export const CommerceOrderSchema = z.object({
   shippingLines: z.array(ShippingLineSchema).optional(),
   transactions: z.array(TransactionSchema).optional(),
   metafields: z.array(MetafieldSchema).optional(),
+  // 외부 마켓(네이버·쿠팡 등)에서 유입된 주문이 어느 마켓 것인지. 자사몰 주문이면 빈 값이다.
+  marketId: z.string().optional(),
+  // 그 마켓이 발번한 주문번호. 몰 주문번호(id)와 달라 CS 조회 키로 쓰인다.
+  marketOrderNo: z.string().optional(),
 });
 export type CommerceOrder = ProtoBacked<z.infer<typeof CommerceOrderSchema>, ProtoCommerceOrder>;
 

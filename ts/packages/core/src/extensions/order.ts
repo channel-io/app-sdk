@@ -13,6 +13,7 @@ import type {
   OrderExchangeItem as ProtoOrderExchangeItem,
   OrderFieldConfig as ProtoFieldConfig,
   OrderFulfillment as ProtoFulfillment,
+  OrderFulfillmentItem as ProtoOrderFulfillmentItem,
   OrderItem as ProtoOrderItem,
   OrderAttribute as ProtoOrderAttribute,
   OrderMetafield as ProtoOrderMetafield,
@@ -51,6 +52,8 @@ export const AddressSchema = z.object({
   country: z.string().optional(),
   city: z.string().optional(),
   province: z.string().optional(),
+  // ISO 3166-1 alpha-2. country 는 표시용 국가명이라 코드 비교에는 쓸 수 없다.
+  countryCode: z.string().optional(),
 });
 export type Address = ProtoBacked<z.infer<typeof AddressSchema>, ProtoAddress>;
 
@@ -145,8 +148,24 @@ export const PaymentSchema = z.object({
   methods: z.array(z.string()).optional(),
   requireRefundBankAccount: z.boolean(),
   taxAmount: z.number().optional(),
+  // discountAmount 는 아래 세 값의 합이다. 무엇으로 깎였는지 안내하려면 개별 값이 필요하다.
+  pointAmount: z.number().optional(),
+  creditAmount: z.number().optional(),
+  couponDiscountAmount: z.number().optional(),
+  // 아직 결제되지 않은 잔액(무통장 입금 대기, 부분 결제 등). state 만으로는 얼마가 남았는지 모른다.
+  dueAmount: z.number().optional(),
 });
 export type Payment = ProtoBacked<z.infer<typeof PaymentSchema>, ProtoPayment>;
+
+// 배송에 포함된 항목 하나와 그 항목의 상태.
+export const FulfillmentItemSchema = z.object({
+  itemId: z.string(),
+  state: z.string().optional(),
+});
+export type FulfillmentItem = ProtoBacked<
+  z.infer<typeof FulfillmentItemSchema>,
+  ProtoOrderFulfillmentItem
+>;
 
 export const FulfillmentSchema = z.object({
   id: z.string(),
@@ -156,6 +175,11 @@ export const FulfillmentSchema = z.object({
   trackingCompany: z.string().optional(),
   trackingUrl: z.string().optional(),
   estimatedDeliveryDate: z.number().optional(),
+  // trackingCompany 에 몰의 택배사 코드가 들어가는 몰이 있어 사람이 읽을 수 없다. 표시용 이름.
+  trackingCompanyName: z.string().optional(),
+  // 한 배송 안에서도 항목별 상태가 갈리는 몰이 있다(부분 출하·부분 반품).
+  // state 는 배송 단위, 항목별은 이쪽이다.
+  items: z.array(FulfillmentItemSchema).optional(),
 });
 export type Fulfillment = ProtoBacked<z.infer<typeof FulfillmentSchema>, ProtoFulfillment>;
 
