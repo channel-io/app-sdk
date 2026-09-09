@@ -167,7 +167,7 @@ export const TeamChatMessageCreatedHookInputSchema = z
     sourceAppId: TeamChatMessageCreatedIdentifierSchema.optional(),
     writer: TeamChatMessageCreatedWriterSchema,
     plainText: z.string().max(20_000).optional(),
-    links: z.array(TeamChatMessageCreatedLinkSchema).max(20),
+    links: z.array(TeamChatMessageCreatedLinkSchema).max(20).default([]),
   })
   .strict();
 
