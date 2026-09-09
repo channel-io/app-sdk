@@ -2014,6 +2014,38 @@ export const HookUserChatOpenedResultProtoSchema = z.object({
 }) satisfies z.ZodType<pb.HookUserChatOpenedResult>;
 export type HookUserChatOpenedResultProto = z.infer<typeof HookUserChatOpenedResultProtoSchema>;
 
+export const HookTeamChatMessageCreatedWriterProtoSchema = z.object({
+  type: z.string().optional(),
+  id: z.string().optional(),
+}) satisfies z.ZodType<pb.HookTeamChatMessageCreatedWriter>;
+export type HookTeamChatMessageCreatedWriterProto = z.infer<typeof HookTeamChatMessageCreatedWriterProtoSchema>;
+
+export const HookTeamChatMessageCreatedLinkProtoSchema = z.object({
+  url: z.string().optional(),
+  title: z.string().optional(),
+}) satisfies z.ZodType<pb.HookTeamChatMessageCreatedLink>;
+export type HookTeamChatMessageCreatedLinkProto = z.infer<typeof HookTeamChatMessageCreatedLinkProtoSchema>;
+
+export const HookTeamChatMessageCreatedInputProtoSchema = z.object({
+  eventId: z.string().optional(),
+  channelId: z.string().optional(),
+  groupId: z.string().optional(),
+  rootMessageId: z.string().optional(),
+  messageId: z.string().optional(),
+  occurredAt: z.string().optional(),
+  sourceAppId: z.string().optional(),
+  writer: z.lazy(() => HookTeamChatMessageCreatedWriterProtoSchema).optional(),
+  plainText: z.string().optional(),
+  links: z.array(z.lazy(() => HookTeamChatMessageCreatedLinkProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.HookTeamChatMessageCreatedInput>;
+export type HookTeamChatMessageCreatedInputProto = z.infer<typeof HookTeamChatMessageCreatedInputProtoSchema>;
+
+export const HookTeamChatMessageCreatedResultProtoSchema = z.object({
+  hookHandlingResult: z.string().optional(),
+  terminal: z.boolean().optional(),
+}) satisfies z.ZodType<pb.HookTeamChatMessageCreatedResult>;
+export type HookTeamChatMessageCreatedResultProto = z.infer<typeof HookTeamChatMessageCreatedResultProtoSchema>;
+
 export const DataSourceManagerPermissionProtoSchema = z.object({
   action: z.string().optional(),
   scope: z.string().optional(),

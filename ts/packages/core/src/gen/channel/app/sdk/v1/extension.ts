@@ -2111,6 +2111,34 @@ export interface HookUserChatOpenedResult {
   terminal?: boolean | undefined;
 }
 
+export interface HookTeamChatMessageCreatedWriter {
+  type?: string | undefined;
+  id?: string | undefined;
+}
+
+export interface HookTeamChatMessageCreatedLink {
+  url?: string | undefined;
+  title?: string | undefined;
+}
+
+export interface HookTeamChatMessageCreatedInput {
+  eventId?: string | undefined;
+  channelId?: string | undefined;
+  groupId?: string | undefined;
+  rootMessageId?: string | undefined;
+  messageId?: string | undefined;
+  occurredAt?: string | undefined;
+  sourceAppId?: string | undefined;
+  writer?: HookTeamChatMessageCreatedWriter | undefined;
+  plainText?: string | undefined;
+  links?: HookTeamChatMessageCreatedLink[] | undefined;
+}
+
+export interface HookTeamChatMessageCreatedResult {
+  hookHandlingResult?: string | undefined;
+  terminal?: boolean | undefined;
+}
+
 export interface DataSourceManagerPermission {
   action?: string | undefined;
   scope?: string | undefined;

@@ -7,13 +7,16 @@ metadata가 가리키는 handler는 standalone app Function이며 새 Extension 
 
 `extension.hook.metadata.getHooks`가 필수입니다. 지원 type은 `app.installed`, `app.uninstalled`,
 `command.toggle`, `config.saved`, `config.deleted`, `widget.installed`, `widget.uninstalled`,
-`webhook.received`입니다.
+`webhook.received`, `oauth.connected`, `oauth.disconnected`, `userChat.opened`,
+`teamChat.messageCreated`입니다.
 
 Widget hook은 widget name과 같은 `targetId`가 필요합니다. App, command, Config hook에는 target을
 넣지 않습니다. Public webhook target은 1-64자의 URL-safe identifier입니다. `executionScope`의
 기본값은 `app`이며 32-128자의 entropy 높은 `endpointToken`이 필요합니다. Manager scope에서는
 AppStore가 설치·Channel·manager에 binding된 URL을 발급하므로 token을 넣지 않습니다. 다른 hook
 type에는 webhook object를 넣을 수 없습니다.
+`teamChat.messageCreated`에는 target metadata가 없고 크기가 제한된 message identifier, writer
+identity, plain text, link metadata만 전달됩니다. 정확한 DTO는 TypeScript 레퍼런스를 확인하세요.
 
 ## TypeScript
 

@@ -7,13 +7,16 @@ to ordinary app Functions; it does not turn those handlers into new Extension Fu
 
 `extension.hook.metadata.getHooks` is required. Supported types are `app.installed`,
 `app.uninstalled`, `command.toggle`, `config.saved`, `config.deleted`, `widget.installed`,
-`widget.uninstalled`, and `webhook.received`.
+`widget.uninstalled`, `webhook.received`, `oauth.connected`, `oauth.disconnected`,
+`userChat.opened`, and `teamChat.messageCreated`.
 
 Widget hooks require a `targetId` matching the widget name. App, command, and Config hooks must not
 set a target. A public webhook target is 1-64 URL-safe identifier characters. `executionScope`
 defaults to `app`, where a 32-128 character high-entropy `endpointToken` is required. Manager scope
 must omit the token because AppStore issues a URL bound to the installation, Channel, and manager.
 The webhook object is invalid on every other hook type.
+`teamChat.messageCreated` has no target metadata and carries only bounded message identifiers,
+writer identity, plain text, and link metadata; see the TypeScript reference for its exact DTO.
 
 ## TypeScript
 

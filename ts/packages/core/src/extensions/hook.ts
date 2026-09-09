@@ -2,6 +2,10 @@ import { z } from "zod";
 import type {
   HookConfig as ProtoHookConfig,
   HookGetHooksOutput as ProtoGetHooksOutput,
+  HookTeamChatMessageCreatedInput as ProtoTeamChatMessageCreatedHookInput,
+  HookTeamChatMessageCreatedLink as ProtoTeamChatMessageCreatedLink,
+  HookTeamChatMessageCreatedResult as ProtoTeamChatMessageCreatedHookResult,
+  HookTeamChatMessageCreatedWriter as ProtoTeamChatMessageCreatedWriter,
   HookUserChatOpenedInput as ProtoUserChatOpenedHookInput,
   HookUserChatOpenedResult as ProtoUserChatOpenedHookResult,
   HookWebhookConfig as ProtoWebhookConfig,
@@ -24,6 +28,7 @@ export const HookTypeSchema = z.enum([
   "oauth.connected",
   "oauth.disconnected",
   "userChat.opened",
+  "teamChat.messageCreated",
 ]);
 
 export type HookType = z.infer<typeof HookTypeSchema>;
@@ -125,6 +130,87 @@ export type UserChatOpenedHookResult = ProtoBacked<
   ProtoUserChatOpenedHookResult
 >;
 
+const TeamChatMessageCreatedIdentifierSchema = z.string().min(1).max(255);
+
+export const TeamChatMessageCreatedWriterSchema = z
+  .object({
+    type: z.string().min(1).max(50),
+    id: TeamChatMessageCreatedIdentifierSchema,
+  })
+  .strict();
+
+export type TeamChatMessageCreatedWriter = ProtoBacked<
+  z.infer<typeof TeamChatMessageCreatedWriterSchema>,
+  ProtoTeamChatMessageCreatedWriter
+>;
+
+export const TeamChatMessageCreatedLinkSchema = z
+  .object({
+    url: z.string().url().max(2048),
+    title: z.string().min(1).max(255).optional(),
+  })
+  .strict();
+
+export type TeamChatMessageCreatedLink = ProtoBacked<
+  z.infer<typeof TeamChatMessageCreatedLinkSchema>,
+  ProtoTeamChatMessageCreatedLink
+>;
+
+export const TeamChatMessageCreatedHookInputSchema = z
+  .object({
+    eventId: TeamChatMessageCreatedIdentifierSchema,
+    channelId: TeamChatMessageCreatedIdentifierSchema,
+    groupId: TeamChatMessageCreatedIdentifierSchema,
+    rootMessageId: TeamChatMessageCreatedIdentifierSchema,
+    messageId: TeamChatMessageCreatedIdentifierSchema,
+    occurredAt: z.string().datetime({ offset: true }),
+    sourceAppId: TeamChatMessageCreatedIdentifierSchema.optional(),
+    writer: TeamChatMessageCreatedWriterSchema,
+    plainText: z.string().max(20_000).optional(),
+    links: z.array(TeamChatMessageCreatedLinkSchema).max(20).default([]),
+  })
+  .strict();
+
+export type TeamChatMessageCreatedHookInput = ProtoBacked<
+  z.infer<typeof TeamChatMessageCreatedHookInputSchema>,
+  ProtoTeamChatMessageCreatedHookInput
+>;
+
+export const TeamChatMessageCreatedHookResultSchema = z.discriminatedUnion("hookHandlingResult", [
+  z.object({ hookHandlingResult: z.literal("succeeded"), terminal: z.literal(true) }).strict(),
+  z
+    .object({ hookHandlingResult: z.literal("skipped_source_app"), terminal: z.literal(true) })
+    .strict(),
+  z
+    .object({ hookHandlingResult: z.literal("skipped_unlinked"), terminal: z.literal(true) })
+    .strict(),
+  z
+    .object({
+      hookHandlingResult: z.literal("skipped_ineligible_writer"),
+      terminal: z.literal(true),
+    })
+    .strict(),
+  z.object({ hookHandlingResult: z.literal("skipped_empty"), terminal: z.literal(true) }).strict(),
+  z
+    .object({
+      hookHandlingResult: z.literal("skipped_oauth_unavailable"),
+      terminal: z.literal(true),
+    })
+    .strict(),
+  z
+    .object({
+      hookHandlingResult: z.literal("skipped_organization_mismatch"),
+      terminal: z.literal(true),
+    })
+    .strict(),
+  z.object({ hookHandlingResult: z.literal("unknown"), terminal: z.literal(true) }).strict(),
+]);
+
+export type TeamChatMessageCreatedHookResult = ProtoBacked<
+  z.infer<typeof TeamChatMessageCreatedHookResultSchema>,
+  ProtoTeamChatMessageCreatedHookResult
+>;
+
 const AppWebhookConfigSchema = z
   .object({
     endpointToken: WebhookEndpointTokenSchema,
@@ -192,6 +278,9 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("userChat.opened"),
+  }).strict(),
+  BaseHookConfigSchema.extend({
+    type: z.literal("teamChat.messageCreated"),
   }).strict(),
 ]);
 

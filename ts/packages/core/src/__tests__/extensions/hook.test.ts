@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { HookConfigSchema, HookTypeSchema, WebhookConfigSchema } from "../../extensions/hook.js";
+import {
+  HookConfigSchema,
+  HookTypeSchema,
+  TeamChatMessageCreatedHookInputSchema,
+  WebhookConfigSchema,
+} from "../../extensions/hook.js";
 
 const endpointToken = "a".repeat(32);
 
@@ -40,6 +45,28 @@ describe("HookConfigSchema", () => {
     expect(HookTypeSchema.options).toEqual(
       expect.arrayContaining(["oauth.connected", "oauth.disconnected"])
     );
+  });
+
+  it("accepts a teamChat.messageCreated hook without target metadata", () => {
+    expect(
+      HookConfigSchema.parse({
+        type: "teamChat.messageCreated",
+        actionFunctionName: "linear.teamChatMessageCreated.handle",
+      })
+    ).toEqual({
+      type: "teamChat.messageCreated",
+      actionFunctionName: "linear.teamChatMessageCreated.handle",
+    });
+  });
+
+  it("rejects target metadata on teamChat.messageCreated hooks", () => {
+    expect(() =>
+      HookConfigSchema.parse({
+        type: "teamChat.messageCreated",
+        targetId: "linear.comments",
+        actionFunctionName: "linear.teamChatMessageCreated.handle",
+      })
+    ).toThrow();
   });
 
   it("accepts an app-level public webhook hook", () => {
@@ -138,5 +165,21 @@ describe("WebhookConfigSchema", () => {
     expect(WebhookConfigSchema.parse({ endpointToken: "a".repeat(128) })).toEqual({
       endpointToken: "a".repeat(128),
     });
+  });
+});
+
+describe("TeamChatMessageCreatedHookInputSchema", () => {
+  it("defaults omitted links to an empty array", () => {
+    expect(
+      TeamChatMessageCreatedHookInputSchema.parse({
+        eventId: "event-1",
+        channelId: "channel-1",
+        groupId: "group-1",
+        rootMessageId: "root-message-1",
+        messageId: "message-1",
+        occurredAt: "2026-09-09T00:00:00Z",
+        writer: { type: "manager", id: "manager-1" },
+      })
+    ).toMatchObject({ links: [] });
   });
 });

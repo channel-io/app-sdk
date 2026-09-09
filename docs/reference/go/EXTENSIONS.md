@@ -125,6 +125,11 @@ internally, so app handlers receive SDK DTOs while the wire format stays camelCa
 | Mail relay | `extension/mailrelay`  |
 | Custom     | `extension`            |
 
+The Hook package exports `TeamChatMessageCreatedInput`, its bounded writer and
+link DTOs, `TeamChatMessageCreatedResult`, and constants for every terminal
+result. Register `TypeTeamChatMessageCreated` through `StaticHooks` and keep the
+referenced action handler as an ordinary app Function.
+
 Server-side extension DTOs are defined in proto first. Go extension packages
 either expose generated DTOs directly, as `extension/wms` and
 `extension/messaging` do, or expose `Proto*` aliases alongside existing

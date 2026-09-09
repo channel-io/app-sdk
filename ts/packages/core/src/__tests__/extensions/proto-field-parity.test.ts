@@ -85,6 +85,10 @@ import {
   GetWmsSupportedCommercesInputSchema,
   GetWmsSupportedCommercesOutputSchema,
   HookConfigSchema,
+  TeamChatMessageCreatedHookInputSchema,
+  TeamChatMessageCreatedHookResultSchema,
+  TeamChatMessageCreatedLinkSchema,
+  TeamChatMessageCreatedWriterSchema,
   UserChatOpenedHookInputSchema,
   UserChatOpenedHookResultSchema,
   InboxGetCustomEditorWamInputSchema,
@@ -395,6 +399,30 @@ const contracts: Contract[] = [
     UserChatOpenedHookResultSchema,
     "extension",
     "HookUserChatOpenedResult"
+  ),
+  contract(
+    "TeamChatMessageCreatedWriter",
+    TeamChatMessageCreatedWriterSchema,
+    "extension",
+    "HookTeamChatMessageCreatedWriter"
+  ),
+  contract(
+    "TeamChatMessageCreatedLink",
+    TeamChatMessageCreatedLinkSchema,
+    "extension",
+    "HookTeamChatMessageCreatedLink"
+  ),
+  contract(
+    "TeamChatMessageCreatedHookInput",
+    TeamChatMessageCreatedHookInputSchema,
+    "extension",
+    "HookTeamChatMessageCreatedInput"
+  ),
+  contract(
+    "TeamChatMessageCreatedHookResult",
+    TeamChatMessageCreatedHookResultSchema,
+    "extension",
+    "HookTeamChatMessageCreatedResult"
   ),
 
   contract("PollingPoller", PollingPollerSchema, "extension", "PollingPoller"),
