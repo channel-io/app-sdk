@@ -1337,6 +1337,7 @@ export const CommerceOrderItemProtoSchema = z.object({
   trackingCompany: z.string().optional(),
   trackingCompanyName: z.string().optional(),
   shippingCode: z.string().optional(),
+  productCode: z.string().optional(),
 }) satisfies z.ZodType<pb.CommerceOrderItem>;
 export type CommerceOrderItemProto = z.infer<typeof CommerceOrderItemProtoSchema>;
 
@@ -1350,6 +1351,7 @@ export const CommerceOrderBundleItemProtoSchema = z.object({
   amount: z.number().optional(),
   optionAmount: z.number().optional(),
   supplierId: z.string().optional(),
+  productCode: z.string().optional(),
 }) satisfies z.ZodType<pb.CommerceOrderBundleItem>;
 export type CommerceOrderBundleItemProto = z.infer<typeof CommerceOrderBundleItemProtoSchema>;
 

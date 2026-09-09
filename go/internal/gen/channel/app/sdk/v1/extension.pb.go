@@ -11212,7 +11212,11 @@ type CommerceOrderItem struct {
 	TrackingCompany     string `protobuf:"bytes,35,opt,name=tracking_company,json=trackingCompany,proto3" json:"tracking_company,omitempty"`
 	TrackingCompanyName string `protobuf:"bytes,36,opt,name=tracking_company_name,json=trackingCompanyName,proto3" json:"tracking_company_name,omitempty"`
 	// 이 항목이 속한 배송 건 코드. fulfillments[].id 와 대응한다.
-	ShippingCode  string `protobuf:"bytes,37,opt,name=shipping_code,json=shippingCode,proto3" json:"shipping_code,omitempty"`
+	ShippingCode string `protobuf:"bytes,37,opt,name=shipping_code,json=shippingCode,proto3" json:"shipping_code,omitempty"`
+	// 몰이 상품에 부여한 코드. product_id(내부 식별자)·sku(품목 단위 재고 코드)와 다른 축이다.
+	// 카페24는 숫자 product_no 와 사람이 읽는 product_code("P000000Y")를 따로 두고, CS 안내와
+	// 어드민 검색에는 후자를 쓴다. sku 에 넣으면 품목 단위 값이라는 뜻이 어긋난다.
+	ProductCode   string `protobuf:"bytes,38,opt,name=product_code,json=productCode,proto3" json:"product_code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -11506,6 +11510,13 @@ func (x *CommerceOrderItem) GetShippingCode() string {
 	return ""
 }
 
+func (x *CommerceOrderItem) GetProductCode() string {
+	if x != nil {
+		return x.ProductCode
+	}
+	return ""
+}
+
 // 세트(번들) 상품의 구성품 한 줄. CommerceOrderItem 의 부분집합이라 이름·수량·금액 규약이 같다.
 type CommerceOrderBundleItem struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
@@ -11516,9 +11527,11 @@ type CommerceOrderBundleItem struct {
 	Option    string                 `protobuf:"bytes,5,opt,name=option,proto3" json:"option,omitempty"`
 	Quantity  float64                `protobuf:"fixed64,6,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	// 0 원 구성품(사은품)이 정상이라 presence 가 필요하다.
-	Amount        *float64 `protobuf:"fixed64,7,opt,name=amount,proto3,oneof" json:"amount,omitempty"`
-	OptionAmount  *float64 `protobuf:"fixed64,8,opt,name=option_amount,json=optionAmount,proto3,oneof" json:"option_amount,omitempty"`
-	SupplierId    string   `protobuf:"bytes,9,opt,name=supplier_id,json=supplierId,proto3" json:"supplier_id,omitempty"`
+	Amount       *float64 `protobuf:"fixed64,7,opt,name=amount,proto3,oneof" json:"amount,omitempty"`
+	OptionAmount *float64 `protobuf:"fixed64,8,opt,name=option_amount,json=optionAmount,proto3,oneof" json:"option_amount,omitempty"`
+	SupplierId   string   `protobuf:"bytes,9,opt,name=supplier_id,json=supplierId,proto3" json:"supplier_id,omitempty"`
+	// 상위 항목의 product_code 와 같은 뜻(품목 단위 sku 와 다른 축).
+	ProductCode   string `protobuf:"bytes,10,opt,name=product_code,json=productCode,proto3" json:"product_code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -11612,6 +11625,13 @@ func (x *CommerceOrderBundleItem) GetOptionAmount() float64 {
 func (x *CommerceOrderBundleItem) GetSupplierId() string {
 	if x != nil {
 		return x.SupplierId
+	}
+	return ""
+}
+
+func (x *CommerceOrderBundleItem) GetProductCode() string {
+	if x != nil {
+		return x.ProductCode
 	}
 	return ""
 }
@@ -18404,7 +18424,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\">\n" +
 	"\x12CommerceIdentifier\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value\"\xfe\v\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value\"\xa1\f\n" +
 	"\x11CommerceOrderItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1b\n" +
@@ -18452,12 +18472,13 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x0ftracking_number\x18\" \x01(\tR\x0etrackingNumber\x12)\n" +
 	"\x10tracking_company\x18# \x01(\tR\x0ftrackingCompany\x122\n" +
 	"\x15tracking_company_name\x18$ \x01(\tR\x13trackingCompanyName\x12#\n" +
-	"\rshipping_code\x18% \x01(\tR\fshippingCodeB\t\n" +
+	"\rshipping_code\x18% \x01(\tR\fshippingCode\x12!\n" +
+	"\fproduct_code\x18& \x01(\tR\vproductCodeB\t\n" +
 	"\a_amountB\x17\n" +
 	"\x15_unfulfilled_quantityB\x14\n" +
 	"\x12_requires_shippingB\x10\n" +
 	"\x0e_option_amountB\t\n" +
-	"\a_bundle\"\xb6\x02\n" +
+	"\a_bundle\"\xd9\x02\n" +
 	"\x17CommerceOrderBundleItem\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x01 \x01(\tR\tproductId\x12\x1d\n" +
@@ -18470,7 +18491,9 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x06amount\x18\a \x01(\x01H\x00R\x06amount\x88\x01\x01\x12(\n" +
 	"\roption_amount\x18\b \x01(\x01H\x01R\foptionAmount\x88\x01\x01\x12\x1f\n" +
 	"\vsupplier_id\x18\t \x01(\tR\n" +
-	"supplierIdB\t\n" +
+	"supplierId\x12!\n" +
+	"\fproduct_code\x18\n" +
+	" \x01(\tR\vproductCodeB\t\n" +
 	"\a_amountB\x10\n" +
 	"\x0e_option_amount\"\xf7\n" +
 	"\n" +

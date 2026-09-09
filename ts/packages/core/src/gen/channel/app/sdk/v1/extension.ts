@@ -1438,7 +1438,15 @@ export interface CommerceOrderItem {
     | string
     | undefined;
   /** 이 항목이 속한 배송 건 코드. fulfillments[].id 와 대응한다. */
-  shippingCode?: string | undefined;
+  shippingCode?:
+    | string
+    | undefined;
+  /**
+   * 몰이 상품에 부여한 코드. product_id(내부 식별자)·sku(품목 단위 재고 코드)와 다른 축이다.
+   * 카페24는 숫자 product_no 와 사람이 읽는 product_code("P000000Y")를 따로 두고, CS 안내와
+   * 어드민 검색에는 후자를 쓴다. sku 에 넣으면 품목 단위 값이라는 뜻이 어긋난다.
+   */
+  productCode?: string | undefined;
 }
 
 /** 세트(번들) 상품의 구성품 한 줄. CommerceOrderItem 의 부분집합이라 이름·수량·금액 규약이 같다. */
@@ -1454,7 +1462,11 @@ export interface CommerceOrderBundleItem {
   /** 0 원 구성품(사은품)이 정상이라 presence 가 필요하다. */
   amount?: number | undefined;
   optionAmount?: number | undefined;
-  supplierId?: string | undefined;
+  supplierId?:
+    | string
+    | undefined;
+  /** 상위 항목의 product_code 와 같은 뜻(품목 단위 sku 와 다른 축). */
+  productCode?: string | undefined;
 }
 
 export interface CommerceOrder {

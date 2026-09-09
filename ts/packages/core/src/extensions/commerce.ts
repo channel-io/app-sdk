@@ -56,6 +56,8 @@ export const CommerceOrderBundleItemSchema = z.object({
   amount: z.number().optional(),
   optionAmount: z.number().optional(),
   supplierId: z.string().optional(),
+  // 상위 항목의 productCode 와 같은 뜻(품목 단위 sku 와 다른 축).
+  productCode: z.string().optional(),
 });
 export type CommerceOrderBundleItem = ProtoBacked<
   z.infer<typeof CommerceOrderBundleItemSchema>,
@@ -113,6 +115,8 @@ export const CommerceOrderItemSchema = z.object({
   trackingCompanyName: z.string().optional(),
   // 이 항목이 속한 배송 건 코드. fulfillments[].id 와 대응한다.
   shippingCode: z.string().optional(),
+  // 몰이 상품에 부여한 코드. productId(내부 식별자)·sku(품목 단위 재고 코드)와 다른 축이다.
+  productCode: z.string().optional(),
 });
 export type CommerceOrderItem = ProtoBacked<
   z.infer<typeof CommerceOrderItemSchema>,
