@@ -116,13 +116,19 @@ describe("hook metadata schema", () => {
     eventId: "event-1",
     channelId: "channel-1",
     groupId: "group-1",
-    rootMessageId: "root-message-1",
     messageId: "message-1",
     occurredAt: "2026-09-09T10:30:00.000Z",
     sourceAppId: "app-linear",
-    writer: { type: "manager", id: "manager-1" },
-    plainText: "Ship the webhook path.",
-    links: [{ url: "https://linear.app/channel/issue/AS-3305", title: "AS-3305" }],
+    snapshot: {
+      id: "message-1",
+      channelId: "channel-1",
+      chatId: "group-1",
+      threadId: "root-message-1",
+      personType: "manager",
+      personId: "manager-1",
+      plainText: "Ship the webhook path.",
+      webPage: { url: "https://linear.app/channel/issue/AS-3305" },
+    },
   } as const;
 
   it("accepts a userChat.opened hook without targetId", () => {
@@ -226,41 +232,38 @@ describe("hook metadata schema", () => {
     ).toThrow();
   });
 
-  it("parses a bounded teamChat.messageCreated event", () => {
+  it("parses a teamChat.messageCreated event with a full Message snapshot", () => {
     expect(TeamChatMessageCreatedHookInputSchema.parse(teamChatMessageCreatedInput)).toEqual(
       teamChatMessageCreatedInput
     );
   });
 
-  it("parses a content-empty teamChat.messageCreated event for terminal skip handling", () => {
-    const {
-      sourceAppId: _sourceAppId,
-      plainText: _plainText,
-      ...withoutOptionalContent
-    } = teamChatMessageCreatedInput;
+  it("preserves snapshot fields that the SDK does not model", () => {
+    const input = {
+      ...teamChatMessageCreatedInput,
+      snapshot: {
+        ...teamChatMessageCreatedInput.snapshot,
+        futureField: { nested: [true, 1, "value"] },
+      },
+    };
 
-    expect(
-      TeamChatMessageCreatedHookInputSchema.parse({ ...withoutOptionalContent, links: [] })
-    ).toEqual({ ...withoutOptionalContent, links: [] });
+    expect(TeamChatMessageCreatedHookInputSchema.parse(input)).toEqual(input);
   });
 
-  it.each([
-    ["plainText", "a".repeat(20_001)],
-    ["links", Array.from({ length: 21 }, (_, index) => ({ url: `https://example.com/${index}` }))],
-  ] as const)("rejects an oversized teamChat.messageCreated %s field", (field, value) => {
+  it("rejects a teamChat.messageCreated event without a snapshot", () => {
+    const input = { ...teamChatMessageCreatedInput } as Record<string, unknown>;
+    delete input.snapshot;
+
+    expect(() => TeamChatMessageCreatedHookInputSchema.parse(input)).toThrow();
+  });
+
+  it("rejects obsolete flattened message fields", () => {
     expect(() =>
       TeamChatMessageCreatedHookInputSchema.parse({
         ...teamChatMessageCreatedInput,
-        [field]: value,
+        plainText: "obsolete",
       })
     ).toThrow();
-  });
-
-  it("accepts a root teamChat.messageCreated event without a root message ID", () => {
-    const input = { ...teamChatMessageCreatedInput } as Record<string, unknown>;
-    delete input.rootMessageId;
-
-    expect(TeamChatMessageCreatedHookInputSchema.parse(input)).toEqual(input);
   });
 
   it.each([

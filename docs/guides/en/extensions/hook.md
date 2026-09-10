@@ -16,8 +16,9 @@ defaults to `app`, where a 32-128 character high-entropy `endpointToken` is requ
 must omit the token because AppStore issues a URL bound to the installation, Channel, and manager.
 The webhook object is invalid on every other hook type.
 `teamChat.messageCreated` has no target metadata and carries every committed root or reply from a
-public, non-archived TeamChat group as bounded message identifiers, writer identity, plain text, and
-link metadata. Apps apply their own eligibility rules; see the TypeScript reference for the exact DTO.
+public, non-archived TeamChat group with the full serialized Channel Message snapshot. Apps apply
+their own eligibility rules and read writer, thread, and content fields from that snapshot; see the
+TypeScript reference for the exact DTO.
 
 ## TypeScript
 

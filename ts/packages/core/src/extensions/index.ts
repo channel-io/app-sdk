@@ -177,8 +177,6 @@ export {
   UserChatOpenedActorKindSchema,
   UserChatOpenedHookInputSchema,
   UserChatOpenedHookResultSchema,
-  TeamChatMessageCreatedWriterSchema,
-  TeamChatMessageCreatedLinkSchema,
   TeamChatMessageCreatedHookInputSchema,
   TeamChatMessageCreatedHookResultSchema,
   type HookType,
@@ -187,8 +185,6 @@ export {
   type GetHooksOutput,
   type UserChatOpenKind,
   type UserChatOpenedActorKind,
-  type TeamChatMessageCreatedWriter,
-  type TeamChatMessageCreatedLink,
   type TeamChatMessageCreatedHookInput,
   type TeamChatMessageCreatedHookResult,
 } from "./hook.js";

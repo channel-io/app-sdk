@@ -3,9 +3,7 @@ import type {
   HookConfig as ProtoHookConfig,
   HookGetHooksOutput as ProtoGetHooksOutput,
   HookTeamChatMessageCreatedInput as ProtoTeamChatMessageCreatedHookInput,
-  HookTeamChatMessageCreatedLink as ProtoTeamChatMessageCreatedLink,
   HookTeamChatMessageCreatedResult as ProtoTeamChatMessageCreatedHookResult,
-  HookTeamChatMessageCreatedWriter as ProtoTeamChatMessageCreatedWriter,
   HookUserChatOpenedInput as ProtoUserChatOpenedHookInput,
   HookUserChatOpenedResult as ProtoUserChatOpenedHookResult,
   HookWebhookConfig as ProtoWebhookConfig,
@@ -132,42 +130,17 @@ export type UserChatOpenedHookResult = ProtoBacked<
 
 const TeamChatMessageCreatedIdentifierSchema = z.string().min(1).max(255);
 
-export const TeamChatMessageCreatedWriterSchema = z
-  .object({
-    type: z.string().min(1).max(50),
-    id: TeamChatMessageCreatedIdentifierSchema,
-  })
-  .strict();
-
-export type TeamChatMessageCreatedWriter = ProtoBacked<
-  z.infer<typeof TeamChatMessageCreatedWriterSchema>,
-  ProtoTeamChatMessageCreatedWriter
->;
-
-export const TeamChatMessageCreatedLinkSchema = z
-  .object({
-    url: z.string().url().max(2048),
-    title: z.string().min(1).max(255).optional(),
-  })
-  .strict();
-
-export type TeamChatMessageCreatedLink = ProtoBacked<
-  z.infer<typeof TeamChatMessageCreatedLinkSchema>,
-  ProtoTeamChatMessageCreatedLink
->;
+const TeamChatMessageCreatedSnapshotSchema = z.record(z.string(), z.unknown());
 
 export const TeamChatMessageCreatedHookInputSchema = z
   .object({
     eventId: TeamChatMessageCreatedIdentifierSchema,
     channelId: TeamChatMessageCreatedIdentifierSchema,
     groupId: TeamChatMessageCreatedIdentifierSchema,
-    rootMessageId: TeamChatMessageCreatedIdentifierSchema.optional(),
     messageId: TeamChatMessageCreatedIdentifierSchema,
     occurredAt: z.string().datetime({ offset: true }),
     sourceAppId: TeamChatMessageCreatedIdentifierSchema.optional(),
-    writer: TeamChatMessageCreatedWriterSchema,
-    plainText: z.string().max(20_000).optional(),
-    links: z.array(TeamChatMessageCreatedLinkSchema).max(20).default([]),
+    snapshot: TeamChatMessageCreatedSnapshotSchema,
   })
   .strict();
 
