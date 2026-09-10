@@ -15,9 +15,9 @@ Widget hook은 widget name과 같은 `targetId`가 필요합니다. App, command
 기본값은 `app`이며 32-128자의 entropy 높은 `endpointToken`이 필요합니다. Manager scope에서는
 AppStore가 설치·Channel·manager에 binding된 URL을 발급하므로 token을 넣지 않습니다. 다른 hook
 type에는 webhook object를 넣을 수 없습니다.
-`teamChat.messageCreated`에는 target metadata가 없고 public group에 commit된 모든 root/reply를
-크기가 제한된 message identifier, writer identity, plain text, link metadata로 전달합니다. 앱이
-자체 eligibility rule을 적용하며, 정확한 DTO는 TypeScript 레퍼런스를 확인하세요.
+`teamChat.messageCreated`에는 target metadata가 없고 보관되지 않은 public TeamChat group에 commit된
+모든 root/reply를 크기가 제한된 message identifier, writer identity, plain text, link metadata로
+전달합니다. 앱이 자체 eligibility rule을 적용하며, 정확한 DTO는 TypeScript 레퍼런스를 확인하세요.
 
 ## TypeScript
 
