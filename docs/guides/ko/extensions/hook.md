@@ -16,8 +16,9 @@ Widget hook은 widget name과 같은 `targetId`가 필요합니다. App, command
 AppStore가 설치·Channel·manager에 binding된 URL을 발급하므로 token을 넣지 않습니다. 다른 hook
 type에는 webhook object를 넣을 수 없습니다.
 `teamChat.messageCreated`에는 target metadata가 없고 보관되지 않은 public TeamChat group에 commit된
-모든 root/reply를 전체 Channel Message snapshot과 함께 전달합니다. 앱은 snapshot에서 writer, thread,
-content field를 읽어 자체 eligibility rule을 적용합니다. 정확한 DTO는 TypeScript 레퍼런스를 확인하세요.
+모든 root/reply를 전체 Channel Message snapshot과 함께 전달합니다. 앱은 snapshot의 `personType`과
+`personId`에서 작성자를, `rootMessageId`에서 thread 관계를, `plainText`와 `blocks`에서 콘텐츠를 읽어
+자체 eligibility rule을 적용합니다. 정확한 DTO는 TypeScript 레퍼런스를 확인하세요.
 
 ## TypeScript
 

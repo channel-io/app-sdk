@@ -17,8 +17,9 @@ must omit the token because AppStore issues a URL bound to the installation, Cha
 The webhook object is invalid on every other hook type.
 `teamChat.messageCreated` has no target metadata and carries every committed root or reply from a
 public, non-archived TeamChat group with the full serialized Channel Message snapshot. Apps apply
-their own eligibility rules and read writer, thread, and content fields from that snapshot; see the
-TypeScript reference for the exact DTO.
+their own eligibility rules and read the author from `personType` and `personId`, the thread
+relationship from `rootMessageId`, and content from `plainText` and `blocks`; see the TypeScript
+reference for the exact DTO.
 
 ## TypeScript
 
