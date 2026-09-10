@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.24.1
+
+### Patch Changes
+
+- a5e4958: Allow `teamChat.messageCreated` to represent public-group root messages by making `rootMessageId` optional.
+
 ## 0.24.0
 
 ### Minor Changes
