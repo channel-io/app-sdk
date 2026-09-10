@@ -1873,7 +1873,7 @@ message HookTeamChatMessageCreatedInput {
   string event_id = 1;
   string channel_id = 2;
   string group_id = 3;
-  string root_message_id = 4;
+  optional string root_message_id = 4;
   string message_id = 5;
   string occurred_at = 6;
   optional string source_app_id = 7;

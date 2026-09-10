@@ -16,9 +16,10 @@ target を設定しません。Public webhook target は 1-64 文字の URL-safe
 `executionScope` の default は `app` で、32-128 文字の高 entropy `endpointToken` が必要です。
 Manager scope では AppStore が installation、Channel、manager に binding した URL を発行するため、
 token は指定しません。他の hook type に webhook object は使えません。
-`teamChat.messageCreated` には target metadata がなく、サイズ制限された message identifier、
-writer identity、plain text、link metadata だけが渡されます。正確な DTO は TypeScript reference
-を参照してください。
+`teamChat.messageCreated` には target metadata がなく、public group に commit されたすべての
+root/reply を、サイズ制限された message identifier、writer identity、plain text、link metadata
+として渡します。App が独自の eligibility rule を適用します。正確な DTO は TypeScript
+reference を参照してください。
 
 ## TypeScript
 
