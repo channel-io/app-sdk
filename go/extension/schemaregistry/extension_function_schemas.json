@@ -2181,8 +2181,7 @@
                     "name",
                     "amount",
                     "quantity",
-                    "state",
-                    "claimability"
+                    "state"
                   ],
                   "additionalProperties": false
                 }
@@ -2237,10 +2236,7 @@
                   "state",
                   "currency",
                   "totalAmount",
-                  "itemsAmount",
-                  "shippingAmount",
-                  "discountAmount",
-                  "requireRefundBankAccount"
+                  "itemsAmount"
                 ],
                 "additionalProperties": false
               },
@@ -22286,8 +22282,7 @@
                     "name",
                     "amount",
                     "quantity",
-                    "state",
-                    "claimability"
+                    "state"
                   ],
                   "additionalProperties": false
                 }
@@ -22342,10 +22337,7 @@
                   "state",
                   "currency",
                   "totalAmount",
-                  "itemsAmount",
-                  "shippingAmount",
-                  "discountAmount",
-                  "requireRefundBankAccount"
+                  "itemsAmount"
                 ],
                 "additionalProperties": false
               },
@@ -22843,8 +22835,7 @@
               "name",
               "amount",
               "quantity",
-              "state",
-              "claimability"
+              "state"
             ],
             "additionalProperties": false
           }

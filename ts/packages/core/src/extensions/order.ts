@@ -118,7 +118,11 @@ export const OrderItemSchema = z.object({
   shippedAt: z.number().optional(),
   deliveredAt: z.number().optional(),
   estimatedShipDate: z.number().optional(),
-  claimability: ClaimabilitySchema,
+  // proto3 message 필드라 암묵적 presence 를 갖는다 — 앱이 채우지 않으면 protojson 이 키를
+  // 통째로 지운다. 안쪽 bool 네 개를 required 에서 뺀 것(V236)과 같은 이유가 한 단계 위에도
+  // 그대로 적용된다: claimability 를 아예 계산하지 않는 몰의 정상 응답이 필수 선언 때문에
+  // 검증에서 걸린다.
+  claimability: ClaimabilitySchema.optional(),
 });
 export type OrderItem = ProtoBacked<z.infer<typeof OrderItemSchema>, ProtoOrderItem>;
 
@@ -144,12 +148,17 @@ export const PaymentSchema = z.object({
   currency: z.string(),
   totalAmount: z.number(),
   itemsAmount: z.number(),
-  shippingAmount: z.number(),
-  discountAmount: z.number(),
+  // 배송비·할인을 따로 떼어 내려주지 않는 몰이 있다. presence 는 있으므로 0 은 0 으로 실리고,
+  // 키가 없으면 "이 몰은 이 값을 분리해 주지 않는다" 는 뜻이다. totalAmount·itemsAmount 와
+  // 달리 모든 몰이 계산해 주는 값이 아니라 필수로 둘 수 없다.
+  shippingAmount: z.number().optional(),
+  discountAmount: z.number().optional(),
   // repeated 필드는 비면 protojson 이 키를 지운다. protobuf 는 repeated 에 presence 를
   // 줄 수 없어(optional 금지) 계약에서 필수를 뗀다 — 빈 목록과 미제공을 구별하지 않는다.
   methods: z.array(z.string()).optional(),
-  requireRefundBankAccount: z.boolean(),
+  // 환불 계좌 개념이 없는 결제수단·몰이 있다. presence 가 있어 false 는 false 로 실리고,
+  // 키가 없으면 판단 자체를 하지 않는 몰이라는 뜻이다.
+  requireRefundBankAccount: z.boolean().optional(),
   taxAmount: z.number().optional(),
   // discountAmount 는 아래 세 값의 합이다. 무엇으로 깎였는지 안내하려면 개별 값이 필요하다.
   pointAmount: z.number().optional(),
