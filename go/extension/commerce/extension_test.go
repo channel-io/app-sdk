@@ -26,7 +26,8 @@ func newExtension() appsdk.Extension {
 		AcceptReturnOrder(zero[commerce.AcceptReturnOrderInput, commerce.ActionResult]()).
 		RequestExchangeOrder(zero[commerce.ExchangeOrderInput, commerce.ActionResult]()).
 		GetExchangeableItems(zero[commerce.GetExchangeableItemsInput, commerce.GetExchangeableItemsOutput]()).
-		ChangeShippingAddress(zero[commerce.ChangeShippingAddressInput, commerce.ActionResult]())
+		ChangeShippingAddress(zero[commerce.ChangeShippingAddressInput, commerce.ActionResult]()).
+		GetProducts(zero[commerce.GetProductsInput, commerce.GetProductsOutput]())
 }
 
 func TestExtensionRegistersFunctions(t *testing.T) {
@@ -35,8 +36,8 @@ func TestExtensionRegistersFunctions(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := len(app.Methods()); got != 8 {
-		t.Fatalf("expected 8 methods, got %d", got)
+	if got := len(app.Methods()); got != 9 {
+		t.Fatalf("expected 9 methods, got %d", got)
 	}
 
 	targets := app.AutoRegisterTargets()
@@ -61,6 +62,7 @@ func TestSchemasMatchCanonicalRegistry(t *testing.T) {
 		commerce.FunctionRequestExchangeOrder,
 		commerce.FunctionGetExchangeableItems,
 		commerce.FunctionChangeShippingAddress,
+		commerce.FunctionGetProducts,
 	}
 
 	schemas := app.Schemas()
@@ -106,5 +108,70 @@ func TestGetOrdersUsesProtoJSONNames(t *testing.T) {
 	first := orders[0].(map[string]any)
 	if first["id"] != "order-1" {
 		t.Fatalf("expected protojson camelCase output, got %+v", out)
+	}
+}
+
+func TestGetProductsKeepsZeroValuesAndOmitsUnsetFields(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	price := 0.0
+	if err := app.Use(commerce.Extension().
+		GetProducts(func(_ context.Context, _ appsdk.Context, in *commerce.GetProductsInput) (*commerce.GetProductsOutput, error) {
+			if in.GetLimit() != 20 {
+				t.Fatalf("expected limit 20, got %d", in.GetLimit())
+			}
+			return &commerce.GetProductsOutput{
+				Products: []*commerce.Product{{
+					Id:    "product-1",
+					Name:  "gift",
+					Price: &price,
+					Variants: []*commerce.ProductVariant{
+						{Id: "variant-1", Price: &price},
+						{Id: "variant-2", Price: &price, StockQuantity: &price},
+					},
+				}},
+				Next: "cursor-2",
+			}, nil
+		}),
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	res := app.HandleRequest(context.Background(), appsdk.FunctionRequest{
+		Method: commerce.FunctionGetProducts,
+		Params: json.RawMessage(`{"searchFilter":{"state":"active"},"limit":20}`),
+	})
+	if res.Error != nil {
+		t.Fatalf("unexpected error: %+v", res.Error)
+	}
+	var out map[string]any
+	if err := json.Unmarshal(res.Result, &out); err != nil {
+		t.Fatal(err)
+	}
+	if out["next"] != "cursor-2" {
+		t.Fatalf("expected next cursor, got %+v", out)
+	}
+	products, ok := out["products"].([]any)
+	if !ok || len(products) != 1 {
+		t.Fatalf("unexpected products: %+v", out)
+	}
+	first := products[0].(map[string]any)
+	if first["id"] != "product-1" || first["price"] != 0.0 {
+		t.Fatalf("expected protojson camelCase output with zero price kept, got %+v", first)
+	}
+	for _, key := range []string{"state", "originalPrice", "images", "categories", "tags"} {
+		if _, present := first[key]; present {
+			t.Fatalf("expected unset %s to be omitted, got %+v", key, first)
+		}
+	}
+	variant := first["variants"].([]any)[0].(map[string]any)
+	if variant["price"] != 0.0 {
+		t.Fatalf("expected zero variant price kept, got %+v", variant)
+	}
+	if _, present := variant["stockQuantity"]; present {
+		t.Fatalf("expected unset stockQuantity to be omitted, got %+v", variant)
+	}
+	soldOut := first["variants"].([]any)[1].(map[string]any)
+	if soldOut["stockQuantity"] != 0.0 {
+		t.Fatalf("expected zero stockQuantity kept (sold out), got %+v", soldOut)
 	}
 }

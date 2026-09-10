@@ -202,6 +202,10 @@ import type {
   CommerceGetExchangeableItemsInput as ProtoCommerceGetExchangeableItemsInput,
   CommerceGetExchangeableItemsOutput as ProtoCommerceGetExchangeableItemsOutput,
   CommerceChangeShippingAddressInput as ProtoCommerceChangeShippingAddressInput,
+  CommerceGetProductsInput as ProtoCommerceGetProductsInput,
+  CommerceGetProductsOutput as ProtoCommerceGetProductsOutput,
+  CommerceProduct as ProtoCommerceProduct,
+  CommerceProductVariant as ProtoCommerceProductVariant,
   OrderClaimItem as ProtoOrderClaimItem,
   OrderExchangeItem as ProtoOrderExchangeItem,
 } from "../gen/channel/app/sdk/v1/extension.js";
@@ -1000,6 +1004,27 @@ export type ExtensionProtoSchemaContracts = [
     SchemaOutputExtendsProto<
       typeof CommerceSchemas.CommerceChangeShippingAddressInputSchema,
       ProtoCommerceChangeShippingAddressInput
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof CommerceSchemas.CommerceProductVariantSchema,
+      ProtoCommerceProductVariant
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<typeof CommerceSchemas.CommerceProductSchema, ProtoCommerceProduct>
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof CommerceSchemas.CommerceGetProductsInputSchema,
+      ProtoCommerceGetProductsInput
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof CommerceSchemas.CommerceGetProductsOutputSchema,
+      ProtoCommerceGetProductsOutput
     >
   >,
   Expect<SchemaOutputExtendsProto<typeof OrderSchemas.OrderClaimItemSchema, ProtoOrderClaimItem>>,

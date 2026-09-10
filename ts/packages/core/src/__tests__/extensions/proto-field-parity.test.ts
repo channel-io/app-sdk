@@ -221,6 +221,10 @@ import {
   CommerceExchangeableVariantSchema,
   CommerceVariantOptionSchema,
   CommerceChangeShippingAddressInputSchema,
+  CommerceProductVariantSchema,
+  CommerceProductSchema,
+  CommerceGetProductsInputSchema,
+  CommerceGetProductsOutputSchema,
 } from "../../extensions/commerce.js";
 
 type GeneratedFile = "common" | "extension";
@@ -680,6 +684,25 @@ const contracts: Contract[] = [
     CommerceChangeShippingAddressInputSchema,
     "extension",
     "CommerceChangeShippingAddressInput"
+  ),
+  contract(
+    "CommerceProductVariant",
+    CommerceProductVariantSchema,
+    "extension",
+    "CommerceProductVariant"
+  ),
+  contract("CommerceProduct", CommerceProductSchema, "extension", "CommerceProduct"),
+  contract(
+    "CommerceGetProductsInput",
+    CommerceGetProductsInputSchema,
+    "extension",
+    "CommerceGetProductsInput"
+  ),
+  contract(
+    "CommerceGetProductsOutput",
+    CommerceGetProductsOutputSchema,
+    "extension",
+    "CommerceGetProductsOutput"
   ),
   contract("WmsShippingInfo", WmsShippingInfoSchema, "extension", "WmsShippingInfo"),
   contract("WmsDelivery", WmsDeliverySchema, "extension", "WmsDelivery"),

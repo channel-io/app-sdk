@@ -1407,6 +1407,7 @@ export const CommerceAppCapabilitiesProtoSchema = z.object({
   acceptReturnOrderOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
   requestExchangeOrderOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
   changeShippingAddressOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
+  getProductsOptions: z.lazy(() => OrderOperationOptionsProtoSchema).optional(),
 }) satisfies z.ZodType<pb.CommerceAppCapabilities>;
 export type CommerceAppCapabilitiesProto = z.infer<typeof CommerceAppCapabilitiesProtoSchema>;
 
@@ -1518,6 +1519,49 @@ export const CommerceChangeShippingAddressInputProtoSchema = z.object({
   newAddress: z.lazy(() => OrderAddressProtoSchema).optional(),
 }) satisfies z.ZodType<pb.CommerceChangeShippingAddressInput>;
 export type CommerceChangeShippingAddressInputProto = z.infer<typeof CommerceChangeShippingAddressInputProtoSchema>;
+
+export const CommerceGetProductsInputProtoSchema = z.object({
+  searchFilter: z.any().optional(),
+  since: z.string().optional(),
+  limit: z.number().int().optional(),
+}) satisfies z.ZodType<pb.CommerceGetProductsInput>;
+export type CommerceGetProductsInputProto = z.infer<typeof CommerceGetProductsInputProtoSchema>;
+
+export const CommerceGetProductsOutputProtoSchema = z.object({
+  products: z.array(z.lazy(() => CommerceProductProtoSchema)).optional(),
+  next: z.string().optional(),
+}) satisfies z.ZodType<pb.CommerceGetProductsOutput>;
+export type CommerceGetProductsOutputProto = z.infer<typeof CommerceGetProductsOutputProtoSchema>;
+
+export const CommerceProductProtoSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().optional(),
+  price: z.number().optional(),
+  originalPrice: z.number().optional(),
+  currency: z.string().optional(),
+  state: z.string().optional(),
+  imageUrl: z.string().optional(),
+  images: z.array(z.string()).optional(),
+  productUrl: z.string().optional(),
+  description: z.string().optional(),
+  summary: z.string().optional(),
+  vendor: z.string().optional(),
+  productType: z.string().optional(),
+  categories: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
+  createdAt: z.number().optional(),
+  updatedAt: z.number().optional(),
+  variants: z.array(z.lazy(() => CommerceProductVariantProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.CommerceProduct>;
+export type CommerceProductProto = z.infer<typeof CommerceProductProtoSchema>;
+
+export const CommerceProductVariantProtoSchema = z.object({
+  id: z.string().optional(),
+  price: z.number().optional(),
+  stockQuantity: z.number().optional(),
+  options: z.array(z.lazy(() => CommerceVariantOptionProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.CommerceProductVariant>;
+export type CommerceProductVariantProto = z.infer<typeof CommerceProductVariantProtoSchema>;
 
 export const WmsShippingInfoProtoSchema = z.object({
   name: z.string().optional(),

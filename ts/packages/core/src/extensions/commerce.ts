@@ -14,6 +14,10 @@ import type {
   CommerceVariantOption as ProtoCommerceVariantOption,
   CommerceGetOrdersInput as ProtoCommerceGetOrdersInput,
   CommerceGetOrdersOutput as ProtoCommerceGetOrdersOutput,
+  CommerceGetProductsInput as ProtoCommerceGetProductsInput,
+  CommerceGetProductsOutput as ProtoCommerceGetProductsOutput,
+  CommerceProduct as ProtoCommerceProduct,
+  CommerceProductVariant as ProtoCommerceProductVariant,
   CommerceIdentifier as ProtoCommerceIdentifier,
   CommerceOrder as ProtoCommerceOrder,
   CommerceOrderItem as ProtoCommerceOrderItem,
@@ -199,6 +203,11 @@ export const CommerceAppCapabilitiesSchema = z.object({
   acceptReturnOrderOptions: OperationOptionsSchema.optional(),
   requestExchangeOrderOptions: OperationOptionsSchema.optional(),
   changeShippingAddressOptions: OperationOptionsSchema.optional(),
+  // 다른 *Options 와 같은 어휘다: required / optional 에는 getProducts 입력 필드명
+  // (searchFilter·since·limit)을, 앱이 받는 searchFilter 키는 fieldConfigs["searchFilter.key"] 한 항목에
+  // enum allowedValues 로 나열한다(getOrders 와 같은 방식). 필터 없이 불러도 첫 페이지를 돌려주므로
+  // required 는 비운다.
+  getProductsOptions: OperationOptionsSchema.optional(),
 });
 export type CommerceAppCapabilities = ProtoBacked<
   z.infer<typeof CommerceAppCapabilitiesSchema>,
@@ -345,4 +354,74 @@ export const CommerceChangeShippingAddressInputSchema = z.object({
 export type CommerceChangeShippingAddressInput = ProtoBacked<
   z.infer<typeof CommerceChangeShippingAddressInputSchema>,
   ProtoCommerceChangeShippingAddressInput
+>;
+
+// --- product 그룹: 카탈로그 열람·ID 조회. 이름 검색은 받지 않는다 ---
+
+export const CommerceProductVariantSchema = z.object({
+  // getOrders 의 items[].variantId, requestExchangeOrder 의 afterExchangeItems[].variantId 와 같은 값이다.
+  id: z.string(),
+  // variant 의 절대 판매가. CommerceExchangeableVariant.additionalAmount(추가금)와 뜻이 다르다.
+  price: z.number(),
+  // 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공은 다른 뜻이다.
+  stockQuantity: z.number().optional(),
+  options: z.array(CommerceVariantOptionSchema).optional(),
+});
+export type CommerceProductVariant = ProtoBacked<
+  z.infer<typeof CommerceProductVariantSchema>,
+  ProtoCommerceProductVariant
+>;
+
+export const CommerceProductSchema = z.object({
+  // getOrders 의 items[].productId 와 같은 값이다.
+  id: z.string(),
+  name: z.string(),
+  price: z.number(),
+  originalPrice: z.number().optional(),
+  currency: z.string().optional(),
+  // 판단할 수 없으면 비운다 — 기본값으로 active 를 넣지 않는다. 닫힌 집합이라 몰 고유 상태(draft 등)는
+  // 앱이 두 값으로 매핑한다.
+  state: z.enum(["active", "inactive"]).optional(),
+  imageUrl: z.string().optional(),
+  // 상품 이미지 전체. 대표 이미지도 포함한다.
+  images: z.array(z.string()).optional(),
+  productUrl: z.string().optional(),
+  description: z.string().optional(),
+  summary: z.string().optional(),
+  vendor: z.string().optional(),
+  productType: z.string().optional(),
+  // 카테고리 이름 목록.
+  categories: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
+  // 몰에서 상품이 만들어진 시각(epoch ms). searchFilter 의 createdAt 도 이 축이다.
+  createdAt: z.number().optional(),
+  // epoch ms. 몰의 수정 시각이 아니라 앱이 상품을 저장한 시각일 수 있다.
+  updatedAt: z.number().optional(),
+  variants: z.array(CommerceProductVariantSchema).optional(),
+});
+export type CommerceProduct = ProtoBacked<
+  z.infer<typeof CommerceProductSchema>,
+  ProtoCommerceProduct
+>;
+
+export const CommerceGetProductsInputSchema = z.object({
+  // 공통 키는 productId(복수 id 조회 포함 — any-of 는 $eq 에 복수 values)·state·createdAt.
+  // 광고하지 않은 키는 앱이 BadRequest 로 거부한다.
+  searchFilter: z.any().optional(),
+  since: z.string().optional(),
+  // 앱이 기본값(10)과 상한(50)을 둔다.
+  limit: z.number().int().optional(),
+});
+export type CommerceGetProductsInput = ProtoBacked<
+  z.infer<typeof CommerceGetProductsInputSchema>,
+  ProtoCommerceGetProductsInput
+>;
+
+export const CommerceGetProductsOutputSchema = z.object({
+  products: z.array(CommerceProductSchema).optional(),
+  next: z.string().optional(),
+});
+export type CommerceGetProductsOutput = ProtoBacked<
+  z.infer<typeof CommerceGetProductsOutputSchema>,
+  ProtoCommerceGetProductsOutput
 >;
