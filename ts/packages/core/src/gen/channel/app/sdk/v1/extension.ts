@@ -1535,7 +1535,17 @@ export interface CommerceAppCapabilities {
   requestReturnOrderOptions?: OrderOperationOptions | undefined;
   acceptReturnOrderOptions?: OrderOperationOptions | undefined;
   requestExchangeOrderOptions?: OrderOperationOptions | undefined;
-  changeShippingAddressOptions?: OrderOperationOptions | undefined;
+  changeShippingAddressOptions?:
+    | OrderOperationOptions
+    | undefined;
+  /**
+   * 다른 *_options 와 같은 어휘다: required / optional 에는 getProducts 의 입력 필드명
+   * (searchFilter·since·limit)을 적고, 앱이 받는 searchFilter 키는 field_configs["searchFilter.key"]
+   * 한 항목에 type=enum·allowed_values 로 나열한다(getOrders 와 같은 방식). searchFilter 는
+   * 자유 형식이라 호출자가 지원 키를 기계적으로 알 길은 이것뿐이다. 필터 없이 불러도 첫 페이지를
+   * 돌려주므로 required 는 비운다.
+   */
+  getProductsOptions?: OrderOperationOptions | undefined;
 }
 
 export interface CommerceGetAppConfigsInput {
@@ -1668,6 +1678,99 @@ export interface CommerceChangeShippingAddressInput {
   identifier?: CommerceIdentifier | undefined;
   orderId?: string | undefined;
   newAddress?: OrderAddress | undefined;
+}
+
+export interface CommerceGetProductsInput {
+  /**
+   * getOrders 와 같은 필터 표현. 안쪽 키는 protojson 이 변환하지 않는 데이터라 camelCase 그대로다 —
+   * 공통 키는 productId(복수 id 조회 포함 — 커머스 필터 방언에서 any-of 는 $eq 에 복수 values 다)·
+   * state·createdAt 이고, 광고하지 않은 키는 앱이 BadRequest 로 거부한다.
+   * name 키는 없다 — 이름 검색은 이 함수의 몫이 아니다.
+   */
+  searchFilter?:
+    | any
+    | undefined;
+  /** 이전 응답의 next 를 그대로 돌려주는 커서. */
+  since?:
+    | string
+    | undefined;
+  /** 한 페이지 크기. 앱이 기본값(10)과 상한(50)을 둔다. */
+  limit?: number | undefined;
+}
+
+export interface CommerceGetProductsOutput {
+  products?: CommerceProduct[] | undefined;
+  next?: string | undefined;
+}
+
+export interface CommerceProduct {
+  /** 상품 id. getOrders 의 items[].product_id 와 같은 값이라 주문 아이템에서 상품으로 이어 갈 수 있다. */
+  id?: string | undefined;
+  name?:
+    | string
+    | undefined;
+  /** 판매가. 0 원 상품(사은품)이 정상이라 presence 가 필요하다. */
+  price?:
+    | number
+    | undefined;
+  /** 정가. 판매가와 같으면 비워도 된다. */
+  originalPrice?: number | undefined;
+  currency?:
+    | string
+    | undefined;
+  /** active / inactive. 판단할 수 없으면 비운다 — 기본값으로 active 를 넣지 않는다. */
+  state?:
+    | string
+    | undefined;
+  /** 대표 이미지. */
+  imageUrl?:
+    | string
+    | undefined;
+  /** 상품 이미지 전체. 대표 이미지도 포함한다. */
+  images?:
+    | string[]
+    | undefined;
+  /** 몰 상품 페이지 주소. */
+  productUrl?: string | undefined;
+  description?: string | undefined;
+  summary?: string | undefined;
+  vendor?: string | undefined;
+  productType?:
+    | string
+    | undefined;
+  /** 카테고리 이름 목록. */
+  categories?: string[] | undefined;
+  tags?:
+    | string[]
+    | undefined;
+  /** 몰에서 상품이 만들어진 시각(epoch ms). searchFilter 의 createdAt 도 이 축이다. */
+  createdAt?:
+    | number
+    | undefined;
+  /** epoch ms. 몰의 수정 시각이 아니라 앱이 상품을 저장한 시각일 수 있다. */
+  updatedAt?: number | undefined;
+  variants?: CommerceProductVariant[] | undefined;
+}
+
+export interface CommerceProductVariant {
+  /**
+   * variant id. getOrders 의 items[].variant_id, requestExchangeOrder 의
+   * after_exchange_items.variant_id 와 같은 값이다.
+   */
+  id?:
+    | string
+    | undefined;
+  /**
+   * variant 의 절대 판매가. CommerceExchangeableVariant.additional_amount(원래 아이템 대비 추가금)와
+   * 의도적으로 다르다 — 카탈로그 소비자가 원하는 값도, 앱이 들고 있는 값도 절대가다.
+   * 0 원이 정상 값이라 presence 가 필요하다.
+   */
+  price?:
+    | number
+    | undefined;
+  /** 재고 수량. 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공을 구별해야 해서 optional 이다. */
+  stockQuantity?: number | undefined;
+  options?: CommerceVariantOption[] | undefined;
 }
 
 export interface WmsShippingInfo {

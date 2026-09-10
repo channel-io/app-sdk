@@ -168,7 +168,8 @@ app.Use(commerce.Extension().
   AcceptReturnOrder(handler.AcceptReturnOrder).
   RequestExchangeOrder(handler.RequestExchangeOrder).
   GetExchangeableItems(handler.GetExchangeableItems).
-  ChangeShippingAddress(handler.ChangeShippingAddress))
+  ChangeShippingAddress(handler.ChangeShippingAddress).
+  GetProducts(handler.GetProducts))
 ```
 
 Commerce uses stable ID-based orders and structured action results. Validate current provider state

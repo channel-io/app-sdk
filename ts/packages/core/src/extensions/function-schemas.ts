@@ -76,6 +76,8 @@ import {
   CommerceGetExchangeableItemsOutputSchema,
   CommerceGetOrdersInputSchema,
   CommerceGetOrdersOutputSchema,
+  CommerceGetProductsInputSchema,
+  CommerceGetProductsOutputSchema,
   CommerceResultSchema,
   CommerceAcceptReturnOrderInputSchema,
   CommerceReturnOrderInputSchema,
@@ -385,6 +387,11 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     name: "extension.commerce.order.requestReturnOrder",
     input: CommerceReturnOrderInputSchema,
     output: CommerceResultSchema,
+  },
+  {
+    name: "extension.commerce.product.getProducts",
+    input: CommerceGetProductsInputSchema,
+    output: CommerceGetProductsOutputSchema,
   },
   {
     name: "extension.config.metadata.getConfigSchema",

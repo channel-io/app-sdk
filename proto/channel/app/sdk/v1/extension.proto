@@ -1316,6 +1316,12 @@ message CommerceAppCapabilities {
   OrderOperationOptions accept_return_order_options = 4;
   OrderOperationOptions request_exchange_order_options = 5;
   OrderOperationOptions change_shipping_address_options = 6;
+  // 다른 *_options 와 같은 어휘다: required / optional 에는 getProducts 의 입력 필드명
+  // (searchFilter·since·limit)을 적고, 앱이 받는 searchFilter 키는 field_configs["searchFilter.key"]
+  // 한 항목에 type=enum·allowed_values 로 나열한다(getOrders 와 같은 방식). searchFilter 는
+  // 자유 형식이라 호출자가 지원 키를 기계적으로 알 길은 이것뿐이다. 필터 없이 불러도 첫 페이지를
+  // 돌려주므로 required 는 비운다.
+  OrderOperationOptions get_products_options = 7;
 }
 
 message CommerceGetAppConfigsInput {}
@@ -1427,6 +1433,69 @@ message CommerceChangeShippingAddressInput {
   CommerceIdentifier identifier = 1;
   string order_id = 2;
   OrderAddress new_address = 3;
+}
+
+// --- product group: 카탈로그 열람·ID 조회. 이름 검색은 받지 않는다 ---
+
+message CommerceGetProductsInput {
+  // getOrders 와 같은 필터 표현. 안쪽 키는 protojson 이 변환하지 않는 데이터라 camelCase 그대로다 —
+  // 공통 키는 productId(복수 id 조회 포함 — 커머스 필터 방언에서 any-of 는 $eq 에 복수 values 다)·
+  // state·createdAt 이고, 광고하지 않은 키는 앱이 BadRequest 로 거부한다.
+  // name 키는 없다 — 이름 검색은 이 함수의 몫이 아니다.
+  google.protobuf.Value search_filter = 1;
+  // 이전 응답의 next 를 그대로 돌려주는 커서.
+  string since = 2;
+  // 한 페이지 크기. 앱이 기본값(10)과 상한(50)을 둔다.
+  int32 limit = 3;
+}
+
+message CommerceGetProductsOutput {
+  repeated CommerceProduct products = 1;
+  string next = 2;
+}
+
+message CommerceProduct {
+  // 상품 id. getOrders 의 items[].product_id 와 같은 값이라 주문 아이템에서 상품으로 이어 갈 수 있다.
+  string id = 1;
+  string name = 2;
+  // 판매가. 0 원 상품(사은품)이 정상이라 presence 가 필요하다.
+  optional double price = 3;
+  // 정가. 판매가와 같으면 비워도 된다.
+  optional double original_price = 4;
+  string currency = 5;
+  // active / inactive. 판단할 수 없으면 비운다 — 기본값으로 active 를 넣지 않는다.
+  string state = 6;
+  // 대표 이미지.
+  string image_url = 7;
+  // 상품 이미지 전체. 대표 이미지도 포함한다.
+  repeated string images = 8;
+  // 몰 상품 페이지 주소.
+  string product_url = 9;
+  string description = 10;
+  string summary = 11;
+  string vendor = 12;
+  string product_type = 13;
+  // 카테고리 이름 목록.
+  repeated string categories = 14;
+  repeated string tags = 15;
+  // 몰에서 상품이 만들어진 시각(epoch ms). searchFilter 의 createdAt 도 이 축이다.
+  double created_at = 16;
+  // epoch ms. 몰의 수정 시각이 아니라 앱이 상품을 저장한 시각일 수 있다.
+  double updated_at = 17;
+  repeated CommerceProductVariant variants = 18;
+}
+
+message CommerceProductVariant {
+  // variant id. getOrders 의 items[].variant_id, requestExchangeOrder 의
+  // after_exchange_items.variant_id 와 같은 값이다.
+  string id = 1;
+  // variant 의 절대 판매가. CommerceExchangeableVariant.additional_amount(원래 아이템 대비 추가금)와
+  // 의도적으로 다르다 — 카탈로그 소비자가 원하는 값도, 앱이 들고 있는 값도 절대가다.
+  // 0 원이 정상 값이라 presence 가 필요하다.
+  optional double price = 2;
+  // 재고 수량. 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공을 구별해야 해서 optional 이다.
+  optional double stock_quantity = 3;
+  repeated CommerceVariantOption options = 4;
 }
 
 message WmsShippingInfo {
