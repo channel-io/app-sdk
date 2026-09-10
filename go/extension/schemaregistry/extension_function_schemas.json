@@ -2235,8 +2235,7 @@
                 "required": [
                   "state",
                   "currency",
-                  "totalAmount",
-                  "itemsAmount"
+                  "totalAmount"
                 ],
                 "additionalProperties": false
               },
@@ -22336,8 +22335,7 @@
                 "required": [
                   "state",
                   "currency",
-                  "totalAmount",
-                  "itemsAmount"
+                  "totalAmount"
                 ],
                 "additionalProperties": false
               },

@@ -147,10 +147,10 @@ export const PaymentSchema = z.object({
   state: z.string(),
   currency: z.string(),
   totalAmount: z.number(),
-  itemsAmount: z.number(),
-  // 배송비·할인을 따로 떼어 내려주지 않는 몰이 있다. presence 는 있으므로 0 은 0 으로 실리고,
-  // 키가 없으면 "이 몰은 이 값을 분리해 주지 않는다" 는 뜻이다. totalAmount·itemsAmount 와
-  // 달리 모든 몰이 계산해 주는 값이 아니라 필수로 둘 수 없다.
+  // 총액의 분해 항목. 상품 소계·배송비·할인을 따로 떼어 내려주지 않는 몰이 있다. presence 는
+  // 있으므로 0 은 0 으로 실리고, 키가 없으면 "이 몰은 이 값을 분리해 주지 않는다" 는 뜻이다.
+  // 어느 몰이든 내려주는 totalAmount 와 달리 분해 항목은 몰마다 갈려 필수로 둘 수 없다.
+  itemsAmount: z.number().optional(),
   shippingAmount: z.number().optional(),
   discountAmount: z.number().optional(),
   // repeated 필드는 비면 protojson 이 키를 지운다. protobuf 는 repeated 에 presence 를
