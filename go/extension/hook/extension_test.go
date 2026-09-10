@@ -61,6 +61,7 @@ func TestStaticManagerWebhookHooks(t *testing.T) {
 }
 
 func TestStaticTeamChatMessageCreatedHook(t *testing.T) {
+	rootMessageID := "root-message-1"
 	handler := StaticHooks(&Config{
 		Type:               TypeTeamChatMessageCreated,
 		ActionFunctionName: "linear.teamChatMessageCreated.handle",
@@ -79,7 +80,7 @@ func TestStaticTeamChatMessageCreatedHook(t *testing.T) {
 		EventId:       "event-1",
 		ChannelId:     "channel-1",
 		GroupId:       "group-1",
-		RootMessageId: "root-message-1",
+		RootMessageId: &rootMessageID,
 		MessageId:     "message-1",
 		OccurredAt:    "2026-09-09T10:30:00Z",
 		Writer:        &TeamChatMessageCreatedWriter{Type: "manager", Id: "manager-1"},

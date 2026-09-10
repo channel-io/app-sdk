@@ -92,7 +92,7 @@ interface TeamChatMessageCreatedHookInput {
   eventId: string;
   channelId: string;
   groupId: string;
-  rootMessageId: string;
+  rootMessageId?: string; // absent for root messages
   messageId: string;
   occurredAt: string; // ISO 8601 datetime
   sourceAppId?: string;
@@ -102,9 +102,11 @@ interface TeamChatMessageCreatedHookInput {
 }
 ```
 
-Identifiers are non-empty strings of at most 255 characters. Writer types are
-bounded to 50 characters, link URLs to 2,048 characters, and link titles to 255
-characters. Empty content is valid input so a handler can return
+The publisher emits every committed message in a public, non-archived TeamChat
+group, including root messages, replies, and non-manager writers. Apps decide
+which events are relevant to their own workflow. Identifiers are non-empty
+strings of at most 255 characters. Writer types are bounded to 50 characters,
+link URLs to 2,048 characters, and link titles to 255 characters. Empty content is valid input so a handler can return
 `skipped_empty` as a terminal result. The envelope intentionally omits the full
 message snapshot, files, reactions, and message history.
 

@@ -1,5 +1,14 @@
 # @channel.io/app-sdk
 
+## 0.24.1
+
+### Patch Changes
+
+- Updated dependencies [a5e4958]
+  - @channel.io/app-sdk-core@0.24.1
+  - @channel.io/app-sdk-server@0.24.1
+  - @channel.io/app-sdk-wam@0.24.1
+
 ## 0.24.0
 
 ### Patch Changes

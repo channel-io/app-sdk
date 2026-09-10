@@ -256,11 +256,11 @@ describe("hook metadata schema", () => {
     ).toThrow();
   });
 
-  it("rejects a teamChat.messageCreated event without a root message ID", () => {
+  it("accepts a root teamChat.messageCreated event without a root message ID", () => {
     const input = { ...teamChatMessageCreatedInput } as Record<string, unknown>;
     delete input.rootMessageId;
 
-    expect(() => TeamChatMessageCreatedHookInputSchema.parse(input)).toThrow();
+    expect(TeamChatMessageCreatedHookInputSchema.parse(input)).toEqual(input);
   });
 
   it.each([

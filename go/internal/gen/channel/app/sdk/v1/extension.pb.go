@@ -17841,7 +17841,7 @@ type HookTeamChatMessageCreatedInput struct {
 	EventId       string                            `protobuf:"bytes,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
 	ChannelId     string                            `protobuf:"bytes,2,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
 	GroupId       string                            `protobuf:"bytes,3,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
-	RootMessageId string                            `protobuf:"bytes,4,opt,name=root_message_id,json=rootMessageId,proto3" json:"root_message_id,omitempty"`
+	RootMessageId *string                           `protobuf:"bytes,4,opt,name=root_message_id,json=rootMessageId,proto3,oneof" json:"root_message_id,omitempty"`
 	MessageId     string                            `protobuf:"bytes,5,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
 	OccurredAt    string                            `protobuf:"bytes,6,opt,name=occurred_at,json=occurredAt,proto3" json:"occurred_at,omitempty"`
 	SourceAppId   *string                           `protobuf:"bytes,7,opt,name=source_app_id,json=sourceAppId,proto3,oneof" json:"source_app_id,omitempty"`
@@ -17904,8 +17904,8 @@ func (x *HookTeamChatMessageCreatedInput) GetGroupId() string {
 }
 
 func (x *HookTeamChatMessageCreatedInput) GetRootMessageId() string {
-	if x != nil {
-		return x.RootMessageId
+	if x != nil && x.RootMessageId != nil {
+		return *x.RootMessageId
 	}
 	return ""
 }
@@ -19695,23 +19695,24 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x1eHookTeamChatMessageCreatedLink\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01B\b\n" +
-	"\x06_title\"\xe4\x03\n" +
+	"\x06_title\"\xfd\x03\n" +
 	"\x1fHookTeamChatMessageCreatedInput\x12\x19\n" +
 	"\bevent_id\x18\x01 \x01(\tR\aeventId\x12\x1d\n" +
 	"\n" +
 	"channel_id\x18\x02 \x01(\tR\tchannelId\x12\x19\n" +
-	"\bgroup_id\x18\x03 \x01(\tR\agroupId\x12&\n" +
-	"\x0froot_message_id\x18\x04 \x01(\tR\rrootMessageId\x12\x1d\n" +
+	"\bgroup_id\x18\x03 \x01(\tR\agroupId\x12+\n" +
+	"\x0froot_message_id\x18\x04 \x01(\tH\x00R\rrootMessageId\x88\x01\x01\x12\x1d\n" +
 	"\n" +
 	"message_id\x18\x05 \x01(\tR\tmessageId\x12\x1f\n" +
 	"\voccurred_at\x18\x06 \x01(\tR\n" +
 	"occurredAt\x12'\n" +
-	"\rsource_app_id\x18\a \x01(\tH\x00R\vsourceAppId\x88\x01\x01\x12L\n" +
+	"\rsource_app_id\x18\a \x01(\tH\x01R\vsourceAppId\x88\x01\x01\x12L\n" +
 	"\x06writer\x18\b \x01(\v24.channel.app.sdk.v1.HookTeamChatMessageCreatedWriterR\x06writer\x12\"\n" +
 	"\n" +
-	"plain_text\x18\t \x01(\tH\x01R\tplainText\x88\x01\x01\x12H\n" +
+	"plain_text\x18\t \x01(\tH\x02R\tplainText\x88\x01\x01\x12H\n" +
 	"\x05links\x18\n" +
-	" \x03(\v22.channel.app.sdk.v1.HookTeamChatMessageCreatedLinkR\x05linksB\x10\n" +
+	" \x03(\v22.channel.app.sdk.v1.HookTeamChatMessageCreatedLinkR\x05linksB\x12\n" +
+	"\x10_root_message_idB\x10\n" +
 	"\x0e_source_app_idB\r\n" +
 	"\v_plain_text\"p\n" +
 	" HookTeamChatMessageCreatedResult\x120\n" +
