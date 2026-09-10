@@ -334,8 +334,8 @@ Arrow-compatible result を stream してください。SDK は PostgreSQL と B
 
 新しい commerce app は redesigned `commerce` Extension を使います。ID-based order model、
 buyer、order lookup、cancel/return/exchange request、exchangeable item、shipping address change、
-structured `ActionResult` を提供します。Mutation 前に provider state を検証し、provider が
-対応しない operation は明確な unsupported result にしてください。
+product catalog read、structured `ActionResult` を提供します。Mutation 前に provider state を
+検証し、provider が対応しない operation は明確な unsupported result にしてください。
 
 [Commerce 詳細](extensions/commerce.md)
 

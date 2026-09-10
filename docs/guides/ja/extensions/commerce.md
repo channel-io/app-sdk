@@ -1,6 +1,6 @@
 # Commerce 拡張
 
-Commerce 拡張は、コマース注文の取得とクレームアクションを helper で登録します。取得モデルは `id` ベースの `CommerceOrder`（`CommerceOrderItem` を含む）で、アクションは結果を `ActionResult` でラップします。
+Commerce 拡張は、コマース注文の取得・クレームアクション・商品カタログの取得を helper で登録します。取得モデルは `id` ベースの `CommerceOrder`（`CommerceOrderItem` を含む）で、アクションは結果を `ActionResult` でラップします。
 
 ## Go
 
@@ -14,7 +14,8 @@ err := app.Use(commerce.Extension().
   AcceptReturnOrder(handler.AcceptReturnOrder).
   RequestExchangeOrder(handler.RequestExchangeOrder).
   GetExchangeableItems(handler.GetExchangeableItems).
-  ChangeShippingAddress(handler.ChangeShippingAddress),
+  ChangeShippingAddress(handler.ChangeShippingAddress).
+  GetProducts(handler.GetProducts),
 )
 ```
 
@@ -28,15 +29,22 @@ err := app.Use(commerce.Extension().
 - `extension.commerce.order.requestExchangeOrder`
 - `extension.commerce.order.getExchangeableItems`
 - `extension.commerce.order.changeShippingAddress`
+- `extension.commerce.product.getProducts`
 
 住所・決済・履行・クレームには SDK が export する値型を再利用します。
+
+`getProducts` は検索ではなくカタログ取得です。`searchFilter` は `productId`（単一・複数 id）・
+`state`・`createdAt` を受け取ります。受け取るキーは `getProductsOptions.fieldConfigs["searchFilter.key"]`
+の enum `allowedValues` で告知し、それ以外のキーは拒否し、`name` は受け取りません。`since` には
+前回の `next` を渡し、`limit` は app が既定 10・上限 50 を適用します。
 
 ## TypeScript
 
 `@Extension({ name: "commerce", systemVersion: "v1" })` と
 `@channel.io/app-sdk-server` が export する canonical schema を使います。
 `CommerceGetAppConfigsOutputSchema`、`CommerceGetOrdersInputSchema`/
-`CommerceGetOrdersOutputSchema`、action input schema、`CommerceResultSchema` を使い、上の正確な
+`CommerceGetOrdersOutputSchema`、action input schema、`CommerceResultSchema`、商品カタログ用の
+`CommerceGetProductsInputSchema`/`CommerceGetProductsOutputSchema` を使い、上の正確な
 relative name で Function を登録します。
 
 ## 認証・信頼性・test
