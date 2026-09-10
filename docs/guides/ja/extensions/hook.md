@@ -17,8 +17,9 @@ target を設定しません。Public webhook target は 1-64 文字の URL-safe
 Manager scope では AppStore が installation、Channel、manager に binding した URL を発行するため、
 token は指定しません。他の hook type に webhook object は使えません。
 `teamChat.messageCreated` には target metadata がなく、archive されていない public TeamChat group に
-commit されたすべての root/reply を、サイズ制限された message identifier、writer identity、plain
-text、link metadata として渡します。App が独自の eligibility rule を適用します。正確な DTO は
+commit されたすべての root/reply を、完全な Channel Message snapshot とともに渡します。App は
+snapshot の `personType` と `personId` から作成者を、`rootMessageId` から thread の関連を、
+`plainText` と `blocks` から content を読み、独自の eligibility rule を適用します。正確な DTO は
 TypeScript reference を参照してください。
 
 ## TypeScript

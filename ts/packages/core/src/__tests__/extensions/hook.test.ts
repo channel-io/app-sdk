@@ -169,17 +169,23 @@ describe("WebhookConfigSchema", () => {
 });
 
 describe("TeamChatMessageCreatedHookInputSchema", () => {
-  it("defaults omitted links to an empty array", () => {
-    expect(
-      TeamChatMessageCreatedHookInputSchema.parse({
-        eventId: "event-1",
-        channelId: "channel-1",
-        groupId: "group-1",
-        rootMessageId: "root-message-1",
-        messageId: "message-1",
-        occurredAt: "2026-09-09T00:00:00Z",
-        writer: { type: "manager", id: "manager-1" },
-      })
-    ).toMatchObject({ links: [] });
+  it("keeps the complete Message snapshot", () => {
+    const input = {
+      eventId: "event-1",
+      channelId: "channel-1",
+      groupId: "group-1",
+      messageId: "message-1",
+      occurredAt: "2026-09-09T00:00:00Z",
+      snapshot: {
+        id: "message-1",
+        threadId: "root-message-1",
+        personType: "manager",
+        personId: "manager-1",
+        files: [{ id: "file-1" }],
+        reactions: [{ emoji: "thumbsup" }],
+      },
+    };
+
+    expect(TeamChatMessageCreatedHookInputSchema.parse(input)).toEqual(input);
   });
 });

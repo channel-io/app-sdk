@@ -1859,27 +1859,17 @@ message HookUserChatOpenedResult {
   bool terminal = 2;
 }
 
-message HookTeamChatMessageCreatedWriter {
-  string type = 1;
-  string id = 2;
-}
-
-message HookTeamChatMessageCreatedLink {
-  string url = 1;
-  optional string title = 2;
-}
-
 message HookTeamChatMessageCreatedInput {
+  reserved 4, 8 to 10;
+  reserved "root_message_id", "writer", "plain_text", "links";
+
   string event_id = 1;
   string channel_id = 2;
   string group_id = 3;
-  optional string root_message_id = 4;
   string message_id = 5;
   string occurred_at = 6;
   optional string source_app_id = 7;
-  HookTeamChatMessageCreatedWriter writer = 8;
-  optional string plain_text = 9;
-  repeated HookTeamChatMessageCreatedLink links = 10;
+  google.protobuf.Struct snapshot = 11;
 }
 
 message HookTeamChatMessageCreatedResult {
