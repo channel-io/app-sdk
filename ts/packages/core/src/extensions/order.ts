@@ -98,7 +98,10 @@ export const ClaimSchema = z.object({
   type: z.string(),
   state: z.string(),
   itemIds: z.array(z.string()),
-  createdAt: z.number(),
+  // 클레임 생성 시각을 안 주는 몰이 있다. proto3 plain double 이라 presence 도 없어
+  // 미제공과 0 이 구별되지 않고, protojson 이 0 을 생략해 키가 통째로 빠진다. 필수로 두면
+  // 그 몰의 유효한 응답을 출력 검증이 거부하므로 — 지킬 수 없는 약속이라 계약에서 뗀다.
+  createdAt: z.number().optional(),
 });
 export type Claim = ProtoBacked<z.infer<typeof ClaimSchema>, ProtoClaim>;
 

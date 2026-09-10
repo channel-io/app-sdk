@@ -2379,8 +2379,7 @@
                     "id",
                     "type",
                     "state",
-                    "itemIds",
-                    "createdAt"
+                    "itemIds"
                   ],
                   "additionalProperties": false
                 }
@@ -22485,8 +22484,7 @@
                     "id",
                     "type",
                     "state",
-                    "itemIds",
-                    "createdAt"
+                    "itemIds"
                   ],
                   "additionalProperties": false
                 }
