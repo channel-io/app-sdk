@@ -2181,8 +2181,7 @@
                     "name",
                     "amount",
                     "quantity",
-                    "state",
-                    "claimability"
+                    "state"
                   ],
                   "additionalProperties": false
                 }
@@ -2236,11 +2235,7 @@
                 "required": [
                   "state",
                   "currency",
-                  "totalAmount",
-                  "itemsAmount",
-                  "shippingAmount",
-                  "discountAmount",
-                  "requireRefundBankAccount"
+                  "totalAmount"
                 ],
                 "additionalProperties": false
               },
@@ -2379,8 +2374,7 @@
                     "id",
                     "type",
                     "state",
-                    "itemIds",
-                    "createdAt"
+                    "itemIds"
                   ],
                   "additionalProperties": false
                 }
@@ -22287,8 +22281,7 @@
                     "name",
                     "amount",
                     "quantity",
-                    "state",
-                    "claimability"
+                    "state"
                   ],
                   "additionalProperties": false
                 }
@@ -22342,11 +22335,7 @@
                 "required": [
                   "state",
                   "currency",
-                  "totalAmount",
-                  "itemsAmount",
-                  "shippingAmount",
-                  "discountAmount",
-                  "requireRefundBankAccount"
+                  "totalAmount"
                 ],
                 "additionalProperties": false
               },
@@ -22485,8 +22474,7 @@
                     "id",
                     "type",
                     "state",
-                    "itemIds",
-                    "createdAt"
+                    "itemIds"
                   ],
                   "additionalProperties": false
                 }
@@ -22845,8 +22833,7 @@
               "name",
               "amount",
               "quantity",
-              "state",
-              "claimability"
+              "state"
             ],
             "additionalProperties": false
           }

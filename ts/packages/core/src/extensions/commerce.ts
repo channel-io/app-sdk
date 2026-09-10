@@ -77,7 +77,11 @@ export const CommerceOrderItemSchema = z.object({
   shippedAt: z.number().optional(),
   deliveredAt: z.number().optional(),
   estimatedShipDate: z.number().optional(),
-  claimability: ClaimabilitySchema,
+  // proto3 message 필드라 암묵적 presence 를 갖는다 — 앱이 채우지 않으면 protojson 이 키를
+  // 통째로 지운다. 안쪽 bool 네 개를 required 에서 뺀 것(V236)과 같은 이유가 한 단계 위에도
+  // 그대로 적용된다: claimability 를 아예 계산하지 않는 몰의 정상 응답이 필수 선언 때문에
+  // 검증에서 걸린다.
+  claimability: ClaimabilitySchema.optional(),
   sku: z.string().optional(),
   // 0(전량 출하됨)과 미제공은 다른 뜻이라 optional 이다.
   unfulfilledQuantity: z.number().optional(),
