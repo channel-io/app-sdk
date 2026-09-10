@@ -161,7 +161,7 @@ export const TeamChatMessageCreatedHookInputSchema = z
     eventId: TeamChatMessageCreatedIdentifierSchema,
     channelId: TeamChatMessageCreatedIdentifierSchema,
     groupId: TeamChatMessageCreatedIdentifierSchema,
-    rootMessageId: TeamChatMessageCreatedIdentifierSchema,
+    rootMessageId: TeamChatMessageCreatedIdentifierSchema.optional(),
     messageId: TeamChatMessageCreatedIdentifierSchema,
     occurredAt: z.string().datetime({ offset: true }),
     sourceAppId: TeamChatMessageCreatedIdentifierSchema.optional(),
