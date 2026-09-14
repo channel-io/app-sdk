@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/channel-io/app-sdk/go/appsdk"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestStaticWebhookHooks(t *testing.T) {
@@ -61,7 +62,6 @@ func TestStaticManagerWebhookHooks(t *testing.T) {
 }
 
 func TestStaticTeamChatMessageCreatedHook(t *testing.T) {
-	rootMessageID := "root-message-1"
 	handler := StaticHooks(&Config{
 		Type:               TypeTeamChatMessageCreated,
 		ActionFunctionName: "linear.teamChatMessageCreated.handle",
@@ -76,21 +76,31 @@ func TestStaticTeamChatMessageCreatedHook(t *testing.T) {
 		t.Fatalf("unexpected TeamChat message hook: %#v", response.Hooks)
 	}
 
+	snapshot, err := structpb.NewStruct(map[string]any{
+		"id":         "message-1",
+		"channelId":  "channel-1",
+		"chatId":     "group-1",
+		"threadId":   "root-message-1",
+		"personType": "manager",
+		"personId":   "manager-1",
+		"plainText":  "Ship the webhook path.",
+	})
+	if err != nil {
+		t.Fatalf("failed to build Message snapshot: %v", err)
+	}
 	input := &TeamChatMessageCreatedInput{
-		EventId:       "event-1",
-		ChannelId:     "channel-1",
-		GroupId:       "group-1",
-		RootMessageId: &rootMessageID,
-		MessageId:     "message-1",
-		OccurredAt:    "2026-09-09T10:30:00Z",
-		Writer:        &TeamChatMessageCreatedWriter{Type: "manager", Id: "manager-1"},
-		Links:         []*TeamChatMessageCreatedLink{{Url: "https://linear.app/channel/issue/AS-3305"}},
+		EventId:    "event-1",
+		ChannelId:  "channel-1",
+		GroupId:    "group-1",
+		MessageId:  "message-1",
+		OccurredAt: "2026-09-09T10:30:00Z",
+		Snapshot:   snapshot,
 	}
 	result := &TeamChatMessageCreatedResult{
 		HookHandlingResult: TeamChatMessageCreatedResultSucceeded,
 		Terminal:           true,
 	}
-	if input.Writer.Id != "manager-1" || result.HookHandlingResult != "succeeded" || !result.Terminal {
+	if input.Snapshot.GetFields()["personId"].GetStringValue() != "manager-1" || result.HookHandlingResult != "succeeded" || !result.Terminal {
 		t.Fatalf("unexpected TeamChat hook contract: input=%#v result=%#v", input, result)
 	}
 }

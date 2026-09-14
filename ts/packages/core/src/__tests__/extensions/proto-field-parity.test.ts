@@ -87,8 +87,6 @@ import {
   HookConfigSchema,
   TeamChatMessageCreatedHookInputSchema,
   TeamChatMessageCreatedHookResultSchema,
-  TeamChatMessageCreatedLinkSchema,
-  TeamChatMessageCreatedWriterSchema,
   UserChatOpenedHookInputSchema,
   UserChatOpenedHookResultSchema,
   InboxGetCustomEditorWamInputSchema,
@@ -403,18 +401,6 @@ const contracts: Contract[] = [
     UserChatOpenedHookResultSchema,
     "extension",
     "HookUserChatOpenedResult"
-  ),
-  contract(
-    "TeamChatMessageCreatedWriter",
-    TeamChatMessageCreatedWriterSchema,
-    "extension",
-    "HookTeamChatMessageCreatedWriter"
-  ),
-  contract(
-    "TeamChatMessageCreatedLink",
-    TeamChatMessageCreatedLinkSchema,
-    "extension",
-    "HookTeamChatMessageCreatedLink"
   ),
   contract(
     "TeamChatMessageCreatedHookInput",

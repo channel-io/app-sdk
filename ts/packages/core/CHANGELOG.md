@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.24.2
+
+### Patch Changes
+
+- 63d3174: Deliver `teamChat.messageCreated` with the full immutable Channel Message snapshot instead of a flattened content subset.
+
 ## 0.24.1
 
 ### Patch Changes
