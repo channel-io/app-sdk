@@ -1,6 +1,6 @@
 # Commerce Extension
 
-The Commerce extension registers commerce order lookups and claim actions through a helper. The read model is the `id`-based `CommerceOrder` (with `CommerceOrderItem`), and actions wrap their result in an `ActionResult`.
+The Commerce extension registers commerce order lookups, claim actions, and product catalog reads through a helper. The read model is the `id`-based `CommerceOrder` (with `CommerceOrderItem`), and actions wrap their result in an `ActionResult`.
 
 ## Go
 
@@ -14,7 +14,8 @@ err := app.Use(commerce.Extension().
   AcceptReturnOrder(handler.AcceptReturnOrder).
   RequestExchangeOrder(handler.RequestExchangeOrder).
   GetExchangeableItems(handler.GetExchangeableItems).
-  ChangeShippingAddress(handler.ChangeShippingAddress),
+  ChangeShippingAddress(handler.ChangeShippingAddress).
+  GetProducts(handler.GetProducts),
 )
 ```
 
@@ -28,15 +29,31 @@ Supported methods:
 - `extension.commerce.order.requestExchangeOrder`
 - `extension.commerce.order.getExchangeableItems`
 - `extension.commerce.order.changeShippingAddress`
+- `extension.commerce.product.getProducts`
 
 Reuse the SDK-exported value types for addresses, payments, fulfillment, and claims.
+
+`getProducts` is a catalog read, not a search. Its `searchFilter` accepts `productId` (one id or
+several), `state`, and `createdAt`; advertise the keys you accept as the enum `allowedValues` of
+`getProductsOptions.fieldConfigs["searchFilter.key"]`, reject any other key, and do not accept
+`name`. Each `allowedValues` entry pairs a filter key name (`value`) with the name a person sees when
+picking it (`label`). `since` carries the previous `next` cursor, and the app applies a default
+`limit` of 10 and caps it at 50.
+
+A product's `state` is the closed set `active` / `inactive`: map a mall-specific state to one of the
+two, or leave it unset when you cannot; any other value fails validation for the whole response, not
+just the field. The product-level `price` may be absent when a mall prices only its variants — leave
+it unset rather than emitting `0`, and read `variants[].price` instead. `currency` is the currency of
+the mall connection; emit it together with `price`. `productCode` and `variants[].sku` carry the same
+values as `items[].productCode` and `items[].sku` on an order.
 
 ## TypeScript
 
 Use `@Extension({ name: "commerce", systemVersion: "v1" })` and the canonical schemas exported by
 `@channel.io/app-sdk-server`: `CommerceGetAppConfigsOutputSchema`,
-`CommerceGetOrdersInputSchema`/`CommerceGetOrdersOutputSchema`, the action input schemas, and
-`CommerceResultSchema`. Use the exact relative names listed above and add the class to the NestJS
+`CommerceGetOrdersInputSchema`/`CommerceGetOrdersOutputSchema`, the action input schemas,
+`CommerceResultSchema`, and `CommerceGetProductsInputSchema`/`CommerceGetProductsOutputSchema` for
+the product catalog. Use the exact relative names listed above and add the class to the NestJS
 providers.
 
 ## Authentication, reliability, and testing

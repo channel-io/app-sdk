@@ -485,6 +485,10 @@ export {
   CommerceExchangeableVariantSchema,
   CommerceVariantOptionSchema,
   CommerceChangeShippingAddressInputSchema,
+  CommerceProductVariantSchema,
+  CommerceProductSchema,
+  CommerceGetProductsInputSchema,
+  CommerceGetProductsOutputSchema,
   type CommerceOrderItem,
   type CommerceOrder,
   type CommerceIdentifier,
@@ -503,6 +507,10 @@ export {
   type CommerceExchangeableVariant,
   type CommerceVariantOption,
   type CommerceChangeShippingAddressInput,
+  type CommerceProductVariant,
+  type CommerceProduct,
+  type CommerceGetProductsInput,
+  type CommerceGetProductsOutput,
 } from "./commerce.js";
 
 // Messaging Extension Schemas (v1)

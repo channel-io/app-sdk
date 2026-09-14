@@ -335,8 +335,8 @@ Arrow-compatible results. The SDK includes PostgreSQL and BigQuery-oriented runn
 
 Use the redesigned `commerce` Extension for new commerce apps. It provides the ID-based order model,
 buyer information, order lookup, cancel/return/exchange requests, exchangeable items, shipping
-address changes, and structured `ActionResult` responses. Validate provider state before mutations
-and return explicit unsupported results when a provider lacks an operation.
+address changes, product catalog reads, and structured `ActionResult` responses. Validate provider
+state before mutations and return explicit unsupported results when a provider lacks an operation.
 
 [Commerce details](extensions/commerce.md)
 

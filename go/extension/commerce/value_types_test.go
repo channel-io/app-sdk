@@ -21,35 +21,43 @@ const sdkProtoPackage = "channel.app.sdk.v1"
 // 별칭을 빠뜨리면 스키마에는 필드가 보이는데 앱이 그 값을 만들 방법이 없는 상태가 된다 —
 // 컴파일은 SDK 안에서 멀쩡히 통과해서 릴리즈 전까지 드러나지 않는다(#116).
 //
-// 아래 목록을 손으로 관리하지만, 진실의 원천은 proto 디스크립터다. Order 에서 도달 가능한
-// 메시지를 걸어 목록과 대조하므로, 새 메시지를 추가하고 이 목록을 갱신하지 않으면 실패한다.
-// 값은 별칭 자체를 참조하므로 별칭이 없으면 컴파일도 되지 않는다.
-func TestOrderValueTypesAreAliased(t *testing.T) {
+// 아래 목록을 손으로 관리하지만, 진실의 원천은 proto 디스크립터다. Order·Product·ExchangeableItem
+// 에서 도달 가능한 메시지를 걸어 목록과 대조하므로, 새 메시지를 추가하고 이 목록을 갱신하지 않으면
+// 실패한다. 값은 별칭 자체를 참조하므로 별칭이 없으면 컴파일도 되지 않는다.
+func TestCommerceValueTypesAreAliased(t *testing.T) {
 	aliases := map[string]any{
-		"CommerceOrder":           commerce.Order{},
-		"CommerceOrderItem":       commerce.OrderItem{},
-		"CommerceOrderBundleItem": commerce.OrderBundleItem{},
-		"Buyer":                   commerce.Buyer{},
-		"OrderAddress":            commerce.Address{},
-		"OrderPayment":            commerce.Payment{},
-		"OrderFulfillment":        commerce.Fulfillment{},
-		"OrderFulfillmentItem":    commerce.FulfillmentItem{},
-		"OrderClaim":              commerce.Claim{},
-		"OrderClaimability":       commerce.Claimability{},
-		"OrderTaxLine":            commerce.TaxLine{},
-		"OrderAttribute":          commerce.Attribute{},
-		"OrderShippingLine":       commerce.ShippingLine{},
-		"OrderTransaction":        commerce.Transaction{},
-		"OrderMetafield":          commerce.Metafield{},
+		"CommerceOrder":               commerce.Order{},
+		"CommerceOrderItem":           commerce.OrderItem{},
+		"CommerceOrderBundleItem":     commerce.OrderBundleItem{},
+		"Buyer":                       commerce.Buyer{},
+		"OrderAddress":                commerce.Address{},
+		"OrderPayment":                commerce.Payment{},
+		"OrderFulfillment":            commerce.Fulfillment{},
+		"OrderFulfillmentItem":        commerce.FulfillmentItem{},
+		"OrderClaim":                  commerce.Claim{},
+		"OrderClaimability":           commerce.Claimability{},
+		"OrderTaxLine":                commerce.TaxLine{},
+		"OrderAttribute":              commerce.Attribute{},
+		"OrderShippingLine":           commerce.ShippingLine{},
+		"OrderTransaction":            commerce.Transaction{},
+		"OrderMetafield":              commerce.Metafield{},
+		"CommerceProduct":             commerce.Product{},
+		"CommerceProductVariant":      commerce.ProductVariant{},
+		"CommerceVariantOption":       commerce.VariantOption{},
+		"CommerceExchangeableItem":    commerce.ExchangeableItem{},
+		"CommerceExchangeableVariant": commerce.ExchangeableVariant{},
 	}
 
 	reachable := map[string]protoreflect.MessageDescriptor{}
 	collectMessages((&commerce.Order{}).ProtoReflect().Descriptor(), reachable)
+	// 상품 카탈로그와 교환 후보는 주문에서 도달하지 않는 별도 루트다.
+	collectMessages((&commerce.Product{}).ProtoReflect().Descriptor(), reachable)
+	collectMessages((&commerce.ExchangeableItem{}).ProtoReflect().Descriptor(), reachable)
 
 	for name := range reachable {
 		if _, ok := aliases[name]; !ok {
 			t.Errorf(
-				"proto 메시지 %s 가 주문 계약에서 도달 가능한데 commerce 별칭이 없다 — "+
+				"proto 메시지 %s 가 주문·상품·교환 계약에서 도달 가능한데 commerce 별칭이 없다 — "+
 					"extension/commerce/types.go 에 별칭을 추가하고 이 목록에도 넣어라",
 				name,
 			)
@@ -61,7 +69,7 @@ func TestOrderValueTypesAreAliased(t *testing.T) {
 	for name, value := range aliases {
 		desc, ok := reachable[name]
 		if !ok {
-			// 주문 계약에서 도달하지 않는 별칭은 이 테스트의 관심사가 아니다.
+			// 주문·상품·교환 계약에서 도달하지 않는 별칭은 이 테스트의 관심사가 아니다.
 			continue
 		}
 

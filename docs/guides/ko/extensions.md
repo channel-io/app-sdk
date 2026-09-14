@@ -324,9 +324,9 @@ stream하세요. SDK는 PostgreSQL과 BigQuery용 runner를 제공합니다.
 ## Commerce
 
 새 commerce 앱은 재설계된 `commerce` Extension을 사용합니다. ID 기반 order model, buyer,
-order 조회, cancel/return/exchange request, 교환 가능 상품, 배송지 변경, 구조화된 `ActionResult`를
-제공합니다. Mutation 전에 provider 상태를 검증하고 provider가 지원하지 않는 동작은 명시적인
-unsupported 결과로 반환하세요.
+order 조회, cancel/return/exchange request, 교환 가능 상품, 배송지 변경, 상품 카탈로그 조회,
+구조화된 `ActionResult`를 제공합니다. Mutation 전에 provider 상태를 검증하고 provider가 지원하지
+않는 동작은 명시적인 unsupported 결과로 반환하세요.
 
 [Commerce 상세](extensions/commerce.md)
 
