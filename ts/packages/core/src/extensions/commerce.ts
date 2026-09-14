@@ -162,9 +162,13 @@ export const CommerceOrderSchema = z.object({
   shippingLines: z.array(ShippingLineSchema).optional(),
   transactions: z.array(TransactionSchema).optional(),
   metafields: z.array(MetafieldSchema).optional(),
-  // 외부 마켓(네이버·쿠팡 등)에서 유입된 주문이 어느 마켓 것인지. 자사몰 주문이면 빈 값이다.
+  // 주문이 들어온 경로를 몰이 식별하는 값. **비어 있지 않다고 해서 외부 마켓 주문이라는
+  // 뜻은 아니다** — 자사몰 주문에도 자기 식별자를 넣는 몰이 있다(카페24는 self·cafe24·
+  // mobile·mobile_d). 값의 의미는 몰마다 다르므로 특정 값을 가정하지 말고, 외부 마켓
+  // 여부가 필요하면 marketOrderNo 유무를 함께 본다.
   marketId: z.string().optional(),
-  // 그 마켓이 발번한 주문번호. 몰 주문번호(id)와 달라 CS 조회 키로 쓰인다.
+  // 외부 마켓(네이버·쿠팡 등)이 발번한 주문번호. 몰 주문번호(id)와 달라 CS 조회 키로 쓰인다.
+  // 자사몰 주문이면 비어 있다.
   marketOrderNo: z.string().optional(),
 });
 export type CommerceOrder = ProtoBacked<z.infer<typeof CommerceOrderSchema>, ProtoCommerceOrder>;
