@@ -36,7 +36,14 @@ err := app.Use(commerce.Extension().
 `getProducts` は検索ではなくカタログ取得です。`searchFilter` は `productId`（単一・複数 id）・
 `state`・`createdAt` を受け取ります。受け取るキーは `getProductsOptions.fieldConfigs["searchFilter.key"]`
 の enum `allowedValues` で告知し、それ以外のキーは拒否し、`name` は受け取りません。`since` には
-前回の `next` を渡し、`limit` は app が既定 10・上限 50 を適用します。
+前回の `next` を渡し、`limit` は app が既定 10・上限 50 を適用します。`allowedValues` の `value` は
+フィルタキー名、`label` はそのキーを人が選ぶときに見える表示名です。
+
+商品の `state` は `active` / `inactive` の閉じた集合です。モール固有の状態はどちらかに対応付け、対応付け
+られなければ空にします。それ以外の値を載せるとフィールド単位ではなく応答全体が検証で落ちます。商品単位の
+`price` は、価格を variant にだけ持つモールでは空にできます。`0` を入れずに空にすれば、消費者は
+`variants[].price` を読みます。`currency` は連携（モール）の通貨で、`price` と一緒に載せます。
+`productCode` と `variants[].sku` は注文の `items[].productCode`・`items[].sku` と同じ値です。
 
 ## TypeScript
 

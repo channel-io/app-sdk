@@ -3289,6 +3289,9 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "sku": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -3297,12 +3300,14 @@
                   ],
                   "additionalProperties": false
                 }
+              },
+              "productCode": {
+                "type": "string"
               }
             },
             "required": [
               "id",
-              "name",
-              "price"
+              "name"
             ],
             "additionalProperties": false
           }

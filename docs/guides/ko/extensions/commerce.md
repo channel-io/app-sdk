@@ -36,7 +36,14 @@ err := app.Use(commerce.Extension().
 `getProducts`는 검색이 아니라 카탈로그 조회입니다. `searchFilter`는 `productId`(단건·복수 id)·
 `state`·`createdAt`을 받습니다. 받는 키는 `getProductsOptions.fieldConfigs["searchFilter.key"]`의
 enum `allowedValues`로 광고하고, 그 밖의 키는 거부하며 `name`은 받지 않습니다. `since`에는 이전
-응답의 `next`를 넣고, `limit`은 앱이 기본 10·상한 50으로 둡니다.
+응답의 `next`를 넣고, `limit`은 앱이 기본 10·상한 50으로 둡니다. `allowedValues`의 `value`는 필터 키
+이름, `label`은 그 키를 사람이 고를 때 보이는 표시 이름입니다.
+
+상품 `state`는 `active`/`inactive` 닫힌 집합입니다. 몰 고유 상태는 둘 중 하나로 매핑하고, 매핑할 수 없으면
+비웁니다. 그 밖의 값을 실으면 필드 하나가 아니라 응답 전체가 검증에서 떨어집니다. 상품 단위 `price`는
+가격을 variant에만 두는 몰에서는 비울 수 있습니다. `0`을 넣지 말고 비우면 소비자가 `variants[].price`를
+읽습니다. `currency`는 연동(몰)의 통화이며 `price`와 함께 싣습니다. `productCode`와 `variants[].sku`는
+주문의 `items[].productCode`·`items[].sku`와 같은 값입니다.
 
 ## TypeScript
 

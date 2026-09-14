@@ -1552,6 +1552,7 @@ export const CommerceProductProtoSchema = z.object({
   createdAt: z.number().optional(),
   updatedAt: z.number().optional(),
   variants: z.array(z.lazy(() => CommerceProductVariantProtoSchema)).optional(),
+  productCode: z.string().optional(),
 }) satisfies z.ZodType<pb.CommerceProduct>;
 export type CommerceProductProto = z.infer<typeof CommerceProductProtoSchema>;
 
@@ -1560,6 +1561,7 @@ export const CommerceProductVariantProtoSchema = z.object({
   price: z.number().optional(),
   stockQuantity: z.number().optional(),
   options: z.array(z.lazy(() => CommerceVariantOptionProtoSchema)).optional(),
+  sku: z.string().optional(),
 }) satisfies z.ZodType<pb.CommerceProductVariant>;
 export type CommerceProductVariantProto = z.infer<typeof CommerceProductVariantProtoSchema>;
 

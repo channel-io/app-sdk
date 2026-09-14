@@ -209,7 +209,8 @@ export const CommerceAppCapabilitiesSchema = z.object({
   changeShippingAddressOptions: OperationOptionsSchema.optional(),
   // 다른 *Options 와 같은 어휘다: required / optional 에는 getProducts 입력 필드명
   // (searchFilter·since·limit)을, 앱이 받는 searchFilter 키는 fieldConfigs["searchFilter.key"] 한 항목에
-  // enum allowedValues 로 나열한다(getOrders 와 같은 방식). 필터 없이 불러도 첫 페이지를 돌려주므로
+  // enum allowedValues 로 나열한다(getOrders 와 같은 방식). value 는 필터 키 이름(productId·state·createdAt),
+  // label 은 그 키를 사람이 고를 때 보이는 표시 이름이다. 필터 없이 불러도 첫 페이지를 돌려주므로
   // required 는 비운다.
   getProductsOptions: OperationOptionsSchema.optional(),
 });
@@ -370,6 +371,8 @@ export const CommerceProductVariantSchema = z.object({
   // 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공은 다른 뜻이다.
   stockQuantity: z.number().optional(),
   options: z.array(CommerceVariantOptionSchema).optional(),
+  // 품목 단위 재고 코드. getOrders 의 items[].sku 와 같은 값이다.
+  sku: z.string().optional(),
 });
 export type CommerceProductVariant = ProtoBacked<
   z.infer<typeof CommerceProductVariantSchema>,
@@ -380,8 +383,11 @@ export const CommerceProductSchema = z.object({
   // getOrders 의 items[].productId 와 같은 값이다.
   id: z.string(),
   name: z.string(),
-  price: z.number(),
+  // 상품 단위 판매가. 가격을 variant 에만 두는 몰이 있어 필수가 아니다 — 대표값을 지어내는 대신 비우고,
+  // 소비자는 variants[].price 로 내려가 읽는다. 0 원은 무료라는 뜻이다.
+  price: z.number().optional(),
   originalPrice: z.number().optional(),
+  // 상품이 아니라 이 연동(몰)의 통화. price·originalPrice 를 실으면 함께 싣는다.
   currency: z.string().optional(),
   // 판단할 수 없으면 비운다 — 기본값으로 active 를 넣지 않는다. 닫힌 집합이라 몰 고유 상태(draft 등)는
   // 앱이 두 값으로 매핑한다.
@@ -402,6 +408,8 @@ export const CommerceProductSchema = z.object({
   // epoch ms. 몰의 수정 시각이 아니라 앱이 상품을 저장한 시각일 수 있다.
   updatedAt: z.number().optional(),
   variants: z.array(CommerceProductVariantSchema).optional(),
+  // 몰이 상품에 부여한 사람이 읽는 코드. getOrders 의 items[].productCode 와 같은 값이다. 없는 몰은 비운다.
+  productCode: z.string().optional(),
 });
 export type CommerceProduct = ProtoBacked<
   z.infer<typeof CommerceProductSchema>,

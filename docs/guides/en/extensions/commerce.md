@@ -36,8 +36,16 @@ Reuse the SDK-exported value types for addresses, payments, fulfillment, and cla
 `getProducts` is a catalog read, not a search. Its `searchFilter` accepts `productId` (one id or
 several), `state`, and `createdAt`; advertise the keys you accept as the enum `allowedValues` of
 `getProductsOptions.fieldConfigs["searchFilter.key"]`, reject any other key, and do not accept
-`name`. `since` carries the previous `next` cursor, and the app applies a default `limit` of 10 and
-caps it at 50.
+`name`. Each `allowedValues` entry pairs a filter key name (`value`) with the name a person sees when
+picking it (`label`). `since` carries the previous `next` cursor, and the app applies a default
+`limit` of 10 and caps it at 50.
+
+A product's `state` is the closed set `active` / `inactive`: map a mall-specific state to one of the
+two, or leave it unset when you cannot; any other value fails validation for the whole response, not
+just the field. The product-level `price` may be absent when a mall prices only its variants — leave
+it unset rather than emitting `0`, and read `variants[].price` instead. `currency` is the currency of
+the mall connection; emit it together with `price`. `productCode` and `variants[].sku` carry the same
+values as `items[].productCode` and `items[].sku` on an order.
 
 ## TypeScript
 

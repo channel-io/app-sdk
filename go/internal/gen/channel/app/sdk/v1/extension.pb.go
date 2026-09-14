@@ -12025,8 +12025,11 @@ type CommerceAppCapabilities struct {
 	// 다른 *_options 와 같은 어휘다: required / optional 에는 getProducts 의 입력 필드명
 	// (searchFilter·since·limit)을 적고, 앱이 받는 searchFilter 키는 field_configs["searchFilter.key"]
 	// 한 항목에 type=enum·allowed_values 로 나열한다(getOrders 와 같은 방식). searchFilter 는
-	// 자유 형식이라 호출자가 지원 키를 기계적으로 알 길은 이것뿐이다. 필터 없이 불러도 첫 페이지를
-	// 돌려주므로 required 는 비운다.
+	// { key, type, operator, values, and, or } 꼴이라 "searchFilter.key" 는 자리표시자가 아니라
+	// identifier.type 과 같은 실제 필드 경로다. allowed_values 의 value 는 필터 키 이름
+	// (productId·state·createdAt), label 은 그 키를 사람이 고를 때 보이는 표시 이름이다.
+	// searchFilter 는 자유 형식이라 호출자가 지원 키를 기계적으로 알 길은 이것뿐이다. 필터 없이
+	// 불러도 첫 페이지를 돌려주므로 required 는 비운다.
 	GetProductsOptions *OrderOperationOptions `protobuf:"bytes,7,opt,name=get_products_options,json=getProductsOptions,proto3" json:"get_products_options,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
@@ -13186,11 +13189,14 @@ type CommerceProduct struct {
 	// 상품 id. getOrders 의 items[].product_id 와 같은 값이라 주문 아이템에서 상품으로 이어 갈 수 있다.
 	Id   string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	// 판매가. 0 원 상품(사은품)이 정상이라 presence 가 필요하다.
+	// 상품 단위 판매가. 0 원 상품(사은품)이 정상이라 presence 가 필요하다. 가격을 variant 에만 두는
+	// 몰이 있어 필수가 아니다 — 대표값을 지어내는 대신 비우고, 소비자는 variants[].price 로 내려가 읽는다.
 	Price *float64 `protobuf:"fixed64,3,opt,name=price,proto3,oneof" json:"price,omitempty"`
 	// 정가. 판매가와 같으면 비워도 된다.
 	OriginalPrice *float64 `protobuf:"fixed64,4,opt,name=original_price,json=originalPrice,proto3,oneof" json:"original_price,omitempty"`
-	Currency      string   `protobuf:"bytes,5,opt,name=currency,proto3" json:"currency,omitempty"`
+	// 상품이 아니라 이 연동(몰)의 통화다. price·original_price 를 실으면 함께 싣는다 — 통화가 없으면
+	// 소비자는 채널 기본 통화로 가정할 수밖에 없다.
+	Currency string `protobuf:"bytes,5,opt,name=currency,proto3" json:"currency,omitempty"`
 	// active / inactive. 판단할 수 없으면 비운다 — 기본값으로 active 를 넣지 않는다.
 	State string `protobuf:"bytes,6,opt,name=state,proto3" json:"state,omitempty"`
 	// 대표 이미지.
@@ -13209,8 +13215,12 @@ type CommerceProduct struct {
 	// 몰에서 상품이 만들어진 시각(epoch ms). searchFilter 의 createdAt 도 이 축이다.
 	CreatedAt float64 `protobuf:"fixed64,16,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	// epoch ms. 몰의 수정 시각이 아니라 앱이 상품을 저장한 시각일 수 있다.
-	UpdatedAt     float64                   `protobuf:"fixed64,17,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	Variants      []*CommerceProductVariant `protobuf:"bytes,18,rep,name=variants,proto3" json:"variants,omitempty"`
+	UpdatedAt float64                   `protobuf:"fixed64,17,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Variants  []*CommerceProductVariant `protobuf:"bytes,18,rep,name=variants,proto3" json:"variants,omitempty"`
+	// 몰이 상품에 부여한 사람이 읽는 코드. id(내부 식별자)와 다른 축이고 getOrders 의
+	// items[].product_code 와 같은 값이라, 주문에서 본 코드로 카탈로그 상품을 가리킬 수 있다.
+	// 코드 개념이 없는 몰은 비운다.
+	ProductCode   string `protobuf:"bytes,19,opt,name=product_code,json=productCode,proto3" json:"product_code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -13371,6 +13381,13 @@ func (x *CommerceProduct) GetVariants() []*CommerceProductVariant {
 	return nil
 }
 
+func (x *CommerceProduct) GetProductCode() string {
+	if x != nil {
+		return x.ProductCode
+	}
+	return ""
+}
+
 type CommerceProductVariant struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// variant id. getOrders 의 items[].variant_id, requestExchangeOrder 의
@@ -13383,6 +13400,8 @@ type CommerceProductVariant struct {
 	// 재고 수량. 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공을 구별해야 해서 optional 이다.
 	StockQuantity *float64                 `protobuf:"fixed64,3,opt,name=stock_quantity,json=stockQuantity,proto3,oneof" json:"stock_quantity,omitempty"`
 	Options       []*CommerceVariantOption `protobuf:"bytes,4,rep,name=options,proto3" json:"options,omitempty"`
+	// 품목 단위 재고 코드. getOrders 의 items[].sku 와 같은 값이다.
+	Sku           string `protobuf:"bytes,5,opt,name=sku,proto3" json:"sku,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -13443,6 +13462,13 @@ func (x *CommerceProductVariant) GetOptions() []*CommerceVariantOption {
 		return x.Options
 	}
 	return nil
+}
+
+func (x *CommerceProductVariant) GetSku() string {
+	if x != nil {
+		return x.Sku
+	}
+	return ""
 }
 
 type WmsShippingInfo struct {
@@ -19194,7 +19220,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x05limit\x18\x03 \x01(\x05R\x05limit\"p\n" +
 	"\x19CommerceGetProductsOutput\x12?\n" +
 	"\bproducts\x18\x01 \x03(\v2#.channel.app.sdk.v1.CommerceProductR\bproducts\x12\x12\n" +
-	"\x04next\x18\x02 \x01(\tR\x04next\"\xd2\x04\n" +
+	"\x04next\x18\x02 \x01(\tR\x04next\"\xf5\x04\n" +
 	"\x0fCommerceProduct\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n" +
@@ -19219,14 +19245,16 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"created_at\x18\x10 \x01(\x01R\tcreatedAt\x12\x1d\n" +
 	"\n" +
 	"updated_at\x18\x11 \x01(\x01R\tupdatedAt\x12F\n" +
-	"\bvariants\x18\x12 \x03(\v2*.channel.app.sdk.v1.CommerceProductVariantR\bvariantsB\b\n" +
+	"\bvariants\x18\x12 \x03(\v2*.channel.app.sdk.v1.CommerceProductVariantR\bvariants\x12!\n" +
+	"\fproduct_code\x18\x13 \x01(\tR\vproductCodeB\b\n" +
 	"\x06_priceB\x11\n" +
-	"\x0f_original_price\"\xd1\x01\n" +
+	"\x0f_original_price\"\xe3\x01\n" +
 	"\x16CommerceProductVariant\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\x05price\x18\x02 \x01(\x01H\x00R\x05price\x88\x01\x01\x12*\n" +
 	"\x0estock_quantity\x18\x03 \x01(\x01H\x01R\rstockQuantity\x88\x01\x01\x12C\n" +
-	"\aoptions\x18\x04 \x03(\v2).channel.app.sdk.v1.CommerceVariantOptionR\aoptionsB\b\n" +
+	"\aoptions\x18\x04 \x03(\v2).channel.app.sdk.v1.CommerceVariantOptionR\aoptions\x12\x10\n" +
+	"\x03sku\x18\x05 \x01(\tR\x03skuB\b\n" +
 	"\x06_priceB\x11\n" +
 	"\x0f_stock_quantity\"\xd1\x02\n" +
 	"\x0fWmsShippingInfo\x12\x12\n" +

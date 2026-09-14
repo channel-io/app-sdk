@@ -1542,8 +1542,11 @@ export interface CommerceAppCapabilities {
    * 다른 *_options 와 같은 어휘다: required / optional 에는 getProducts 의 입력 필드명
    * (searchFilter·since·limit)을 적고, 앱이 받는 searchFilter 키는 field_configs["searchFilter.key"]
    * 한 항목에 type=enum·allowed_values 로 나열한다(getOrders 와 같은 방식). searchFilter 는
-   * 자유 형식이라 호출자가 지원 키를 기계적으로 알 길은 이것뿐이다. 필터 없이 불러도 첫 페이지를
-   * 돌려주므로 required 는 비운다.
+   * { key, type, operator, values, and, or } 꼴이라 "searchFilter.key" 는 자리표시자가 아니라
+   * identifier.type 과 같은 실제 필드 경로다. allowed_values 의 value 는 필터 키 이름
+   * (productId·state·createdAt), label 은 그 키를 사람이 고를 때 보이는 표시 이름이다.
+   * searchFilter 는 자유 형식이라 호출자가 지원 키를 기계적으로 알 길은 이것뿐이다. 필터 없이
+   * 불러도 첫 페이지를 돌려주므로 required 는 비운다.
    */
   getProductsOptions?: OrderOperationOptions | undefined;
 }
@@ -1709,12 +1712,21 @@ export interface CommerceProduct {
   name?:
     | string
     | undefined;
-  /** 판매가. 0 원 상품(사은품)이 정상이라 presence 가 필요하다. */
+  /**
+   * 상품 단위 판매가. 0 원 상품(사은품)이 정상이라 presence 가 필요하다. 가격을 variant 에만 두는
+   * 몰이 있어 필수가 아니다 — 대표값을 지어내는 대신 비우고, 소비자는 variants[].price 로 내려가 읽는다.
+   */
   price?:
     | number
     | undefined;
   /** 정가. 판매가와 같으면 비워도 된다. */
-  originalPrice?: number | undefined;
+  originalPrice?:
+    | number
+    | undefined;
+  /**
+   * 상품이 아니라 이 연동(몰)의 통화다. price·original_price 를 실으면 함께 싣는다 — 통화가 없으면
+   * 소비자는 채널 기본 통화로 가정할 수밖에 없다.
+   */
   currency?:
     | string
     | undefined;
@@ -1749,7 +1761,15 @@ export interface CommerceProduct {
     | undefined;
   /** epoch ms. 몰의 수정 시각이 아니라 앱이 상품을 저장한 시각일 수 있다. */
   updatedAt?: number | undefined;
-  variants?: CommerceProductVariant[] | undefined;
+  variants?:
+    | CommerceProductVariant[]
+    | undefined;
+  /**
+   * 몰이 상품에 부여한 사람이 읽는 코드. id(내부 식별자)와 다른 축이고 getOrders 의
+   * items[].product_code 와 같은 값이라, 주문에서 본 코드로 카탈로그 상품을 가리킬 수 있다.
+   * 코드 개념이 없는 몰은 비운다.
+   */
+  productCode?: string | undefined;
 }
 
 export interface CommerceProductVariant {
@@ -1770,7 +1790,11 @@ export interface CommerceProductVariant {
     | undefined;
   /** 재고 수량. 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공을 구별해야 해서 optional 이다. */
   stockQuantity?: number | undefined;
-  options?: CommerceVariantOption[] | undefined;
+  options?:
+    | CommerceVariantOption[]
+    | undefined;
+  /** 품목 단위 재고 코드. getOrders 의 items[].sku 와 같은 값이다. */
+  sku?: string | undefined;
 }
 
 export interface WmsShippingInfo {
