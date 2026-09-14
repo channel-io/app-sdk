@@ -11667,9 +11667,13 @@ type CommerceOrder struct {
 	ShippingLines    []*OrderShippingLine `protobuf:"bytes,23,rep,name=shipping_lines,json=shippingLines,proto3" json:"shipping_lines,omitempty"`
 	Transactions     []*OrderTransaction  `protobuf:"bytes,24,rep,name=transactions,proto3" json:"transactions,omitempty"`
 	Metafields       []*OrderMetafield    `protobuf:"bytes,25,rep,name=metafields,proto3" json:"metafields,omitempty"`
-	// 외부 마켓(네이버·쿠팡 등)에서 유입된 주문이 어느 마켓 것인지. 자사몰 주문이면 빈 값이다.
+	// 주문이 들어온 경로를 몰이 식별하는 값. **비어 있지 않다고 해서 외부 마켓 주문이라는
+	// 뜻은 아니다** — 자사몰 주문에도 자기 식별자를 넣는 몰이 있다(카페24는 self·cafe24·
+	// mobile·mobile_d). 값의 의미는 몰마다 다르므로 특정 값을 가정하지 말고, 외부 마켓
+	// 여부가 필요하면 market_order_no 유무를 함께 본다.
 	MarketId string `protobuf:"bytes,26,opt,name=market_id,json=marketId,proto3" json:"market_id,omitempty"`
-	// 그 마켓이 발번한 주문번호. 몰 주문번호(id)와 달라 CS 조회 키로 쓰인다.
+	// 외부 마켓(네이버·쿠팡 등)이 발번한 주문번호. 몰 주문번호(id)와 달라 CS 조회 키로 쓰인다.
+	// 자사몰 주문이면 비어 있다.
 	MarketOrderNo string `protobuf:"bytes,27,opt,name=market_order_no,json=marketOrderNo,proto3" json:"market_order_no,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
