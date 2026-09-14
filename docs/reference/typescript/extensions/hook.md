@@ -82,7 +82,7 @@ revision as the delivery idempotency boundary. A handler result uses
 
 ## TeamChat Message Created
 
-`teamChat.messageCreated` declares an ordinary Function that receives a bounded,
+`teamChat.messageCreated` declares an ordinary Function that receives an
 immutable event after a TeamChat message is committed. It uses only
 `actionFunctionName` and optional `systemVersion`; `targetId` and `webhook` are
 not allowed.
@@ -92,23 +92,24 @@ interface TeamChatMessageCreatedHookInput {
   eventId: string;
   channelId: string;
   groupId: string;
-  rootMessageId?: string; // absent for root messages
   messageId: string;
   occurredAt: string; // ISO 8601 datetime
   sourceAppId?: string;
-  writer: { type: string; id: string };
-  plainText?: string; // at most 20,000 characters
-  links: Array<{ url: string; title?: string }>; // at most 20 links
+  snapshot: Record<string, unknown>; // full serialized Channel Message
 }
 ```
 
 The publisher emits every committed message in a public, non-archived TeamChat
 group, including root messages, replies, and non-manager writers. Apps decide
-which events are relevant to their own workflow. Identifiers are non-empty
-strings of at most 255 characters. Writer types are bounded to 50 characters,
-link URLs to 2,048 characters, and link titles to 255 characters. Empty content is valid input so a handler can return
-`skipped_empty` as a terminal result. The envelope intentionally omits the full
-message snapshot, files, reactions, and message history.
+which events are relevant to their own workflow. `snapshot` is the full Message
+JSON produced by Channel, matching the existing UserChat message-created
+delivery shape instead of a separately flattened subset. Read thread, writer,
+plain text, links, files, reactions, and other message fields from the snapshot.
+Message fields can grow as the platform evolves, so handlers must tolerate
+unknown fields and must not treat the snapshot as a stable storage schema.
+Identifiers in the envelope are non-empty strings of at most 255 characters.
+Empty message content remains valid so a handler can return `skipped_empty` as a
+terminal result.
 
 All result states are terminal: `succeeded`, `skipped_source_app`,
 `skipped_unlinked`, `skipped_ineligible_writer`, `skipped_empty`,
