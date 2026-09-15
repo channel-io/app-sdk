@@ -105,8 +105,6 @@ Both properties are required. The older spelling `readonly: true` is also suppor
 A hook connects a trigger to a Function name. `config.display.load` is the fixed hook name;
 `commerce.config.getDisplayValues` is a Function name chosen by the app. Using `commerce` in that
 name does not require registering a Commerce Extension. Keep any existing hooks in the array.
-To call a specific Function version, set `systemVersion` on the hook. If omitted, the existing app
-version selection rules apply.
 
 ### 2. Implement the Function that returns display values
 

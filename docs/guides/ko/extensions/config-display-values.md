@@ -105,8 +105,6 @@ hook은 호출 시점과 Function 이름을 연결하는 설정입니다. `confi
 hook 이름이고, `commerce.config.getDisplayValues`는 앱이 선택한 Function 이름입니다.
 이 이름에 `commerce`를 사용해도 Commerce Extension을 등록할 필요는 없습니다.
 기존 hook이 있다면 배열에 함께 유지해주세요.
-특정 Function 버전을 호출하려면 hook에 `systemVersion`을 지정합니다.
-생략하면 기존 앱 버전 선택 방식을 사용합니다.
 
 ### 2. 표시값을 반환할 Function 구현
 

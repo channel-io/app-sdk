@@ -107,8 +107,6 @@ hook は、呼び出すタイミングと Function 名を結び付ける設定�
 `config.display.load` は決められた hook 名で、`commerce.config.getDisplayValues` はアプリが選ぶ
 Function 名です。名前に `commerce` を使っても、Commerce Extension の登録は必要ありません。
 既存の hook がある場合は、配列内に残してください。
-特定の Function バージョンを呼び出す場合は、hook に `systemVersion` を指定します。
-省略すると、既存のアプリバージョン選択ルールを使います。
 
 ### 2. 表示値を返す Function を実装
 
