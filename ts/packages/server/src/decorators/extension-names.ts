@@ -11,6 +11,7 @@ export const SDK_EXTENSION_NAMES = [
   "hook",
   "polling",
   "store",
+  "suggestion",
   "datasource",
   "commerce",
   "order",

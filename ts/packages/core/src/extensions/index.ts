@@ -226,6 +226,19 @@ export {
   type GetPollingTargetManagersOutput,
 } from "./polling.js";
 
+// Suggestion Extension Schemas (v1)
+export {
+  SuggestionTriggersSchema,
+  GetSuggestionTriggersInputSchema,
+  GetSuggestionTriggersOutputSchema,
+  defineSuggestionTriggers,
+  createSuggestionExtensionV1,
+  type SuggestionTriggers,
+  type GetSuggestionTriggersInput,
+  type GetSuggestionTriggersOutput,
+  type SuggestionTriggersProvider,
+} from "./suggestion.js";
+
 // Store Extension Schemas (v1)
 export {
   StoreProfileImageSchema,

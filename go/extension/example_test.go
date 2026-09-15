@@ -15,6 +15,7 @@ import (
 	"github.com/channel-io/app-sdk/go/extension/oauth"
 	"github.com/channel-io/app-sdk/go/extension/polling"
 	"github.com/channel-io/app-sdk/go/extension/store"
+	"github.com/channel-io/app-sdk/go/extension/suggestion"
 	"github.com/channel-io/app-sdk/go/extension/widget"
 )
 
@@ -39,6 +40,8 @@ func Example_extensionBuilders() {
 		GetPollers(exampleZero[polling.GetPollersRequest, polling.GetPollersResponse]()))
 	_ = app.Use(store.Extension().
 		GetStoreProfile(exampleZero[store.GetStoreProfileRequest, store.GetStoreProfileResponse]()))
+	_ = app.Use(suggestion.Extension().
+		GetTriggers(exampleZero[suggestion.GetTriggersRequest, suggestion.GetTriggersResponse]()))
 	_ = app.Use(messaging.Extension().
 		InboxGetWritingTypes(exampleZero[messaging.InboxGetWritingTypesInput, messaging.InboxGetWritingTypesOutput]()))
 	_ = app.Use(alftask.Extension().
@@ -47,8 +50,8 @@ func Example_extensionBuilders() {
 	fmt.Println(len(app.AutoRegisterTargets()))
 	fmt.Println(len(app.Schemas()))
 	// Output:
-	// 11
-	// 11
+	// 12
+	// 12
 }
 
 func exampleZero[TIn any, TOut any]() appsdk.TypedHandlerFunc[TIn, TOut] {

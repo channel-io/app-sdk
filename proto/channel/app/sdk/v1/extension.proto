@@ -696,6 +696,19 @@ message PollingGetTargetChannelsOutput {
   bool has_next_page = 3;
 }
 
+// Contextual App Suggestion metadata. The keywords Struct is encoded as a
+// locale-to-string-array JSON object (for example, {"ko":["쇼피파이"]}).
+message SuggestionTriggers {
+  repeated string urls = 1;
+  google.protobuf.Struct keywords = 2;
+}
+
+message SuggestionGetTriggersInput {}
+
+message SuggestionGetTriggersOutput {
+  SuggestionTriggers triggers = 1;
+}
+
 message MailRelayHeader {
   string name = 1;
   string value = 2;

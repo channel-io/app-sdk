@@ -115,6 +115,7 @@ internally, so app handlers receive SDK DTOs while the wire format stays camelCa
 | Custom tab | `extension/customtab`  |
 | Hook       | `extension/hook`       |
 | Polling    | `extension/polling`    |
+| Suggestion | `extension/suggestion` |
 | Store      | `extension/store`      |
 | DataSource | `extension/datasource` |
 | Commerce   | `extension/commerce`   |
