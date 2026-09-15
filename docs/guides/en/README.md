@@ -18,6 +18,7 @@ These guides give Channel app developers one shared model for the TypeScript and
 
 ## Feature guides
 
+- [Display fetched values in the setup screen](extensions/config-display-values.md): populate read-only fields with `config.display.load`.
 - [`userAuthorization` Extension guide](extensions/user-authorization.md): separate ALF identity verification from app-owned resource authorization.
 
 ## Choosing a SDK

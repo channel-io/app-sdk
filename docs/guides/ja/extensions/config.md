@@ -36,6 +36,10 @@ provider に追加すると `ChannelAppModule` が検出して auto-register し
 image、hook、localization の詳細は [TypeScript Config reference](../../../reference/typescript/extensions/config.md)
 を参照してください。
 
+店舗名や注文数など、取得した値を保存せずに読み取り専用フィールドへ表示する場合は、
+[`config.display.load` ガイド](config-display-values.md) を確認してください。
+フィールド定義、Function の登録、レスポンスのルール、SDK スキーマの互換性を説明します。
+
 ## Go
 
 ```go

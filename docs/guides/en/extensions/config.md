@@ -36,6 +36,10 @@ Use `@Extension({ name: "config", systemVersion: "v1" })`,
 discovers and auto-registers it. The complete schema, multi-config, image, hook, and localization
 examples are in the [TypeScript Config reference](../../../reference/typescript/extensions/config.md).
 
+To show fetched values such as a store name or order count in read-only fields without saving them,
+see the [`config.display.load` guide](config-display-values.md). It covers field definitions,
+Function registration, response rules, and SDK schema compatibility.
+
 ## Go
 
 ```go

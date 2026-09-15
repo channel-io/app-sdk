@@ -31,7 +31,9 @@ The canonical registration path is:
 - these hook targets are ordinary app functions, not additional config extension functions
 
 For read-only values that should appear in the setup UI without being persisted, see the
-[Config display values guide (Korean)](../../../guides/ko/extensions/config-display-values.md).
+[Config display values guide](../../../guides/en/extensions/config-display-values.md), also available in
+[Korean](../../../guides/ko/extensions/config-display-values.md) and
+[Japanese](../../../guides/ja/extensions/config-display-values.md).
 It covers `config.display.load`, ordinary Function registration, response validation, scoped inputs,
 and compatibility with the current SDK schema helpers.
 
