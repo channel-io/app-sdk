@@ -1383,6 +1383,7 @@ export const CommerceOrderProtoSchema = z.object({
   metafields: z.array(z.lazy(() => OrderMetafieldProtoSchema)).optional(),
   marketId: z.string().optional(),
   marketOrderNo: z.string().optional(),
+  tags: z.array(z.string()).optional(),
 }) satisfies z.ZodType<pb.CommerceOrder>;
 export type CommerceOrderProto = z.infer<typeof CommerceOrderProtoSchema>;
 
