@@ -170,6 +170,9 @@ export const CommerceOrderSchema = z.object({
   // 외부 마켓(네이버·쿠팡 등)이 발번한 주문번호. 몰 주문번호(id)와 달라 CS 조회 키로 쓰인다.
   // 자사몰 주문이면 비어 있다.
   marketOrderNo: z.string().optional(),
+  // 몰이 주문에 붙인 태그. ALF 워크플로가 주문 단위 분기 조건으로 쓴다. 상품 태그는
+  // CommerceProductSchema.tags 로 따로 나간다.
+  tags: z.array(z.string()).optional(),
 });
 export type CommerceOrder = ProtoBacked<z.infer<typeof CommerceOrderSchema>, ProtoCommerceOrder>;
 

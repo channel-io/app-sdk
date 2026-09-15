@@ -11675,6 +11675,9 @@ type CommerceOrder struct {
 	// 외부 마켓(네이버·쿠팡 등)이 발번한 주문번호. 몰 주문번호(id)와 달라 CS 조회 키로 쓰인다.
 	// 자사몰 주문이면 비어 있다.
 	MarketOrderNo string `protobuf:"bytes,27,opt,name=market_order_no,json=marketOrderNo,proto3" json:"market_order_no,omitempty"`
+	// 몰이 주문에 붙인 태그. ALF 워크플로가 주문 단위 분기 조건으로 쓴다. 상품 태그는
+	// CommerceProduct.tags 로 따로 나간다.
+	Tags          []string `protobuf:"bytes,28,rep,name=tags,proto3" json:"tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -11896,6 +11899,13 @@ func (x *CommerceOrder) GetMarketOrderNo() string {
 		return x.MarketOrderNo
 	}
 	return ""
+}
+
+func (x *CommerceOrder) GetTags() []string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
 }
 
 type CommerceGetOrdersInput struct {
@@ -19064,8 +19074,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\fproduct_code\x18\n" +
 	" \x01(\tR\vproductCodeB\t\n" +
 	"\a_amountB\x10\n" +
-	"\x0e_option_amount\"\xf7\n" +
-	"\n" +
+	"\x0e_option_amount\"\x8b\v\n" +
 	"\rCommerceOrder\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1d\n" +
@@ -19098,7 +19107,8 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"metafields\x18\x19 \x03(\v2\".channel.app.sdk.v1.OrderMetafieldR\n" +
 	"metafields\x12\x1b\n" +
 	"\tmarket_id\x18\x1a \x01(\tR\bmarketId\x12&\n" +
-	"\x0fmarket_order_no\x18\x1b \x01(\tR\rmarketOrderNoB\a\n" +
+	"\x0fmarket_order_no\x18\x1b \x01(\tR\rmarketOrderNo\x12\x12\n" +
+	"\x04tags\x18\x1c \x03(\tR\x04tagsB\a\n" +
 	"\x05_testB\x0e\n" +
 	"\f_first_orderB\t\n" +
 	"\a_closedB\f\n" +
