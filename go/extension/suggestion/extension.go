@@ -2,6 +2,7 @@ package suggestion
 
 import (
 	"context"
+	"errors"
 
 	"github.com/channel-io/app-sdk/go/appsdk"
 	extensionkit "github.com/channel-io/app-sdk/go/extension"
@@ -63,6 +64,9 @@ func NewTriggers(urls []string, keywords map[string][]string) (*Triggers, error)
 
 func StaticTriggers(triggers *Triggers) appsdk.TypedHandlerFunc[GetTriggersRequest, GetTriggersResponse] {
 	return func(context.Context, appsdk.Context, *GetTriggersRequest) (*GetTriggersResponse, error) {
+		if triggers == nil {
+			return nil, errors.New("suggestion triggers are required")
+		}
 		return &GetTriggersResponse{Triggers: triggers}, nil
 	}
 }

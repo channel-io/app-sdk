@@ -31,7 +31,28 @@ describe("suggestion extension", () => {
       SuggestionTriggersSchema.parse({ urls: ["ftp://shopify.com/"], keywords: {} })
     ).toThrow();
     expect(() =>
+      SuggestionTriggersSchema.parse({
+        urls: ["https://user:pass@shopify.com/"],
+        keywords: {},
+      })
+    ).toThrow();
+    expect(() =>
       SuggestionTriggersSchema.parse({ urls: [], keywords: { en: ["shop*"] } })
+    ).toThrow();
+  });
+
+  it("accepts BCP 47 extension tags and rejects malformed locale keys", () => {
+    expect(
+      SuggestionTriggersSchema.parse({
+        urls: [],
+        keywords: { "en-US-u-ca-gregory": ["shopify"] },
+      })
+    ).toEqual({
+      urls: [],
+      keywords: { "en-US-u-ca-gregory": ["shopify"] },
+    });
+    expect(() =>
+      SuggestionTriggersSchema.parse({ urls: [], keywords: { "en-US-u": ["shopify"] } })
     ).toThrow();
   });
 
