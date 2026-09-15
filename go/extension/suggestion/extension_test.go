@@ -32,6 +32,20 @@ func TestNewTriggersAndStaticHandler(t *testing.T) {
 	}
 }
 
+func TestStaticTriggersRejectsNil(t *testing.T) {
+	response, err := StaticTriggers(nil)(
+		context.Background(),
+		appsdk.Context{},
+		&GetTriggersRequest{},
+	)
+	if err == nil {
+		t.Fatal("StaticTriggers(nil) error = nil")
+	}
+	if response != nil {
+		t.Fatalf("StaticTriggers(nil) response = %v", response)
+	}
+}
+
 func TestExtensionRegistersGetTriggers(t *testing.T) {
 	app := appsdk.New(appsdk.Options{})
 	triggers, err := NewTriggers(nil, nil)

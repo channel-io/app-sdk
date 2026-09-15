@@ -23,7 +23,7 @@ class SuggestionExtension {
 
 - Use only absolute HTTP(S) URLs and literal keyword tokens or phrases.
 - Do not use crawling, regex, wildcard rules, credentials, or user data.
-- Return an empty trigger object to remove every previously registered rule.
+- Return `{ triggers: { urls: [], keywords: {} } }` to remove every previously registered rule.
 - Re-register after changing metadata and verify that the app appears in the suggestion catalog.
 
 Go apps use `suggestion.Extension().GetTriggers(...)`; `suggestion.NewTriggers` and `suggestion.StaticTriggers` provide the static metadata path.

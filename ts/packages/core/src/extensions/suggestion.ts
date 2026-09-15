@@ -9,12 +9,19 @@ import type { ExtensionDefinition } from "../types/extension.js";
 
 type ProtoBacked<T, Proto> = T & Proto;
 
+const SuggestionUrlPattern = /^https?:\/\/[^\s/?#@]+(?:[/?#]|$)/i;
+
+// A regular BCP 47 language tag, including extension singletons and private-use subtags.
+const SuggestionLocalePattern =
+  /^(?:[A-Za-z]{2,3}(?:-[A-Za-z]{3}){0,3}|[A-Za-z]{4}|[A-Za-z]{5,8})(?:-[A-Za-z]{4})?(?:-(?:[A-Za-z]{2}|[0-9]{3}))?(?:-(?:[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(?:-[0-9A-WY-Za-wy-z](?:-[A-Za-z0-9]{2,8})+)*(?:-x(?:-[A-Za-z0-9]{1,8})+)?$/;
+
 const SuggestionUrlSchema = z
   .string()
   .trim()
   .min(1)
   .max(2048)
   .url()
+  .regex(SuggestionUrlPattern, "Suggestion URLs must use HTTP(S) and must not contain user info")
   .refine((value) => {
     const url = new URL(value);
     return (
@@ -25,7 +32,7 @@ const SuggestionUrlSchema = z
 const SuggestionLocaleSchema = z
   .string()
   .trim()
-  .regex(/^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/, "Expected a BCP 47 locale");
+  .regex(SuggestionLocalePattern, "Expected a BCP 47 locale");
 
 const SuggestionKeywordSchema = z
   .string()
