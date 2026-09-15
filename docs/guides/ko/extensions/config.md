@@ -36,6 +36,10 @@ class를 등록해야 `ChannelAppModule`이 발견하고 자동 등록합니다.
 image, hook, 번역 예제는 [TypeScript Config 레퍼런스](../../../reference/typescript/extensions/config.md)에
 있습니다.
 
+매장명이나 주문 수를 저장하지 않고 읽기 전용 필드에 표시하려면
+[`config.display.load` 사용 가이드](config-display-values.md)를 확인해주세요.
+필드 정의, 조회 Function 등록, 응답 규칙, SDK 스키마 호환성을 설명합니다.
+
 ## Go
 
 ```go

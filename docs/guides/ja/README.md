@@ -18,6 +18,7 @@
 
 ## 機能別ガイド
 
+- [設定画面に取得した値を表示](extensions/config-display-values.md): `config.display.load` で読み取り専用フィールドに値を表示します。
 - [`userAuthorization` Extension ガイド](extensions/user-authorization.md): ALF の本人確認と app resource authorization の責任を分けて説明します。
 
 ## SDK の選び方
