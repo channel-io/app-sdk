@@ -89,6 +89,10 @@ import {
   GetPollingTargetManagersInputSchema,
   GetPollingTargetManagersOutputSchema,
 } from "./polling.js";
+import {
+  GetSuggestionTriggersInputSchema,
+  GetSuggestionTriggersOutputSchema,
+} from "./suggestion.js";
 import { GetStoreProfileInputSchema, GetStoreProfileOutputSchema } from "./store.js";
 import { WidgetActionResultSchema, GetWidgetsOutputSchema } from "./widget.js";
 import {
@@ -572,6 +576,11 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     name: "extension.store.metadata.getStoreProfile",
     input: GetStoreProfileInputSchema,
     output: GetStoreProfileOutputSchema,
+  },
+  {
+    name: "extension.suggestion.metadata.getTriggers",
+    input: GetSuggestionTriggersInputSchema,
+    output: GetSuggestionTriggersOutputSchema,
   },
   {
     name: "extension.widget.metadata.getWidgets",

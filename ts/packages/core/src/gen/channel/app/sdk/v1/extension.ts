@@ -813,6 +813,22 @@ export interface PollingGetTargetChannelsOutput {
   hasNextPage?: boolean | undefined;
 }
 
+/**
+ * Contextual App Suggestion metadata. The keywords Struct is encoded as a
+ * locale-to-string-array JSON object (for example, {"ko":["쇼피파이"]}).
+ */
+export interface SuggestionTriggers {
+  urls?: string[] | undefined;
+  keywords?: { [key: string]: any } | undefined;
+}
+
+export interface SuggestionGetTriggersInput {
+}
+
+export interface SuggestionGetTriggersOutput {
+  triggers?: SuggestionTriggers | undefined;
+}
+
 export interface MailRelayHeader {
   name?: string | undefined;
   value?: string | undefined;
