@@ -30,6 +30,11 @@ The canonical registration path is:
 - schema `hooks` may reference ordinary app functions such as `draftResolverFunctionName` and `validateFunctionName`
 - these hook targets are ordinary app functions, not additional config extension functions
 
+For read-only values that should appear in the setup UI without being persisted, see the
+[Config display values guide (Korean)](../../../guides/ko/extensions/config-display-values.md).
+It covers `config.display.load`, ordinary Function registration, response validation, scoped inputs,
+and compatibility with the current SDK schema helpers.
+
 ## Multi Config
 
 Set `supportsMultiple: true` when one scope can store multiple independent config items. Each item has a stable outer `key`. Ordinary app functions receive `{ [key]: values }` in `ctx.config`, even when only one item exists. Stored-config validation receives the selected item's flat `values` object in `ctx.config`.

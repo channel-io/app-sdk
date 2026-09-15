@@ -18,6 +18,7 @@
 
 ## 기능별 가이드
 
+- [설정 화면에 조회값 표시](extensions/config-display-values.md): `config.display.load`로 읽기 전용 필드를 채웁니다.
 - [`userAuthorization` Extension 가이드](extensions/user-authorization.md): ALF Function의 본인 확인과 앱의 리소스 권한 검사를 구분합니다.
 
 ## 선택 기준
