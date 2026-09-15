@@ -1,295 +1,165 @@
-# Display fetched values in the setup screen
+# Using config.display.load
 
-`config.display.load` fills read-only fields in the setup screen with values fetched by your app.
-Use it to show information such as a connected store's name, domain, or order count.
-Define the Config fields, then connect the app Function that fetches the values through a hook.
+`config.display.load` is a hook that displays data fetched by your app in read-only fields on the
+standard setup screen. Your app returns the values, and the screen fills existing Config fields.
+You continue to define fields through the existing Config schema.
 
-This guide uses TypeScript and NestJS. For the basic Config structure, see
-[Config Extension](config.md).
+## When to use it
 
-## Data flow and storage
+Use this hook to display information that meets all of these conditions:
 
-To display a store name, the data flows through these steps:
+- The source data is managed in your app's database or an external service.
+- Users need to view the values, without editing them in the setup screen.
+- The values do not need to be saved in Config or passed to later Function calls through `ctx.config`.
 
-1. The app's `metadata.getConfigSchema` returns the `storeName` field and the hook.
-2. The standard setup screen calls the app Function specified by the hook.
-3. The Function fetches the store name from the app's database or an external API.
-4. The app returns `{ displayValues: { storeName: "Example Store" } }`.
-5. The setup screen validates the field names and value types, then displays the name in `storeName`.
+| Required behavior                                    | Feature to use         |
+| ---------------------------------------------------- | ---------------------- |
+| Display app-fetched values as read-only              | `config.display.load`  |
+| Save user input for the app to use                   | Ordinary Config fields |
+| Compute or adjust other inputs when an input changes | `config.draft.resolve` |
+| Determine whether saved settings are usable          | Config validation      |
 
-| Data                                | Location                           | Purpose                                             |
-| ----------------------------------- | ---------------------------------- | --------------------------------------------------- |
-| Field definitions and hook          | Config schema returned by the app  | Define the screen and the Function to call          |
-| Original store name                 | App database or external service   | Source queried by the app Function                  |
-| Fetched display values              | Memory of the current setup screen | Populate read-only fields                           |
-| Ordinary settings saved by the user | AppStore Config storage            | Passed through `ctx.config` in later Function calls |
+Display values live only in the current screen's memory and are fetched again when the screen is
+reopened. Changes to display values alone do not enable Save. A form containing only display fields
+has no default Save button.
 
-Display values are excluded from Config save requests, change detection, and `ctx.config`.
-Opening the screen again calls the app Function to fetch the values. A change to display values alone
-does not enable the Save button. A form containing only display fields has no default Save button.
+## How to use it
 
-## Before you start
+### 1. Specify the display fields
 
-Both the AppStore server and the standard setup screen must support `config.display.load`.
-Upgrading your app's SDK alone does not enable the feature. Confirm server and screen support before
-registering the hook. Older servers reject the new hook.
+Define the fields in `blocks` in your existing `metadata.getConfigSchema` response with these properties:
 
-As of September 15, 2026, the SDK's `GetConfigSchemaOutputSchema` defines `hooks` in the older object
-format and does not define the `readOnly` field property. The example below uses
-`z.record(z.string(), z.unknown())` for the Config schema response to preserve the new hook array and
-field properties. Parsing the new response with the existing SDK schema can reject the hook array
-or remove field properties.
+| Property       | Setting                                                     |
+| -------------- | ----------------------------------------------------------- |
+| `key`          | The same key the Function will return for the display value |
+| `type`         | An existing Config field type that matches the value        |
+| `readOnly`     | `true`                                                      |
+| `storageClass` | `"transient"`                                               |
 
-AppStore still validates the Config schema. A separate `OutputSchema` checks the structure of the
-display Function's response, and the standard setup screen validates values against each Config field.
+`readOnly` prevents user edits, and `transient` excludes the field from storage. Both are required
+for a field to receive display values. The older spelling `readonly: true` is also supported.
+Password fields, credential fields, fields with `sensitive: true`, and fields with `resolvesTo` cannot be used.
 
-## TypeScript implementation
+### 2. Connect the Function that fetches the values
 
-### 1. Define fields and the hook
+Add this entry to the `hooks` array in the same schema response. Replace `<app-function-name>` with
+an actual registered app Function name, and keep any existing hooks in the array.
 
-Add this code to `config.extension.ts` in your app server. If you already have a Config Extension,
-add the fields and hook to that class's schema.
-
-```ts
-import { Extension, Func, OutputSchema } from "@channel.io/app-sdk-server";
-import { z } from "zod";
-
-@Extension({ name: "config", systemVersion: "v1" })
-export class ConfigExtension {
-  @Func("metadata.getConfigSchema")
-  @OutputSchema(z.record(z.string(), z.unknown()))
-  getConfigSchema() {
-    return {
-      schemaVersion: "v1",
-      configScope: "channel",
-      supportsMultiple: false,
-      providerName: "Example Store",
-      hooks: [
-        {
-          type: "config.display.load",
-          actionFunctionName: "commerce.config.getDisplayValues",
-        },
-      ],
-      blocks: [
-        {
-          type: "text",
-          key: "storeName",
-          label: "Store name",
-          readOnly: true,
-          storageClass: "transient",
-          overviewSummary: true,
-        },
-        {
-          type: "number",
-          key: "orderCount",
-          label: "Order count",
-          readOnly: true,
-          storageClass: "transient",
-        },
-        {
-          type: "switch",
-          key: "active",
-          label: "Store active",
-          readOnly: true,
-          storageClass: "transient",
-        },
-      ],
-    };
-  }
+```json
+{
+  "type": "config.display.load",
+  "actionFunctionName": "<app-function-name>"
 }
 ```
 
-`readOnly: true` prevents user edits, and `storageClass: "transient"` prevents persistence.
-Both properties are required. The older spelling `readonly: true` is also supported.
+`config.display.load` is the fixed hook name. `actionFunctionName` is the name of the ordinary app
+Function to call, chosen by your app. Once the hook is added, the standard setup screen calls the
+Function. You do not need to write a separate WAM call.
 
-A hook connects a trigger to a Function name. `config.display.load` is the fixed hook name;
-`commerce.config.getDisplayValues` is a Function name chosen by the app. Using `commerce` in that
-name does not require registering a Commerce Extension. Keep any existing hooks in the array.
+### 3. Fetch and return values from the app Function
 
-### 2. Implement the Function that returns display values
+In the connected Function, fetch data belonging to the authenticated caller's scope and return
+`{ displayValues: { [fieldKey]: value } }`. `fieldKey` is the field's `key` from step 1.
+The Function returns only values for existing fields; it does not create fields or return a schema.
 
-Add this code to `config-display.functions.ts`. This example returns fixed values so you can check
-the behavior. In your app, fetch the values from your database or an external API.
+In the TypeScript SDK, register an ordinary app Function with `@Func` and use the same name in
+`actionFunctionName`. Add the Function class to NestJS `providers`.
+See [Function registration](../functions.md) for details.
 
-```ts
-import { Injectable } from "@nestjs/common";
-import {
-  Ctx,
-  Func,
-  Input,
-  InputSchema,
-  OutputSchema,
-  type Context,
-} from "@channel.io/app-sdk-server";
-import { z } from "zod";
-
-const DisplayInputSchema = z.object({ key: z.string().optional() }).strict();
-const DisplayOutputSchema = z.object({ displayValues: z.record(z.string(), z.unknown()) }).strict();
-
-@Injectable()
-export class ConfigDisplayFunctions {
-  @Func("commerce.config.getDisplayValues")
-  @InputSchema(DisplayInputSchema)
-  @OutputSchema(DisplayOutputSchema)
-  getDisplayValues(@Ctx() ctx: Context, @Input() _params: z.infer<typeof DisplayInputSchema>) {
-    if (!ctx.channel?.id) {
-      throw new Error("Channel context is required");
-    }
-
-    // When fetching real data, return only data belonging to ctx.channel.id.
-    return {
-      displayValues: {
-        storeName: "Example Store",
-        orderCount: 0,
-        active: false,
-      },
-    };
-  }
-}
-```
-
-Register this class as an ordinary app Function without `@Extension`.
-The string in `@Func` must match the `actionFunctionName` specified earlier.
-There is no built-in SDK function named `display` to implement.
-
-The response has exactly one top-level property, `displayValues`. Each key inside it must match a
-Config `field.key` exactly, including fields within groups. Return a key containing a dot, such as
-`store.name`, as `{ "store.name": "Example Store" }`. You do not need to duplicate each field's
-schema in the Function's output schema.
-
-### 3. Register the classes in NestJS
-
-Keep your existing `ChannelAppModule` configuration and add both classes to the module's `providers`.
+Use these input and output schemas with the Function's `@InputSchema` and `@OutputSchema` decorators.
+Import `z` from `zod`.
 
 ```ts
-import { Module } from "@nestjs/common";
-import { ConfigExtension } from "./config.extension";
-import { ConfigDisplayFunctions } from "./config-display.functions";
-
-@Module({
-  providers: [ConfigExtension, ConfigDisplayFunctions],
-})
-export class ConfigModule {}
+const DisplayLoadInputSchema = z
+  .object({ key: z.string().optional() })
+  .strict();
+const DisplayLoadOutputSchema = z
+  .object({ displayValues: z.record(z.string(), z.unknown()) })
+  .strict();
 ```
 
-Import this `ConfigModule` into the app's root module. With
-`ChannelAppModule.forRoot({ ..., autoRegister: true })`, the SDK discovers the classes and registers
-the Config Extension and ordinary Function. Keep your Function server, request signature validation,
-and authentication configured as described in the [Extension registration guide](../extensions.md).
+The response has exactly one top-level property, `displayValues`. The setup screen validates each
+value against its Config field definition, so you do not need to duplicate every field in the output
+schema. The Function only fetches data; it must not save settings or modify external data.
 
 ## Values passed to the Function
 
-| Configuration mode           | When called                              | `params`                        | Where to read saved values |
-| ---------------------------- | ---------------------------------------- | ------------------------------- | -------------------------- |
-| Single config                | When opened, even without a saved config | `{}`                            | `ctx.config`               |
-| Multiple configs             | When opening a saved item                | `{ "key": "saved-config-key" }` | `ctx.config?.[params.key]` |
-| New item in multiple configs | Not called before saving                 | None                            | None                       |
+| Configuration mode             | `params`                          | Location of saved values   |
+| ------------------------------ | --------------------------------- | -------------------------- |
+| Single config                  | `{}`                              | `ctx.config`               |
+| Saved item in multiple configs | `{ "key": "<saved-config-key>" }` | `ctx.config?.[params.key]` |
+| New item in multiple configs   | Not called before saving          | None                       |
 
-Set `supportsMultiple: true` to use multiple configs. After saving a new item, the screen fetches
-dynamic choices using the returned config key, then calls the display Function with the same key.
-With multiple configs, ordinary Functions receive `ctx.config` as a map from keys to values, even
-when only one item exists. Do not read it as a single config, such as `ctx.config.storeName`.
+Single config calls run even when no values have been saved. Set `supportsMultiple: true` to use
+multiple configs. After a new item is saved, the call uses its returned key. For multiple configs,
+`ctx.config` is a map from keys to values, even if only one item exists. Unsaved input being edited
+is not passed in the display Function's `params`.
 
-If no config has been saved or values needed for an external lookup are not ready, the app Function
-decides how to handle that state. For an expected empty state, such as before the first connection,
-it can return `{ displayValues: {} }`. To clear a previously displayed value, return `null` for that
-key. The platform does not automatically supply missing Function inputs or defaults.
+Both channel and manager scopes are supported. Read the channel ID from the authenticated
+`ctx.channel.id`. Manager scope refers to the caller's own settings, identified by `ctx.caller.id`
+when `ctx.caller.type === "manager"`. The Function must return an error if manager context is missing.
+Do not add `scope`, `channelId`, or `managerId` to `params`. When looking up data using a multi-config
+key, verify that it belongs to the relevant channel and manager.
 
-### Channel and manager scopes
-
-Both `configScope: "channel"` and `configScope: "manager"` are supported.
-Do not add `scope`, `channelId`, or `managerId` to the display Function's `params`.
-
-- Read the channel ID from the authenticated `ctx.channel.id`.
-- Manager settings belong to the caller identified by `ctx.caller.id` when
-  `ctx.caller.type === "manager"`.
-- A manager-scoped Function must return an error if manager context is missing.
-- When looking up app or external data using a multi-config key, verify that it belongs to the
-  relevant channel and manager. The key itself does not grant access.
-
-For manager scope, check the following condition before fetching data:
-
-```ts
-if (ctx.caller?.type !== "manager" || !ctx.caller.id) {
-  throw new Error("Manager context is required");
-}
-const managerId = ctx.caller.id;
-```
-
-The display Function is for fetching data. Do not save settings or modify external data during the call.
+Your app handles cases where the values needed for a lookup are not ready. If there is nothing to
+display, such as before the first connection, return `{ displayValues: {} }`. The platform does not
+create missing inputs. To also clear previously displayed values, return `null` for those keys.
 
 ## Response rules
 
-Include only non-sensitive fields with both `readOnly` and `transient` set as shown above.
-Ordinary persisted fields, credential fields, password fields, fields with `sensitive: true`, and
-fields with `resolvesTo` are not allowed.
+Response keys must exactly match existing `field.key` values, including fields inside groups.
+Use keys containing dots as-is; they are not interpreted as paths into nested objects.
 
-| Field type           | Accepted value                                                                                                                                    |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `text`, `textarea`   | String                                                                                                                                            |
-| `number`             | Finite number                                                                                                                                     |
-| `switch`, `checkbox` | `true` or `false`                                                                                                                                 |
-| `select`, `radio`    | A current choice's `value`, or an empty string                                                                                                    |
-| `multiselect`        | Array of current choices' `value` entries                                                                                                         |
-| `phone`              | Object with string `countryCode` and `number` properties                                                                                          |
-| `address`            | Object with string `name`, `zipcode`, `address1`, and `address2` properties, plus a `cellphone` in the `phone` structure                          |
-| `image`              | Object with `name`, `size`, `contentType`, and at least one of `dataUrl`, `url`, or `previewUrl`. An array of these objects when `multiple: true` |
+| Field type           | Value to return                                                                                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `text`, `textarea`   | String                                                                                                                                                             |
+| `number`             | Finite number                                                                                                                                                      |
+| `switch`, `checkbox` | Boolean                                                                                                                                                            |
+| `select`, `radio`    | A current choice's `value`, or an empty string                                                                                                                     |
+| `multiselect`        | Array of current choices' `value` entries                                                                                                                          |
+| `phone`              | Object with string `countryCode` and `number` properties                                                                                                           |
+| `address`            | Object with string `name`, `zipcode`, `address1`, and `address2` properties, plus a `cellphone` in the `phone` structure                                           |
+| `image`              | Object with string `name` and `contentType`, finite non-negative `size`, and at least one string `dataUrl`, `url`, or `previewUrl`. An array when `multiple: true` |
 
-For images, `name`, `contentType`, and any URL values must be strings. `size` must be a finite,
-non-negative number. All field types listed above accept `null` to clear the field. Other field
-types are not supported.
+All field types listed above accept `null` to clear the field. Other types are not supported.
+The screen completes the initial dynamic choices lookup before validating display values. After a
+new item is saved, it also fetches choices with the same key before validating display values.
+A previous selection is cleared if it is no longer valid in the updated choices.
 
-| Response                                                                | Screen behavior                                                   |
-| ----------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `{ "displayValues": {} }`                                               | Keep previously fetched, valid display values for the same target |
-| `{ "displayValues": { "storeName": null } }`                            | Clear the store name without reapplying `defaultValue`            |
-| `{ "displayValues": { "orderCount": 0, "active": false } }`             | Display `0` and `false` as returned                               |
-| `{ "displayValues": { "storeName": "" } }`                              | Apply the empty string                                            |
-| `{}` or `{ "displayValues": null }`                                     | Invalid response format                                           |
-| A response containing any undefined key, wrong type, or persisted field | Reject the entire response                                        |
+| Returned content                                  | Screen behavior                                                                                   |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Omitted key or empty `displayValues`              | Keep previous values for the same target that are still valid under the current field definitions |
+| `null`                                            | Clear the field without reapplying `defaultValue`                                                 |
+| `false`, `0`, `""`                                | Apply as returned if valid for the field type                                                     |
+| `{}` or `displayValues: null`                     | Invalid response format                                                                           |
+| Any undefined key, wrong type, or persisted field | Reject the entire response without applying any part                                              |
 
-Omitted keys retain their previous display values if those values are still valid under the current
-field definitions. `null` sets a field to its empty state: `false` for switches and checkboxes,
-and `[]` for multiselects.
+Clearing a switch or checkbox with `null` sets it to `false`; clearing a multiselect sets it to `[]`.
 
-For dynamic choices, connect an existing choices Function with `choicesSource.type: "function"`.
-The screen completes the initial choices lookup before validating display values. For example, if a
-choice is `{ label: "Basic plan", value: "basic" }`, the display Function returns `"basic"`.
-If a previously displayed selection is absent from the updated choices, the screen clears it.
-
-## Refresh and failure handling
+## Call timing and failure handling
 
 The Function runs when entering the setup screen, reloading an existing config, refreshing after a
 connection completes, or retrying a display lookup. It does not run on every input edit.
 
-- If the hook is omitted, the screen skips the display Function and keeps existing Config behavior.
-- If the hook is registered but its target Function is missing or the call fails, the screen shows
-  an error banner with a retry action.
+- Without the hook, the call is skipped and existing Config behavior is unchanged.
+- A missing Function, failed lookup, or invalid response produces an error banner with a retry action.
 - A failed lookup for the same target retains the last successful values.
-- Retrying display values or refreshing after OAuth completes preserves ordinary settings the user
-  is currently editing.
-- Responses arriving after the user switches to another config or closes the screen are ignored.
+- Retrying display values or refreshing after OAuth completes preserves ordinary settings being edited.
+- Responses arriving after the user switches targets or closes the screen are ignored.
 
-A successful display lookup does not mean that settings are valid or a connection is complete.
-Connection state is determined by the existing Config validation and OAuth state.
+Display values are excluded from save requests, `ctx.config`, Config validation, and connection
+completion checks. A visible value alone is not proof of a successful connection.
 
-### Values in summary screens
+## Before enabling the hook
 
-For a single config, set `overviewSummary: true` on a field to show its display value in the saved
-connection summary. As of September 15, 2026, multiple configs show display values in the detail
-screen, but list cards use only persisted values and do not show values from this hook.
-This feature alone cannot provide display values for list cards.
+Both the AppStore server and the standard setup screen must support this hook. An SDK update alone
+does not enable it, and older servers reject it.
 
-## Verify the behavior
+As of September 15, 2026, SDK 0.24.2's `GetConfigSchemaOutputSchema` does not define the hook array or
+`readOnly`. If you use this helper, set the output schema for `metadata.getConfigSchema` to
+`@OutputSchema(z.record(z.string(), z.unknown()))` to preserve these properties. AppStore still
+validates the Config schema and display responses.
 
-After registering the app, check the following in the standard setup screen:
-
-1. Open a single config without saved settings. The Function receives `{}`, and the screen shows
-   the store name, order count `0`, and switch value `false`.
-2. Display fields cannot be edited, and fetching display values alone does not enable Save.
-3. If the app has ordinary persisted fields, save them and confirm that `ctx.config` excludes display values.
-4. Empty `displayValues` retains previous values; `null` clears the specified field.
-5. An undefined key or wrong value type produces an error without partially applying the response.
-6. Retrying a failed lookup preserves ordinary settings being edited.
-7. Multiple configs skip the call before saving and pass the selected key after saving.
-8. Manager scope fetches only the authenticated manager's data and rejects requests without manager context.
+For a single config, display values can appear in the saved connection summary when the field has
+`overviewSummary: true`. As of September 15, 2026, multiple configs show display values only in the
+detail screen. List cards use persisted values and do not show values from this hook.
