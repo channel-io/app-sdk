@@ -23,6 +23,7 @@ import (
 	"github.com/channel-io/app-sdk/go/extension/polling"
 	"github.com/channel-io/app-sdk/go/extension/schemaregistry"
 	"github.com/channel-io/app-sdk/go/extension/store"
+	"github.com/channel-io/app-sdk/go/extension/suggestion"
 	"github.com/channel-io/app-sdk/go/extension/widget"
 	"github.com/channel-io/app-sdk/go/extension/wms"
 )
@@ -119,6 +120,9 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	use(t, app, store.Extension().
 		GetStoreProfile(zero[store.GetStoreProfileRequest, store.GetStoreProfileResponse]()))
 
+	use(t, app, suggestion.Extension().
+		GetTriggers(zero[suggestion.GetTriggersRequest, suggestion.GetTriggersResponse]()))
+
 	use(t, app, widget.Extension().
 		GetWidgets(zero[widget.GetWidgetsRequest, widget.GetWidgetsResponse]()).
 		Action(widget.FunctionAction, zero[widget.ActionRequest, widget.ActionResult]()))
@@ -148,8 +152,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	got := app.Schemas()
 	want := schemaregistry.Schemas()
 
-	if len(got) != 79 {
-		t.Fatalf("expected 79 registered extension function schemas, got %d", len(got))
+	if len(got) != 80 {
+		t.Fatalf("expected 80 registered extension function schemas, got %d", len(got))
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("registered extension function schemas drifted from canonical registry")

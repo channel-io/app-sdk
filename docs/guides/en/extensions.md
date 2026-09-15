@@ -303,6 +303,12 @@ bound each batch, and test partial failure.
 
 [Polling recipe](extensions/polling.md)
 
+## Suggestion
+
+Use Suggestion to publish URL and locale keyword triggers that AppStore snapshots during registration. Channel uses the catalog to recommend an uninstalled app privately to the manager who wrote a matching message.
+
+[Suggestion recipe](extensions/suggestion.md)
+
 ## Calendar
 
 Use `calendar` for calendars, event types, availability, booking creation, cancellation, and

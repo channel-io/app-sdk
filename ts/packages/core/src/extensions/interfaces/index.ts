@@ -31,6 +31,7 @@ export {
   type UserChatOpenedHookResult,
 } from "./hook.js";
 export * from "./polling.js";
+export * from "./suggestion.js";
 export * from "./store.js";
 export * from "./datasource.js";
 export * from "./alftask.js";

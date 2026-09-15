@@ -23,6 +23,7 @@ import (
 	"github.com/channel-io/app-sdk/go/extension/polling"
 	"github.com/channel-io/app-sdk/go/extension/schemaregistry"
 	"github.com/channel-io/app-sdk/go/extension/store"
+	"github.com/channel-io/app-sdk/go/extension/suggestion"
 	"github.com/channel-io/app-sdk/go/extension/widget"
 	"github.com/channel-io/app-sdk/go/extension/wms"
 	"github.com/channel-io/app-sdk/go/testkit"
@@ -295,6 +296,17 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 		},
 	},
 	{
+		name:          suggestion.ExtensionName,
+		systemVersion: suggestion.SystemVersion,
+		functions: []string{
+			suggestion.FunctionGetTriggers,
+		},
+		build: func() appsdk.Extension {
+			return suggestion.Extension().
+				GetTriggers(smokeZero[suggestion.GetTriggersRequest, suggestion.GetTriggersResponse]())
+		},
+	},
+	{
 		name:          widget.ExtensionName,
 		systemVersion: widget.SystemVersion,
 		functions: []string{
@@ -413,6 +425,7 @@ func TestExtensionSmokeSpecsCoverCanonicalRegistry(t *testing.T) {
 		hook.ExtensionName,
 		polling.ExtensionName,
 		store.ExtensionName,
+		suggestion.ExtensionName,
 		messaging.ExtensionName,
 		alftask.ExtensionName,
 		notebook.ExtensionName,
