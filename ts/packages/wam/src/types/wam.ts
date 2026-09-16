@@ -31,6 +31,16 @@ export interface CallNativeFunctionArgs {
 }
 
 /**
+ * Arguments for calling a function provided by the WAM host
+ */
+export interface CallClientFunctionArgs {
+  /** Host function name */
+  name: string;
+  /** Function parameters */
+  params: Record<string, unknown>;
+}
+
+/**
  * Channel.io WAM API interface
  */
 export interface ChannelIOWam {
@@ -42,6 +52,8 @@ export interface ChannelIOWam {
   callFunction: <T>(args: CallFunctionArgs) => Promise<T>;
   /** Call a native function */
   callNativeFunction: <T>(args: CallNativeFunctionArgs) => Promise<T>;
+  /** Call a function provided by the WAM host, when supported */
+  callClientFunction?: <T>(args: CallClientFunctionArgs) => Promise<T>;
   /** Close the WAM window */
   close: () => void;
 }
