@@ -2,6 +2,7 @@ package suggestion
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 
 	"github.com/channel-io/app-sdk/go/appsdk"
@@ -58,5 +59,53 @@ func TestExtensionRegistersGetTriggers(t *testing.T) {
 
 	if !app.HasMethod(FunctionGetTriggers) {
 		t.Fatalf("function %q was not registered", FunctionGetTriggers)
+	}
+}
+
+func TestExtensionSerializesRequiredTriggerCollections(t *testing.T) {
+	tests := []struct {
+		name         string
+		keywords     map[string][]string
+		wantKeywords int
+	}{
+		{name: "empty snapshot"},
+		{name: "keyword only", keywords: map[string][]string{"en": {"shopify"}}, wantKeywords: 1},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			triggers, err := NewTriggers(nil, tt.keywords)
+			if err != nil {
+				t.Fatalf("NewTriggers() error = %v", err)
+			}
+			app := appsdk.New(appsdk.Options{})
+			if err := Extension().GetTriggers(StaticTriggers(triggers)).Register(app); err != nil {
+				t.Fatalf("Register() error = %v", err)
+			}
+
+			response := app.HandleRequest(context.Background(), appsdk.FunctionRequest{
+				Method: FunctionGetTriggers,
+			})
+			if response.IsError() {
+				t.Fatalf("HandleRequest() error = %v", response.Error)
+			}
+
+			var result map[string]any
+			if err := json.Unmarshal(response.Result, &result); err != nil {
+				t.Fatalf("Unmarshal() error = %v", err)
+			}
+			serializedTriggers, ok := result["triggers"].(map[string]any)
+			if !ok {
+				t.Fatalf("triggers = %#v", result["triggers"])
+			}
+			urls, ok := serializedTriggers["urls"].([]any)
+			if !ok || len(urls) != 0 {
+				t.Fatalf("urls = %#v", serializedTriggers["urls"])
+			}
+			keywords, ok := serializedTriggers["keywords"].(map[string]any)
+			if !ok || len(keywords) != tt.wantKeywords {
+				t.Fatalf("keywords = %#v", serializedTriggers["keywords"])
+			}
+		})
 	}
 }

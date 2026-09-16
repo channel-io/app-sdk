@@ -11,9 +11,10 @@ type ProtoBacked<T, Proto> = T & Proto;
 
 const SuggestionUrlPattern = /^https?:\/\/[^\s/?#@]+(?:[/?#]|$)/i;
 
-// A regular BCP 47 language tag, including extension singletons and private-use subtags.
+// A BCP 47 language tag, including extension singletons, private-use tags, and
+// grandfathered forms that do not match the regular language-tag grammar.
 const SuggestionLocalePattern =
-  /^(?:[A-Za-z]{2,3}(?:-[A-Za-z]{3}){0,3}|[A-Za-z]{4}|[A-Za-z]{5,8})(?:-[A-Za-z]{4})?(?:-(?:[A-Za-z]{2}|[0-9]{3}))?(?:-(?:[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(?:-[0-9A-WY-Za-wy-z](?:-[A-Za-z0-9]{2,8})+)*(?:-x(?:-[A-Za-z0-9]{1,8})+)?$/;
+  /^(?:(?:[A-Za-z]{2,3}(?:-[A-Za-z]{3}){0,3}|[A-Za-z]{4}|[A-Za-z]{5,8})(?:-[A-Za-z]{4})?(?:-(?:[A-Za-z]{2}|[0-9]{3}))?(?:-(?:[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(?:-[0-9A-WY-Za-wy-z](?:-[A-Za-z0-9]{2,8})+)*(?:-[Xx](?:-[A-Za-z0-9]{1,8})+)?|[Xx](?:-[A-Za-z0-9]{1,8})+|[Ee][Nn]-[Gg][Bb]-[Oo][Ee][Dd]|[Ii]-(?:[Aa][Mm][Ii]|[Bb][Nn][Nn]|[Dd][Ee][Ff][Aa][Uu][Ll][Tt]|[Ee][Nn][Oo][Cc][Hh][Ii][Aa][Nn]|[Hh][Aa][Kk]|[Kk][Ll][Ii][Nn][Gg][Oo][Nn]|[Ll][Uu][Xx]|[Mm][Ii][Nn][Gg][Oo]|[Nn][Aa][Vv][Aa][Jj][Oo]|[Pp][Ww][Nn]|[Tt][Aa][Oo]|[Tt][Aa][Yy]|[Tt][Ss][Uu])|[Ss][Gg][Nn]-(?:[Bb][Ee]-(?:[Ff][Rr]|[Nn][Ll])|[Cc][Hh]-[Dd][Ee]))$/;
 
 const SuggestionUrlSchema = z
   .string()

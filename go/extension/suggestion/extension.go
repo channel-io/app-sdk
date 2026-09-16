@@ -2,12 +2,14 @@ package suggestion
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 
 	"github.com/channel-io/app-sdk/go/appsdk"
 	extensionkit "github.com/channel-io/app-sdk/go/extension"
 	"github.com/channel-io/app-sdk/go/extension/schemaregistry"
 	sdkv1 "github.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -27,7 +29,7 @@ func Extension() *ExtensionBuilder {
 }
 
 func (b *ExtensionBuilder) GetTriggers(handler appsdk.TypedHandlerFunc[GetTriggersRequest, GetTriggersResponse]) *ExtensionBuilder {
-	b.base.Func(FunctionGetTriggers, schemaregistry.Append(FunctionGetTriggers, appsdk.HandleProto(handler))...)
+	b.base.Func(FunctionGetTriggers, schemaregistry.Append(FunctionGetTriggers, handleGetTriggers(handler))...)
 	return b
 }
 
@@ -69,6 +71,34 @@ func StaticTriggers(triggers *Triggers) appsdk.TypedHandlerFunc[GetTriggersReque
 		}
 		return &GetTriggersResponse{Triggers: triggers}, nil
 	}
+}
+
+type getTriggersResult struct {
+	response *GetTriggersResponse
+}
+
+// MarshalSDKResult preserves the required empty trigger collections without changing other Proto handlers.
+func (r *getTriggersResult) MarshalSDKResult() (json.RawMessage, error) {
+	data, err := (protojson.MarshalOptions{EmitUnpopulated: true}).Marshal(r.response)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+// handleGetTriggers applies suggestion-specific Proto JSON serialization to the public handler.
+func handleGetTriggers(handler appsdk.TypedHandlerFunc[GetTriggersRequest, GetTriggersResponse]) appsdk.FunctionOption {
+	return appsdk.HandleProto(func(
+		ctx context.Context,
+		fnCtx appsdk.Context,
+		input *GetTriggersRequest,
+	) (*getTriggersResult, error) {
+		response, err := handler(ctx, fnCtx, input)
+		if err != nil || response == nil {
+			return nil, err
+		}
+		return &getTriggersResult{response: response}, nil
+	})
 }
 
 type GetTriggersRequest = sdkv1.SuggestionGetTriggersInput

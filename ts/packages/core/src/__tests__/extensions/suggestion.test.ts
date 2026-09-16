@@ -41,18 +41,39 @@ describe("suggestion extension", () => {
     ).toThrow();
   });
 
-  it("accepts BCP 47 extension tags and rejects malformed locale keys", () => {
+  it("accepts BCP 47 extension, private-use, and grandfathered tags", () => {
     expect(
       SuggestionTriggersSchema.parse({
         urls: [],
-        keywords: { "en-US-u-ca-gregory": ["shopify"] },
+        keywords: {
+          "en-US-u-ca-gregory": ["shopify"],
+          "x-acme": ["shopify"],
+          "i-klingon": ["shopify"],
+          "en-GB-oed": ["shopify"],
+          "sgn-BE-FR": ["shopify"],
+        },
       })
     ).toEqual({
       urls: [],
-      keywords: { "en-US-u-ca-gregory": ["shopify"] },
+      keywords: {
+        "en-US-u-ca-gregory": ["shopify"],
+        "x-acme": ["shopify"],
+        "i-klingon": ["shopify"],
+        "en-GB-oed": ["shopify"],
+        "sgn-BE-FR": ["shopify"],
+      },
     });
+  });
+
+  it("rejects malformed BCP 47 locale keys", () => {
     expect(() =>
       SuggestionTriggersSchema.parse({ urls: [], keywords: { "en-US-u": ["shopify"] } })
+    ).toThrow();
+    expect(() =>
+      SuggestionTriggersSchema.parse({ urls: [], keywords: { x: ["shopify"] } })
+    ).toThrow();
+    expect(() =>
+      SuggestionTriggersSchema.parse({ urls: [], keywords: { "i-unknown": ["shopify"] } })
     ).toThrow();
   });
 
