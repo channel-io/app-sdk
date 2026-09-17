@@ -129,6 +129,9 @@ func TestGetProductsKeepsZeroValuesAndOmitsUnsetFields(t *testing.T) {
 						{Id: "variant-1", Price: &price},
 						{Id: "variant-2", Price: &price, StockQuantity: &price},
 					},
+				}, {
+					Id:   "product-2",
+					Name: "plain",
 				}},
 				Next: "cursor-2",
 			}, nil
@@ -152,7 +155,7 @@ func TestGetProductsKeepsZeroValuesAndOmitsUnsetFields(t *testing.T) {
 		t.Fatalf("expected next cursor, got %+v", out)
 	}
 	products, ok := out["products"].([]any)
-	if !ok || len(products) != 1 {
+	if !ok || len(products) != 2 {
 		t.Fatalf("unexpected products: %+v", out)
 	}
 	first := products[0].(map[string]any)
@@ -162,10 +165,14 @@ func TestGetProductsKeepsZeroValuesAndOmitsUnsetFields(t *testing.T) {
 	if first["sellerProductCode"] != "SP-001" {
 		t.Fatalf("expected sellerProductCode emitted in camelCase, got %+v", first)
 	}
-	for _, key := range []string{"state", "originalPrice", "images", "categories", "tags", "productCode"} {
+	for _, key := range []string{"state", "originalPrice", "images", "categories", "tags"} {
 		if _, present := first[key]; present {
 			t.Fatalf("expected unset %s to be omitted, got %+v", key, first)
 		}
+	}
+	plain := products[1].(map[string]any)
+	if _, present := plain["sellerProductCode"]; present {
+		t.Fatalf("expected unset sellerProductCode to be omitted, got %+v", plain)
 	}
 	variant := first["variants"].([]any)[0].(map[string]any)
 	if variant["price"] != 0.0 {

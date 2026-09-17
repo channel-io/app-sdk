@@ -48,7 +48,8 @@ the mall connection; emit it together with `price`. `productCode` and `variants[
 values as `items[].productCode` and `items[].sku` on an order. `sellerProductCode` is the code a
 seller assigns to a product by hand, as opposed to the platform-assigned `productCode`; it is a
 separate value from `variants[].sku`, not one the variants inherit, and stays unset on platforms that
-have no product-level seller code.
+have no product-level seller code. It is output only — not a `searchFilter` key — and an order's
+`items[]` has no counterpart field. Do not put a variant-level seller code into `variants[].sku`.
 
 ## TypeScript
 
