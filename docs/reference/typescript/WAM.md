@@ -115,6 +115,27 @@ const { call, loading, error } = useCallFunction({
 
 Call a Channel native function that is exposed to the current role and surface.
 This is useful for manager-scoped OAuth or API key management flows, and for other runtime-native integrations.
+
+Known Native names infer their parameter and result types. OAuth onboarding
+provides `getOAuthFlow`, `resumeOAuthFlow`, and `cancelOAuthFlow`:
+
+```ts
+const { call: resume } = useNativeFunction({ name: "resumeOAuthFlow" });
+const { flow } = await resume({ flowId, resumeNonce });
+// flow: id, phase, expiresAt, optional key/targetAuthScope/authorizationURL/canResume
+```
+
+All three operations require the initiating manager's authenticated session;
+app or channel tokens cannot substitute for it. Resume rechecks the current app
+hook. The settings return URL carries `oauthFlowId` and `oauthFlowNonce`; consume
+the nonce on return without persisting it. A manual resume can omit the nonce.
+Canceling an after-authorization step leaves the already saved OAuth credential
+usable. Flow responses contain no provider credentials. A compatible AppStore
+deployment is required.
+
+When `canResume` is false, show the status without resume/cancel controls. This
+can occur when another manager views a shared channel connection or a flow needs
+to be restarted.
 Authorization comes from the current Channel surface and manager/user role. The WAM does not receive or mint that token.
 
 ```tsx

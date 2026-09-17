@@ -10,6 +10,18 @@ to ordinary app Functions; it does not turn those handlers into new Extension Fu
 `widget.uninstalled`, `webhook.received`, `oauth.connected`, `oauth.disconnected`,
 `userChat.opened`, and `teamChat.messageCreated`.
 
+Optional `oauth.beforeAuthorization` and `oauth.afterAuthorization` hooks use the
+same registration. Both require `redirectOrigins` containing exact canonical
+HTTPS origins (or `[]` for continue-only handlers). Use `OAuthFlowHookInputSchema`
+for `{ flowId, resumeUrl, expiresAt }` and `OAuthFlowHookResultSchema` for the
+strict union `{ type: "continue" } | { type: "redirect", url }`. The same system
+hook runs again on authenticated resume and must recheck external state. Before
+receives no provider token; after receives the newly saved token. OAuth remains
+usable while after setup is pending. Only actual manager actions grant access or
+consent; the system hook reads their durable completion receipt. See the
+[Hook reference](../../../reference/typescript/extensions/hook.md#optional-oauth-flow-hooks)
+and test repeated resume, invalid origins, and malformed result variants.
+
 Widget hooks require a `targetId` matching the widget name. App, command, and Config hooks must not
 set a target. A public webhook target is 1-64 URL-safe identifier characters. `executionScope`
 defaults to `app`, where a 32-128 character high-entropy `endpointToken` is required. Manager scope

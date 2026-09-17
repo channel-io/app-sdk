@@ -179,6 +179,8 @@ export {
   UserChatOpenedHookResultSchema,
   TeamChatMessageCreatedHookInputSchema,
   TeamChatMessageCreatedHookResultSchema,
+  OAuthFlowHookInputSchema,
+  OAuthFlowHookResultSchema,
   type HookType,
   type WebhookConfig,
   type HookConfig,
@@ -187,6 +189,8 @@ export {
   type UserChatOpenedActorKind,
   type TeamChatMessageCreatedHookInput,
   type TeamChatMessageCreatedHookResult,
+  type OAuthFlowHookInput,
+  type OAuthFlowHookResult,
 } from "./hook.js";
 
 // Mail Relay Extension Schemas (v1)

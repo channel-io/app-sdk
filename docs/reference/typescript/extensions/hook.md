@@ -22,6 +22,8 @@ Current SDK schema supports:
 - `webhook.received`
 - `oauth.connected`
 - `oauth.disconnected`
+- `oauth.beforeAuthorization`
+- `oauth.afterAuthorization`
 - `userChat.opened`
 - `teamChat.messageCreated`
 
@@ -47,6 +49,77 @@ For a manager `oauth.connected` event, a separately declared manager-scoped
 fast path only. The URL can be absent and Hook delivery can fail, so reconcile
 manager targets by polling as the recovery path. Do not expect a webhook URL
 for channel OAuth or `oauth.disconnected`.
+
+## Optional OAuth Flow Hooks
+
+Register either hook through the existing `metadata.getHooks` function. No new
+method is required on `OAuthExtensionInterface` or `HookExtensionInterface`.
+
+```ts
+return {
+  hooks: [
+    {
+      type: "oauth.beforeAuthorization",
+      actionFunctionName: "connection.beforeOAuth",
+      redirectOrigins: ["https://setup.example.com"],
+    },
+    {
+      type: "oauth.afterAuthorization",
+      actionFunctionName: "connection.afterOAuth",
+      redirectOrigins: ["https://setup.example.com"],
+    },
+  ],
+};
+```
+
+Both types require `redirectOrigins`; use `[]` for a continue-only handler.
+Entries are canonical HTTPS origins, including a non-default port when needed.
+Paths (including a trailing slash), query strings, fragments, credentials,
+wildcards, whitespace, and non-canonical spellings are rejected. Other hook
+types cannot declare `redirectOrigins`. The platform also checks each returned
+redirect against this allowlist; the result schema alone cannot do that check.
+Go proto JSON omits an empty repeated list; the platform treats that wire
+omission as an empty allowlist and rejects every redirect.
+
+Use the public `OAuthFlowHookInputSchema` and `OAuthFlowHookResultSchema` on the
+ordinary app handlers:
+
+```ts
+type OAuthFlowHookInput = {
+  flowId: string;
+  resumeUrl: string;
+  expiresAt: string; // ISO 8601 datetime
+};
+type OAuthFlowHookResult =
+  | { type: "continue" }
+  | { type: "redirect"; url: string };
+```
+
+Input and result objects are strict. A continue result cannot include `url`, and
+a redirect requires an absolute HTTPS URL without credentials. There is no
+`settingsUrl` input or settings-specific redirect exception. Apps construct
+their destinations from trusted configuration and signed context.
+
+AppStore calls the same hook initially and after the original manager resumes
+the flow. Recheck the actual external state and make repeated calls safe before
+returning `continue`; browser query parameters and a redirect return are not
+completion proof. These hooks run as the system caller, not the manager. Do not
+turn the hook into an approval action by copying identity fields into a manager
+context. The before hook receives no provider credential; the after hook receives
+the exact newly connected credential in `context.authToken`. OAuth credentials
+are stored and usable before the after hook finishes; a pending or cancelled
+after step does not roll back OAuth.
+
+`context.oauthFlow` is the platform-signed target: `appId`, `channelId`,
+`managerId` (the initiating actor), `authScope` (`channel` or `manager`), optional
+`key`, and optional `targetManagerId`. After authorization, `key` is the resolved
+credential key. Use this context to select the target while keeping the caller
+as system; these identity fields are not a manager authorization grant.
+
+For user-approved setup, let the authenticated settings action commit its
+business change and durable receipt. The after hook can read that receipt on
+each retry. No app-to-platform completion callback is required. A compatible
+AppStore deployment is required to execute these optional hooks.
 
 ## UserChat Open Lifecycle
 

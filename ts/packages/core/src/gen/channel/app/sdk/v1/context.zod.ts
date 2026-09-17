@@ -42,6 +42,16 @@ export const WebhookEndpointContextProtoSchema = z.object({
 }) satisfies z.ZodType<pb.WebhookEndpointContext>;
 export type WebhookEndpointContextProto = z.infer<typeof WebhookEndpointContextProtoSchema>;
 
+export const OAuthFlowContextProtoSchema = z.object({
+  appId: z.string().optional(),
+  channelId: z.string().optional(),
+  managerId: z.string().optional(),
+  authScope: z.string().optional(),
+  key: z.string().optional(),
+  targetManagerId: z.string().optional(),
+}) satisfies z.ZodType<pb.OAuthFlowContext>;
+export type OAuthFlowContextProto = z.infer<typeof OAuthFlowContextProtoSchema>;
+
 export const FunctionContextProtoSchema = z.object({
   caller: z.lazy(() => CallerProtoSchema).optional(),
   channel: z.lazy(() => ChannelProtoSchema).optional(),
@@ -56,5 +66,6 @@ export const FunctionContextProtoSchema = z.object({
   sessionId: z.string().optional(),
   seedState: z.any().optional(),
   webhooks: z.record(z.string(), z.lazy(() => WebhookEndpointContextProtoSchema)).optional(),
+  oauthFlow: z.lazy(() => OAuthFlowContextProtoSchema).optional(),
 }) satisfies z.ZodType<pb.FunctionContext>;
 export type FunctionContextProto = z.infer<typeof FunctionContextProtoSchema>;

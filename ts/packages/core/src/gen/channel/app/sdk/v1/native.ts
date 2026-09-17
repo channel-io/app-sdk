@@ -89,3 +89,37 @@ export interface GetAppNotebookVersionsResult {
   errorMessage?: string | undefined;
   notebooks?: AppNotebookVersion[] | undefined;
 }
+
+/** Manager-authenticated OAuth onboarding state. Never contains provider credentials. */
+export interface OAuthFlow {
+  id?:
+    | string
+    | undefined;
+  /** before, oauth, after, completed, or canceled. */
+  phase?: string | undefined;
+  expiresAt?: string | undefined;
+  key?: string | undefined;
+  targetAuthScope?: string | undefined;
+  authorizationURL?:
+    | string
+    | undefined;
+  /** False for another manager's read-only view or a flow that must be restarted. */
+  canResume?: boolean | undefined;
+}
+
+export interface GetOAuthFlowParams {
+  flowId?: string | undefined;
+}
+
+export interface ResumeOAuthFlowParams {
+  flowId?: string | undefined;
+  resumeNonce?: string | undefined;
+}
+
+export interface CancelOAuthFlowParams {
+  flowId?: string | undefined;
+}
+
+export interface OAuthFlowResult {
+  flow?: OAuthFlow | undefined;
+}

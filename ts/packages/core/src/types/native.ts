@@ -1,3 +1,11 @@
+import type {
+  CancelOAuthFlowParams,
+  GetOAuthFlowParams,
+  OAuthFlow,
+  OAuthFlowResult,
+  ResumeOAuthFlowParams,
+} from "../gen/channel/app/sdk/v1/native.js";
+
 export type NativeJsonObject = object;
 export type NativeEmptyResult = Record<string, never>;
 
@@ -820,6 +828,25 @@ export interface NativeListActiveOAuthManagerTargetsResult {
   nextCursor?: string;
 }
 
+/** Manager-authenticated flow state. No provider credentials are returned. */
+export interface NativeOAuthFlow extends OAuthFlow {
+  id: string;
+  phase: "before" | "oauth" | "after" | "completed" | "canceled";
+  expiresAt: string;
+}
+export interface NativeGetOAuthFlowParams extends GetOAuthFlowParams {
+  flowId: string;
+}
+export interface NativeResumeOAuthFlowParams extends ResumeOAuthFlowParams {
+  flowId: string;
+}
+export interface NativeCancelOAuthFlowParams extends CancelOAuthFlowParams {
+  flowId: string;
+}
+export interface NativeOAuthFlowResult extends OAuthFlowResult {
+  flow?: NativeOAuthFlow;
+}
+
 export interface NativeIssueEntityTokenParams {
   channelId: string;
   entityType: string;
@@ -834,6 +861,21 @@ export interface NativeIssueEntityTokenResult {
 // `getRevision`, `getArticle`), but they are intentionally omitted here until
 // the document-api request/result DTOs are modeled in this SDK.
 export interface NativeFunctionTypeMap {
+  /** Requires the initiating manager's authenticated WAM session. */
+  getOAuthFlow: {
+    params: NativeGetOAuthFlowParams;
+    result: NativeOAuthFlowResult;
+  };
+  /** Requires the initiating manager's authenticated WAM session. */
+  resumeOAuthFlow: {
+    params: NativeResumeOAuthFlowParams;
+    result: NativeOAuthFlowResult;
+  };
+  /** Requires the initiating manager's authenticated WAM session. */
+  cancelOAuthFlow: {
+    params: NativeCancelOAuthFlowParams;
+    result: NativeOAuthFlowResult;
+  };
   writeGroupMessage: {
     params: NativeWriteGroupMessageParams;
     result: NativeWriteGroupMessageResult;

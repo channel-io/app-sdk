@@ -1,5 +1,16 @@
 # Hook Extension
 
+任意の `oauth.beforeAuthorization` と `oauth.afterAuthorization` は既存の
+`getHooks` で登録します。両タイプの `redirectOrigins` には canonical HTTPS origin
+のみを指定し、継続だけを行う場合は空配列を使います。`OAuthFlowHookInputSchema`
+の入力は `{ flowId, resumeUrl, expiresAt }`、`OAuthFlowHookResultSchema` の結果は
+strict union の `{ type: "continue" } | { type: "redirect", url }` です。認証済み
+ユーザーによる再開時に同じシステムフックを再実行するため、外部状態を再検証します。
+before にプロバイダートークンは渡されず、after には保存済みの新しいトークンが
+渡されます。後続設定中も OAuth は利用できます。権限と同意は実際のマネージャー
+操作で保存し、フックは完了記録を参照します。再開の再試行、不正な origin と結果形式を
+テストしてください。詳細は [Hook reference](../../../reference/typescript/extensions/hook.md#optional-oauth-flow-hooks) を参照してください。
+
 App、command、config、widget lifecycle event または public webhook event を受け取るときに使います。
 Hook metadata が参照する handler は standalone app Function で、新しい Extension Function では
 ありません。

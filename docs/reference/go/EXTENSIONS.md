@@ -133,6 +133,20 @@ writer, and content fields from that `structpb.Struct`. Register
 `TypeTeamChatMessageCreated` through `StaticHooks` and keep the referenced
 action handler as an ordinary app Function.
 
+Optional `TypeOAuthBeforeAuthorization` and `TypeOAuthAfterAuthorization` hooks
+also use ordinary app Functions. Declare `RedirectOrigins` as canonical HTTPS
+origins (an empty list permits only continuation), accept `OAuthFlowHookInput`,
+and return `OAuthFlowHookResult` with `OAuthFlowResultContinue` or
+`OAuthFlowResultRedirect` plus `Url: proto.String(...)`. Register the handler
+with `HandleProto` so its wire format remains camelCase. Other hook types must
+not declare redirect origins. See the [OAuth flow hook contract](../typescript/extensions/hook.md#optional-oauth-flow-hooks)
+for validation and retry semantics: handlers run as system, the before hook has
+no credential, and the after hook gets the exact newly saved credential in
+`Context.AuthToken`. An unfinished after hook does not revoke that credential.
+Go proto JSON omits an empty repeated `RedirectOrigins` list on the wire. The
+platform treats this omission as an empty allowlist, so it permits continuation
+and rejects every redirect. TypeScript metadata explicitly declares `[]`.
+
 Server-side extension DTOs are defined in proto first. Go extension packages
 either expose generated DTOs directly, as `extension/wms` and
 `extension/messaging` do, or expose `Proto*` aliases alongside existing

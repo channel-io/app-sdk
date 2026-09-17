@@ -41,6 +41,22 @@ export interface WebhookEndpointContext {
   url?: string | undefined;
 }
 
+/** Platform-signed target for OAuth flow hooks; caller remains system. */
+export interface OAuthFlowContext {
+  appId?: string | undefined;
+  channelId?:
+    | string
+    | undefined;
+  /** Manager who initiated the flow, not an impersonated caller. */
+  managerId?:
+    | string
+    | undefined;
+  /** channel or manager. */
+  authScope?: string | undefined;
+  key?: string | undefined;
+  targetManagerId?: string | undefined;
+}
+
 export interface FunctionContext {
   caller?: Caller | undefined;
   channel?: Channel | undefined;
@@ -55,6 +71,7 @@ export interface FunctionContext {
   sessionId?: string | undefined;
   seedState?: any | undefined;
   webhooks?: { [key: string]: WebhookEndpointContext } | undefined;
+  oauthFlow?: OAuthFlowContext | undefined;
 }
 
 export interface FunctionContext_ApiCredentialsEntry {

@@ -13,6 +13,9 @@ const SENSITIVE_LOG_KEYS = new Set([
   "clientsecret",
   "password",
   "xaccesstoken",
+  "resumeurl",
+  "resumenonce",
+  "oauthflownonce",
 ]);
 
 function normalizeSensitiveLogKey(key: string): string {
@@ -21,6 +24,11 @@ function normalizeSensitiveLogKey(key: string): string {
 
 export function sanitizeForLogging(value: unknown, key?: string, seen = new WeakSet()): unknown {
   if (key && SENSITIVE_LOG_KEYS.has(normalizeSensitiveLogKey(key))) {
+    return REDACTED_LOG_VALUE;
+  }
+
+  // Redirect destinations can embed the signed resume URL as an encoded query value.
+  if (typeof value === "string" && value.toLowerCase().includes("oauthflownonce")) {
     return REDACTED_LOG_VALUE;
   }
 

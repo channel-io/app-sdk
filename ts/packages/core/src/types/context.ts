@@ -2,6 +2,7 @@ import type {
   Caller as ProtoCaller,
   Channel as ProtoChannel,
   FunctionContext as ProtoFunctionContext,
+  OAuthFlowContext as ProtoOAuthFlowContext,
   User as ProtoUser,
   UserChat as ProtoUserChat,
   WebhookEndpointContext as ProtoWebhookEndpointContext,
@@ -48,13 +49,21 @@ export type UserChat = ProtoUserChat;
 /** One AppStore-issued webhook callback endpoint. */
 export type WebhookEndpointContext = ProtoWebhookEndpointContext;
 
+/** Platform-signed flow target. This does not grant manager caller authority. */
+export interface OAuthFlowContext extends ProtoOAuthFlowContext {
+  appId: string;
+  channelId: string;
+  managerId: string;
+  authScope: "channel" | "manager";
+}
+
 /**
  * Context passed to function handlers.
  * Mirrors Go's ChannelContext struct (internal/domain/app/subdomain/core/svc/function.go).
  */
 export interface Context extends Omit<
   ProtoFunctionContext,
-  "caller" | "channel" | "user" | "userChat"
+  "caller" | "channel" | "user" | "userChat" | "oauthFlow"
 > {
   /** Caller information */
   caller: Caller;
@@ -85,6 +94,8 @@ export interface Context extends Omit<
   config?: Record<string, unknown>;
   /** Manager-scoped webhook callback endpoints keyed by Hook target ID. */
   webhooks?: Record<string, WebhookEndpointContext>;
+  /** Target and initiating actor for system-invoked OAuth flow hooks. */
+  oauthFlow?: OAuthFlowContext;
   /** Sandbox mode flag (for LLM mock testing) */
   sandbox?: boolean;
   /** Sandbox session ID (stateful mode) */

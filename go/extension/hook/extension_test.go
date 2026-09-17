@@ -6,8 +6,42 @@ import (
 	"testing"
 
 	"github.com/channel-io/app-sdk/go/appsdk"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+func TestOAuthFlowHookContracts(t *testing.T) {
+	for _, kind := range []string{TypeOAuthBeforeAuthorization, TypeOAuthAfterAuthorization} {
+		t.Run(kind, func(t *testing.T) {
+			handler := StaticHooks(&Config{
+				Type:               kind,
+				ActionFunctionName: "hooks.oauth.flow",
+				RedirectOrigins:    []string{"https://provider.example"},
+			})
+			response, err := handler(context.Background(), appsdk.Context{}, &GetHooksRequest{})
+			if err != nil || len(response.Hooks) != 1 || response.Hooks[0].RedirectOrigins[0] != "https://provider.example" {
+				t.Fatalf("unexpected flow hook metadata: response=%v err=%v", response, err)
+			}
+		})
+	}
+	for _, result := range []*OAuthFlowHookResult{
+		{Type: OAuthFlowResultContinue},
+		{Type: OAuthFlowResultRedirect, Url: proto.String("https://provider.example/install")},
+	} {
+		encoded, err := protojson.Marshal(result)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if result.Type == OAuthFlowResultContinue && strings.Contains(string(encoded), "url") {
+			t.Fatalf("continue must not emit url: %s", encoded)
+		}
+		var decoded OAuthFlowHookResult
+		if err := protojson.Unmarshal(encoded, &decoded); err != nil || !proto.Equal(result, &decoded) {
+			t.Fatalf("result did not round trip: result=%v err=%v", result, err)
+		}
+	}
+}
 
 func TestStaticWebhookHooks(t *testing.T) {
 	endpointToken := strings.Repeat("a", 32)

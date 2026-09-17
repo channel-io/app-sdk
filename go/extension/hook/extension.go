@@ -15,15 +15,17 @@ const (
 
 	FunctionGetHooks = "extension.hook.metadata.getHooks"
 
-	TypeAppInstalled           = "app.installed"
-	TypeAppUninstalled         = "app.uninstalled"
-	TypeCommandToggle          = "command.toggle"
-	TypeConfigSaved            = "config.saved"
-	TypeConfigDeleted          = "config.deleted"
-	TypeWidgetInstalled        = "widget.installed"
-	TypeWidgetUninstalled      = "widget.uninstalled"
-	TypeWebhookReceived        = "webhook.received"
-	TypeTeamChatMessageCreated = "teamChat.messageCreated"
+	TypeAppInstalled             = "app.installed"
+	TypeAppUninstalled           = "app.uninstalled"
+	TypeCommandToggle            = "command.toggle"
+	TypeConfigSaved              = "config.saved"
+	TypeConfigDeleted            = "config.deleted"
+	TypeWidgetInstalled          = "widget.installed"
+	TypeWidgetUninstalled        = "widget.uninstalled"
+	TypeWebhookReceived          = "webhook.received"
+	TypeOAuthBeforeAuthorization = "oauth.beforeAuthorization"
+	TypeOAuthAfterAuthorization  = "oauth.afterAuthorization"
+	TypeTeamChatMessageCreated   = "teamChat.messageCreated"
 
 	TeamChatMessageCreatedResultSucceeded                   = "succeeded"
 	TeamChatMessageCreatedResultSkippedSourceApp            = "skipped_source_app"
@@ -36,6 +38,8 @@ const (
 
 	WebhookExecutionScopeApp     = "app"
 	WebhookExecutionScopeManager = "manager"
+	OAuthFlowResultContinue      = "continue"
+	OAuthFlowResultRedirect      = "redirect"
 )
 
 type ExtensionBuilder struct {
@@ -77,3 +81,5 @@ type Config = sdkv1.HookConfig
 type WebhookConfig = sdkv1.HookWebhookConfig
 type TeamChatMessageCreatedInput = sdkv1.HookTeamChatMessageCreatedInput
 type TeamChatMessageCreatedResult = sdkv1.HookTeamChatMessageCreatedResult
+type OAuthFlowHookInput = sdkv1.OAuthFlowHookInput
+type OAuthFlowHookResult = sdkv1.OAuthFlowHookResult
