@@ -24,6 +24,14 @@ describe("HookConfigSchema", () => {
         ...hook,
         redirectOrigins: [],
       });
+      // Go proto JSON omits empty repeated fields.
+      expect(HookConfigSchema.parse({ type, actionFunctionName: hook.actionFunctionName })).toEqual(
+        {
+          type,
+          actionFunctionName: hook.actionFunctionName,
+          redirectOrigins: [],
+        }
+      );
     }
   );
 
@@ -49,11 +57,12 @@ describe("HookConfigSchema", () => {
     ).toBe(false);
   });
 
-  it("requires redirectOrigins only on OAuth flow hooks", () => {
+  it("rejects null redirectOrigins and origins on other hook types", () => {
     expect(
       HookConfigSchema.safeParse({
         type: "oauth.beforeAuthorization",
         actionFunctionName: "hooks.oauth.flow",
+        redirectOrigins: null,
       }).success
     ).toBe(false);
     expect(

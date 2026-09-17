@@ -23,6 +23,29 @@ describe("sanitizeForLogging", () => {
     });
   });
 
+  it.each(["oauth_flow_nonce", "oauth-flow-nonce", "OAuth_Flow_Nonce"])(
+    "redacts %s inside nested and encoded redirect URLs",
+    (nonceKey) => {
+      const resumeUrl = `https://desk.example/return?${nonceKey}=secret`;
+      expect(
+        sanitizeForLogging({
+          result: {
+            url: `https://setup.example/?returnTo=${encodeURIComponent(resumeUrl)}`,
+            returnTo: resumeUrl,
+          },
+        })
+      ).toEqual({
+        result: { url: "[REDACTED]", returnTo: "[REDACTED]" },
+      });
+    }
+  );
+
+  it("redacts space-separated nonce names in strings", () => {
+    expect(sanitizeForLogging({ url: "https://desk.example/?oauth flow nonce=secret" })).toEqual({
+      url: "[REDACTED]",
+    });
+  });
+
   it("should redact snake_case and kebab-case sensitive keys", () => {
     expect(
       sanitizeForLogging({

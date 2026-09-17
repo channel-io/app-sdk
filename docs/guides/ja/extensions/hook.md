@@ -19,7 +19,8 @@ Hook metadata が参照する handler は standalone app Function で、新し�
 
 `extension.hook.metadata.getHooks` が必須です。対応 type は `app.installed`、`app.uninstalled`、
 `command.toggle`、`config.saved`、`config.deleted`、`widget.installed`、`widget.uninstalled`、
-`webhook.received`、`oauth.connected`、`oauth.disconnected`、`userChat.opened`、
+`webhook.received`、`oauth.connected`、`oauth.disconnected`、`oauth.beforeAuthorization`、
+`oauth.afterAuthorization`、`userChat.opened`、
 `teamChat.messageCreated` です。
 
 Widget hook には widget name と一致する `targetId` が必要です。App、command、Config hook には

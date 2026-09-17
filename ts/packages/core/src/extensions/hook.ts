@@ -297,11 +297,11 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.beforeAuthorization"),
-    redirectOrigins: z.array(OAuthFlowRedirectOriginSchema),
+    redirectOrigins: z.array(OAuthFlowRedirectOriginSchema).default([]),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.afterAuthorization"),
-    redirectOrigins: z.array(OAuthFlowRedirectOriginSchema),
+    redirectOrigins: z.array(OAuthFlowRedirectOriginSchema).default([]),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("userChat.opened"),

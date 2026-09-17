@@ -8,6 +8,7 @@ to ordinary app Functions; it does not turn those handlers into new Extension Fu
 `extension.hook.metadata.getHooks` is required. Supported types are `app.installed`,
 `app.uninstalled`, `command.toggle`, `config.saved`, `config.deleted`, `widget.installed`,
 `widget.uninstalled`, `webhook.received`, `oauth.connected`, `oauth.disconnected`,
+`oauth.beforeAuthorization`, `oauth.afterAuthorization`,
 `userChat.opened`, and `teamChat.messageCreated`.
 
 Optional `oauth.beforeAuthorization` and `oauth.afterAuthorization` hooks use the

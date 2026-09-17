@@ -28,7 +28,7 @@ export function sanitizeForLogging(value: unknown, key?: string, seen = new Weak
   }
 
   // Redirect destinations can embed the signed resume URL as an encoded query value.
-  if (typeof value === "string" && value.toLowerCase().includes("oauthflownonce")) {
+  if (typeof value === "string" && /oauth[-_ ]?flow[-_ ]?nonce/i.test(value)) {
     return REDACTED_LOG_VALUE;
   }
 

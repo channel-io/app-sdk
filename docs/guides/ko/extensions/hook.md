@@ -18,7 +18,8 @@ metadata가 가리키는 handler는 standalone app Function이며 새 Extension 
 
 `extension.hook.metadata.getHooks`가 필수입니다. 지원 type은 `app.installed`, `app.uninstalled`,
 `command.toggle`, `config.saved`, `config.deleted`, `widget.installed`, `widget.uninstalled`,
-`webhook.received`, `oauth.connected`, `oauth.disconnected`, `userChat.opened`,
+`webhook.received`, `oauth.connected`, `oauth.disconnected`, `oauth.beforeAuthorization`,
+`oauth.afterAuthorization`, `userChat.opened`,
 `teamChat.messageCreated`입니다.
 
 Widget hook은 widget name과 같은 `targetId`가 필요합니다. App, command, Config hook에는 target을

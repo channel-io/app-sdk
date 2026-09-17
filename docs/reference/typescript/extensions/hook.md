@@ -72,7 +72,9 @@ return {
 };
 ```
 
-Both types require `redirectOrigins`; use `[]` for a continue-only handler.
+Both TypeScript hook types declare `redirectOrigins`; use `[]` for a continue-only handler.
+Parsing a wire response that omits the list defaults it to `[]`, and the published
+JSON schema permits that omission. An omitted list never permits a redirect.
 Entries are canonical HTTPS origins, including a non-default port when needed.
 Paths (including a trailing slash), query strings, fragments, credentials,
 wildcards, whitespace, and non-canonical spellings are rejected. Other hook

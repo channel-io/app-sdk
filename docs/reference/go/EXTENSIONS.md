@@ -144,8 +144,11 @@ for validation and retry semantics: handlers run as system, the before hook has
 no credential, and the after hook gets the exact newly saved credential in
 `Context.AuthToken`. An unfinished after hook does not revoke that credential.
 Go proto JSON omits an empty repeated `RedirectOrigins` list on the wire. The
-platform treats this omission as an empty allowlist, so it permits continuation
-and rejects every redirect. TypeScript metadata explicitly declares `[]`.
+platform and published metadata schema accept this omission as an empty allowlist,
+so it permits continuation and rejects every redirect. TypeScript metadata explicitly
+declares `[]`; its parser restores the empty list when reading Go responses.
+Both `GetHooks` and `StaticHooks` validate flow-hook origins before returning them,
+including rejection of uppercase hosts and explicit default port `:443`.
 
 Server-side extension DTOs are defined in proto first. Go extension packages
 either expose generated DTOs directly, as `extension/wms` and

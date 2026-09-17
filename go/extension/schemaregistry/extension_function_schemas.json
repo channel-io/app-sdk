@@ -17774,13 +17774,13 @@
                       "type": "string",
                       "format": "uri",
                       "pattern": "^https:\\/\\/[^/?#@\\\\\\s*]+$"
-                    }
+                    },
+                    "default": []
                   }
                 },
                 "required": [
                   "actionFunctionName",
-                  "type",
-                  "redirectOrigins"
+                  "type"
                 ],
                 "additionalProperties": false
               },
@@ -17809,13 +17809,13 @@
                       "type": "string",
                       "format": "uri",
                       "pattern": "^https:\\/\\/[^/?#@\\\\\\s*]+$"
-                    }
+                    },
+                    "default": []
                   }
                 },
                 "required": [
                   "actionFunctionName",
-                  "type",
-                  "redirectOrigins"
+                  "type"
                 ],
                 "additionalProperties": false
               },
