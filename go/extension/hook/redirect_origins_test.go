@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/channel-io/app-sdk/go/appsdk"
@@ -130,5 +131,26 @@ func TestOAuthOriginValidationPreservesExistingHookResponses(t *testing.T) {
 	})
 	if response.Error == nil || response.Error.Message != "internal error" {
 		t.Fatalf("handler error changed: %#v", response.Error)
+	}
+}
+
+func TestNonOAuthFlowHooksRejectNonemptyRedirectOrigins(t *testing.T) {
+	for _, kind := range []string{TypeAppInstalled, "oauth.connected", TypeWebhookReceived} {
+		for _, origins := range [][]string{nil, {}, {"https://provider.example"}} {
+			t.Run(kind+"/"+strings.Join(origins, ","), func(t *testing.T) {
+				config := &Config{Type: kind, ActionFunctionName: "hooks.handle", RedirectOrigins: origins}
+				wantError := len(origins) > 0
+				_, err := StaticHooks(config)(context.Background(), appsdk.Context{}, &GetHooksRequest{})
+				if (err != nil) != wantError {
+					t.Errorf("StaticHooks error=%v, wantError=%v", err, wantError)
+				}
+				response, _ := callGetHooks(t, func(context.Context, appsdk.Context, *GetHooksRequest) (*GetHooksResponse, error) {
+					return &GetHooksResponse{Hooks: []*Config{config}}, nil
+				})
+				if (response.Error != nil) != wantError {
+					t.Errorf("GetHooks error=%v, wantError=%v", response.Error, wantError)
+				}
+			})
+		}
 	}
 }

@@ -1,6 +1,6 @@
 const REDACTED_LOG_VALUE = "[REDACTED]";
 const CIRCULAR_LOG_VALUE = "[Circular]";
-const OAUTH_FLOW_NONCE_NAME = /oauth[-_ ]?flow[-_ ]?nonce/i;
+const OAUTH_FLOW_NONCE_NAME = /oauth[-_ +]?flow[-_ +]?nonce/i;
 const SENSITIVE_LOG_KEYS = new Set([
   "secret",
   "appsecret",

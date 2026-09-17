@@ -11,6 +11,9 @@ import (
 func validateOAuthRedirectOrigins(hooks []*Config) error {
 	for i, config := range hooks {
 		if config.GetType() != TypeOAuthBeforeAuthorization && config.GetType() != TypeOAuthAfterAuthorization {
+			if len(config.GetRedirectOrigins()) > 0 {
+				return fmt.Errorf("hook %d: redirectOrigins are only supported for OAuth flow hooks", i)
+			}
 			continue
 		}
 		for _, origin := range config.RedirectOrigins {

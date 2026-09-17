@@ -51,6 +51,8 @@ describe("sanitizeForLogging", () => {
     "oauth%5Fflow%5Fnonce",
     "oauth%2Dflow%2Dnonce",
     "oauth%20flow%20nonce",
+    "oauth+flow+nonce",
+    "oauth%2Bflow%2Bnonce",
   ])("redacts encoded nonce name %s in direct and nested URLs", (nonceKey) => {
     const resumeUrl = `https://desk.example/?${nonceKey}=secret`;
     const redirectUrl = `https://setup.example/?returnTo=${encodeURIComponent(resumeUrl)}`;
