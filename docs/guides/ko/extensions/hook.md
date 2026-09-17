@@ -1,5 +1,16 @@
 # Hook Extension
 
+선택적 `oauth.beforeAuthorization`, `oauth.afterAuthorization`도 기존 `getHooks`로
+등록합니다. 두 타입은 canonical HTTPS origin만 담은 `redirectOrigins`가 필요하며,
+계속 진행만 하는 훅은 빈 배열을 사용합니다. `OAuthFlowHookInputSchema`의 입력은
+`{ flowId, resumeUrl, expiresAt }`, `OAuthFlowHookResultSchema`의 결과는 strict union인
+`{ type: "continue" } | { type: "redirect", url }`입니다. 같은 시스템 훅이 인증된
+사용자의 재개 시 다시 호출되므로 외부 상태를 재검증해야 합니다. before에는 제공자
+토큰이 없고 after에는 새로 저장한 토큰이 전달됩니다. 후속 설정 중에도 OAuth는
+사용할 수 있습니다. 권한·동의는 실제 매니저 액션에서 저장하고 훅은 완료 기록을
+조회합니다. 재개 재시도, 잘못된 origin과 결과 형식을 테스트하세요.
+자세한 계약은 [Hook reference](../../../reference/typescript/extensions/hook.md#optional-oauth-flow-hooks)를 참고하세요.
+
 App, command, config, widget lifecycle event 또는 공개 webhook event를 받을 때 사용합니다. Hook
 metadata가 가리키는 handler는 standalone app Function이며 새 Extension Function이 아닙니다.
 
@@ -7,7 +18,8 @@ metadata가 가리키는 handler는 standalone app Function이며 새 Extension 
 
 `extension.hook.metadata.getHooks`가 필수입니다. 지원 type은 `app.installed`, `app.uninstalled`,
 `command.toggle`, `config.saved`, `config.deleted`, `widget.installed`, `widget.uninstalled`,
-`webhook.received`, `oauth.connected`, `oauth.disconnected`, `userChat.opened`,
+`webhook.received`, `oauth.connected`, `oauth.disconnected`, `oauth.beforeAuthorization`,
+`oauth.afterAuthorization`, `userChat.opened`,
 `teamChat.messageCreated`입니다.
 
 Widget hook은 widget name과 같은 `targetId`가 필요합니다. App, command, Config hook에는 target을

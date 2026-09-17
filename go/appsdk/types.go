@@ -52,6 +52,16 @@ type WebhookEndpointContext struct {
 	URL string `json:"url"`
 }
 
+// OAuthFlowContext identifies a signed OAuth flow target; Caller remains system.
+type OAuthFlowContext struct {
+	AppID           string  `json:"appId"`
+	ChannelID       string  `json:"channelId"`
+	ManagerID       string  `json:"managerId"`
+	AuthScope       string  `json:"authScope"`
+	Key             *string `json:"key,omitempty"`
+	TargetManagerID *string `json:"targetManagerId,omitempty"`
+}
+
 type Context struct {
 	Caller          Caller                            `json:"caller"`
 	Channel         Channel                           `json:"channel"`
@@ -62,6 +72,7 @@ type Context struct {
 	APICredentials  map[string]string                 `json:"apiCredentials,omitempty"`
 	Config          map[string]any                    `json:"config,omitempty"`
 	Webhooks        map[string]WebhookEndpointContext `json:"webhooks,omitempty"`
+	OAuthFlow       *OAuthFlowContext                 `json:"oauthFlow,omitempty"`
 	Language        string                            `json:"language,omitempty"`
 	Sandbox         bool                              `json:"sandbox,omitempty"`
 	SessionID       string                            `json:"sessionId,omitempty"`

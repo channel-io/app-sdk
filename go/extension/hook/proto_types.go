@@ -7,3 +7,5 @@ type ProtoGetHooksRequest = sdkv1.HookGetHooksInput
 type ProtoGetHooksResponse = sdkv1.HookGetHooksOutput
 type ProtoTeamChatMessageCreatedInput = sdkv1.HookTeamChatMessageCreatedInput
 type ProtoTeamChatMessageCreatedResult = sdkv1.HookTeamChatMessageCreatedResult
+type ProtoOAuthFlowHookInput = sdkv1.OAuthFlowHookInput
+type ProtoOAuthFlowHookResult = sdkv1.OAuthFlowHookResult

@@ -15,15 +15,17 @@ const (
 
 	FunctionGetHooks = "extension.hook.metadata.getHooks"
 
-	TypeAppInstalled           = "app.installed"
-	TypeAppUninstalled         = "app.uninstalled"
-	TypeCommandToggle          = "command.toggle"
-	TypeConfigSaved            = "config.saved"
-	TypeConfigDeleted          = "config.deleted"
-	TypeWidgetInstalled        = "widget.installed"
-	TypeWidgetUninstalled      = "widget.uninstalled"
-	TypeWebhookReceived        = "webhook.received"
-	TypeTeamChatMessageCreated = "teamChat.messageCreated"
+	TypeAppInstalled             = "app.installed"
+	TypeAppUninstalled           = "app.uninstalled"
+	TypeCommandToggle            = "command.toggle"
+	TypeConfigSaved              = "config.saved"
+	TypeConfigDeleted            = "config.deleted"
+	TypeWidgetInstalled          = "widget.installed"
+	TypeWidgetUninstalled        = "widget.uninstalled"
+	TypeWebhookReceived          = "webhook.received"
+	TypeOAuthBeforeAuthorization = "oauth.beforeAuthorization"
+	TypeOAuthAfterAuthorization  = "oauth.afterAuthorization"
+	TypeTeamChatMessageCreated   = "teamChat.messageCreated"
 
 	TeamChatMessageCreatedResultSucceeded                   = "succeeded"
 	TeamChatMessageCreatedResultSkippedSourceApp            = "skipped_source_app"
@@ -36,6 +38,8 @@ const (
 
 	WebhookExecutionScopeApp     = "app"
 	WebhookExecutionScopeManager = "manager"
+	OAuthFlowResultContinue      = "continue"
+	OAuthFlowResultRedirect      = "redirect"
 )
 
 type ExtensionBuilder struct {
@@ -47,7 +51,15 @@ func Extension() *ExtensionBuilder {
 }
 
 func (b *ExtensionBuilder) GetHooks(handler appsdk.TypedHandlerFunc[GetHooksRequest, GetHooksResponse]) *ExtensionBuilder {
-	b.base.Func(FunctionGetHooks, schemaregistry.Append(FunctionGetHooks, appsdk.HandleProto(handler))...)
+	b.base.Func(FunctionGetHooks, schemaregistry.Append(FunctionGetHooks, appsdk.HandleProto(
+		func(ctx context.Context, fnCtx appsdk.Context, input *GetHooksRequest) (*GetHooksResponse, error) {
+			response, err := handler(ctx, fnCtx, input)
+			if err != nil {
+				return nil, err
+			}
+			return response, validateOAuthRedirectOrigins(response.GetHooks())
+		},
+	))...)
 	return b
 }
 
@@ -67,7 +79,7 @@ func (b *ExtensionBuilder) Register(app *appsdk.App) error {
 
 func StaticHooks(hooks ...*Config) appsdk.TypedHandlerFunc[GetHooksRequest, GetHooksResponse] {
 	return func(context.Context, appsdk.Context, *GetHooksRequest) (*GetHooksResponse, error) {
-		return &GetHooksResponse{Hooks: hooks}, nil
+		return &GetHooksResponse{Hooks: hooks}, validateOAuthRedirectOrigins(hooks)
 	}
 }
 
@@ -77,3 +89,5 @@ type Config = sdkv1.HookConfig
 type WebhookConfig = sdkv1.HookWebhookConfig
 type TeamChatMessageCreatedInput = sdkv1.HookTeamChatMessageCreatedInput
 type TeamChatMessageCreatedResult = sdkv1.HookTeamChatMessageCreatedResult
+type OAuthFlowHookInput = sdkv1.OAuthFlowHookInput
+type OAuthFlowHookResult = sdkv1.OAuthFlowHookResult

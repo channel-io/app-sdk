@@ -1,19 +1,24 @@
 import { useState, useCallback } from "react";
+import type {
+  NativeFunctionMethod,
+  NativeFunctionParams,
+  NativeFunctionResult,
+} from "@channel.io/app-sdk-core";
 
 /**
  * Options for useNativeFunction hook
  */
-export interface UseNativeFunctionOptions {
+export interface UseNativeFunctionOptions<TName extends string = string> {
   /** Native function name */
-  name: string;
+  name: TName;
 }
 
 /**
  * Result of useNativeFunction hook
  */
-export interface UseNativeFunctionResult<T> {
+export interface UseNativeFunctionResult<T, TParams = Record<string, unknown>> {
   /** Function to call the native function */
-  call: (params: Record<string, unknown>) => Promise<T>;
+  call: (params: TParams) => Promise<T>;
   /** Whether the function is currently being called */
   loading: boolean;
   /** Error from the last call, if any */
@@ -53,6 +58,12 @@ export interface UseNativeFunctionResult<T> {
  * }
  * ```
  */
+export function useNativeFunction<TMethod extends NativeFunctionMethod>(
+  options: UseNativeFunctionOptions<TMethod>
+): UseNativeFunctionResult<NativeFunctionResult<TMethod>, NativeFunctionParams<TMethod>>;
+export function useNativeFunction<T = unknown>(
+  options: UseNativeFunctionOptions
+): UseNativeFunctionResult<T>;
 export function useNativeFunction<T = unknown>(
   options: UseNativeFunctionOptions
 ): UseNativeFunctionResult<T> {

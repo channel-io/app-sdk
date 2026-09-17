@@ -4,6 +4,10 @@
     "composite": false,
     "noEmit": true
   },
-  "include": ["src/__tests__/extensions/hook.type.test.ts"],
+  "include": [
+    "src/__tests__/extensions/hook.type.test.ts",
+    "src/__tests__/schemas/context.test.ts",
+    "src/__tests__/schemas/native.test.ts"
+  ],
   "exclude": []
 }

@@ -737,8 +737,22 @@ export const HookConfigProtoSchema = z.object({
   systemVersion: z.string().optional(),
   targetId: z.string().optional(),
   webhook: z.lazy(() => HookWebhookConfigProtoSchema).optional(),
+  redirectOrigins: z.array(z.string()).optional(),
 }) satisfies z.ZodType<pb.HookConfig>;
 export type HookConfigProto = z.infer<typeof HookConfigProtoSchema>;
+
+export const OAuthFlowHookInputProtoSchema = z.object({
+  flowId: z.string().optional(),
+  resumeUrl: z.string().optional(),
+  expiresAt: z.string().optional(),
+}) satisfies z.ZodType<pb.OAuthFlowHookInput>;
+export type OAuthFlowHookInputProto = z.infer<typeof OAuthFlowHookInputProtoSchema>;
+
+export const OAuthFlowHookResultProtoSchema = z.object({
+  type: z.string().optional(),
+  url: z.string().optional(),
+}) satisfies z.ZodType<pb.OAuthFlowHookResult>;
+export type OAuthFlowHookResultProto = z.infer<typeof OAuthFlowHookResultProtoSchema>;
 
 export const HookGetHooksInputProtoSchema = z.object({}) satisfies z.ZodType<pb.HookGetHooksInput>;
 export type HookGetHooksInputProto = z.infer<typeof HookGetHooksInputProtoSchema>;

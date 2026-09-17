@@ -85,6 +85,8 @@ import {
   GetWmsSupportedCommercesInputSchema,
   GetWmsSupportedCommercesOutputSchema,
   HookConfigSchema,
+  OAuthFlowHookInputSchema,
+  OAuthFlowHookResultSchema,
   TeamChatMessageCreatedHookInputSchema,
   TeamChatMessageCreatedHookResultSchema,
   UserChatOpenedHookInputSchema,
@@ -392,6 +394,8 @@ const contracts: Contract[] = [
 
   contract("WebhookConfig", WebhookConfigSchema, "extension", "HookWebhookConfig"),
   contract("HookConfig", HookConfigSchema, "extension", "HookConfig"),
+  contract("OAuthFlowHookInput", OAuthFlowHookInputSchema, "extension", "OAuthFlowHookInput"),
+  contract("OAuthFlowHookResult", OAuthFlowHookResultSchema, "extension", "OAuthFlowHookResult"),
   contract("GetHooksOutput", GetHooksOutputSchema, "extension", "HookGetHooksOutput"),
   contract(
     "UserChatOpenedHookInput",

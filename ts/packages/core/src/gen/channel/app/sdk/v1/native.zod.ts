@@ -96,3 +96,35 @@ export const GetAppNotebookVersionsResultProtoSchema = z.object({
   notebooks: z.array(z.lazy(() => AppNotebookVersionProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.GetAppNotebookVersionsResult>;
 export type GetAppNotebookVersionsResultProto = z.infer<typeof GetAppNotebookVersionsResultProtoSchema>;
+
+export const OAuthFlowProtoSchema = z.object({
+  id: z.string().optional(),
+  phase: z.string().optional(),
+  expiresAt: z.string().optional(),
+  key: z.string().optional(),
+  targetAuthScope: z.string().optional(),
+  authorizationURL: z.string().optional(),
+  canResume: z.boolean().optional(),
+}) satisfies z.ZodType<pb.OAuthFlow>;
+export type OAuthFlowProto = z.infer<typeof OAuthFlowProtoSchema>;
+
+export const GetOAuthFlowParamsProtoSchema = z.object({
+  flowId: z.string().optional(),
+}) satisfies z.ZodType<pb.GetOAuthFlowParams>;
+export type GetOAuthFlowParamsProto = z.infer<typeof GetOAuthFlowParamsProtoSchema>;
+
+export const ResumeOAuthFlowParamsProtoSchema = z.object({
+  flowId: z.string().optional(),
+  resumeNonce: z.string().optional(),
+}) satisfies z.ZodType<pb.ResumeOAuthFlowParams>;
+export type ResumeOAuthFlowParamsProto = z.infer<typeof ResumeOAuthFlowParamsProtoSchema>;
+
+export const CancelOAuthFlowParamsProtoSchema = z.object({
+  flowId: z.string().optional(),
+}) satisfies z.ZodType<pb.CancelOAuthFlowParams>;
+export type CancelOAuthFlowParamsProto = z.infer<typeof CancelOAuthFlowParamsProtoSchema>;
+
+export const OAuthFlowResultProtoSchema = z.object({
+  flow: z.lazy(() => OAuthFlowProtoSchema).optional(),
+}) satisfies z.ZodType<pb.OAuthFlowResult>;
+export type OAuthFlowResultProto = z.infer<typeof OAuthFlowResultProtoSchema>;

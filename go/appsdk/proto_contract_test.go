@@ -54,6 +54,11 @@ func TestCoreDTOJSONFieldsMatchProto(t *testing.T) {
 			descriptor: sdkv1.File_channel_app_sdk_v1_context_proto.Messages().ByName("FunctionContext"),
 		},
 		{
+			name:       "OAuthFlowContext",
+			runtime:    appsdk.OAuthFlowContext{},
+			descriptor: sdkv1.File_channel_app_sdk_v1_context_proto.Messages().ByName("OAuthFlowContext"),
+		},
+		{
 			name:       "FunctionRequest",
 			runtime:    appsdk.FunctionRequest{},
 			descriptor: sdkv1.File_channel_app_sdk_v1_function_proto.Messages().ByName("FunctionRequest"),
@@ -113,6 +118,16 @@ func TestContextDecodesManagerWebhookEndpoints(t *testing.T) {
 	}
 	if got.Webhooks["provider.events"].URL != "https://app-store.example.com/hook" {
 		t.Fatalf("unexpected webhook context: %#v", got.Webhooks)
+	}
+}
+
+func TestContextPreservesSignedOAuthFlowTarget(t *testing.T) {
+	var got appsdk.Context
+	if err := json.Unmarshal([]byte(`{"caller":{"type":"system","id":"system"},"authToken":"exact-token","oauthFlow":{"appId":"app-1","channelId":"channel-1","managerId":"manager-1","authScope":"manager","key":"organization-1","targetManagerId":"manager-1"}}`), &got); err != nil {
+		t.Fatal(err)
+	}
+	if got.Caller.Type != appsdk.CallerTypeSystem || got.GetAuthToken() != "exact-token" || got.OAuthFlow == nil || got.OAuthFlow.ManagerID != "manager-1" || got.OAuthFlow.AuthScope != "manager" || got.OAuthFlow.Key == nil || *got.OAuthFlow.Key != "organization-1" {
+		t.Fatalf("flow context was not preserved: %#v", got)
 	}
 }
 

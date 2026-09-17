@@ -17769,6 +17769,76 @@
                   },
                   "type": {
                     "type": "string",
+                    "const": "oauth.beforeAuthorization"
+                  },
+                  "redirectOrigins": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uri",
+                      "pattern": "^https:\\/\\/[^/?#@\\\\\\s*]+$"
+                    },
+                    "default": []
+                  }
+                },
+                "required": [
+                  "actionFunctionName",
+                  "type"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "actionFunctionName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "pattern": "^[a-zA-Z_][a-zA-Z0-9._]*$"
+                  },
+                  "systemVersion": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50,
+                    "pattern": "^[A-Za-z0-9._-]+$"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "oauth.afterAuthorization"
+                  },
+                  "redirectOrigins": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uri",
+                      "pattern": "^https:\\/\\/[^/?#@\\\\\\s*]+$"
+                    },
+                    "default": []
+                  }
+                },
+                "required": [
+                  "actionFunctionName",
+                  "type"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "actionFunctionName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "pattern": "^[a-zA-Z_][a-zA-Z0-9._]*$"
+                  },
+                  "systemVersion": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50,
+                    "pattern": "^[A-Za-z0-9._-]+$"
+                  },
+                  "type": {
+                    "type": "string",
                     "const": "userChat.opened"
                   }
                 },
