@@ -1,5 +1,105 @@
 # @channel.io/app-sdk-core
 
+## 0.25.0
+
+### Minor Changes
+
+- 8a8cb45: Add `tags` to `CommerceOrder`, the tags a mall puts on an order itself.
+
+  The commerce extension had nowhere to carry them. The legacy `extension.order.core.getOrders`
+  passed the data-warehouse response straight through, so order tags reached ALF workflows that
+  branched on them; the commerce contract picks fields one by one, so moving to it silently dropped
+  the value. Workflows keyed on an order tag could not be published at all, because the legacy
+  function is hidden once an app serves the commerce one.
+
+  Order tags and product tags are different fields and both exist now: `CommerceOrder.tags` is set on
+  the order, `CommerceProduct.tags` on the product. A consumer that wants to branch on "this order is
+  flagged VIP" reads the former; one that wants "this order contains a made-to-order item" joins
+  `items[].productId` against `products[].id` and reads the latter.
+
+  The field is optional and repeated, so an app that cannot supply tags leaves it out and an order
+  with no tags emits nothing rather than an empty list. Malls that model order tags can fill it
+  without further contract work — this is not Shopify-specific.
+
+- 4c100f1: Add a `product` group to the commerce extension with one function,
+  `extension.commerce.product.getProducts`, so an app can expose its product catalog through the
+  same contract surface as orders. Until now the extension only had `core` and `order` groups, and
+  there was no standard place to list products or look one up by id.
+
+  The function is a catalog read, not a search: `searchFilter` accepts `productId` (a single id or
+  several — in the commerce filter dialect any-of is `$eq` with several `values`), `state`, and
+  `createdAt`, and an app rejects any key it has not advertised. It does not take a `name` key. `since` and `limit` follow `getOrders`, and the output is `{ products, next }`.
+
+  `CommerceProduct` carries `id` (the same value as `items[].productId` on an order) and `name`, plus
+  optional `price`, `originalPrice`, `currency`, `state` (`active` / `inactive`, left unset when
+  unknown), `imageUrl`, `images` (every image, the representative one included), `productUrl`,
+  `description`, `summary`, `vendor`, `productType`, `categories`, `tags`, `createdAt`, `updatedAt`,
+  `variants`, and `productCode` (the same value as `items[].productCode` on an order). `createdAt` is
+  when the mall created the product; `updatedAt` may be the time the app stored the product rather
+  than the time the mall changed it. A variant's `id` is the same value as `items[].variantId` on an
+  order and `afterExchangeItems[].variantId` on an exchange request, and a variant's `sku` is the same
+  value as `items[].sku`.
+
+  The product-level `price` is optional because some catalogs price only their variants. An app that
+  would have to derive a representative price should leave it unset rather than emit `0`, which this
+  contract reads as free; consumers fall back to `variants[].price`. `currency` is the currency of the
+  mall connection rather than of the product, and an app that emits `price` or `originalPrice` emits
+  `currency` with it.
+
+  `CommerceProductVariant.price` is required: it is the variant's absolute selling price. This is deliberately
+  different from `CommerceExchangeableVariant.additionalAmount`, which is the surcharge relative to
+  the original item. `stockQuantity` is left unset when the variant does not track inventory, so `0`
+  (sold out) stays distinguishable from unknown. `price` fields have presence so a zero price is
+  emitted, matching the other commerce amount fields — in Go they are `*float64`, so an app sets them
+  through a pointer.
+
+  `state` is a closed set. A mall-specific state such as a draft has to be mapped to one of the two
+  values by the app, and a TypeScript app validating its output against the schema fails on any other
+  value.
+
+  `CommerceAppCapabilities` gains `getProductsOptions`. It follows the other `*Options`: `optional`
+  lists the function's input fields (`searchFilter`, `since`, `limit`), and the `searchFilter` keys the
+  app accepts are advertised as the enum `allowedValues` of `fieldConfigs["searchFilter.key"]`, the
+  same way `getOrdersOptions` does it — each `value` is a filter key name such as `productId`, and its
+  `label` is the name a person sees when picking that key. `required` stays empty because calling
+  without a filter returns the first page of the catalog.
+
+- ecfde4e: Relax six output fields in the commerce (and legacy order) contract that the SDK could not
+  guarantee: `Claim.createdAt`, `CommerceOrderItem.claimability`, and `Payment`'s `itemsAmount`,
+  `shippingAmount`, `discountAmount` and `requireRefundBankAccount`.
+
+  Each was declared required while a mall could legitimately have nothing to put there.
+  `Claim.createdAt` is a presence-less `double`, so an unset value is indistinguishable from `0` and
+  serialization drops the key. `claimability` is a proto3 message field with implicit presence, so an
+  app that never computes it emits no key at all — the same reason the four booleans inside it stopped
+  being required, one level up. The payment fields carry presence, so `0`/`false` still serialize;
+  they are relaxed because they are the breakdown of the total, and not every mall separates item
+  subtotal, shipping and discount, or has a refund bank account concept. `totalAmount` — which every
+  mall reports — stays required, alongside `state` and `currency`.
+
+  Only the canonical schema's `required` lists change; generated field types are unaffected, so no
+  builder or accessor code needs updating. Consumers reading any of these six should treat them as
+  possibly absent.
+
+- 9ddc724: Add the `suggestion:v1` extension contract and the
+  `extension.suggestion.metadata.getTriggers` function for declaring URL and localized keyword
+  triggers. TypeScript and Go apps can now expose validated static suggestion triggers for App Store
+  registration.
+
+### Patch Changes
+
+- 6798f5f: Correct the `CommerceOrder.marketId` doc comment, which claimed the field is empty for own-mall
+  orders. It is not: Cafe24 fills it for own-mall orders too, using `self`, `cafe24`, `mobile` or
+  `mobile_d`. A consumer that followed the comment and branched on `marketId` being non-empty would
+  classify every Cafe24 order as an external-marketplace order.
+
+  The comment now says the value identifies the route an order came in through, that a non-empty
+  value does not imply an external marketplace, and that `marketOrderNo` is the field to check when
+  external-marketplace membership is what you actually need. `marketOrderNo` in turn now states that
+  it is empty for own-mall orders.
+
+  Comments only — no schema, wire format or type changes.
+
 ## 0.24.2
 
 ### Patch Changes

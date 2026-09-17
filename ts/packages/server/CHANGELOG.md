@@ -1,5 +1,23 @@
 # @channel.io/app-sdk-server
 
+## 0.25.0
+
+### Minor Changes
+
+- 9ddc724: Add the `suggestion:v1` extension contract and the
+  `extension.suggestion.metadata.getTriggers` function for declaring URL and localized keyword
+  triggers. TypeScript and Go apps can now expose validated static suggestion triggers for App Store
+  registration.
+
+### Patch Changes
+
+- Updated dependencies [6798f5f]
+- Updated dependencies [8a8cb45]
+- Updated dependencies [4c100f1]
+- Updated dependencies [ecfde4e]
+- Updated dependencies [9ddc724]
+  - @channel.io/app-sdk-core@0.25.0
+
 ## 0.24.2
 
 ### Patch Changes
