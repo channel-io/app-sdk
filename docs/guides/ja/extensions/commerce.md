@@ -46,8 +46,9 @@ err := app.Use(commerce.Extension().
 `productCode` と `variants[].sku` は注文の `items[].productCode`・`items[].sku` と同じ値です。
 `sellerProductCode` は販売者が商品単位で自ら付けたコードで、プラットフォームが自動採番する
 `productCode` とは別です。`variants[].sku` に継承されない独立した値で、商品単位の欄がないモールでは
-空にします。出力専用で `searchFilter` のキーではなく、注文の `items[]` に対応するフィールドはありません。
-品目単位の販売者コードを `variants[].sku` に入れないでください。
+空にします。出力専用で、共通の `searchFilter` キーとしては定義していません。現時点では注文の `items[]`・
+`bundleItems[]` に対応するフィールドはなく、品目単位の販売者コードの欄もありません。`variants[].sku` に
+入れないでください。
 
 ## TypeScript
 

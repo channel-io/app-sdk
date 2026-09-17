@@ -7,12 +7,12 @@ Add `sellerProductCode` to `CommerceProduct`, the code a seller assigns to a pro
 `productCode` is the code the platform assigns to a product. Sellers who run their own item codes
 enter them in a separate field the platform keeps for that purpose — Cafe24 "custom product code"
 (`custom_product_code`), Imweb "custom product code" (`custom_prod_code`), Naver Smart Store
-"seller product code" (`sellerManagementCode`) — and the commerce contract had nowhere to carry
-that value, so a workflow that keys on the seller's own code could not read it from `getProducts`.
+`sellerManagementCode` — and the commerce contract had nowhere to carry that value, so a workflow
+that keys on the seller's own code could not read it from `getProducts`.
 
-The field is an output-only axis: it is not a `searchFilter` key, and `getOrders` `items[]` has no
-counterpart field in this release. A variant-level seller code has no place in the contract either;
-do not put one into `variants[].sku`, which stays the mall's item-level stock code.
+The field is output only and is not defined as a common `searchFilter` key. `getOrders` `items[]`
+and `bundleItems[]` do not yet carry a counterpart, and there is no variant-level seller code slot
+yet; do not put one into `variants[].sku`, which stays the mall's item-level stock code.
 
 The field is deliberately not named `sku` and does not inherit into variants. Platforms that call
 the product-level code `sku` (BigCommerce, WooCommerce) let a variant inherit it when the variant's

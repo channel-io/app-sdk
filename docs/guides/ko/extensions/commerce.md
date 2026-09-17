@@ -45,8 +45,9 @@ enum `allowedValues`로 광고하고, 그 밖의 키는 거부하며 `name`은 �
 읽습니다. `currency`는 연동(몰)의 통화이며 `price`와 함께 싣습니다. `productCode`와 `variants[].sku`는
 주문의 `items[].productCode`·`items[].sku`와 같은 값입니다. `sellerProductCode`는 판매자가 상품 단위로
 직접 매긴 코드로, 플랫폼이 자동 부여하는 `productCode`와 다릅니다. `variants[].sku`로 상속되지 않는
-별개 값이며, 상품 단위 자리가 없는 몰에서는 비웁니다. 출력 전용이라 `searchFilter` 키가 아니고, 주문의
-`items[]`에는 대응 필드가 없습니다. 품목 단위 판매자 코드는 `variants[].sku`에 넣지 않습니다.
+별개 값이며, 상품 단위 자리가 없는 몰에서는 비웁니다. 출력 전용이며 공통 `searchFilter` 키로는 정의하지
+않았습니다. 지금 버전에서는 주문의 `items[]`·`bundleItems[]`에 대응 필드가 없고 품목 단위 판매자 코드 자리도
+없습니다 — `variants[].sku`에 넣지 않습니다.
 
 ## TypeScript
 
