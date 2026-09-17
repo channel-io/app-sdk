@@ -1,5 +1,17 @@
 # @calendar-example/server
 
+## 0.0.19
+
+### Patch Changes
+
+- Updated dependencies [6798f5f]
+- Updated dependencies [8a8cb45]
+- Updated dependencies [4c100f1]
+- Updated dependencies [ecfde4e]
+- Updated dependencies [9ddc724]
+  - @channel.io/app-sdk-core@0.25.0
+  - @channel.io/app-sdk-server@0.25.0
+
 ## 0.0.18
 
 ### Patch Changes
