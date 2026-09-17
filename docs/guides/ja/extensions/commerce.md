@@ -44,6 +44,9 @@ err := app.Use(commerce.Extension().
 `price` は、価格を variant にだけ持つモールでは空にできます。`0` を入れずに空にすれば、消費者は
 `variants[].price` を読みます。`currency` は連携（モール）の通貨で、`price` と一緒に載せます。
 `productCode` と `variants[].sku` は注文の `items[].productCode`・`items[].sku` と同じ値です。
+`sellerProductCode` は販売者が商品単位で自ら付けたコードで、プラットフォームが自動採番する
+`productCode` とは別です。`variants[].sku` に継承されない独立した値で、商品単位の欄がないモールでは
+空にします。
 
 ## TypeScript
 

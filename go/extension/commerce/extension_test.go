@@ -121,9 +121,10 @@ func TestGetProductsKeepsZeroValuesAndOmitsUnsetFields(t *testing.T) {
 			}
 			return &commerce.GetProductsOutput{
 				Products: []*commerce.Product{{
-					Id:    "product-1",
-					Name:  "gift",
-					Price: &price,
+					Id:                "product-1",
+					Name:              "gift",
+					Price:             &price,
+					SellerProductCode: "SP-001",
 					Variants: []*commerce.ProductVariant{
 						{Id: "variant-1", Price: &price},
 						{Id: "variant-2", Price: &price, StockQuantity: &price},
@@ -158,7 +159,10 @@ func TestGetProductsKeepsZeroValuesAndOmitsUnsetFields(t *testing.T) {
 	if first["id"] != "product-1" || first["price"] != 0.0 {
 		t.Fatalf("expected protojson camelCase output with zero price kept, got %+v", first)
 	}
-	for _, key := range []string{"state", "originalPrice", "images", "categories", "tags"} {
+	if first["sellerProductCode"] != "SP-001" {
+		t.Fatalf("expected sellerProductCode emitted in camelCase, got %+v", first)
+	}
+	for _, key := range []string{"state", "originalPrice", "images", "categories", "tags", "productCode"} {
 		if _, present := first[key]; present {
 			t.Fatalf("expected unset %s to be omitted, got %+v", key, first)
 		}

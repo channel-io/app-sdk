@@ -417,6 +417,9 @@ export const CommerceProductSchema = z.object({
   variants: z.array(CommerceProductVariantSchema).optional(),
   // 몰이 상품에 부여한 사람이 읽는 코드. getOrders 의 items[].productCode 와 같은 값이다. 없는 몰은 비운다.
   productCode: z.string().optional(),
+  // 판매자가 상품 단위로 직접 매긴 코드. 플랫폼이 자동 부여하는 productCode 와 다른 축이고, 품목 단위 코드인
+  // variants[].sku 와 상속 관계가 아니라 별개다. 상품 단위 자리가 없는 몰은 비운다.
+  sellerProductCode: z.string().optional(),
 });
 export type CommerceProduct = ProtoBacked<
   z.infer<typeof CommerceProductSchema>,

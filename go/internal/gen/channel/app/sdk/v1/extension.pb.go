@@ -13368,9 +13368,14 @@ type CommerceProduct struct {
 	// 몰이 상품에 부여한 사람이 읽는 코드. id(내부 식별자)와 다른 축이고 getOrders 의
 	// items[].product_code 와 같은 값이라, 주문에서 본 코드로 카탈로그 상품을 가리킬 수 있다.
 	// 코드 개념이 없는 몰은 비운다.
-	ProductCode   string `protobuf:"bytes,19,opt,name=product_code,json=productCode,proto3" json:"product_code,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ProductCode string `protobuf:"bytes,19,opt,name=product_code,json=productCode,proto3" json:"product_code,omitempty"`
+	// 판매자가 상품 단위로 직접 매긴 코드(카페24 "자체 상품코드", 아임웹 "자체 상품코드", 네이버
+	// "판매자 상품코드"). 플랫폼이 자동 부여하는 product_code 와 다른 축이고, 품목 단위 코드인
+	// variants[].sku 와 상속 관계가 아니라 별개다 — 상품 코드가 비어도 품목 코드는 채워질 수 있다.
+	// 상품 단위 자리가 없는 몰(Shopify)은 비운다.
+	SellerProductCode string `protobuf:"bytes,20,opt,name=seller_product_code,json=sellerProductCode,proto3" json:"seller_product_code,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *CommerceProduct) Reset() {
@@ -13532,6 +13537,13 @@ func (x *CommerceProduct) GetVariants() []*CommerceProductVariant {
 func (x *CommerceProduct) GetProductCode() string {
 	if x != nil {
 		return x.ProductCode
+	}
+	return ""
+}
+
+func (x *CommerceProduct) GetSellerProductCode() string {
+	if x != nil {
+		return x.SellerProductCode
 	}
 	return ""
 }
@@ -19374,7 +19386,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x05limit\x18\x03 \x01(\x05R\x05limit\"p\n" +
 	"\x19CommerceGetProductsOutput\x12?\n" +
 	"\bproducts\x18\x01 \x03(\v2#.channel.app.sdk.v1.CommerceProductR\bproducts\x12\x12\n" +
-	"\x04next\x18\x02 \x01(\tR\x04next\"\xf5\x04\n" +
+	"\x04next\x18\x02 \x01(\tR\x04next\"\xa5\x05\n" +
 	"\x0fCommerceProduct\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n" +
@@ -19400,7 +19412,8 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\x11 \x01(\x01R\tupdatedAt\x12F\n" +
 	"\bvariants\x18\x12 \x03(\v2*.channel.app.sdk.v1.CommerceProductVariantR\bvariants\x12!\n" +
-	"\fproduct_code\x18\x13 \x01(\tR\vproductCodeB\b\n" +
+	"\fproduct_code\x18\x13 \x01(\tR\vproductCode\x12.\n" +
+	"\x13seller_product_code\x18\x14 \x01(\tR\x11sellerProductCodeB\b\n" +
 	"\x06_priceB\x11\n" +
 	"\x0f_original_price\"\xe3\x01\n" +
 	"\x16CommerceProductVariant\x12\x0e\n" +

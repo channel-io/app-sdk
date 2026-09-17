@@ -43,7 +43,9 @@ enum `allowedValues`로 광고하고, 그 밖의 키는 거부하며 `name`은 �
 비웁니다. 그 밖의 값을 실으면 필드 하나가 아니라 응답 전체가 검증에서 떨어집니다. 상품 단위 `price`는
 가격을 variant에만 두는 몰에서는 비울 수 있습니다. `0`을 넣지 말고 비우면 소비자가 `variants[].price`를
 읽습니다. `currency`는 연동(몰)의 통화이며 `price`와 함께 싣습니다. `productCode`와 `variants[].sku`는
-주문의 `items[].productCode`·`items[].sku`와 같은 값입니다.
+주문의 `items[].productCode`·`items[].sku`와 같은 값입니다. `sellerProductCode`는 판매자가 상품 단위로
+직접 매긴 코드로, 플랫폼이 자동 부여하는 `productCode`와 다릅니다. `variants[].sku`로 상속되지 않는
+별개 값이며, 상품 단위 자리가 없는 몰에서는 비웁니다.
 
 ## TypeScript
 

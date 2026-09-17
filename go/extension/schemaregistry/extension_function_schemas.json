@@ -3309,6 +3309,9 @@
               },
               "productCode": {
                 "type": "string"
+              },
+              "sellerProductCode": {
+                "type": "string"
               }
             },
             "required": [

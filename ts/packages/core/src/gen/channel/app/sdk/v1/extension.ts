@@ -1800,7 +1800,16 @@ export interface CommerceProduct {
    * items[].product_code 와 같은 값이라, 주문에서 본 코드로 카탈로그 상품을 가리킬 수 있다.
    * 코드 개념이 없는 몰은 비운다.
    */
-  productCode?: string | undefined;
+  productCode?:
+    | string
+    | undefined;
+  /**
+   * 판매자가 상품 단위로 직접 매긴 코드(카페24 "자체 상품코드", 아임웹 "자체 상품코드", 네이버
+   * "판매자 상품코드"). 플랫폼이 자동 부여하는 product_code 와 다른 축이고, 품목 단위 코드인
+   * variants[].sku 와 상속 관계가 아니라 별개다 — 상품 코드가 비어도 품목 코드는 채워질 수 있다.
+   * 상품 단위 자리가 없는 몰(Shopify)은 비운다.
+   */
+  sellerProductCode?: string | undefined;
 }
 
 export interface CommerceProductVariant {
