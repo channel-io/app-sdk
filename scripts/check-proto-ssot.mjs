@@ -47,6 +47,7 @@ const allowedTsHelperTypes = new Set([
   "OAuthProviderI18nMap",
   "StaticDataSourceMetadata",
   "StoreProfileProvider",
+  "SuggestionTriggersProvider",
 ]);
 const allowedTsHelperSchemas = new Set([
   "ConfigI18nMapSchema",

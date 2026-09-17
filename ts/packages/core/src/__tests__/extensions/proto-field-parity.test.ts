@@ -151,6 +151,9 @@ import {
   NotebookTabSchema,
   PollingPollerSchema,
   PollingManagerTargetSchema,
+  GetSuggestionTriggersInputSchema,
+  SuggestionTriggersSchema,
+  GetSuggestionTriggersOutputSchema,
   PrebuiltBuildMediumTopicsInputSchema,
   PrebuiltBuildMediumTopicsOutputSchema,
   PrebuiltGetCustomEditorWamInputSchema,
@@ -441,6 +444,20 @@ const contracts: Contract[] = [
     GetPollingTargetManagersOutputSchema,
     "extension",
     "PollingGetTargetManagersOutput"
+  ),
+
+  contract(
+    "GetSuggestionTriggersInput",
+    GetSuggestionTriggersInputSchema,
+    "extension",
+    "SuggestionGetTriggersInput"
+  ),
+  contract("SuggestionTriggers", SuggestionTriggersSchema, "extension", "SuggestionTriggers"),
+  contract(
+    "GetSuggestionTriggersOutput",
+    GetSuggestionTriggersOutputSchema,
+    "extension",
+    "SuggestionGetTriggersOutput"
   ),
 
   contract("MailRelayHeader", MailRelayHeaderSchema, "extension", "MailRelayHeader"),

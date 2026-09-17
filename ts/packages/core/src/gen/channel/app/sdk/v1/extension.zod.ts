@@ -780,6 +780,20 @@ export const PollingGetTargetChannelsOutputProtoSchema = z.object({
 }) satisfies z.ZodType<pb.PollingGetTargetChannelsOutput>;
 export type PollingGetTargetChannelsOutputProto = z.infer<typeof PollingGetTargetChannelsOutputProtoSchema>;
 
+export const SuggestionTriggersProtoSchema = z.object({
+  urls: z.array(z.string()).optional(),
+  keywords: z.record(z.string(), z.any()).optional(),
+}) satisfies z.ZodType<pb.SuggestionTriggers>;
+export type SuggestionTriggersProto = z.infer<typeof SuggestionTriggersProtoSchema>;
+
+export const SuggestionGetTriggersInputProtoSchema = z.object({}) satisfies z.ZodType<pb.SuggestionGetTriggersInput>;
+export type SuggestionGetTriggersInputProto = z.infer<typeof SuggestionGetTriggersInputProtoSchema>;
+
+export const SuggestionGetTriggersOutputProtoSchema = z.object({
+  triggers: z.lazy(() => SuggestionTriggersProtoSchema).optional(),
+}) satisfies z.ZodType<pb.SuggestionGetTriggersOutput>;
+export type SuggestionGetTriggersOutputProto = z.infer<typeof SuggestionGetTriggersOutputProtoSchema>;
+
 export const MailRelayHeaderProtoSchema = z.object({
   name: z.string().optional(),
   value: z.string().optional(),
