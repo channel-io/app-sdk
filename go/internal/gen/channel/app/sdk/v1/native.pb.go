@@ -806,6 +806,285 @@ func (x *GetAppNotebookVersionsResult) GetNotebooks() []*AppNotebookVersion {
 	return nil
 }
 
+// Manager-authenticated OAuth onboarding state. Never contains provider credentials.
+type OAuthFlow struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// before, oauth, after, completed, or canceled.
+	Phase            string  `protobuf:"bytes,2,opt,name=phase,proto3" json:"phase,omitempty"`
+	ExpiresAt        string  `protobuf:"bytes,3,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	Key              *string `protobuf:"bytes,4,opt,name=key,proto3,oneof" json:"key,omitempty"`
+	TargetAuthScope  *string `protobuf:"bytes,5,opt,name=target_auth_scope,json=targetAuthScope,proto3,oneof" json:"target_auth_scope,omitempty"`
+	AuthorizationUrl *string `protobuf:"bytes,6,opt,name=authorization_url,json=authorizationURL,proto3,oneof" json:"authorization_url,omitempty"`
+	// False for another manager's read-only view or a flow that must be restarted.
+	CanResume     *bool `protobuf:"varint,7,opt,name=can_resume,json=canResume,proto3,oneof" json:"can_resume,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OAuthFlow) Reset() {
+	*x = OAuthFlow{}
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OAuthFlow) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OAuthFlow) ProtoMessage() {}
+
+func (x *OAuthFlow) ProtoReflect() protoreflect.Message {
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OAuthFlow.ProtoReflect.Descriptor instead.
+func (*OAuthFlow) Descriptor() ([]byte, []int) {
+	return file_channel_app_sdk_v1_native_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *OAuthFlow) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *OAuthFlow) GetPhase() string {
+	if x != nil {
+		return x.Phase
+	}
+	return ""
+}
+
+func (x *OAuthFlow) GetExpiresAt() string {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return ""
+}
+
+func (x *OAuthFlow) GetKey() string {
+	if x != nil && x.Key != nil {
+		return *x.Key
+	}
+	return ""
+}
+
+func (x *OAuthFlow) GetTargetAuthScope() string {
+	if x != nil && x.TargetAuthScope != nil {
+		return *x.TargetAuthScope
+	}
+	return ""
+}
+
+func (x *OAuthFlow) GetAuthorizationUrl() string {
+	if x != nil && x.AuthorizationUrl != nil {
+		return *x.AuthorizationUrl
+	}
+	return ""
+}
+
+func (x *OAuthFlow) GetCanResume() bool {
+	if x != nil && x.CanResume != nil {
+		return *x.CanResume
+	}
+	return false
+}
+
+type GetOAuthFlowParams struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FlowId        string                 `protobuf:"bytes,1,opt,name=flow_id,json=flowId,proto3" json:"flow_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetOAuthFlowParams) Reset() {
+	*x = GetOAuthFlowParams{}
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetOAuthFlowParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetOAuthFlowParams) ProtoMessage() {}
+
+func (x *GetOAuthFlowParams) ProtoReflect() protoreflect.Message {
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetOAuthFlowParams.ProtoReflect.Descriptor instead.
+func (*GetOAuthFlowParams) Descriptor() ([]byte, []int) {
+	return file_channel_app_sdk_v1_native_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *GetOAuthFlowParams) GetFlowId() string {
+	if x != nil {
+		return x.FlowId
+	}
+	return ""
+}
+
+type ResumeOAuthFlowParams struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FlowId        string                 `protobuf:"bytes,1,opt,name=flow_id,json=flowId,proto3" json:"flow_id,omitempty"`
+	ResumeNonce   *string                `protobuf:"bytes,2,opt,name=resume_nonce,json=resumeNonce,proto3,oneof" json:"resume_nonce,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResumeOAuthFlowParams) Reset() {
+	*x = ResumeOAuthFlowParams{}
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResumeOAuthFlowParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResumeOAuthFlowParams) ProtoMessage() {}
+
+func (x *ResumeOAuthFlowParams) ProtoReflect() protoreflect.Message {
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResumeOAuthFlowParams.ProtoReflect.Descriptor instead.
+func (*ResumeOAuthFlowParams) Descriptor() ([]byte, []int) {
+	return file_channel_app_sdk_v1_native_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *ResumeOAuthFlowParams) GetFlowId() string {
+	if x != nil {
+		return x.FlowId
+	}
+	return ""
+}
+
+func (x *ResumeOAuthFlowParams) GetResumeNonce() string {
+	if x != nil && x.ResumeNonce != nil {
+		return *x.ResumeNonce
+	}
+	return ""
+}
+
+type CancelOAuthFlowParams struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FlowId        string                 `protobuf:"bytes,1,opt,name=flow_id,json=flowId,proto3" json:"flow_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CancelOAuthFlowParams) Reset() {
+	*x = CancelOAuthFlowParams{}
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CancelOAuthFlowParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CancelOAuthFlowParams) ProtoMessage() {}
+
+func (x *CancelOAuthFlowParams) ProtoReflect() protoreflect.Message {
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CancelOAuthFlowParams.ProtoReflect.Descriptor instead.
+func (*CancelOAuthFlowParams) Descriptor() ([]byte, []int) {
+	return file_channel_app_sdk_v1_native_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *CancelOAuthFlowParams) GetFlowId() string {
+	if x != nil {
+		return x.FlowId
+	}
+	return ""
+}
+
+type OAuthFlowResult struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Flow          *OAuthFlow             `protobuf:"bytes,1,opt,name=flow,proto3,oneof" json:"flow,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OAuthFlowResult) Reset() {
+	*x = OAuthFlowResult{}
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OAuthFlowResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OAuthFlowResult) ProtoMessage() {}
+
+func (x *OAuthFlowResult) ProtoReflect() protoreflect.Message {
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OAuthFlowResult.ProtoReflect.Descriptor instead.
+func (*OAuthFlowResult) Descriptor() ([]byte, []int) {
+	return file_channel_app_sdk_v1_native_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *OAuthFlowResult) GetFlow() *OAuthFlow {
+	if x != nil {
+		return x.Flow
+	}
+	return nil
+}
+
 var File_channel_app_sdk_v1_native_proto protoreflect.FileDescriptor
 
 const file_channel_app_sdk_v1_native_proto_rawDesc = "" +
@@ -870,7 +1149,32 @@ const file_channel_app_sdk_v1_native_proto_rawDesc = "" +
 	"\x1cGetAppNotebookVersionsResult\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12#\n" +
 	"\rerror_message\x18\x02 \x01(\tR\ferrorMessage\x12D\n" +
-	"\tnotebooks\x18\x03 \x03(\v2&.channel.app.sdk.v1.AppNotebookVersionR\tnotebooksBHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
+	"\tnotebooks\x18\x03 \x03(\v2&.channel.app.sdk.v1.AppNotebookVersionR\tnotebooks\"\xb1\x02\n" +
+	"\tOAuthFlow\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05phase\x18\x02 \x01(\tR\x05phase\x12\x1d\n" +
+	"\n" +
+	"expires_at\x18\x03 \x01(\tR\texpiresAt\x12\x15\n" +
+	"\x03key\x18\x04 \x01(\tH\x00R\x03key\x88\x01\x01\x12/\n" +
+	"\x11target_auth_scope\x18\x05 \x01(\tH\x01R\x0ftargetAuthScope\x88\x01\x01\x120\n" +
+	"\x11authorization_url\x18\x06 \x01(\tH\x02R\x10authorizationURL\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"can_resume\x18\a \x01(\bH\x03R\tcanResume\x88\x01\x01B\x06\n" +
+	"\x04_keyB\x14\n" +
+	"\x12_target_auth_scopeB\x14\n" +
+	"\x12_authorization_urlB\r\n" +
+	"\v_can_resume\"-\n" +
+	"\x12GetOAuthFlowParams\x12\x17\n" +
+	"\aflow_id\x18\x01 \x01(\tR\x06flowId\"i\n" +
+	"\x15ResumeOAuthFlowParams\x12\x17\n" +
+	"\aflow_id\x18\x01 \x01(\tR\x06flowId\x12&\n" +
+	"\fresume_nonce\x18\x02 \x01(\tH\x00R\vresumeNonce\x88\x01\x01B\x0f\n" +
+	"\r_resume_nonce\"0\n" +
+	"\x15CancelOAuthFlowParams\x12\x17\n" +
+	"\aflow_id\x18\x01 \x01(\tR\x06flowId\"R\n" +
+	"\x0fOAuthFlowResult\x126\n" +
+	"\x04flow\x18\x01 \x01(\v2\x1d.channel.app.sdk.v1.OAuthFlowH\x00R\x04flow\x88\x01\x01B\a\n" +
+	"\x05_flowBHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
 
 var (
 	file_channel_app_sdk_v1_native_proto_rawDescOnce sync.Once
@@ -884,7 +1188,7 @@ func file_channel_app_sdk_v1_native_proto_rawDescGZIP() []byte {
 	return file_channel_app_sdk_v1_native_proto_rawDescData
 }
 
-var file_channel_app_sdk_v1_native_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_channel_app_sdk_v1_native_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_channel_app_sdk_v1_native_proto_goTypes = []any{
 	(*NativeFunctionRequest)(nil),         // 0: channel.app.sdk.v1.NativeFunctionRequest
 	(*NativeFunctionResponse)(nil),        // 1: channel.app.sdk.v1.NativeFunctionResponse
@@ -898,22 +1202,28 @@ var file_channel_app_sdk_v1_native_proto_goTypes = []any{
 	(*AppNotebookRegistrationResult)(nil), // 9: channel.app.sdk.v1.AppNotebookRegistrationResult
 	(*AppNotebookVersion)(nil),            // 10: channel.app.sdk.v1.AppNotebookVersion
 	(*GetAppNotebookVersionsResult)(nil),  // 11: channel.app.sdk.v1.GetAppNotebookVersionsResult
-	(*structpb.Value)(nil),                // 12: google.protobuf.Value
-	(*FunctionContext)(nil),               // 13: channel.app.sdk.v1.FunctionContext
-	(*FunctionError)(nil),                 // 14: channel.app.sdk.v1.FunctionError
+	(*OAuthFlow)(nil),                     // 12: channel.app.sdk.v1.OAuthFlow
+	(*GetOAuthFlowParams)(nil),            // 13: channel.app.sdk.v1.GetOAuthFlowParams
+	(*ResumeOAuthFlowParams)(nil),         // 14: channel.app.sdk.v1.ResumeOAuthFlowParams
+	(*CancelOAuthFlowParams)(nil),         // 15: channel.app.sdk.v1.CancelOAuthFlowParams
+	(*OAuthFlowResult)(nil),               // 16: channel.app.sdk.v1.OAuthFlowResult
+	(*structpb.Value)(nil),                // 17: google.protobuf.Value
+	(*FunctionContext)(nil),               // 18: channel.app.sdk.v1.FunctionContext
+	(*FunctionError)(nil),                 // 19: channel.app.sdk.v1.FunctionError
 }
 var file_channel_app_sdk_v1_native_proto_depIdxs = []int32{
-	12, // 0: channel.app.sdk.v1.NativeFunctionRequest.params:type_name -> google.protobuf.Value
-	13, // 1: channel.app.sdk.v1.NativeFunctionRequest.context:type_name -> channel.app.sdk.v1.FunctionContext
-	12, // 2: channel.app.sdk.v1.NativeFunctionResponse.result:type_name -> google.protobuf.Value
-	14, // 3: channel.app.sdk.v1.NativeFunctionResponse.error:type_name -> channel.app.sdk.v1.FunctionError
+	17, // 0: channel.app.sdk.v1.NativeFunctionRequest.params:type_name -> google.protobuf.Value
+	18, // 1: channel.app.sdk.v1.NativeFunctionRequest.context:type_name -> channel.app.sdk.v1.FunctionContext
+	17, // 2: channel.app.sdk.v1.NativeFunctionResponse.result:type_name -> google.protobuf.Value
+	19, // 3: channel.app.sdk.v1.NativeFunctionResponse.error:type_name -> channel.app.sdk.v1.FunctionError
 	7,  // 4: channel.app.sdk.v1.GetAlfTaskVersionsResult.tasks:type_name -> channel.app.sdk.v1.AlfTaskVersion
 	10, // 5: channel.app.sdk.v1.GetAppNotebookVersionsResult.notebooks:type_name -> channel.app.sdk.v1.AppNotebookVersion
-	6,  // [6:6] is the sub-list for method output_type
-	6,  // [6:6] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	12, // 6: channel.app.sdk.v1.OAuthFlowResult.flow:type_name -> channel.app.sdk.v1.OAuthFlow
+	7,  // [7:7] is the sub-list for method output_type
+	7,  // [7:7] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_channel_app_sdk_v1_native_proto_init() }
@@ -923,13 +1233,16 @@ func file_channel_app_sdk_v1_native_proto_init() {
 	}
 	file_channel_app_sdk_v1_context_proto_init()
 	file_channel_app_sdk_v1_error_proto_init()
+	file_channel_app_sdk_v1_native_proto_msgTypes[12].OneofWrappers = []any{}
+	file_channel_app_sdk_v1_native_proto_msgTypes[14].OneofWrappers = []any{}
+	file_channel_app_sdk_v1_native_proto_msgTypes[16].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_channel_app_sdk_v1_native_proto_rawDesc), len(file_channel_app_sdk_v1_native_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

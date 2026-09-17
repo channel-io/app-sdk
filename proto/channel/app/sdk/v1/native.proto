@@ -87,3 +87,33 @@ message GetAppNotebookVersionsResult {
   string error_message = 2;
   repeated AppNotebookVersion notebooks = 3;
 }
+
+// Manager-authenticated OAuth onboarding state. Never contains provider credentials.
+message OAuthFlow {
+  string id = 1;
+  // before, oauth, after, completed, or canceled.
+  string phase = 2;
+  string expires_at = 3;
+  optional string key = 4;
+  optional string target_auth_scope = 5;
+  optional string authorization_url = 6 [json_name = "authorizationURL"];
+  // False for another manager's read-only view or a flow that must be restarted.
+  optional bool can_resume = 7;
+}
+
+message GetOAuthFlowParams {
+  string flow_id = 1;
+}
+
+message ResumeOAuthFlowParams {
+  string flow_id = 1;
+  optional string resume_nonce = 2;
+}
+
+message CancelOAuthFlowParams {
+  string flow_id = 1;
+}
+
+message OAuthFlowResult {
+  optional OAuthFlow flow = 1;
+}

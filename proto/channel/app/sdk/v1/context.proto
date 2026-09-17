@@ -39,6 +39,18 @@ message WebhookEndpointContext {
   string url = 1;
 }
 
+// Platform-signed target for OAuth flow hooks; caller remains system.
+message OAuthFlowContext {
+  string app_id = 1;
+  string channel_id = 2;
+  // Manager who initiated the flow, not an impersonated caller.
+  string manager_id = 3;
+  // channel or manager.
+  string auth_scope = 4;
+  optional string key = 5;
+  optional string target_manager_id = 6;
+}
+
 message FunctionContext {
   Caller caller = 1;
   Channel channel = 2;
@@ -53,4 +65,5 @@ message FunctionContext {
   string session_id = 11;
   google.protobuf.Value seed_state = 12;
   map<string, WebhookEndpointContext> webhooks = 13;
+  OAuthFlowContext oauth_flow = 14;
 }

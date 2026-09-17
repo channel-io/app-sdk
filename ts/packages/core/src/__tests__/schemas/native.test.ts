@@ -1,6 +1,10 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
 import {
   NativeCreateAppDataTableParamsSchema,
+  NativeGetOAuthFlowParamsSchema,
+  NativeResumeOAuthFlowParamsSchema,
+  NativeCancelOAuthFlowParamsSchema,
+  NativeOAuthFlowResultSchema,
   NativeListActiveOAuthManagerTargetsParamsSchema,
   NativeListActiveOAuthManagerTargetsResultSchema,
   NativeUpsertAppDataTableRowsParamsSchema,
@@ -9,6 +13,10 @@ import {
 } from "../../schemas/native.js";
 import type {
   NativeFunctionParams,
+  NativeGetOAuthFlowParams,
+  NativeResumeOAuthFlowParams,
+  NativeCancelOAuthFlowParams,
+  NativeOAuthFlowResult,
   NativeFunctionResult,
   NativeListActiveOAuthManagerTargetsParams,
   NativeListActiveOAuthManagerTargetsResult,
@@ -22,6 +30,9 @@ describe("native function schemas", () => {
     const names = getNativeFunctionSchemas().map((schema) => schema.name);
 
     expect(names).toEqual([
+      "getOAuthFlow",
+      "resumeOAuthFlow",
+      "cancelOAuthFlow",
       "createAppDataTable",
       "createAppDataTableSchema",
       "getAppDataTableSchema",
@@ -29,7 +40,7 @@ describe("native function schemas", () => {
       "getAppNotebookVersions",
       "listActiveOAuthManagerTargets",
     ]);
-    expect(nativeFunctionSchemaDefinitions).toHaveLength(6);
+    expect(nativeFunctionSchemaDefinitions).toHaveLength(9);
   });
 
   it("validates createAppDataTable input", () => {
@@ -142,5 +153,63 @@ describe("native function schemas", () => {
     expectTypeOf<keyof NativeWritePrivateNoteDto>().toEqualTypeOf<
       "blocks" | "plainText" | "customPayload"
     >();
+  });
+});
+
+describe("manager OAuth flow contracts", () => {
+  it("accepts flow operations without caller-supplied identities", () => {
+    for (const schema of [NativeGetOAuthFlowParamsSchema, NativeCancelOAuthFlowParamsSchema]) {
+      expect(schema.parse({ flowId: "flow-1" })).toEqual({ flowId: "flow-1" });
+      expect(() => schema.parse({ flowId: "flow-1", managerId: "other" })).toThrow();
+    }
+    expect(NativeResumeOAuthFlowParamsSchema.parse({ flowId: "flow-1" })).toEqual({
+      flowId: "flow-1",
+    });
+    expect(
+      NativeResumeOAuthFlowParamsSchema.parse({ flowId: "flow-1", resumeNonce: "nonce" })
+    ).toEqual({ flowId: "flow-1", resumeNonce: "nonce" });
+    expect(() =>
+      NativeResumeOAuthFlowParamsSchema.parse({ flowId: "flow-1", resumeNonce: "" })
+    ).toThrow();
+    expect(() =>
+      NativeResumeOAuthFlowParamsSchema.parse({ flowId: "flow-1", authToken: "provider-token" })
+    ).toThrow();
+  });
+
+  it("keeps authorizationURL capitalization and credentials out of flow state", () => {
+    const flow = {
+      id: "flow-1",
+      phase: "after",
+      expiresAt: "2026-09-17T12:00:00Z",
+      authorizationURL: "https://setup.example/consent",
+      key: "resolved-organization-key",
+      canResume: false,
+    };
+    expect(NativeOAuthFlowResultSchema.parse({ flow })).toEqual({ flow });
+    expect(NativeOAuthFlowResultSchema.parse({})).toEqual({});
+    expect(() =>
+      NativeOAuthFlowResultSchema.parse({
+        flow: { ...flow, authorizationUrl: flow.authorizationURL },
+      })
+    ).toThrow();
+    expect(() =>
+      NativeOAuthFlowResultSchema.parse({ flow: { ...flow, authToken: "provider-token" } })
+    ).toThrow();
+    expect(() =>
+      NativeOAuthFlowResultSchema.parse({ flow: { ...flow, phase: "unknown" } })
+    ).toThrow();
+  });
+
+  it("maps all flow Native methods to the proto-backed DTOs", () => {
+    expectTypeOf<NativeFunctionParams<"getOAuthFlow">>().toEqualTypeOf<NativeGetOAuthFlowParams>();
+    expectTypeOf<
+      NativeFunctionParams<"resumeOAuthFlow">
+    >().toEqualTypeOf<NativeResumeOAuthFlowParams>();
+    expectTypeOf<
+      NativeFunctionParams<"cancelOAuthFlow">
+    >().toEqualTypeOf<NativeCancelOAuthFlowParams>();
+    expectTypeOf<NativeFunctionResult<"getOAuthFlow">>().toEqualTypeOf<NativeOAuthFlowResult>();
+    expectTypeOf<NativeFunctionResult<"resumeOAuthFlow">>().toEqualTypeOf<NativeOAuthFlowResult>();
+    expectTypeOf<NativeFunctionResult<"cancelOAuthFlow">>().toEqualTypeOf<NativeOAuthFlowResult>();
   });
 });

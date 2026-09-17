@@ -775,7 +775,33 @@ export interface HookConfig {
   actionFunctionName?: string | undefined;
   systemVersion?: string | undefined;
   targetId?: string | undefined;
-  webhook?: HookWebhookConfig | undefined;
+  webhook?:
+    | HookWebhookConfig
+    | undefined;
+  /**
+   * Only oauth.beforeAuthorization and oauth.afterAuthorization may declare
+   * redirect origins. Values are exact HTTPS origins without paths or wildcards.
+   */
+  redirectOrigins?: string[] | undefined;
+}
+
+/**
+ * Optional OAuth flow hooks are ordinary app functions registered by getHooks.
+ * The same hook is called again after authenticated resume to verify external state.
+ */
+export interface OAuthFlowHookInput {
+  flowId?: string | undefined;
+  resumeUrl?: string | undefined;
+  expiresAt?: string | undefined;
+}
+
+/**
+ * Exactly {type: "continue"} or {type: "redirect", url: "https://..."}.
+ * Runtime validation rejects additional fields and URL on a continue result.
+ */
+export interface OAuthFlowHookResult {
+  type?: string | undefined;
+  url?: string | undefined;
 }
 
 export interface HookGetHooksInput {

@@ -7,6 +7,8 @@ import type {
   HookUserChatOpenedInput as ProtoUserChatOpenedHookInput,
   HookUserChatOpenedResult as ProtoUserChatOpenedHookResult,
   HookWebhookConfig as ProtoWebhookConfig,
+  OAuthFlowHookInput as ProtoOAuthFlowHookInput,
+  OAuthFlowHookResult as ProtoOAuthFlowHookResult,
 } from "../gen/channel/app/sdk/v1/extension.js";
 
 type ProtoBacked<T extends Proto, Proto> = T;
@@ -25,6 +27,8 @@ export const HookTypeSchema = z.enum([
   "webhook.received",
   "oauth.connected",
   "oauth.disconnected",
+  "oauth.beforeAuthorization",
+  "oauth.afterAuthorization",
   "userChat.opened",
   "teamChat.messageCreated",
 ]);
@@ -44,6 +48,48 @@ const HookActionFunctionNameSchema = z
   .regex(/^[a-zA-Z_][a-zA-Z0-9._]*$/);
 
 const HookTargetIdSchema = z.string().min(1).max(255);
+
+const OAuthFlowRedirectOriginSchema = z
+  .string()
+  .url()
+  .regex(/^https:\/\/[^/?#@\\\s*]+$/)
+  .refine((value) => {
+    try {
+      return new URL(value).origin === value;
+    } catch {
+      return false;
+    }
+  }, "Expected a canonical HTTPS origin");
+
+const OAuthFlowURLSchema = z
+  .string()
+  .url()
+  .regex(/^https:\/\/[^/?#@\\\s]+(?:[/?#][^\\\s]*)?$/);
+
+/** Opaque flow reference and server-owned resume URL. Neither grants manager authority. */
+export const OAuthFlowHookInputSchema = z
+  .object({
+    flowId: z.string().min(1).max(255),
+    resumeUrl: OAuthFlowURLSchema,
+    expiresAt: z.string().datetime({ offset: true }),
+  })
+  .strict();
+
+export type OAuthFlowHookInput = ProtoBacked<
+  z.infer<typeof OAuthFlowHookInputSchema>,
+  ProtoOAuthFlowHookInput
+>;
+
+/** A redirect must also match the hook's registered redirectOrigins on the platform. */
+export const OAuthFlowHookResultSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("continue") }).strict(),
+  z.object({ type: z.literal("redirect"), url: OAuthFlowURLSchema }).strict(),
+]);
+
+export type OAuthFlowHookResult = ProtoBacked<
+  z.infer<typeof OAuthFlowHookResultSchema>,
+  ProtoOAuthFlowHookResult
+>;
 
 const WebhookTargetIdSchema = z
   .string()
@@ -248,6 +294,14 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.disconnected"),
+  }).strict(),
+  BaseHookConfigSchema.extend({
+    type: z.literal("oauth.beforeAuthorization"),
+    redirectOrigins: z.array(OAuthFlowRedirectOriginSchema).default([]),
+  }).strict(),
+  BaseHookConfigSchema.extend({
+    type: z.literal("oauth.afterAuthorization"),
+    redirectOrigins: z.array(OAuthFlowRedirectOriginSchema).default([]),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("userChat.opened"),

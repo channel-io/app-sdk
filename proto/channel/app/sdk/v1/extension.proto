@@ -661,6 +661,24 @@ message HookConfig {
   string system_version = 3;
   string target_id = 4;
   HookWebhookConfig webhook = 5;
+  // Only oauth.beforeAuthorization and oauth.afterAuthorization may declare
+  // redirect origins. Values are exact HTTPS origins without paths or wildcards.
+  repeated string redirect_origins = 6;
+}
+
+// Optional OAuth flow hooks are ordinary app functions registered by getHooks.
+// The same hook is called again after authenticated resume to verify external state.
+message OAuthFlowHookInput {
+  string flow_id = 1;
+  string resume_url = 2;
+  string expires_at = 3;
+}
+
+// Exactly {type: "continue"} or {type: "redirect", url: "https://..."}.
+// Runtime validation rejects additional fields and URL on a continue result.
+message OAuthFlowHookResult {
+  string type = 1;
+  optional string url = 2;
 }
 
 message HookGetHooksInput {}

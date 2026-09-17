@@ -116,6 +116,35 @@ export const NativeListActiveOAuthManagerTargetsResultSchema = z
   })
   .strict();
 
+export const NativeOAuthFlowSchema = z
+  .object({
+    id: NativeNonEmptyStringSchema,
+    phase: z.enum(["before", "oauth", "after", "completed", "canceled"]),
+    expiresAt: z.string().datetime({ offset: true }),
+    key: z.string().optional(),
+    targetAuthScope: z.string().optional(),
+    authorizationURL: z.string().url().optional(),
+    canResume: z.boolean().optional(),
+  })
+  .strict();
+
+export const NativeGetOAuthFlowParamsSchema = z
+  .object({ flowId: NativeNonEmptyStringSchema })
+  .strict();
+
+export const NativeResumeOAuthFlowParamsSchema = z
+  .object({
+    flowId: NativeNonEmptyStringSchema,
+    resumeNonce: NativeNonEmptyStringSchema.optional(),
+  })
+  .strict();
+
+export const NativeCancelOAuthFlowParamsSchema = NativeGetOAuthFlowParamsSchema;
+
+export const NativeOAuthFlowResultSchema = z
+  .object({ flow: NativeOAuthFlowSchema.optional() })
+  .strict();
+
 interface NativeFunctionSchemaDefinition {
   name: string;
   description: string;
@@ -124,6 +153,26 @@ interface NativeFunctionSchemaDefinition {
 }
 
 export const nativeFunctionSchemaDefinitions = [
+  {
+    name: "getOAuthFlow",
+    description:
+      "Read an OAuth flow as its initiating manager through the authenticated WAM session.",
+    input: NativeGetOAuthFlowParamsSchema,
+    output: NativeOAuthFlowResultSchema,
+  },
+  {
+    name: "resumeOAuthFlow",
+    description: "Resume an OAuth flow as its initiating manager and recheck the current app hook.",
+    input: NativeResumeOAuthFlowParamsSchema,
+    output: NativeOAuthFlowResultSchema,
+  },
+  {
+    name: "cancelOAuthFlow",
+    description:
+      "Cancel an OAuth flow as its initiating manager without revoking a saved credential.",
+    input: NativeCancelOAuthFlowParamsSchema,
+    output: NativeOAuthFlowResultSchema,
+  },
   {
     name: "createAppDataTable",
     description: "Create an app-owned logical data table.",
