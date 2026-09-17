@@ -46,6 +46,44 @@ describe("sanitizeForLogging", () => {
     });
   });
 
+  it.each([
+    "oauth%46lowNonce",
+    "oauth%5Fflow%5Fnonce",
+    "oauth%2Dflow%2Dnonce",
+    "oauth%20flow%20nonce",
+  ])("redacts encoded nonce name %s in direct and nested URLs", (nonceKey) => {
+    const resumeUrl = `https://desk.example/?${nonceKey}=secret`;
+    const redirectUrl = `https://setup.example/?returnTo=${encodeURIComponent(resumeUrl)}`;
+    expect(
+      sanitizeForLogging({
+        url: resumeUrl,
+        nested: { returnTo: `https://outer.example/?next=${encodeURIComponent(redirectUrl)}` },
+      })
+    ).toEqual({ url: "[REDACTED]", nested: { returnTo: "[REDACTED]" } });
+  });
+
+  it("redacts encoded nonces even when another URL component has malformed escapes", () => {
+    expect(
+      sanitizeForLogging({ url: "https://desk.example/?broken=%FF%&oauth%46lowNonce=secret" })
+    ).toEqual({ url: "[REDACTED]" });
+  });
+
+  it("redacts deeply encoded values without unbounded decoding", () => {
+    let url = "https://desk.example/?oauth%46lowNonce=secret";
+    for (let i = 0; i < 8; i++) {
+      url = encodeURIComponent(url);
+    }
+    expect(sanitizeForLogging({ url })).toEqual({ url: "[REDACTED]" });
+  });
+
+  it("preserves unrelated text and URLs, including malformed percent escapes", () => {
+    const value = {
+      url: "https://desk.example/?returnTo=https%3A%2F%2Fsetup.example%2Fdone&broken=%FF%",
+      message: "100% complete",
+    };
+    expect(sanitizeForLogging(value)).toEqual(value);
+  });
+
   it("should redact snake_case and kebab-case sensitive keys", () => {
     expect(
       sanitizeForLogging({
