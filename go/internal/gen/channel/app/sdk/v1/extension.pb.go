@@ -11494,6 +11494,8 @@ type CommerceOrderItem struct {
 	// 몰이 상품에 부여한 코드. product_id(내부 식별자)·sku(품목 단위 재고 코드)와 다른 축이다.
 	// 카페24는 숫자 product_no 와 사람이 읽는 product_code("P000000Y")를 따로 두고, CS 안내와
 	// 어드민 검색에는 후자를 쓴다. sku 에 넣으면 품목 단위 값이라는 뜻이 어긋난다.
+	// 판매자가 직접 매긴 상품 단위 자체 코드는 이 자리에도 sku 에도 넣지 않는다 — 상품 단위 자리는
+	// CommerceProduct.seller_product_code 이고, 주문 항목 쪽 자리는 지금 계약에 없다.
 	ProductCode   string `protobuf:"bytes,38,opt,name=product_code,json=productCode,proto3" json:"product_code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -11808,7 +11810,9 @@ type CommerceOrderBundleItem struct {
 	Amount       *float64 `protobuf:"fixed64,7,opt,name=amount,proto3,oneof" json:"amount,omitempty"`
 	OptionAmount *float64 `protobuf:"fixed64,8,opt,name=option_amount,json=optionAmount,proto3,oneof" json:"option_amount,omitempty"`
 	SupplierId   string   `protobuf:"bytes,9,opt,name=supplier_id,json=supplierId,proto3" json:"supplier_id,omitempty"`
-	// 상위 항목의 product_code 와 같은 뜻(품목 단위 sku 와 다른 축).
+	// 상위 항목의 product_code 와 같은 뜻(품목 단위 sku 와 다른 축). 판매자가 직접 매긴 상품 단위 자체 코드는
+	// 이 자리에도 sku 에도 넣지 않는다 — 상품 단위 자리는 CommerceProduct.seller_product_code 이고,
+	// 구성품 쪽 자리는 지금 계약에 없다.
 	ProductCode   string `protobuf:"bytes,10,opt,name=product_code,json=productCode,proto3" json:"product_code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -13512,9 +13516,16 @@ type CommerceProduct struct {
 	// 몰이 상품에 부여한 사람이 읽는 코드. id(내부 식별자)와 다른 축이고 getOrders 의
 	// items[].product_code 와 같은 값이라, 주문에서 본 코드로 카탈로그 상품을 가리킬 수 있다.
 	// 코드 개념이 없는 몰은 비운다.
-	ProductCode   string `protobuf:"bytes,19,opt,name=product_code,json=productCode,proto3" json:"product_code,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ProductCode string `protobuf:"bytes,19,opt,name=product_code,json=productCode,proto3" json:"product_code,omitempty"`
+	// 판매자가 상품 단위로 직접 매긴 코드(카페24 "자체 상품코드", 아임웹 "자체 상품코드", 네이버
+	// "판매자 상품코드"). 플랫폼이 자동 부여하는 product_code 와 다른 축이고, 품목 단위 코드인
+	// variants[].sku 와 상속 관계가 아니라 별개다 — 상품 코드가 비어도 품목 코드는 채워질 수 있다.
+	// 상품 단위 자리가 없고 코드를 variant 에만 두는 몰은 비운다. 공통 searchFilter 키로는 정의하지 않았다.
+	// 지금 계약에는 getOrders 의 items[]·bundleItems[] 에 대응 필드가 없고, 몰이 sku 와 별도로 입력받는
+	// 품목 단위 판매자 코드(카페24 "자체 품목코드")의 자리도 없다 — 그 값을 sku 에 넣지 않는다.
+	SellerProductCode string `protobuf:"bytes,20,opt,name=seller_product_code,json=sellerProductCode,proto3" json:"seller_product_code,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *CommerceProduct) Reset() {
@@ -13680,6 +13691,13 @@ func (x *CommerceProduct) GetProductCode() string {
 	return ""
 }
 
+func (x *CommerceProduct) GetSellerProductCode() string {
+	if x != nil {
+		return x.SellerProductCode
+	}
+	return ""
+}
+
 type CommerceProductVariant struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// variant id. getOrders 의 items[].variant_id, requestExchangeOrder 의
@@ -13692,7 +13710,9 @@ type CommerceProductVariant struct {
 	// 재고 수량. 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공을 구별해야 해서 optional 이다.
 	StockQuantity *float64                 `protobuf:"fixed64,3,opt,name=stock_quantity,json=stockQuantity,proto3,oneof" json:"stock_quantity,omitempty"`
 	Options       []*CommerceVariantOption `protobuf:"bytes,4,rep,name=options,proto3" json:"options,omitempty"`
-	// 품목 단위 재고 코드. getOrders 의 items[].sku 와 같은 값이다.
+	// 품목 단위 재고 코드. getOrders 의 items[].sku 와 같은 값이다. 몰의 sku 자체가 판매자 입력값이면
+	// (Shopify) 그대로 싣는다. 몰이 sku 와 별도로 판매자 품목 코드 입력란을 두는 경우(카페24 "자체
+	// 품목코드")에는 그 값을 여기에 넣지 않는다 — 지금 계약에 그 자리는 없다.
 	Sku           string `protobuf:"bytes,5,opt,name=sku,proto3" json:"sku,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -19649,7 +19669,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x05limit\x18\x03 \x01(\x05R\x05limit\"p\n" +
 	"\x19CommerceGetProductsOutput\x12?\n" +
 	"\bproducts\x18\x01 \x03(\v2#.channel.app.sdk.v1.CommerceProductR\bproducts\x12\x12\n" +
-	"\x04next\x18\x02 \x01(\tR\x04next\"\xf5\x04\n" +
+	"\x04next\x18\x02 \x01(\tR\x04next\"\xa5\x05\n" +
 	"\x0fCommerceProduct\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n" +
@@ -19675,7 +19695,8 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\x11 \x01(\x01R\tupdatedAt\x12F\n" +
 	"\bvariants\x18\x12 \x03(\v2*.channel.app.sdk.v1.CommerceProductVariantR\bvariants\x12!\n" +
-	"\fproduct_code\x18\x13 \x01(\tR\vproductCodeB\b\n" +
+	"\fproduct_code\x18\x13 \x01(\tR\vproductCode\x12.\n" +
+	"\x13seller_product_code\x18\x14 \x01(\tR\x11sellerProductCodeB\b\n" +
 	"\x06_priceB\x11\n" +
 	"\x0f_original_price\"\xe3\x01\n" +
 	"\x16CommerceProductVariant\x12\x0e\n" +

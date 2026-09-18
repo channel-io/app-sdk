@@ -45,7 +45,14 @@ two, or leave it unset when you cannot; any other value fails validation for the
 just the field. The product-level `price` may be absent when a mall prices only its variants — leave
 it unset rather than emitting `0`, and read `variants[].price` instead. `currency` is the currency of
 the mall connection; emit it together with `price`. `productCode` and `variants[].sku` carry the same
-values as `items[].productCode` and `items[].sku` on an order.
+values as `items[].productCode` and `items[].sku` on an order. `sellerProductCode` is the code a
+seller assigns to a product by hand, as opposed to the platform-assigned `productCode`; it is a
+separate value from `variants[].sku`, not one the variants inherit, and stays unset on platforms that
+have no product-level seller code. It is not defined as a common `searchFilter` key. As of this
+version an order's `items[]` and `bundleItems[]` have no counterpart field. `variants[].sku` stays
+the mall's item-level stock code — where the mall's SKU is itself what the merchant typed (Shopify),
+emit it as is; where the mall keeps a separate seller-entered variant code next to its SKU (Cafe24
+"custom variant code"), there is no slot for that value yet, so do not put it into `variants[].sku`.
 
 ## TypeScript
 
