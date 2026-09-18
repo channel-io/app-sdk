@@ -345,6 +345,7 @@ export const ConfigBlockProtoSchema = z.object({
   successMessage: z.string().optional(),
   showInOverviewMenu: z.boolean().optional(),
   hidden: z.boolean().optional(),
+  redirectOrigins: z.array(z.string()).optional(),
 }) satisfies z.ZodType<pb.ConfigBlock>;
 export type ConfigBlockProto = z.infer<typeof ConfigBlockProtoSchema>;
 
@@ -738,6 +739,7 @@ export const HookConfigProtoSchema = z.object({
   targetId: z.string().optional(),
   webhook: z.lazy(() => HookWebhookConfigProtoSchema).optional(),
   redirectOrigins: z.array(z.string()).optional(),
+  authScope: z.string().optional(),
 }) satisfies z.ZodType<pb.HookConfig>;
 export type HookConfigProto = z.infer<typeof HookConfigProtoSchema>;
 
@@ -2112,3 +2114,16 @@ export const DataSourceManagerPermissionProtoSchema = z.object({
   scope: z.string().optional(),
 }) satisfies z.ZodType<pb.DataSourceManagerPermission>;
 export type DataSourceManagerPermissionProto = z.infer<typeof DataSourceManagerPermissionProtoSchema>;
+
+export const ConfigActionRedirectProtoSchema = z.object({
+  url: z.string().optional(),
+  mode: z.string().optional(),
+}) satisfies z.ZodType<pb.ConfigActionRedirect>;
+export type ConfigActionRedirectProto = z.infer<typeof ConfigActionRedirectProtoSchema>;
+
+export const ConfigActionResultProtoSchema = z.object({
+  valuesPatch: z.record(z.string(), z.any()).optional(),
+  message: z.string().optional(),
+  redirect: z.lazy(() => ConfigActionRedirectProtoSchema).optional(),
+}) satisfies z.ZodType<pb.ConfigActionResult>;
+export type ConfigActionResultProto = z.infer<typeof ConfigActionResultProtoSchema>;

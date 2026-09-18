@@ -27,6 +27,8 @@ import {
   ConfigConditionSchema,
   ConfigChoicesSourceSchema,
   ConfigDraftResolutionOutputSchema,
+  ConfigActionResultSchema,
+  ConfigActionRedirectSchema,
   ConfigDraftResolutionParamsSchema,
   ConfigFieldSchema,
   ConfigHooksSchema,
@@ -396,6 +398,8 @@ const contracts: Contract[] = [
   contract("HookConfig", HookConfigSchema, "extension", "HookConfig"),
   contract("OAuthFlowHookInput", OAuthFlowHookInputSchema, "extension", "OAuthFlowHookInput"),
   contract("OAuthFlowHookResult", OAuthFlowHookResultSchema, "extension", "OAuthFlowHookResult"),
+  contract("ConfigActionResult", ConfigActionResultSchema, "extension", "ConfigActionResult"),
+  contract("ConfigActionRedirect", ConfigActionRedirectSchema, "extension", "ConfigActionRedirect"),
   contract("GetHooksOutput", GetHooksOutputSchema, "extension", "HookGetHooksOutput"),
   contract(
     "UserChatOpenedHookInput",

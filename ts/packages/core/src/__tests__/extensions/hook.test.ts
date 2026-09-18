@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  GetHooksOutputSchema,
   HookConfigSchema,
   HookTypeSchema,
   OAuthFlowHookInputSchema,
@@ -10,7 +11,82 @@ import {
 
 const endpointToken = "a".repeat(32);
 
+describe("GetHooksOutputSchema", () => {
+  it.each([
+    "oauth.beforeAuthorization",
+    "oauth.afterAuthorization",
+    "oauth.connected",
+    "oauth.disconnected",
+  ] as const)("rejects duplicate %s registrations for the same scope", (type) => {
+    for (const authScope of [undefined, "channel", "manager"] as const) {
+      const hook = { type, authScope, actionFunctionName: "hooks.oauth.first" };
+      const result = GetHooksOutputSchema.safeParse({
+        hooks: [hook, { ...hook, actionFunctionName: "hooks.oauth.second" }],
+      });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0]?.path).toEqual(["hooks", 1]);
+      }
+    }
+  });
+
+  it("allows distinct OAuth type/scope keys and preserves unrelated registrations", () => {
+    const hooks = [
+      "oauth.beforeAuthorization",
+      "oauth.afterAuthorization",
+      "oauth.connected",
+      "oauth.disconnected",
+    ].flatMap((type) =>
+      [undefined, "channel", "manager"].map((authScope) => ({
+        type,
+        authScope,
+        actionFunctionName: "hooks.oauth.handle",
+      }))
+    );
+    const webhook = {
+      type: "webhook.received",
+      targetId: "provider.events",
+      actionFunctionName: "hooks.webhook.handle",
+      webhook: { endpointToken },
+    };
+    expect(GetHooksOutputSchema.safeParse({ hooks: [...hooks, webhook, webhook] }).success).toBe(
+      true
+    );
+  });
+});
+
 describe("HookConfigSchema", () => {
+  it.each([
+    "oauth.beforeAuthorization",
+    "oauth.afterAuthorization",
+    "oauth.connected",
+    "oauth.disconnected",
+  ] as const)("accepts shared and concrete %s hooks without widening the scope", (type) => {
+    for (const authScope of [undefined, "channel", "manager"] as const) {
+      const parsed = HookConfigSchema.parse({
+        type,
+        actionFunctionName: "hooks.oauth.handle",
+        ...(authScope ? { authScope } : {}),
+      });
+      expect(parsed).toMatchObject({ type, ...(authScope ? { authScope } : {}) });
+    }
+    for (const authScope of ["caller", "", null, "user"]) {
+      expect(
+        HookConfigSchema.safeParse({ type, actionFunctionName: "hooks.oauth.handle", authScope })
+          .success
+      ).toBe(false);
+    }
+  });
+  it("forbids OAuth scope on unrelated hooks", () => {
+    expect(
+      HookConfigSchema.safeParse({
+        type: "config.saved",
+        actionFunctionName: "hooks.config.handle",
+        authScope: "channel",
+      }).success
+    ).toBe(false);
+  });
+
   it.each(["oauth.beforeAuthorization", "oauth.afterAuthorization"] as const)(
     "accepts optional %s flow hooks with exact redirect origins",
     (type) => {

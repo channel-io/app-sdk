@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { HTTPSRedirectOriginSchema, HTTPSRedirectURLSchema } from "../schemas/redirect.js";
 import type {
   HookConfig as ProtoHookConfig,
   HookGetHooksOutput as ProtoGetHooksOutput,
@@ -49,28 +50,11 @@ const HookActionFunctionNameSchema = z
 
 const HookTargetIdSchema = z.string().min(1).max(255);
 
-const OAuthFlowRedirectOriginSchema = z
-  .string()
-  .url()
-  .regex(/^https:\/\/[^/?#@\\\s*]+$/)
-  .refine((value) => {
-    try {
-      return new URL(value).origin === value;
-    } catch {
-      return false;
-    }
-  }, "Expected a canonical HTTPS origin");
-
-const OAuthFlowURLSchema = z
-  .string()
-  .url()
-  .regex(/^https:\/\/[^/?#@\\\s]+(?:[/?#][^\\\s]*)?$/);
-
 /** Opaque flow reference and server-owned resume URL. Neither grants manager authority. */
 export const OAuthFlowHookInputSchema = z
   .object({
     flowId: z.string().min(1).max(255),
-    resumeUrl: OAuthFlowURLSchema,
+    resumeUrl: HTTPSRedirectURLSchema,
     expiresAt: z.string().datetime({ offset: true }),
   })
   .strict();
@@ -83,7 +67,7 @@ export type OAuthFlowHookInput = ProtoBacked<
 /** A redirect must also match the hook's registered redirectOrigins on the platform. */
 export const OAuthFlowHookResultSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("continue") }).strict(),
-  z.object({ type: z.literal("redirect"), url: OAuthFlowURLSchema }).strict(),
+  z.object({ type: z.literal("redirect"), url: HTTPSRedirectURLSchema }).strict(),
 ]);
 
 export type OAuthFlowHookResult = ProtoBacked<
@@ -291,17 +275,21 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.connected"),
+    authScope: z.enum(["channel", "manager"]).optional(),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.disconnected"),
+    authScope: z.enum(["channel", "manager"]).optional(),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.beforeAuthorization"),
-    redirectOrigins: z.array(OAuthFlowRedirectOriginSchema).default([]),
+    authScope: z.enum(["channel", "manager"]).optional(),
+    redirectOrigins: z.array(HTTPSRedirectOriginSchema).default([]),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.afterAuthorization"),
-    redirectOrigins: z.array(OAuthFlowRedirectOriginSchema).default([]),
+    authScope: z.enum(["channel", "manager"]).optional(),
+    redirectOrigins: z.array(HTTPSRedirectOriginSchema).default([]),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("userChat.opened"),
@@ -317,7 +305,28 @@ export type HookConfig = ProtoBacked<z.infer<typeof HookConfigSchema>, ProtoHook
  * Metadata response schema for hook registration.
  */
 export const GetHooksOutputSchema = z.object({
-  hooks: z.array(HookConfigSchema),
+  hooks: z.array(HookConfigSchema).superRefine((hooks, ctx) => {
+    const seen = new Set<string>();
+    hooks.forEach((hook, index) => {
+      if (
+        hook.type !== "oauth.beforeAuthorization" &&
+        hook.type !== "oauth.afterAuthorization" &&
+        hook.type !== "oauth.connected" &&
+        hook.type !== "oauth.disconnected"
+      ) {
+        return;
+      }
+      const key = `${hook.type}:${hook.authScope ?? ""}`;
+      if (seen.has(key)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [index],
+          message: "Duplicate OAuth hook type and authScope",
+        });
+      }
+      seen.add(key);
+    });
+  }),
 });
 
 export type GetHooksOutput = ProtoBacked<z.infer<typeof GetHooksOutputSchema>, ProtoGetHooksOutput>;

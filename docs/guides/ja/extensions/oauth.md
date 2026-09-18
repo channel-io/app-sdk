@@ -52,8 +52,12 @@ err := app.Use(oauth.Extension().
 
 ## Lifecycle の復旧
 
-`oauth.connected` と `oauth.disconnected` Hook には `actionFunctionName` と optional
-`systemVersion` だけを登録します。どちらの lifecycle Hook にも `targetId`、`webhook`、endpoint
+`oauth.connected` と `oauth.disconnected` Hook には `actionFunctionName`、optional
+`systemVersion`、optional `authScope: "channel" | "manager"` を登録します。
+`authScope` を省略すると共通 fallback になり、一致する scope の Hook が優先されます。
+type と scope の組み合わせごとに Hook を 1 つだけ登録し、Hook scope に `caller` を使わないでください。
+scope ごとの登録を使う前に、プラットフォーム側の対応をデプロイしてください。
+どちらの lifecycle Hook にも `targetId`、`webhook`、endpoint
 token を入れないでください。Manager event では `params.managerId` で manager を識別します。
 `context.caller` は manager ではなく system caller のままで、`oauth.connected` の
 `context.authToken` には新しい provider access token が入ります。

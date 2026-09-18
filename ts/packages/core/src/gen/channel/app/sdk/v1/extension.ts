@@ -373,7 +373,11 @@ export interface ConfigBlock {
   afterSuccess?: string[] | undefined;
   successMessage?: string | undefined;
   showInOverviewMenu?: boolean | undefined;
-  hidden?: boolean | undefined;
+  hidden?:
+    | boolean
+    | undefined;
+  /** Action-only allowlist of exact canonical HTTPS origins; no wildcards or paths. */
+  redirectOrigins?: string[] | undefined;
 }
 
 export interface ConfigBlock_I18nMapEntry {
@@ -782,7 +786,11 @@ export interface HookConfig {
    * Only oauth.beforeAuthorization and oauth.afterAuthorization may declare
    * redirect origins. Values are exact HTTPS origins without paths or wildcards.
    */
-  redirectOrigins?: string[] | undefined;
+  redirectOrigins?:
+    | string[]
+    | undefined;
+  /** OAuth hooks only: channel or manager. Omit for the shared fallback. */
+  authScope?: string | undefined;
 }
 
 /**
@@ -2329,4 +2337,23 @@ export interface HookTeamChatMessageCreatedResult {
 export interface DataSourceManagerPermission {
   action?: string | undefined;
   scope?: string | undefined;
+}
+
+/**
+ * Browser navigation requested by an explicitly clicked Config action.
+ * The URL must match that action's registered redirect_origins.
+ */
+export interface ConfigActionRedirect {
+  url?:
+    | string
+    | undefined;
+  /** "currentTab" or "external". Omission defaults to "external". */
+  mode?: string | undefined;
+}
+
+/** Redirects run after successful after_success steps and do not imply connection completion. */
+export interface ConfigActionResult {
+  valuesPatch?: { [key: string]: any } | undefined;
+  message?: string | undefined;
+  redirect?: ConfigActionRedirect | undefined;
 }

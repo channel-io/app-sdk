@@ -1,5 +1,8 @@
 import { z } from "zod";
+import { HTTPSRedirectOriginSchema, HTTPSRedirectURLSchema } from "../schemas/redirect.js";
 import type {
+  ConfigActionRedirect as ProtoConfigActionRedirect,
+  ConfigActionResult as ProtoConfigActionResult,
   ConfigBlock as ProtoConfigBlock,
   ConfigChoice as ProtoConfigChoice,
   ConfigChoicesSource as ProtoConfigChoicesSource,
@@ -474,6 +477,7 @@ const ConfigActionBlockSchema = z.object({
   validationFieldKeys: z.array(z.string()).optional(),
   saveBeforeRun: z.boolean().optional(),
   afterSuccess: z.array(z.enum(["save", "delete", "reload"])).optional(),
+  redirectOrigins: z.array(HTTPSRedirectOriginSchema).optional(),
   successMessage: z.string().optional(),
   showInOverviewMenu: z.boolean().optional(),
   menuIcon: z.enum(["disconnect", "delete"]).optional(),
@@ -484,6 +488,28 @@ const ConfigActionBlockSchema = z.object({
 export type ConfigActionBlock = ProtoBacked<
   z.infer<typeof ConfigActionBlockSchema>,
   ProtoConfigBlock
+>;
+
+export const ConfigActionRedirectSchema = z
+  .object({
+    url: HTTPSRedirectURLSchema,
+    mode: z.enum(["currentTab", "external"]).optional(),
+  })
+  .strict();
+export type ConfigActionRedirect = ProtoBacked<
+  z.infer<typeof ConfigActionRedirectSchema>,
+  ProtoConfigActionRedirect
+>;
+
+/** Only an explicit action click handles redirect, after successful afterSuccess steps. */
+export const ConfigActionResultSchema = z.object({
+  valuesPatch: z.record(z.string(), z.unknown()).optional(),
+  message: z.string().optional(),
+  redirect: ConfigActionRedirectSchema.optional(),
+});
+export type ConfigActionResult = ProtoBacked<
+  z.infer<typeof ConfigActionResultSchema>,
+  ProtoConfigActionResult
 >;
 
 export const ConfigBlockSchema = z.union([

@@ -8,8 +8,24 @@ import (
 	"strings"
 )
 
-func validateOAuthRedirectOrigins(hooks []*Config) error {
+func validateOAuthHookMetadata(hooks []*Config) error {
+	seen := make(map[[2]string]bool)
 	for i, config := range hooks {
+		switch config.GetType() {
+		case TypeOAuthBeforeAuthorization, TypeOAuthAfterAuthorization, TypeOAuthConnected, TypeOAuthDisconnected:
+			if config.AuthScope != nil && config.GetAuthScope() != "channel" && config.GetAuthScope() != "manager" {
+				return fmt.Errorf("hook %d: authScope must be channel or manager", i)
+			}
+			key := [2]string{config.GetType(), config.GetAuthScope()}
+			if seen[key] {
+				return fmt.Errorf("hook %d: duplicate OAuth hook type and authScope", i)
+			}
+			seen[key] = true
+		default:
+			if config != nil && config.AuthScope != nil {
+				return fmt.Errorf("hook %d: authScope is only supported for OAuth hooks", i)
+			}
+		}
 		if config.GetType() != TypeOAuthBeforeAuthorization && config.GetType() != TypeOAuthAfterAuthorization {
 			if len(config.GetRedirectOrigins()) > 0 {
 				return fmt.Errorf("hook %d: redirectOrigins are only supported for OAuth flow hooks", i)
