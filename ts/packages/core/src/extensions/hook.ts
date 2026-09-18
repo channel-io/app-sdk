@@ -291,16 +291,20 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.connected"),
+    authScope: z.enum(["channel", "manager"]).optional(),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.disconnected"),
+    authScope: z.enum(["channel", "manager"]).optional(),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.beforeAuthorization"),
+    authScope: z.enum(["channel", "manager"]).optional(),
     redirectOrigins: z.array(OAuthFlowRedirectOriginSchema).default([]),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.afterAuthorization"),
+    authScope: z.enum(["channel", "manager"]).optional(),
     redirectOrigins: z.array(OAuthFlowRedirectOriginSchema).default([]),
   }).strict(),
   BaseHookConfigSchema.extend({

@@ -17715,6 +17715,13 @@
                   "type": {
                     "type": "string",
                     "const": "oauth.connected"
+                  },
+                  "authScope": {
+                    "type": "string",
+                    "enum": [
+                      "channel",
+                      "manager"
+                    ]
                   }
                 },
                 "required": [
@@ -17741,6 +17748,13 @@
                   "type": {
                     "type": "string",
                     "const": "oauth.disconnected"
+                  },
+                  "authScope": {
+                    "type": "string",
+                    "enum": [
+                      "channel",
+                      "manager"
+                    ]
                   }
                 },
                 "required": [
@@ -17767,6 +17781,13 @@
                   "type": {
                     "type": "string",
                     "const": "oauth.beforeAuthorization"
+                  },
+                  "authScope": {
+                    "type": "string",
+                    "enum": [
+                      "channel",
+                      "manager"
+                    ]
                   },
                   "redirectOrigins": {
                     "type": "array",
@@ -17802,6 +17823,13 @@
                   "type": {
                     "type": "string",
                     "const": "oauth.afterAuthorization"
+                  },
+                  "authScope": {
+                    "type": "string",
+                    "enum": [
+                      "channel",
+                      "manager"
+                    ]
                   },
                   "redirectOrigins": {
                     "type": "array",

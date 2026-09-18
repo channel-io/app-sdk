@@ -6252,8 +6252,10 @@ type HookConfig struct {
 	// Only oauth.beforeAuthorization and oauth.afterAuthorization may declare
 	// redirect origins. Values are exact HTTPS origins without paths or wildcards.
 	RedirectOrigins []string `protobuf:"bytes,6,rep,name=redirect_origins,json=redirectOrigins,proto3" json:"redirect_origins,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// OAuth hooks only: channel or manager. Omit for the shared fallback.
+	AuthScope     *string `protobuf:"bytes,7,opt,name=auth_scope,json=authScope,proto3,oneof" json:"auth_scope,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *HookConfig) Reset() {
@@ -6326,6 +6328,13 @@ func (x *HookConfig) GetRedirectOrigins() []string {
 		return x.RedirectOrigins
 	}
 	return nil
+}
+
+func (x *HookConfig) GetAuthScope() string {
+	if x != nil && x.AuthScope != nil {
+		return *x.AuthScope
+	}
+	return ""
 }
 
 // Optional OAuth flow hooks are ordinary app functions registered by getHooks.
@@ -18831,7 +18840,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"attributes\"c\n" +
 	"\x11HookWebhookConfig\x12%\n" +
 	"\x0eendpoint_token\x18\x01 \x01(\tR\rendpointToken\x12'\n" +
-	"\x0fexecution_scope\x18\x02 \x01(\tR\x0eexecutionScope\"\x82\x02\n" +
+	"\x0fexecution_scope\x18\x02 \x01(\tR\x0eexecutionScope\"\xb5\x02\n" +
 	"\n" +
 	"HookConfig\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x120\n" +
@@ -18839,7 +18848,10 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x0esystem_version\x18\x03 \x01(\tR\rsystemVersion\x12\x1b\n" +
 	"\ttarget_id\x18\x04 \x01(\tR\btargetId\x12?\n" +
 	"\awebhook\x18\x05 \x01(\v2%.channel.app.sdk.v1.HookWebhookConfigR\awebhook\x12)\n" +
-	"\x10redirect_origins\x18\x06 \x03(\tR\x0fredirectOrigins\"k\n" +
+	"\x10redirect_origins\x18\x06 \x03(\tR\x0fredirectOrigins\x12\"\n" +
+	"\n" +
+	"auth_scope\x18\a \x01(\tH\x00R\tauthScope\x88\x01\x01B\r\n" +
+	"\v_auth_scope\"k\n" +
 	"\x12OAuthFlowHookInput\x12\x17\n" +
 	"\aflow_id\x18\x01 \x01(\tR\x06flowId\x12\x1d\n" +
 	"\n" +
@@ -20512,6 +20524,7 @@ func file_channel_app_sdk_v1_extension_proto_init() {
 		return
 	}
 	file_channel_app_sdk_v1_common_proto_init()
+	file_channel_app_sdk_v1_extension_proto_msgTypes[83].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[85].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[116].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[117].OneofWrappers = []any{}

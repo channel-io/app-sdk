@@ -782,7 +782,11 @@ export interface HookConfig {
    * Only oauth.beforeAuthorization and oauth.afterAuthorization may declare
    * redirect origins. Values are exact HTTPS origins without paths or wildcards.
    */
-  redirectOrigins?: string[] | undefined;
+  redirectOrigins?:
+    | string[]
+    | undefined;
+  /** OAuth hooks only: channel or manager. Omit for the shared fallback. */
+  authScope?: string | undefined;
 }
 
 /**

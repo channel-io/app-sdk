@@ -138,3 +138,33 @@ func TestStaticTeamChatMessageCreatedHook(t *testing.T) {
 		t.Fatalf("unexpected TeamChat hook contract: input=%#v result=%#v", input, result)
 	}
 }
+
+func TestOAuthHookScopes(t *testing.T) {
+	for _, kind := range []string{TypeOAuthBeforeAuthorization, TypeOAuthAfterAuthorization, TypeOAuthConnected, TypeOAuthDisconnected} {
+		for _, scope := range []*string{nil, proto.String("channel"), proto.String("manager"), proto.String("caller"), proto.String("")} {
+			config := &Config{Type: kind, ActionFunctionName: "hooks.oauth.handle", AuthScope: scope}
+			result, err := StaticHooks(config)(context.Background(), appsdk.Context{}, &GetHooksRequest{})
+			valid := scope == nil || *scope == "channel" || *scope == "manager"
+			if valid != (err == nil) {
+				t.Fatalf("scope validation: kind=%s scope=%v err=%v", kind, scope, err)
+			}
+			if valid {
+				encoded, err := protojson.Marshal(result)
+				if err != nil {
+					t.Fatal(err)
+				}
+				var decoded GetHooksResponse
+				if err := protojson.Unmarshal(encoded, &decoded); err != nil || !proto.Equal(result, &decoded) {
+					t.Fatalf("scope round trip failed: %v", err)
+				}
+				if scope == nil && strings.Contains(string(encoded), "authScope") {
+					t.Fatalf("shared scope must stay omitted: %s", encoded)
+				}
+			}
+		}
+	}
+	_, err := StaticHooks(&Config{Type: TypeConfigSaved, ActionFunctionName: "hooks.config.handle", AuthScope: proto.String("channel")})(context.Background(), appsdk.Context{}, &GetHooksRequest{})
+	if err == nil {
+		t.Fatal("non-OAuth hook must reject authScope")
+	}
+}

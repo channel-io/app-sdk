@@ -11,6 +11,37 @@ import {
 const endpointToken = "a".repeat(32);
 
 describe("HookConfigSchema", () => {
+  it.each([
+    "oauth.beforeAuthorization",
+    "oauth.afterAuthorization",
+    "oauth.connected",
+    "oauth.disconnected",
+  ] as const)("accepts shared and concrete %s hooks without widening the scope", (type) => {
+    for (const authScope of [undefined, "channel", "manager"] as const) {
+      const parsed = HookConfigSchema.parse({
+        type,
+        actionFunctionName: "hooks.oauth.handle",
+        ...(authScope ? { authScope } : {}),
+      });
+      expect(parsed).toMatchObject({ type, ...(authScope ? { authScope } : {}) });
+    }
+    for (const authScope of ["caller", "", null, "user"]) {
+      expect(
+        HookConfigSchema.safeParse({ type, actionFunctionName: "hooks.oauth.handle", authScope })
+          .success
+      ).toBe(false);
+    }
+  });
+  it("forbids OAuth scope on unrelated hooks", () => {
+    expect(
+      HookConfigSchema.safeParse({
+        type: "config.saved",
+        actionFunctionName: "hooks.config.handle",
+        authScope: "channel",
+      }).success
+    ).toBe(false);
+  });
+
   it.each(["oauth.beforeAuthorization", "oauth.afterAuthorization"] as const)(
     "accepts optional %s flow hooks with exact redirect origins",
     (type) => {

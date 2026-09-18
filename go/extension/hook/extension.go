@@ -23,6 +23,8 @@ const (
 	TypeWidgetInstalled          = "widget.installed"
 	TypeWidgetUninstalled        = "widget.uninstalled"
 	TypeWebhookReceived          = "webhook.received"
+	TypeOAuthConnected           = "oauth.connected"
+	TypeOAuthDisconnected        = "oauth.disconnected"
 	TypeOAuthBeforeAuthorization = "oauth.beforeAuthorization"
 	TypeOAuthAfterAuthorization  = "oauth.afterAuthorization"
 	TypeTeamChatMessageCreated   = "teamChat.messageCreated"
@@ -57,7 +59,7 @@ func (b *ExtensionBuilder) GetHooks(handler appsdk.TypedHandlerFunc[GetHooksRequ
 			if err != nil {
 				return nil, err
 			}
-			return response, validateOAuthRedirectOrigins(response.GetHooks())
+			return response, validateOAuthHookMetadata(response.GetHooks())
 		},
 	))...)
 	return b
@@ -79,7 +81,7 @@ func (b *ExtensionBuilder) Register(app *appsdk.App) error {
 
 func StaticHooks(hooks ...*Config) appsdk.TypedHandlerFunc[GetHooksRequest, GetHooksResponse] {
 	return func(context.Context, appsdk.Context, *GetHooksRequest) (*GetHooksResponse, error) {
-		return &GetHooksResponse{Hooks: hooks}, validateOAuthRedirectOrigins(hooks)
+		return &GetHooksResponse{Hooks: hooks}, validateOAuthHookMetadata(hooks)
 	}
 }
 
