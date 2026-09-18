@@ -9,14 +9,20 @@ import (
 )
 
 func validateOAuthHookMetadata(hooks []*Config) error {
+	seen := make(map[[2]string]bool)
 	for i, config := range hooks {
-		if config != nil && config.AuthScope != nil {
-			switch config.GetType() {
-			case TypeOAuthBeforeAuthorization, TypeOAuthAfterAuthorization, TypeOAuthConnected, TypeOAuthDisconnected:
-				if config.GetAuthScope() != "channel" && config.GetAuthScope() != "manager" {
-					return fmt.Errorf("hook %d: authScope must be channel or manager", i)
-				}
-			default:
+		switch config.GetType() {
+		case TypeOAuthBeforeAuthorization, TypeOAuthAfterAuthorization, TypeOAuthConnected, TypeOAuthDisconnected:
+			if config.AuthScope != nil && config.GetAuthScope() != "channel" && config.GetAuthScope() != "manager" {
+				return fmt.Errorf("hook %d: authScope must be channel or manager", i)
+			}
+			key := [2]string{config.GetType(), config.GetAuthScope()}
+			if seen[key] {
+				return fmt.Errorf("hook %d: duplicate OAuth hook type and authScope", i)
+			}
+			seen[key] = true
+		default:
+			if config != nil && config.AuthScope != nil {
 				return fmt.Errorf("hook %d: authScope is only supported for OAuth hooks", i)
 			}
 		}

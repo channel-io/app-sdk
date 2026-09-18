@@ -53,8 +53,12 @@ err := app.Use(oauth.Extension().
 
 ## Lifecycle 복구
 
-`oauth.connected`와 `oauth.disconnected` Hook에는 `actionFunctionName`과 선택적
-`systemVersion`만 등록합니다. 두 lifecycle Hook에 `targetId`, `webhook`, endpoint token을
+`oauth.connected`와 `oauth.disconnected` Hook에는 `actionFunctionName`, 선택적
+`systemVersion`, 선택적 `authScope: "channel" | "manager"`를 등록합니다.
+`authScope`를 생략하면 공통 fallback이며, 일치하는 scope의 Hook이 우선합니다.
+type과 scope 조합마다 Hook을 하나만 등록하고, Hook scope에 `caller`를 사용하지 마세요.
+scope별 등록을 사용하기 전에 플랫폼 지원을 배포해야 합니다.
+두 lifecycle Hook에 `targetId`, `webhook`, endpoint token을
 넣지 마세요. Manager event에서는 `params.managerId`로 manager를 식별합니다.
 `context.caller`는 manager가 아니라 system caller이며, `oauth.connected`의
 `context.authToken`은 새 provider access token입니다.

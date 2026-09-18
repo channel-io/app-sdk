@@ -168,3 +168,37 @@ func TestOAuthHookScopes(t *testing.T) {
 		t.Fatal("non-OAuth hook must reject authScope")
 	}
 }
+
+func TestOAuthHookUniqueness(t *testing.T) {
+	type testCase struct {
+		name  string
+		hooks []*Config
+		valid bool
+	}
+	var tests []testCase
+	var distinct []*Config
+	for _, kind := range []string{TypeOAuthBeforeAuthorization, TypeOAuthAfterAuthorization, TypeOAuthConnected, TypeOAuthDisconnected} {
+		for _, scope := range []*string{nil, proto.String("channel"), proto.String("manager")} {
+			first := &Config{Type: kind, AuthScope: scope, ActionFunctionName: "hooks.oauth.first"}
+			second := &Config{Type: kind, AuthScope: scope, ActionFunctionName: "hooks.oauth.second"}
+			tests = append(tests, testCase{kind + "/" + first.GetAuthScope(), []*Config{first, second}, false})
+			distinct = append(distinct, first)
+		}
+	}
+	webhook := &Config{Type: TypeWebhookReceived, TargetId: "provider.events", ActionFunctionName: "hooks.webhook.handle"}
+	tests = append(tests, testCase{"distinct OAuth keys and unrelated registrations", append(distinct, webhook, webhook), true})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := StaticHooks(tt.hooks...)(context.Background(), appsdk.Context{}, &GetHooksRequest{})
+			if (err == nil) != tt.valid {
+				t.Errorf("StaticHooks error=%v, valid=%v", err, tt.valid)
+			}
+			response, _ := callGetHooks(t, func(context.Context, appsdk.Context, *GetHooksRequest) (*GetHooksResponse, error) {
+				return &GetHooksResponse{Hooks: tt.hooks}, nil
+			})
+			if (response.Error == nil) != tt.valid {
+				t.Errorf("GetHooks error=%v, valid=%v", response.Error, tt.valid)
+			}
+		})
+	}
+}

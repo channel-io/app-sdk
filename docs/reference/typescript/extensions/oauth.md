@@ -132,15 +132,22 @@ These are manager-level operations, not app-level registration calls.
 
 Register `oauth.connected` and `oauth.disconnected` through the Hook extension
 when the app must react to OAuth connection lifecycle changes. Each Hook config
-contains only `type`, `actionFunctionName`, and an optional `systemVersion`:
+contains `type`, `actionFunctionName`, optional `systemVersion`, and optional
+`authScope: "channel" | "manager"`:
 
 ```ts
 {
   type: "oauth.connected",
+  authScope: "manager",
   actionFunctionName: "hooks.oauth.onConnected",
   systemVersion: "v1",
 }
 ```
+
+Omit `authScope` for a shared fallback. A matching scoped Hook takes precedence;
+register at most one Hook per type and scope. `caller` is not a valid Hook scope.
+See [Scope-specific OAuth hooks](./hook.md#scope-specific-oauth-hooks) and deploy
+platform support before using scoped registrations.
 
 OAuth lifecycle Hook configs do not accept `targetId`, `webhook`, or a webhook
 endpoint token. Those settings belong only to a separately declared

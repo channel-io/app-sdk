@@ -36,9 +36,12 @@ alphanumeric character, and otherwise contains only `A-Z`, `a-z`, `0-9`, `.`,
 Manager-scoped hooks must omit it because AppStore issues a bound endpoint URL.
 The `webhook` field is not allowed on other hook types.
 
-OAuth lifecycle Hooks use only `actionFunctionName` and optional
-`systemVersion`; they must not include `targetId`, `webhook`, or an endpoint
-token. On a manager OAuth event, identify the manager from `params.managerId`.
+OAuth lifecycle Hooks use `actionFunctionName`, optional `systemVersion`, and
+optional `authScope: "channel" | "manager"`; omitting `authScope` keeps the shared
+fallback. A matching scoped Hook takes precedence over that fallback. See
+[Scope-specific OAuth hooks](#scope-specific-oauth-hooks) for registration rules.
+They must not include `targetId`, `webhook`, or an endpoint token.
+On a manager OAuth event, identify the manager from `params.managerId`.
 `context.caller` is still the system caller (`{ type: "system", id: "system" }`),
 not the manager. `oauth.connected` receives the newly issued provider access
 token in `context.authToken`.

@@ -321,7 +321,28 @@ export type HookConfig = ProtoBacked<z.infer<typeof HookConfigSchema>, ProtoHook
  * Metadata response schema for hook registration.
  */
 export const GetHooksOutputSchema = z.object({
-  hooks: z.array(HookConfigSchema),
+  hooks: z.array(HookConfigSchema).superRefine((hooks, ctx) => {
+    const seen = new Set<string>();
+    hooks.forEach((hook, index) => {
+      if (
+        hook.type !== "oauth.beforeAuthorization" &&
+        hook.type !== "oauth.afterAuthorization" &&
+        hook.type !== "oauth.connected" &&
+        hook.type !== "oauth.disconnected"
+      ) {
+        return;
+      }
+      const key = `${hook.type}:${hook.authScope ?? ""}`;
+      if (seen.has(key)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [index],
+          message: "Duplicate OAuth hook type and authScope",
+        });
+      }
+      seen.add(key);
+    });
+  }),
 });
 
 export type GetHooksOutput = ProtoBacked<z.infer<typeof GetHooksOutputSchema>, ProtoGetHooksOutput>;
