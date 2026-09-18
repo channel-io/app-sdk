@@ -49,8 +49,10 @@ values as `items[].productCode` and `items[].sku` on an order. `sellerProductCod
 seller assigns to a product by hand, as opposed to the platform-assigned `productCode`; it is a
 separate value from `variants[].sku`, not one the variants inherit, and stays unset on platforms that
 have no product-level seller code. It is not defined as a common `searchFilter` key. As of this
-version an order's `items[]` and `bundleItems[]` have no counterpart field, and there is no
-variant-level seller code slot — do not put one into `variants[].sku`.
+version an order's `items[]` and `bundleItems[]` have no counterpart field. `variants[].sku` stays
+the mall's item-level stock code — where the mall's SKU is itself what the merchant typed (Shopify),
+emit it as is; where the mall keeps a separate seller-entered variant code next to its SKU (Cafe24
+"custom variant code"), there is no slot for that value yet, so do not put it into `variants[].sku`.
 
 ## TypeScript
 

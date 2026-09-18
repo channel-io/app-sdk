@@ -11,8 +11,10 @@ enter them in a separate field the platform keeps for that purpose — Cafe24 "c
 that keys on the seller's own code could not read it from `getProducts`.
 
 The field is not defined as a common `searchFilter` key. `getOrders` `items[]` and `bundleItems[]`
-do not yet carry a counterpart, and there is no variant-level seller code slot yet; do not put one
-into `variants[].sku`, which stays the mall's item-level stock code.
+do not yet carry a counterpart. `variants[].sku` stays the mall's item-level stock code: where the
+mall's SKU is itself what the merchant typed (Shopify) it is emitted as is, and where the mall keeps
+a separate seller-entered variant code next to its SKU (Cafe24 "custom variant code") that value has
+no slot yet and does not go into `variants[].sku`.
 
 The field is deliberately not named `sku` and does not inherit into variants. Platforms that call
 the product-level code `sku` (BigCommerce, WooCommerce) let a variant inherit it when the variant's

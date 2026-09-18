@@ -47,8 +47,9 @@ err := app.Use(commerce.Extension().
 `sellerProductCode` は販売者が商品単位で自ら付けたコードで、プラットフォームが自動採番する
 `productCode` とは別です。`variants[].sku` に継承されない独立した値で、商品単位の欄がないモールでは
 空にします。共通の `searchFilter` キーとしては定義していません。現時点では注文の `items[]`・
-`bundleItems[]` に対応するフィールドはなく、品目単位の販売者コードの欄もありません。`variants[].sku` に
-入れないでください。
+`bundleItems[]` に対応するフィールドはありません。`variants[].sku` はモールの品目在庫コードのままです。
+モールの sku 自体が販売者の入力値なら（Shopify）そのまま載せ、モールが sku とは別に販売者の品目コード欄を
+持つ場合（Cafe24「自社品目コード」）はその値の欄がまだないため、`variants[].sku` に入れないでください。
 
 ## TypeScript
 

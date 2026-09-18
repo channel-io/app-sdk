@@ -60,7 +60,7 @@ export const CommerceOrderBundleItemSchema = z.object({
   amount: z.number().optional(),
   optionAmount: z.number().optional(),
   supplierId: z.string().optional(),
-  // 상위 항목의 productCode 와 같은 뜻(품목 단위 sku 와 다른 축). 판매자가 직접 매긴 자체 코드는 이 자리에도
+  // 상위 항목의 productCode 와 같은 뜻(품목 단위 sku 와 다른 축). 판매자가 직접 매긴 상품 단위 자체 코드는 이 자리에도
   // sku 에도 넣지 않는다 — 상품 단위 자리는 CommerceProduct.sellerProductCode 이고, 구성품 쪽 자리는 지금 계약에 없다.
   productCode: z.string().optional(),
 });
@@ -125,8 +125,8 @@ export const CommerceOrderItemSchema = z.object({
   // 이 항목이 속한 배송 건 코드. fulfillments[].id 와 대응한다.
   shippingCode: z.string().optional(),
   // 몰이 상품에 부여한 코드. productId(내부 식별자)·sku(품목 단위 재고 코드)와 다른 축이다. 판매자가 직접
-  // 매긴 자체 코드는 이 자리에도 sku 에도 넣지 않는다 — 상품 단위 자리는 CommerceProduct.sellerProductCode 이고,
-  // 주문 항목 쪽 자리는 지금 계약에 없다.
+  // 매긴 상품 단위 자체 코드는 이 자리에도 sku 에도 넣지 않는다 — 상품 단위 자리는 CommerceProduct.sellerProductCode
+  // 이고, 주문 항목 쪽 자리는 지금 계약에 없다.
   productCode: z.string().optional(),
 });
 export type CommerceOrderItem = ProtoBacked<
@@ -381,8 +381,9 @@ export const CommerceProductVariantSchema = z.object({
   // 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공은 다른 뜻이다.
   stockQuantity: z.number().optional(),
   options: z.array(CommerceVariantOptionSchema).optional(),
-  // 품목 단위 재고 코드. getOrders 의 items[].sku 와 같은 값이다. 판매자가 직접 매긴 품목 코드는 여기에 넣지
-  // 않는다(지금 계약에 그 자리는 없다).
+  // 품목 단위 재고 코드. getOrders 의 items[].sku 와 같은 값이다. 몰의 sku 자체가 판매자 입력값이면(Shopify)
+  // 그대로 싣는다. 몰이 sku 와 별도로 판매자 품목 코드 입력란을 두는 경우(카페24 "자체 품목코드")에는 그 값을
+  // 여기에 넣지 않는다 — 지금 계약에 그 자리는 없다.
   sku: z.string().optional(),
 });
 export type CommerceProductVariant = ProtoBacked<
@@ -424,8 +425,8 @@ export const CommerceProductSchema = z.object({
   // 판매자가 상품 단위로 직접 매긴 코드. 플랫폼이 자동 부여하는 productCode 와 다른 축이고, 품목 단위 코드인
   // variants[].sku 와 상속 관계가 아니라 별개다 — 상품 코드가 비어도 품목 코드는 채워질 수 있다. 상품 단위
   // 자리가 없고 코드를 variant 에만 두는 몰은 비운다. 공통 searchFilter 키로는 정의하지 않았다. 지금 계약에는
-  // getOrders 의 items[]·bundleItems[] 에 대응 필드가 없고 품목 단위 판매자 코드 자리도 없다 — sku 에 넣지
-  // 않는다.
+  // getOrders 의 items[]·bundleItems[] 에 대응 필드가 없고, 몰이 sku 와 별도로 입력받는 품목 단위 판매자
+  // 코드(카페24 "자체 품목코드")의 자리도 없다 — 그 값을 sku 에 넣지 않는다.
   sellerProductCode: z.string().optional(),
 });
 export type CommerceProduct = ProtoBacked<
