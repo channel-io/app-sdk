@@ -1517,7 +1517,11 @@ export interface CommerceOrderBundleItem {
   supplierId?:
     | string
     | undefined;
-  /** 상위 항목의 product_code 와 같은 뜻(품목 단위 sku 와 다른 축). */
+  /**
+   * 상위 항목의 product_code 와 같은 뜻(품목 단위 sku 와 다른 축). 판매자가 직접 매긴 자체 코드는
+   * 이 자리에도 sku 에도 넣지 않는다 — 상품 단위 자리는 CommerceProduct.seller_product_code 이고,
+   * 구성품 쪽 자리는 지금 계약에 없다.
+   */
   productCode?: string | undefined;
 }
 
@@ -1843,9 +1847,9 @@ export interface CommerceProduct {
    * 판매자가 상품 단위로 직접 매긴 코드(카페24 "자체 상품코드", 아임웹 "자체 상품코드", 네이버
    * "판매자 상품코드"). 플랫폼이 자동 부여하는 product_code 와 다른 축이고, 품목 단위 코드인
    * variants[].sku 와 상속 관계가 아니라 별개다 — 상품 코드가 비어도 품목 코드는 채워질 수 있다.
-   * 상품 단위 자리가 없고 코드를 variant 에만 두는 몰은 비운다. 출력 전용으로 두었고 공통 searchFilter
-   * 키로는 정의하지 않았다. 지금 계약에는 getOrders 의 items[]·bundleItems[] 에 대응 필드가 없고
-   * 품목 단위 판매자 코드 자리도 없다 — sku(몰의 품목 재고 코드)에 넣지 않는다.
+   * 상품 단위 자리가 없고 코드를 variant 에만 두는 몰은 비운다. 공통 searchFilter 키로는 정의하지 않았다.
+   * 지금 계약에는 getOrders 의 items[]·bundleItems[] 에 대응 필드가 없고 품목 단위 판매자 코드 자리도
+   * 없다 — sku(몰의 품목 재고 코드)에 넣지 않는다.
    */
   sellerProductCode?: string | undefined;
 }

@@ -10,9 +10,9 @@ enter them in a separate field the platform keeps for that purpose — Cafe24 "c
 `sellerManagementCode` — and the commerce contract had nowhere to carry that value, so a workflow
 that keys on the seller's own code could not read it from `getProducts`.
 
-The field is output only and is not defined as a common `searchFilter` key. `getOrders` `items[]`
-and `bundleItems[]` do not yet carry a counterpart, and there is no variant-level seller code slot
-yet; do not put one into `variants[].sku`, which stays the mall's item-level stock code.
+The field is not defined as a common `searchFilter` key. `getOrders` `items[]` and `bundleItems[]`
+do not yet carry a counterpart, and there is no variant-level seller code slot yet; do not put one
+into `variants[].sku`, which stays the mall's item-level stock code.
 
 The field is deliberately not named `sku` and does not inherit into variants. Platforms that call
 the product-level code `sku` (BigCommerce, WooCommerce) let a variant inherit it when the variant's
