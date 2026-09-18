@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  ConfigActionResultSchema,
+  ConfigBlockSchema,
   ConfigDraftResolutionParamsSchema,
   ConfigDraftResolutionOutputSchema,
   ConfigHooksSchema,
@@ -8,6 +10,55 @@ import {
 } from "../../extensions/index.js";
 
 describe("config extension schema", () => {
+  it("preserves action redirect metadata and optional results", () => {
+    const block = {
+      type: "action",
+      label: "Connect",
+      functionName: "commerce.connect",
+      redirectOrigins: ["https://connect.example.com"],
+    };
+    expect(ConfigBlockSchema.parse(block)).toEqual(block);
+    for (const mode of [undefined, "currentTab", "external"]) {
+      const result = { redirect: { url: "https://connect.example.com/start?channelId=1", mode } };
+      expect(ConfigActionResultSchema.parse(result)).toEqual(result);
+    }
+    expect(
+      ConfigActionResultSchema.parse({ valuesPatch: { enabled: true }, message: "Done" })
+    ).toEqual({ valuesPatch: { enabled: true }, message: "Done" });
+    expect(ConfigActionResultSchema.parse({})).toEqual({});
+  });
+
+  it.each([
+    "http://connect.example.com",
+    "https://*.example.com",
+    "https://connect.example.com/",
+    "https://CONNECT.example.com",
+    "https://connect.example.com:443",
+    "https://user@connect.example.com",
+    "https://connect.example.com?next=1",
+  ])("rejects noncanonical action redirect origin %s", (origin) => {
+    expect(
+      ConfigBlockSchema.safeParse({
+        type: "action",
+        label: "Connect",
+        functionName: "commerce.connect",
+        redirectOrigins: [origin],
+      }).success
+    ).toBe(false);
+  });
+
+  it.each([
+    null,
+    {},
+    { url: "javascript:alert(1)" },
+    { url: "http://connect.example.com" },
+    { url: "https://user@connect.example.com" },
+    { url: "https://connect.example.com\\\n" },
+    { url: "https://connect.example.com", mode: "popup" },
+  ])("rejects invalid action redirect %j", (redirect) => {
+    expect(ConfigActionResultSchema.safeParse({ redirect }).success).toBe(false);
+  });
+
   it("preserves hidden metadata on non-field config blocks", () => {
     const parsed = GetConfigSchemaOutputSchema.parse({
       schemaVersion: "v1",

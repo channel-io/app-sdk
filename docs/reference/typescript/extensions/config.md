@@ -37,6 +37,65 @@ For read-only values that should appear in the setup UI without being persisted,
 It covers `config.display.load`, ordinary Function registration, response validation, scoped inputs,
 and compatibility with the current SDK schema helpers.
 
+## Action redirects
+
+After App Store deploys Config action redirect support, a clicked action may return
+`ConfigActionResultSchema` / `ConfigActionResult` with an optional `redirect`:
+
+```typescript
+import {
+  ConfigActionResultSchema,
+  type ConfigActionBlock,
+} from "@channel.io/app-sdk-core";
+
+const connectAction: ConfigActionBlock = {
+  type: "action",
+  label: "Connect",
+  functionName: "commerce.connect",
+  redirectOrigins: ["https://connect.example.com"],
+};
+
+// Return this from commerce.connect, using trusted function context to select the channel.
+const result = ConfigActionResultSchema.parse({
+  redirect: {
+    url: "https://connect.example.com/start?channelId=123",
+    mode: "currentTab",
+  },
+});
+```
+
+Go exposes the same Proto-backed contract as `config.Block.RedirectOrigins`,
+`config.ActionResult`, and `config.ActionRedirect`:
+
+```go
+result := &config.ActionResult{
+    Redirect: &config.ActionRedirect{
+        Url: "https://connect.example.com/start?channelId=123",
+        Mode: "currentTab",
+    },
+}
+```
+
+- `mode` accepts `currentTab` or `external`; omission defaults to `external`.
+- `redirectOrigins` belongs to the action block. Entries must be exact canonical
+  HTTPS origins without paths, queries, fragments, userinfo, or wildcards. Missing
+  or empty allowlists deny navigation. The WAM validates both the result and the
+  allowlist at runtime; the SDK result schema alone does not authorize a destination.
+- `validateBeforeRun` and `saveBeforeRun` keep their existing order. The WAM validates
+  the returned redirect before applying `valuesPatch`, runs `afterSuccess` steps,
+  and navigates only after they succeed. A navigation failure does not undo a saved
+  or deleted config. A blocked external window is reported as an error.
+- Only explicit action clicks handle redirects. Draft/display hooks and default
+  selector callbacks do not. Read-only transient setup screens need no save event.
+- A redirect suppresses `message`, `successMessage`, and the default success banner:
+  opening a URL does not mean a connection succeeded. Reload connection status with
+  `config.display.load` when the user returns. No AS OAuth session or resume URL is created.
+- Use authenticated function context for channel/actor authority. A channel ID in
+  action params is not proof of permission. For store-specific origins, use an
+  appropriately validated fixed connection entrypoint instead of a wildcard allowlist.
+- Existing results with only `valuesPatch` and/or `message` retain their behavior.
+  Older WAMs ignore redirect results, so deploy the platform before enabling them in apps.
+
 ## Multi Config
 
 Set `supportsMultiple: true` when one scope can store multiple independent config items. Each item has a stable outer `key`. Ordinary app functions receive `{ [key]: values }` in `ctx.config`, even when only one item exists. Stored-config validation receives the selected item's flat `values` object in `ctx.config`.

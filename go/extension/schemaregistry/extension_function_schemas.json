@@ -10165,6 +10165,14 @@
                       ]
                     }
                   },
+                  "redirectOrigins": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uri",
+                      "pattern": "^https:\\/\\/[^/?#@\\\\\\s*]+$"
+                    }
+                  },
                   "successMessage": {
                     "type": "string"
                   },
