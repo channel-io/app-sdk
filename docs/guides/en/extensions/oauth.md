@@ -52,9 +52,13 @@ or channel token.
 
 ## Lifecycle recovery
 
-Register `oauth.connected` and `oauth.disconnected` Hook handlers with only
-`actionFunctionName` and optional `systemVersion`; do not put `targetId`,
-`webhook`, or an endpoint token on either lifecycle Hook. For manager events,
+Register `oauth.connected` and `oauth.disconnected` Hook handlers with
+`actionFunctionName`, optional `systemVersion`, and optional
+`authScope: "channel" | "manager"`. Omit `authScope` for a shared fallback; a
+matching scoped Hook takes precedence. Register at most one Hook per type and
+scope; `caller` is not a valid Hook scope. Deploy platform support before using
+scoped registrations. Do not put `targetId`, `webhook`, or an endpoint token on
+either lifecycle Hook. For manager events,
 use `params.managerId` as the manager identity. `context.caller` remains the
 system caller, not the manager, and `context.authToken` is the newly issued
 provider access token on `oauth.connected`.

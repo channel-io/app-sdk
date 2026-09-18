@@ -739,6 +739,7 @@ export const HookConfigProtoSchema = z.object({
   targetId: z.string().optional(),
   webhook: z.lazy(() => HookWebhookConfigProtoSchema).optional(),
   redirectOrigins: z.array(z.string()).optional(),
+  authScope: z.string().optional(),
 }) satisfies z.ZodType<pb.HookConfig>;
 export type HookConfigProto = z.infer<typeof HookConfigProtoSchema>;
 

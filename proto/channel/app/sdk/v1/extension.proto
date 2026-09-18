@@ -666,6 +666,8 @@ message HookConfig {
   // Only oauth.beforeAuthorization and oauth.afterAuthorization may declare
   // redirect origins. Values are exact HTTPS origins without paths or wildcards.
   repeated string redirect_origins = 6;
+  // OAuth hooks only: channel or manager. Omit for the shared fallback.
+  optional string auth_scope = 7;
 }
 
 // Optional OAuth flow hooks are ordinary app functions registered by getHooks.

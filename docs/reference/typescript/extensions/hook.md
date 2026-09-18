@@ -36,9 +36,12 @@ alphanumeric character, and otherwise contains only `A-Z`, `a-z`, `0-9`, `.`,
 Manager-scoped hooks must omit it because AppStore issues a bound endpoint URL.
 The `webhook` field is not allowed on other hook types.
 
-OAuth lifecycle Hooks use only `actionFunctionName` and optional
-`systemVersion`; they must not include `targetId`, `webhook`, or an endpoint
-token. On a manager OAuth event, identify the manager from `params.managerId`.
+OAuth lifecycle Hooks use `actionFunctionName`, optional `systemVersion`, and
+optional `authScope: "channel" | "manager"`; omitting `authScope` keeps the shared
+fallback. A matching scoped Hook takes precedence over that fallback. See
+[Scope-specific OAuth hooks](#scope-specific-oauth-hooks) for registration rules.
+They must not include `targetId`, `webhook`, or an endpoint token.
+On a manager OAuth event, identify the manager from `params.managerId`.
 `context.caller` is still the system caller (`{ type: "system", id: "system" }`),
 not the manager. `oauth.connected` receives the newly issued provider access
 token in `context.authToken`.
@@ -296,3 +299,28 @@ Use hooks for:
 - reacting to command enable/disable
 - provisioning resources when a specific widget is installed
 - receiving external provider events without operating a separate webhook gateway
+
+### Scope-specific OAuth hooks
+
+The four OAuth hook types (`oauth.beforeAuthorization`, `oauth.afterAuthorization`,
+`oauth.connected`, `oauth.disconnected`) accept optional `authScope: "channel" | "manager"`.
+This is the concrete OAuth credential target, including when the OAuth configuration
+uses `authScope: "caller"`; `caller` is not a valid hook scope.
+
+```typescript
+return {
+  hooks: [
+    { type: "oauth.connected", authScope: "channel", actionFunctionName: "hooks.channelConnected" },
+    { type: "oauth.connected", authScope: "manager", actionFunctionName: "hooks.managerConnected" },
+    { type: "oauth.disconnected", actionFunctionName: "hooks.sharedDisconnected" },
+  ],
+};
+```
+
+Register at most one hook per type and scope. For each event or authorization
+phase, the matching scoped hook takes precedence over the shared hook with no
+`authScope`. Only one hook runs. Without a matching scoped or shared registration,
+the hook is skipped; the other scope's hook is never used. Existing registrations
+without `authScope` retain their behavior. `targetId` remains forbidden on OAuth
+hooks, and `redirectOrigins` remains exclusive to the two authorization hooks.
+Deploy platform support before using scoped registrations.
