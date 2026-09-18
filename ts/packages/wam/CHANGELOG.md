@@ -1,5 +1,22 @@
 # @channel.io/app-sdk-wam
 
+## 0.26.0
+
+### Minor Changes
+
+- 8e738f3: Add optional OAuth before/after authorization hooks with allowlisted redirects,
+  strict flow input/result schemas, and typed manager-authenticated flow Native
+  operations. Infer known Native parameters and results in the WAM hook.
+  Redact flow resume nonces and resume URLs from SDK logs.
+
+### Patch Changes
+
+- Updated dependencies [91c7950]
+- Updated dependencies [c7467db]
+- Updated dependencies [ea88a07]
+- Updated dependencies [8e738f3]
+  - @channel.io/app-sdk-core@0.26.0
+
 ## 0.25.0
 
 ### Patch Changes
