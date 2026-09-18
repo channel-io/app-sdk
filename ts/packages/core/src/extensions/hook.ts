@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { HTTPSRedirectOriginSchema, HTTPSRedirectURLSchema } from "../schemas/redirect.js";
 import type {
   HookConfig as ProtoHookConfig,
   HookGetHooksOutput as ProtoGetHooksOutput,
@@ -49,28 +50,11 @@ const HookActionFunctionNameSchema = z
 
 const HookTargetIdSchema = z.string().min(1).max(255);
 
-const OAuthFlowRedirectOriginSchema = z
-  .string()
-  .url()
-  .regex(/^https:\/\/[^/?#@\\\s*]+$/)
-  .refine((value) => {
-    try {
-      return new URL(value).origin === value;
-    } catch {
-      return false;
-    }
-  }, "Expected a canonical HTTPS origin");
-
-const OAuthFlowURLSchema = z
-  .string()
-  .url()
-  .regex(/^https:\/\/[^/?#@\\\s]+(?:[/?#][^\\\s]*)?$/);
-
 /** Opaque flow reference and server-owned resume URL. Neither grants manager authority. */
 export const OAuthFlowHookInputSchema = z
   .object({
     flowId: z.string().min(1).max(255),
-    resumeUrl: OAuthFlowURLSchema,
+    resumeUrl: HTTPSRedirectURLSchema,
     expiresAt: z.string().datetime({ offset: true }),
   })
   .strict();
@@ -83,7 +67,7 @@ export type OAuthFlowHookInput = ProtoBacked<
 /** A redirect must also match the hook's registered redirectOrigins on the platform. */
 export const OAuthFlowHookResultSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("continue") }).strict(),
-  z.object({ type: z.literal("redirect"), url: OAuthFlowURLSchema }).strict(),
+  z.object({ type: z.literal("redirect"), url: HTTPSRedirectURLSchema }).strict(),
 ]);
 
 export type OAuthFlowHookResult = ProtoBacked<
@@ -297,11 +281,11 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.beforeAuthorization"),
-    redirectOrigins: z.array(OAuthFlowRedirectOriginSchema).default([]),
+    redirectOrigins: z.array(HTTPSRedirectOriginSchema).default([]),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.afterAuthorization"),
-    redirectOrigins: z.array(OAuthFlowRedirectOriginSchema).default([]),
+    redirectOrigins: z.array(HTTPSRedirectOriginSchema).default([]),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("userChat.opened"),
