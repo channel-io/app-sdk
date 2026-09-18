@@ -46,6 +46,7 @@ const (
 	BlockTypeBanner      = "banner"
 	BlockTypeGroup       = "group"
 	BlockTypeNative      = "native"
+	BlockTypeAction      = "action"
 )
 
 type ExtensionBuilder struct {
@@ -147,6 +148,8 @@ type PhoneFieldLabels = sdkv1.ConfigPhoneFieldLabels
 type AddressFieldLabels = sdkv1.ConfigAddressFieldLabels
 type Field = sdkv1.ConfigField
 type Block = sdkv1.ConfigBlock
+type ActionRedirect = sdkv1.ConfigActionRedirect
+type ActionResult = sdkv1.ConfigActionResult
 type ValidateStoredConfigRequest = sdkv1.ConfigValidateStoredConfigInput
 type ValidateStoredConfigResponse = sdkv1.ConfigValidateStoredConfigOutput
 type ValidationError = sdkv1.ConfigValidationError

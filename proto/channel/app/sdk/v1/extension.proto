@@ -324,6 +324,8 @@ message ConfigBlock {
   string success_message = 65;
   bool show_in_overview_menu = 66;
   bool hidden = 67;
+  // Action-only allowlist of exact canonical HTTPS origins; no wildcards or paths.
+  repeated string redirect_origins = 68;
 }
 
 message ConfigGetConfigSchemaInput {}
@@ -2001,4 +2003,19 @@ message HookTeamChatMessageCreatedResult {
 message DataSourceManagerPermission {
   string action = 1;
   string scope = 2;
+}
+
+// Browser navigation requested by an explicitly clicked Config action.
+// The URL must match that action's registered redirect_origins.
+message ConfigActionRedirect {
+  string url = 1;
+  // "currentTab" or "external". Omission defaults to "external".
+  string mode = 2;
+}
+
+// Redirects run after successful after_success steps and do not imply connection completion.
+message ConfigActionResult {
+  google.protobuf.Struct values_patch = 1;
+  string message = 2;
+  ConfigActionRedirect redirect = 3;
 }

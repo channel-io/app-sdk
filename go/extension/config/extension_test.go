@@ -2,12 +2,48 @@ package config_test
 
 import (
 	"context"
+	"encoding/json"
+	"reflect"
 	"testing"
 
 	"github.com/channel-io/app-sdk/go/appsdk"
 	"github.com/channel-io/app-sdk/go/extension/config"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
+
+func TestActionRedirectJSONContract(t *testing.T) {
+	block := &config.Block{
+		Type: config.BlockTypeAction, Label: "Connect", FunctionName: "commerce.connect",
+		RedirectOrigins: []string{"https://connect.example.com"},
+	}
+	result := &config.ActionResult{Redirect: &config.ActionRedirect{
+		Url: "https://connect.example.com/start?channelId=1", Mode: "currentTab",
+	}}
+	for _, test := range []struct {
+		value proto.Message
+		want  string
+	}{
+		{block, `{"type":"action","label":"Connect","functionName":"commerce.connect","redirectOrigins":["https://connect.example.com"]}`},
+		{result, `{"redirect":{"url":"https://connect.example.com/start?channelId=1","mode":"currentTab"}}`},
+		{&config.ActionResult{Message: "Done"}, `{"message":"Done"}`},
+	} {
+		raw, err := protojson.Marshal(test.value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var got, want any
+		if err := json.Unmarshal(raw, &got); err != nil {
+			t.Fatal(err)
+		}
+		if err := json.Unmarshal([]byte(test.want), &want); err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Fatalf("got %s, want %s", raw, test.want)
+		}
+	}
+}
 
 func TestExtensionRegistersConfigSchema(t *testing.T) {
 	app := appsdk.New(appsdk.Options{AppID: "app"})
