@@ -380,6 +380,29 @@ message OAuthProviderLocalizedText {
   string provider_description = 2;
 }
 
+// Plain presentation only. Icons: installation, account, organization, permission, settings.
+message OAuthStepDisplay {
+  string title = 1;
+  optional string description = 2;
+  optional string icon = 3;
+  map<string, OAuthStepLocalizedText> i18n_map = 4;
+}
+
+message OAuthStepLocalizedText {
+  optional string title = 1;
+  optional string description = 2;
+}
+
+// Platform-owned progress; apps cannot declare execution steps or statuses.
+message OAuthFlowStep {
+  string id = 1;
+  string title = 2;
+  optional string description = 3;
+  string icon = 4;
+  string status = 5;
+  optional string detail = 6;
+}
+
 message OAuthProvider {
   string provider = 1;
   string authorization_url = 2;
@@ -398,6 +421,7 @@ message OAuthProvider {
   OAuthTokenRequestMapping token_request = 15;
   OAuthTokenResponseMapping token_response = 16;
   map<string, OAuthProviderLocalizedText> i18n_map = 17;
+  OAuthStepDisplay authorization_display = 18;
 }
 
 message OAuthGetAuthConfigInput {}
@@ -668,6 +692,8 @@ message HookConfig {
   repeated string redirect_origins = 6;
   // OAuth hooks only: channel or manager. Omit for the shared fallback.
   optional string auth_scope = 7;
+  // Authorization flow hooks only.
+  OAuthStepDisplay display = 8;
 }
 
 // Optional OAuth flow hooks are ordinary app functions registered by getHooks.
@@ -678,11 +704,12 @@ message OAuthFlowHookInput {
   string expires_at = 3;
 }
 
-// Exactly {type: "continue"} or {type: "redirect", url: "https://..."}.
+// Continue or redirect action, with an optional plain-text result summary.
 // Runtime validation rejects additional fields and URL on a continue result.
 message OAuthFlowHookResult {
   string type = 1;
   optional string url = 2;
+  optional string detail = 3;
 }
 
 message HookGetHooksInput {}

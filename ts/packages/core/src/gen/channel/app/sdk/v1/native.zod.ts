@@ -4,6 +4,7 @@ import { z } from "zod";
 import type * as pb from "./native.js";
 import { FunctionContextProtoSchema } from "./context.zod.js";
 import { FunctionErrorProtoSchema } from "./error.zod.js";
+import { OAuthFlowStepProtoSchema } from "./extension.zod.js";
 
 export const NativeFunctionRequestProtoSchema = z.object({
   method: z.string().optional(),
@@ -105,22 +106,26 @@ export const OAuthFlowProtoSchema = z.object({
   targetAuthScope: z.string().optional(),
   authorizationURL: z.string().optional(),
   canResume: z.boolean().optional(),
+  steps: z.array(OAuthFlowStepProtoSchema).optional(),
 }) satisfies z.ZodType<pb.OAuthFlow>;
 export type OAuthFlowProto = z.infer<typeof OAuthFlowProtoSchema>;
 
 export const GetOAuthFlowParamsProtoSchema = z.object({
   flowId: z.string().optional(),
+  language: z.string().optional(),
 }) satisfies z.ZodType<pb.GetOAuthFlowParams>;
 export type GetOAuthFlowParamsProto = z.infer<typeof GetOAuthFlowParamsProtoSchema>;
 
 export const ResumeOAuthFlowParamsProtoSchema = z.object({
   flowId: z.string().optional(),
   resumeNonce: z.string().optional(),
+  language: z.string().optional(),
 }) satisfies z.ZodType<pb.ResumeOAuthFlowParams>;
 export type ResumeOAuthFlowParamsProto = z.infer<typeof ResumeOAuthFlowParamsProtoSchema>;
 
 export const CancelOAuthFlowParamsProtoSchema = z.object({
   flowId: z.string().optional(),
+  language: z.string().optional(),
 }) satisfies z.ZodType<pb.CancelOAuthFlowParams>;
 export type CancelOAuthFlowParamsProto = z.infer<typeof CancelOAuthFlowParamsProtoSchema>;
 

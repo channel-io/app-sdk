@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { OAuthStepDisplaySchema } from "./oauth.js";
 import { HTTPSRedirectOriginSchema, HTTPSRedirectURLSchema } from "../schemas/redirect.js";
 import type {
   HookConfig as ProtoHookConfig,
@@ -66,8 +67,14 @@ export type OAuthFlowHookInput = ProtoBacked<
 
 /** A redirect must also match the hook's registered redirectOrigins on the platform. */
 export const OAuthFlowHookResultSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("continue") }).strict(),
-  z.object({ type: z.literal("redirect"), url: HTTPSRedirectURLSchema }).strict(),
+  z.object({ type: z.literal("continue"), detail: z.string().max(200).optional() }).strict(),
+  z
+    .object({
+      type: z.literal("redirect"),
+      url: HTTPSRedirectURLSchema,
+      detail: z.string().max(200).optional(),
+    })
+    .strict(),
 ]);
 
 export type OAuthFlowHookResult = ProtoBacked<
@@ -285,11 +292,13 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
     type: z.literal("oauth.beforeAuthorization"),
     authScope: z.enum(["channel", "manager"]).optional(),
     redirectOrigins: z.array(HTTPSRedirectOriginSchema).default([]),
+    display: OAuthStepDisplaySchema.optional(),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("oauth.afterAuthorization"),
     authScope: z.enum(["channel", "manager"]).optional(),
     redirectOrigins: z.array(HTTPSRedirectOriginSchema).default([]),
+    display: OAuthStepDisplaySchema.optional(),
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("userChat.opened"),

@@ -40,7 +40,13 @@ func Extension() *ExtensionBuilder {
 }
 
 func (b *ExtensionBuilder) GetAuthConfig(handler appsdk.TypedHandlerFunc[GetAuthConfigRequest, AuthConfig]) *ExtensionBuilder {
-	b.base.Func(FunctionGetAuthConfig, schemaregistry.Append(FunctionGetAuthConfig, appsdk.HandleProto(handler))...)
+	b.base.Func(FunctionGetAuthConfig, schemaregistry.Append(FunctionGetAuthConfig, appsdk.HandleProto(func(ctx context.Context, fnCtx appsdk.Context, input *GetAuthConfigRequest) (*AuthConfig, error) {
+		result, err := handler(ctx, fnCtx, input)
+		if err != nil {
+			return nil, err
+		}
+		return result, extensionkit.ValidateOAuthStepDisplay(result.GetOauthProvider().GetAuthorizationDisplay())
+	}))...)
 	return b
 }
 
@@ -65,7 +71,7 @@ func (b *ExtensionBuilder) Register(app *appsdk.App) error {
 
 func StaticAuthConfig(config *AuthConfig) appsdk.TypedHandlerFunc[GetAuthConfigRequest, AuthConfig] {
 	return func(context.Context, appsdk.Context, *GetAuthConfigRequest) (*AuthConfig, error) {
-		return config, nil
+		return config, extensionkit.ValidateOAuthStepDisplay(config.GetOauthProvider().GetAuthorizationDisplay())
 	}
 }
 
@@ -90,4 +96,15 @@ const (
 	LocaleKO = "ko"
 	LocaleJA = "ja"
 	LocaleEN = "en"
+)
+
+type OAuthStepDisplay = sdkv1.OAuthStepDisplay
+type OAuthStepLocalizedText = sdkv1.OAuthStepLocalizedText
+
+const (
+	OAuthStepIconInstallation = "installation"
+	OAuthStepIconAccount      = "account"
+	OAuthStepIconOrganization = "organization"
+	OAuthStepIconPermission   = "permission"
+	OAuthStepIconSettings     = "settings"
 )

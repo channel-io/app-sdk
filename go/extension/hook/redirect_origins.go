@@ -2,6 +2,7 @@ package hook
 
 import (
 	"fmt"
+	extensionkit "github.com/channel-io/app-sdk/go/extension"
 	"net/netip"
 	"net/url"
 	"strconv"
@@ -27,10 +28,16 @@ func validateOAuthHookMetadata(hooks []*Config) error {
 			}
 		}
 		if config.GetType() != TypeOAuthBeforeAuthorization && config.GetType() != TypeOAuthAfterAuthorization {
+			if config.GetDisplay() != nil {
+				return fmt.Errorf("display is only supported on OAuth flow hooks")
+			}
 			if len(config.GetRedirectOrigins()) > 0 {
 				return fmt.Errorf("hook %d: redirectOrigins are only supported for OAuth flow hooks", i)
 			}
 			continue
+		}
+		if err := extensionkit.ValidateOAuthStepDisplay(config.GetDisplay()); err != nil {
+			return err
 		}
 		for _, origin := range config.RedirectOrigins {
 			if !isCanonicalHTTPSOrigin(origin) {

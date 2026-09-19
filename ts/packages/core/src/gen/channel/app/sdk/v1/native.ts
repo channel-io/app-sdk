@@ -7,6 +7,7 @@
 /* eslint-disable */
 import type { FunctionContext } from "./context.js";
 import type { FunctionError } from "./error.js";
+import type { OAuthFlowStep } from "./extension.js";
 
 export const protobufPackage = "channel.app.sdk.v1";
 
@@ -105,19 +106,23 @@ export interface OAuthFlow {
     | undefined;
   /** False for another manager's read-only view or a flow that must be restarted. */
   canResume?: boolean | undefined;
+  steps?: OAuthFlowStep[] | undefined;
 }
 
 export interface GetOAuthFlowParams {
   flowId?: string | undefined;
+  language?: string | undefined;
 }
 
 export interface ResumeOAuthFlowParams {
   flowId?: string | undefined;
   resumeNonce?: string | undefined;
+  language?: string | undefined;
 }
 
 export interface CancelOAuthFlowParams {
   flowId?: string | undefined;
+  language?: string | undefined;
 }
 
 export interface OAuthFlowResult {

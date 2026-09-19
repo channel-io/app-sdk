@@ -150,6 +150,19 @@ declares `[]`; its parser restores the empty list when reading Go responses.
 Both `GetHooks` and `StaticHooks` validate flow-hook origins before returning them,
 including rejection of uppercase hosts and explicit default port `:443`.
 
+Authorization hooks can optionally set `Display: &oauth.OAuthStepDisplay{...}`;
+the provider uses the same type in `AuthorizationDisplay`. Set `Icon` with
+`proto.String(oauth.OAuthStepIconInstallation)` or the `Account`, `Organization`,
+`Permission`, and `Settings` constants. Omitting it selects the platform default.
+The metadata handlers validate these fields; other hook types reject `Display`.
+Results may add `Detail: proto.String("example-organization")` (up to 200 characters).
+Ordinary Function handlers can call `hook.ValidateOAuthFlowHookResult` before returning;
+App Store also validates the result and the redirect allowlist.
+Native flow responses expose optional `Steps`, and flow requests accept `Language`.
+See [step presentation](../typescript/extensions/oauth.md#optional-oauth-step-presentation)
+for text limits, translations, progress, and compatibility. Enable these fields only
+after platform support is deployed; this change does not migrate the GitHub app.
+
 Server-side extension DTOs are defined in proto first. Go extension packages
 either expose generated DTOs directly, as `extension/wms` and
 `extension/messaging` do, or expose `Proto*` aliases alongside existing

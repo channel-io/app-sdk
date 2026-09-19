@@ -324,3 +324,10 @@ the hook is skipped; the other scope's hook is never used. Existing registration
 without `authScope` retain their behavior. `targetId` remains forbidden on OAuth
 hooks, and `redirectOrigins` remains exclusive to the two authorization hooks.
 Deploy platform support before using scoped registrations.
+
+
+## Optional OAuth step presentation
+
+Authorization hooks accept optional `display: OAuthStepDisplay`. The result accepts optional `detail` (up to 200 characters) on either `continue` or `redirect`. `oauth.connected` and other lifecycle hooks cannot declare display metadata. App Store owns progress; detail is not completion evidence.
+
+See [OAuth step presentation](oauth.md#optional-oauth-step-presentation) for icon values, translations, text limits, progress states, and rollout requirements.

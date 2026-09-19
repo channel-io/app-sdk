@@ -10,6 +10,7 @@ describe("useNativeFunction types", () => {
       expectTypeOf(resume.call).parameter(0).toEqualTypeOf<{
         flowId: string;
         resumeNonce?: string | undefined;
+        language?: string | undefined;
       }>();
       expectTypeOf(resume.data).toEqualTypeOf<NativeOAuthFlowResult | null>();
       void resume.call({ flowId: "flow-1", resumeNonce: "nonce" });
