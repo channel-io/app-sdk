@@ -17815,7 +17815,8 @@
                       "title": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 80
+                        "maxLength": 80,
+                        "pattern": "\\S"
                       },
                       "description": {
                         "type": "string",
@@ -17839,7 +17840,8 @@
                             "title": {
                               "type": "string",
                               "minLength": 1,
-                              "maxLength": 80
+                              "maxLength": 80,
+                              "pattern": "\\S"
                             },
                             "description": {
                               "type": "string",
@@ -17847,6 +17849,11 @@
                             }
                           },
                           "additionalProperties": false
+                        },
+                        "propertyNames": {
+                          "minLength": 2,
+                          "maxLength": 2,
+                          "pattern": "^(ko|en|ja)$"
                         }
                       }
                     },
@@ -17903,7 +17910,8 @@
                       "title": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 80
+                        "maxLength": 80,
+                        "pattern": "\\S"
                       },
                       "description": {
                         "type": "string",
@@ -17927,7 +17935,8 @@
                             "title": {
                               "type": "string",
                               "minLength": 1,
-                              "maxLength": 80
+                              "maxLength": 80,
+                              "pattern": "\\S"
                             },
                             "description": {
                               "type": "string",
@@ -17935,6 +17944,11 @@
                             }
                           },
                           "additionalProperties": false
+                        },
+                        "propertyNames": {
+                          "minLength": 2,
+                          "maxLength": 2,
+                          "pattern": "^(ko|en|ja)$"
                         }
                       }
                     },
@@ -21963,7 +21977,8 @@
                 "title": {
                   "type": "string",
                   "minLength": 1,
-                  "maxLength": 80
+                  "maxLength": 80,
+                  "pattern": "\\S"
                 },
                 "description": {
                   "type": "string",
@@ -21987,7 +22002,8 @@
                       "title": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 80
+                        "maxLength": 80,
+                        "pattern": "\\S"
                       },
                       "description": {
                         "type": "string",
@@ -21995,6 +22011,11 @@
                       }
                     },
                     "additionalProperties": false
+                  },
+                  "propertyNames": {
+                    "minLength": 2,
+                    "maxLength": 2,
+                    "pattern": "^(ko|en|ja)$"
                   }
                 }
               },

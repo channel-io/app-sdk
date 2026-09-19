@@ -57,7 +57,7 @@ export type OAuthStepIcon = z.infer<typeof OAuthStepIconSchema>;
 
 export const OAuthStepLocalizedTextSchema = z
   .object({
-    title: z.string().min(1).max(80).optional(),
+    title: z.string().min(1).max(80).regex(/\S/, "OAuth step title must not be blank").optional(),
     description: z.string().max(300).optional(),
   })
   .strict();
@@ -68,22 +68,17 @@ export type OAuthStepLocalizedText = ProtoBacked<
 
 export const OAuthStepDisplaySchema = z
   .object({
-    title: z.string().trim().min(1).max(80),
+    title: z.string().min(1).max(80).regex(/\S/, "OAuth step title must not be blank"),
     description: z.string().max(300).optional(),
     icon: OAuthStepIconSchema.optional(),
     i18nMap: z
-      .record(z.string(), OAuthStepLocalizedTextSchema)
-      .superRefine((value, ctx) => {
-        for (const locale of Object.keys(value)) {
-          if (!OAuthProviderSupportedLocaleSchema.safeParse(locale).success) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              path: [locale],
-              message: "Unsupported OAuth step locale",
-            });
-          }
-        }
-      })
+      .record(
+        z
+          .string()
+          .length(2)
+          .regex(/^(ko|en|ja)$/),
+        OAuthStepLocalizedTextSchema
+      )
       .optional(),
   })
   .strict();
