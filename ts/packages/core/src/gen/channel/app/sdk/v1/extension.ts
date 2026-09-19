@@ -448,6 +448,34 @@ export interface OAuthProviderLocalizedText {
   providerDescription?: string | undefined;
 }
 
+/** Plain presentation only. Icons: installation, account, organization, permission, settings. */
+export interface OAuthStepDisplay {
+  title?: string | undefined;
+  description?: string | undefined;
+  icon?: string | undefined;
+  i18nMap?: { [key: string]: OAuthStepLocalizedText } | undefined;
+}
+
+export interface OAuthStepDisplay_I18nMapEntry {
+  key: string;
+  value?: OAuthStepLocalizedText | undefined;
+}
+
+export interface OAuthStepLocalizedText {
+  title?: string | undefined;
+  description?: string | undefined;
+}
+
+/** Platform-owned progress; apps cannot declare execution steps or statuses. */
+export interface OAuthFlowStep {
+  id?: string | undefined;
+  title?: string | undefined;
+  description?: string | undefined;
+  icon?: string | undefined;
+  status?: string | undefined;
+  detail?: string | undefined;
+}
+
 export interface OAuthProvider {
   provider?: string | undefined;
   authorizationUrl?: string | undefined;
@@ -466,6 +494,7 @@ export interface OAuthProvider {
   tokenRequest?: OAuthTokenRequestMapping | undefined;
   tokenResponse?: OAuthTokenResponseMapping | undefined;
   i18nMap?: { [key: string]: OAuthProviderLocalizedText } | undefined;
+  authorizationDisplay?: OAuthStepDisplay | undefined;
 }
 
 export interface OAuthProvider_AdditionalParamsEntry {
@@ -790,7 +819,11 @@ export interface HookConfig {
     | string[]
     | undefined;
   /** OAuth hooks only: channel or manager. Omit for the shared fallback. */
-  authScope?: string | undefined;
+  authScope?:
+    | string
+    | undefined;
+  /** Authorization flow hooks only. */
+  display?: OAuthStepDisplay | undefined;
 }
 
 /**
@@ -804,12 +837,13 @@ export interface OAuthFlowHookInput {
 }
 
 /**
- * Exactly {type: "continue"} or {type: "redirect", url: "https://..."}.
+ * Continue or redirect action, with an optional plain-text result summary.
  * Runtime validation rejects additional fields and URL on a continue result.
  */
 export interface OAuthFlowHookResult {
   type?: string | undefined;
   url?: string | undefined;
+  detail?: string | undefined;
 }
 
 export interface HookGetHooksInput {

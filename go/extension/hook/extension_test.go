@@ -27,8 +27,12 @@ func TestOAuthFlowHookContracts(t *testing.T) {
 	}
 	for _, result := range []*OAuthFlowHookResult{
 		{Type: OAuthFlowResultContinue},
+		{Type: OAuthFlowResultContinue, Detail: proto.String("example-org")},
 		{Type: OAuthFlowResultRedirect, Url: proto.String("https://provider.example/install")},
 	} {
+		if err := ValidateOAuthFlowHookResult(result); err != nil {
+			t.Fatal(err)
+		}
 		encoded, err := protojson.Marshal(result)
 		if err != nil {
 			t.Fatal(err)
@@ -200,5 +204,33 @@ func TestOAuthHookUniqueness(t *testing.T) {
 				t.Errorf("GetHooks error=%v, valid=%v", response.Error, tt.valid)
 			}
 		})
+	}
+}
+
+func TestOAuthDisplayValidation(t *testing.T) {
+	for _, kind := range []string{TypeOAuthBeforeAuthorization, TypeOAuthAfterAuthorization, TypeOAuthConnected} {
+		config := &Config{Type: kind, ActionFunctionName: "hook", Display: &OAuthStepDisplay{Title: "Install", Icon: proto.String(OAuthStepIconInstallation)}}
+		_, err := StaticHooks(config)(context.Background(), appsdk.Context{}, &GetHooksRequest{})
+		if (err == nil) != (kind != TypeOAuthConnected) {
+			t.Fatalf("unexpected validation for %s: %v", kind, err)
+		}
+		config.Display.Title = strings.Repeat("x", 81)
+		if _, err := StaticHooks(config)(context.Background(), appsdk.Context{}, &GetHooksRequest{}); err == nil {
+			t.Fatal("accepted oversized title")
+		}
+	}
+}
+
+func TestOAuthResultValidation(t *testing.T) {
+	for _, result := range []*OAuthFlowHookResult{
+		{Type: OAuthFlowResultContinue, Detail: proto.String(strings.Repeat("x", 201))},
+		{Type: OAuthFlowResultContinue, Url: proto.String("")},
+		{Type: OAuthFlowResultRedirect, Url: proto.String("http://insecure.example")},
+		{Type: OAuthFlowResultRedirect, Url: proto.String("https://user@provider.example")},
+		{Type: "action_required"}, nil,
+	} {
+		if ValidateOAuthFlowHookResult(result) == nil {
+			t.Fatalf("accepted invalid action: %v", result)
+		}
 	}
 }

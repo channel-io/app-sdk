@@ -1,6 +1,9 @@
 import { z } from "zod";
 import type {
   OAuthConfig as ProtoOAuthConfig,
+  OAuthStepDisplay as ProtoOAuthStepDisplay,
+  OAuthStepLocalizedText as ProtoOAuthStepLocalizedText,
+  OAuthFlowStep as ProtoOAuthFlowStep,
   OAuthCredentialValidationInput as ProtoCredentialValidationInput,
   OAuthCredentialValidationResult as ProtoCredentialValidationResult,
   OAuthProvider as ProtoOAuthProvider,
@@ -41,6 +44,65 @@ export type OAuthAuthScope = z.infer<typeof OAuthAuthScopeSchema>;
 
 export const OAuthProviderSupportedLocaleSchema = z.enum(["ko", "ja", "en"]);
 export type OAuthProviderSupportedLocale = z.infer<typeof OAuthProviderSupportedLocaleSchema>;
+
+/** Built-in semantic icons rendered by App Store. No URLs or SVGs. */
+export const OAuthStepIconSchema = z.enum([
+  "installation",
+  "account",
+  "organization",
+  "permission",
+  "settings",
+]);
+export type OAuthStepIcon = z.infer<typeof OAuthStepIconSchema>;
+
+export const OAuthStepLocalizedTextSchema = z
+  .object({
+    title: z.string().min(1).max(80).optional(),
+    description: z.string().max(300).optional(),
+  })
+  .strict();
+export type OAuthStepLocalizedText = ProtoBacked<
+  z.infer<typeof OAuthStepLocalizedTextSchema>,
+  ProtoOAuthStepLocalizedText
+>;
+
+export const OAuthStepDisplaySchema = z
+  .object({
+    title: z.string().trim().min(1).max(80),
+    description: z.string().max(300).optional(),
+    icon: OAuthStepIconSchema.optional(),
+    i18nMap: z
+      .record(z.string(), OAuthStepLocalizedTextSchema)
+      .superRefine((value, ctx) => {
+        for (const locale of Object.keys(value)) {
+          if (!OAuthProviderSupportedLocaleSchema.safeParse(locale).success) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: [locale],
+              message: "Unsupported OAuth step locale",
+            });
+          }
+        }
+      })
+      .optional(),
+  })
+  .strict();
+export type OAuthStepDisplay = ProtoBacked<
+  z.infer<typeof OAuthStepDisplaySchema>,
+  ProtoOAuthStepDisplay
+>;
+
+export const OAuthFlowStepSchema = z
+  .object({
+    id: z.enum(["before", "oauth", "after"]),
+    title: z.string(),
+    description: z.string().optional(),
+    icon: OAuthStepIconSchema,
+    status: z.enum(["pending", "in_progress", "completed", "failed", "unknown"]),
+    detail: z.string().optional(),
+  })
+  .strict();
+export type OAuthFlowStep = ProtoBacked<z.infer<typeof OAuthFlowStepSchema>, ProtoOAuthFlowStep>;
 
 const OAuthParamNameSchema = z.string().regex(/^[A-Za-z0-9_.-]+$/);
 const OAuthJSONPathSchema = z.string().regex(/^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*$/);
@@ -104,6 +166,7 @@ export type OAuthTokenResponseMapping = ProtoBacked<
  * provider client ID/secret separately through Desk APIs/UI.
  */
 export const OAuthProviderSchema = z.object({
+  authorizationDisplay: OAuthStepDisplaySchema.optional(),
   provider: z.string().min(1),
   authorizationUrl: z.string().url(),
   tokenUrl: z.string().url(),

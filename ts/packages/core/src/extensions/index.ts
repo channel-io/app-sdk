@@ -665,3 +665,14 @@ export {
 
 // Extension Interfaces (for implementing extensions)
 export * from "./interfaces/index.js";
+
+export {
+  OAuthStepIconSchema,
+  OAuthStepLocalizedTextSchema,
+  OAuthStepDisplaySchema,
+  OAuthFlowStepSchema,
+  type OAuthStepIcon,
+  type OAuthStepLocalizedText,
+  type OAuthStepDisplay,
+  type OAuthFlowStep,
+} from "./oauth.js";

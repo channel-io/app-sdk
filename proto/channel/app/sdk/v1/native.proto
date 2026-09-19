@@ -5,6 +5,7 @@ package channel.app.sdk.v1;
 import "channel/app/sdk/v1/context.proto";
 import "channel/app/sdk/v1/error.proto";
 import "google/protobuf/struct.proto";
+import "channel/app/sdk/v1/extension.proto";
 
 option go_package = "github.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1";
 
@@ -99,19 +100,23 @@ message OAuthFlow {
   optional string authorization_url = 6 [json_name = "authorizationURL"];
   // False for another manager's read-only view or a flow that must be restarted.
   optional bool can_resume = 7;
+  repeated OAuthFlowStep steps = 8;
 }
 
 message GetOAuthFlowParams {
   string flow_id = 1;
+  optional string language = 2;
 }
 
 message ResumeOAuthFlowParams {
   string flow_id = 1;
   optional string resume_nonce = 2;
+  optional string language = 3;
 }
 
 message CancelOAuthFlowParams {
   string flow_id = 1;
+  optional string language = 2;
 }
 
 message OAuthFlowResult {

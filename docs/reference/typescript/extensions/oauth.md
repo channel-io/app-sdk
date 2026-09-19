@@ -192,3 +192,42 @@ targets so a missed lifecycle Hook can be recovered safely.
 ## Reference
 
 - [examples/calendar](../../../../ts/examples/calendar/README.md)
+
+
+## Optional OAuth step presentation
+
+Requires platform support before an app returns these fields. Existing registrations and `continue | redirect` actions remain compatible. This SDK change does not enable the hooks in the GitHub app.
+
+Authorization hooks may declare `display`; the OAuth provider may declare `authorizationDisplay`. Both use the exported `OAuthStepDisplay` / `OAuthStepDisplaySchema`:
+
+```ts
+const display: OAuthStepDisplay = {
+  title: "Install the app",
+  description: "Install the app in your organization.",
+  icon: "installation",
+  i18nMap: { ko: { title: "앱 설치", description: "조직에 앱을 설치하세요." } },
+};
+```
+
+`OAuthStepIconSchema.options` lists all supported values for autocomplete and validation:
+
+| Icon | Use | App Store Bezier icon |
+| --- | --- | --- |
+| `installation` | Install or add an app | `DownloadIcon` |
+| `account` | Authorize an account | `PersonIcon` |
+| `organization` | Choose an organization | `GroupIcon` |
+| `permission` | Review access | `LockIcon` |
+| `settings` | Complete configuration | `SettingsIcon` |
+
+Omit the icon to use the platform's default. URLs, SVGs and colors are unsupported. Titles are required (up to 80 characters); descriptions allow up to 300. Translations support ko/en/ja and reuse the provider locale fallback. All values render as plain text.
+
+`display` is permitted only on `oauth.beforeAuthorization` and `oauth.afterAuthorization`, not lifecycle notification hooks such as `oauth.connected`.
+
+```ts
+return { type: "continue", detail: "example-organization" };
+// Or: { type: "redirect", url: setupUrl, detail: "Choose an organization" }
+```
+
+`detail` is optional and limited to 200 characters. Never include credentials, URLs, or raw errors. Only the validated `continue` action completes the hook. A redirect result leaves it in progress.
+
+`OAuthFlowStepSchema` describes platform-owned progress in the optional `steps` response field. The fixed IDs are `before`, `oauth`, `after`; statuses are `pending`, `in_progress`, `completed`, `failed`, `unknown`. These are display records, not an app-declared execution plan. Native flow requests accept optional `language`. Cancel/expiry retain completed records. Old credentials without hook history do not require reauthorization. OAuth credentials remain usable if the after hook fails.

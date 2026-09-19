@@ -1,3 +1,4 @@
+import { OAuthFlowStepSchema } from "../extensions/oauth.js";
 import { z } from "zod";
 import type { FunctionSchema } from "../types/function.js";
 import { zodToJsonSchema } from "../utils/zod-to-json-schema.js";
@@ -125,17 +126,19 @@ export const NativeOAuthFlowSchema = z
     targetAuthScope: z.string().optional(),
     authorizationURL: z.string().url().optional(),
     canResume: z.boolean().optional(),
+    steps: z.array(OAuthFlowStepSchema).optional(),
   })
   .strict();
 
 export const NativeGetOAuthFlowParamsSchema = z
-  .object({ flowId: NativeNonEmptyStringSchema })
+  .object({ flowId: NativeNonEmptyStringSchema, language: z.string().optional() })
   .strict();
 
 export const NativeResumeOAuthFlowParamsSchema = z
   .object({
     flowId: NativeNonEmptyStringSchema,
     resumeNonce: NativeNonEmptyStringSchema.optional(),
+    language: z.string().optional(),
   })
   .strict();
 

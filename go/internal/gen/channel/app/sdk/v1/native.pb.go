@@ -817,7 +817,8 @@ type OAuthFlow struct {
 	TargetAuthScope  *string `protobuf:"bytes,5,opt,name=target_auth_scope,json=targetAuthScope,proto3,oneof" json:"target_auth_scope,omitempty"`
 	AuthorizationUrl *string `protobuf:"bytes,6,opt,name=authorization_url,json=authorizationURL,proto3,oneof" json:"authorization_url,omitempty"`
 	// False for another manager's read-only view or a flow that must be restarted.
-	CanResume     *bool `protobuf:"varint,7,opt,name=can_resume,json=canResume,proto3,oneof" json:"can_resume,omitempty"`
+	CanResume     *bool            `protobuf:"varint,7,opt,name=can_resume,json=canResume,proto3,oneof" json:"can_resume,omitempty"`
+	Steps         []*OAuthFlowStep `protobuf:"bytes,8,rep,name=steps,proto3" json:"steps,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -901,9 +902,17 @@ func (x *OAuthFlow) GetCanResume() bool {
 	return false
 }
 
+func (x *OAuthFlow) GetSteps() []*OAuthFlowStep {
+	if x != nil {
+		return x.Steps
+	}
+	return nil
+}
+
 type GetOAuthFlowParams struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	FlowId        string                 `protobuf:"bytes,1,opt,name=flow_id,json=flowId,proto3" json:"flow_id,omitempty"`
+	Language      *string                `protobuf:"bytes,2,opt,name=language,proto3,oneof" json:"language,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -945,10 +954,18 @@ func (x *GetOAuthFlowParams) GetFlowId() string {
 	return ""
 }
 
+func (x *GetOAuthFlowParams) GetLanguage() string {
+	if x != nil && x.Language != nil {
+		return *x.Language
+	}
+	return ""
+}
+
 type ResumeOAuthFlowParams struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	FlowId        string                 `protobuf:"bytes,1,opt,name=flow_id,json=flowId,proto3" json:"flow_id,omitempty"`
 	ResumeNonce   *string                `protobuf:"bytes,2,opt,name=resume_nonce,json=resumeNonce,proto3,oneof" json:"resume_nonce,omitempty"`
+	Language      *string                `protobuf:"bytes,3,opt,name=language,proto3,oneof" json:"language,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -997,9 +1014,17 @@ func (x *ResumeOAuthFlowParams) GetResumeNonce() string {
 	return ""
 }
 
+func (x *ResumeOAuthFlowParams) GetLanguage() string {
+	if x != nil && x.Language != nil {
+		return *x.Language
+	}
+	return ""
+}
+
 type CancelOAuthFlowParams struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	FlowId        string                 `protobuf:"bytes,1,opt,name=flow_id,json=flowId,proto3" json:"flow_id,omitempty"`
+	Language      *string                `protobuf:"bytes,2,opt,name=language,proto3,oneof" json:"language,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1037,6 +1062,13 @@ func (*CancelOAuthFlowParams) Descriptor() ([]byte, []int) {
 func (x *CancelOAuthFlowParams) GetFlowId() string {
 	if x != nil {
 		return x.FlowId
+	}
+	return ""
+}
+
+func (x *CancelOAuthFlowParams) GetLanguage() string {
+	if x != nil && x.Language != nil {
+		return *x.Language
 	}
 	return ""
 }
@@ -1089,7 +1121,7 @@ var File_channel_app_sdk_v1_native_proto protoreflect.FileDescriptor
 
 const file_channel_app_sdk_v1_native_proto_rawDesc = "" +
 	"\n" +
-	"\x1fchannel/app/sdk/v1/native.proto\x12\x12channel.app.sdk.v1\x1a channel/app/sdk/v1/context.proto\x1a\x1echannel/app/sdk/v1/error.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xc5\x01\n" +
+	"\x1fchannel/app/sdk/v1/native.proto\x12\x12channel.app.sdk.v1\x1a channel/app/sdk/v1/context.proto\x1a\x1echannel/app/sdk/v1/error.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\"channel/app/sdk/v1/extension.proto\"\xc5\x01\n" +
 	"\x15NativeFunctionRequest\x12\x16\n" +
 	"\x06method\x18\x01 \x01(\tR\x06method\x12.\n" +
 	"\x06params\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x06params\x12=\n" +
@@ -1149,7 +1181,7 @@ const file_channel_app_sdk_v1_native_proto_rawDesc = "" +
 	"\x1cGetAppNotebookVersionsResult\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12#\n" +
 	"\rerror_message\x18\x02 \x01(\tR\ferrorMessage\x12D\n" +
-	"\tnotebooks\x18\x03 \x03(\v2&.channel.app.sdk.v1.AppNotebookVersionR\tnotebooks\"\xb1\x02\n" +
+	"\tnotebooks\x18\x03 \x03(\v2&.channel.app.sdk.v1.AppNotebookVersionR\tnotebooks\"\xea\x02\n" +
 	"\tOAuthFlow\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05phase\x18\x02 \x01(\tR\x05phase\x12\x1d\n" +
@@ -1159,19 +1191,26 @@ const file_channel_app_sdk_v1_native_proto_rawDesc = "" +
 	"\x11target_auth_scope\x18\x05 \x01(\tH\x01R\x0ftargetAuthScope\x88\x01\x01\x120\n" +
 	"\x11authorization_url\x18\x06 \x01(\tH\x02R\x10authorizationURL\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"can_resume\x18\a \x01(\bH\x03R\tcanResume\x88\x01\x01B\x06\n" +
+	"can_resume\x18\a \x01(\bH\x03R\tcanResume\x88\x01\x01\x127\n" +
+	"\x05steps\x18\b \x03(\v2!.channel.app.sdk.v1.OAuthFlowStepR\x05stepsB\x06\n" +
 	"\x04_keyB\x14\n" +
 	"\x12_target_auth_scopeB\x14\n" +
 	"\x12_authorization_urlB\r\n" +
-	"\v_can_resume\"-\n" +
+	"\v_can_resume\"[\n" +
 	"\x12GetOAuthFlowParams\x12\x17\n" +
-	"\aflow_id\x18\x01 \x01(\tR\x06flowId\"i\n" +
+	"\aflow_id\x18\x01 \x01(\tR\x06flowId\x12\x1f\n" +
+	"\blanguage\x18\x02 \x01(\tH\x00R\blanguage\x88\x01\x01B\v\n" +
+	"\t_language\"\x97\x01\n" +
 	"\x15ResumeOAuthFlowParams\x12\x17\n" +
 	"\aflow_id\x18\x01 \x01(\tR\x06flowId\x12&\n" +
-	"\fresume_nonce\x18\x02 \x01(\tH\x00R\vresumeNonce\x88\x01\x01B\x0f\n" +
-	"\r_resume_nonce\"0\n" +
+	"\fresume_nonce\x18\x02 \x01(\tH\x00R\vresumeNonce\x88\x01\x01\x12\x1f\n" +
+	"\blanguage\x18\x03 \x01(\tH\x01R\blanguage\x88\x01\x01B\x0f\n" +
+	"\r_resume_nonceB\v\n" +
+	"\t_language\"^\n" +
 	"\x15CancelOAuthFlowParams\x12\x17\n" +
-	"\aflow_id\x18\x01 \x01(\tR\x06flowId\"R\n" +
+	"\aflow_id\x18\x01 \x01(\tR\x06flowId\x12\x1f\n" +
+	"\blanguage\x18\x02 \x01(\tH\x00R\blanguage\x88\x01\x01B\v\n" +
+	"\t_language\"R\n" +
 	"\x0fOAuthFlowResult\x126\n" +
 	"\x04flow\x18\x01 \x01(\v2\x1d.channel.app.sdk.v1.OAuthFlowH\x00R\x04flow\x88\x01\x01B\a\n" +
 	"\x05_flowBHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
@@ -1210,6 +1249,7 @@ var file_channel_app_sdk_v1_native_proto_goTypes = []any{
 	(*structpb.Value)(nil),                // 17: google.protobuf.Value
 	(*FunctionContext)(nil),               // 18: channel.app.sdk.v1.FunctionContext
 	(*FunctionError)(nil),                 // 19: channel.app.sdk.v1.FunctionError
+	(*OAuthFlowStep)(nil),                 // 20: channel.app.sdk.v1.OAuthFlowStep
 }
 var file_channel_app_sdk_v1_native_proto_depIdxs = []int32{
 	17, // 0: channel.app.sdk.v1.NativeFunctionRequest.params:type_name -> google.protobuf.Value
@@ -1218,12 +1258,13 @@ var file_channel_app_sdk_v1_native_proto_depIdxs = []int32{
 	19, // 3: channel.app.sdk.v1.NativeFunctionResponse.error:type_name -> channel.app.sdk.v1.FunctionError
 	7,  // 4: channel.app.sdk.v1.GetAlfTaskVersionsResult.tasks:type_name -> channel.app.sdk.v1.AlfTaskVersion
 	10, // 5: channel.app.sdk.v1.GetAppNotebookVersionsResult.notebooks:type_name -> channel.app.sdk.v1.AppNotebookVersion
-	12, // 6: channel.app.sdk.v1.OAuthFlowResult.flow:type_name -> channel.app.sdk.v1.OAuthFlow
-	7,  // [7:7] is the sub-list for method output_type
-	7,  // [7:7] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	20, // 6: channel.app.sdk.v1.OAuthFlow.steps:type_name -> channel.app.sdk.v1.OAuthFlowStep
+	12, // 7: channel.app.sdk.v1.OAuthFlowResult.flow:type_name -> channel.app.sdk.v1.OAuthFlow
+	8,  // [8:8] is the sub-list for method output_type
+	8,  // [8:8] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_channel_app_sdk_v1_native_proto_init() }
@@ -1233,8 +1274,11 @@ func file_channel_app_sdk_v1_native_proto_init() {
 	}
 	file_channel_app_sdk_v1_context_proto_init()
 	file_channel_app_sdk_v1_error_proto_init()
+	file_channel_app_sdk_v1_extension_proto_init()
 	file_channel_app_sdk_v1_native_proto_msgTypes[12].OneofWrappers = []any{}
+	file_channel_app_sdk_v1_native_proto_msgTypes[13].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_native_proto_msgTypes[14].OneofWrappers = []any{}
+	file_channel_app_sdk_v1_native_proto_msgTypes[15].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_native_proto_msgTypes[16].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

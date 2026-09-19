@@ -408,6 +408,30 @@ export const OAuthProviderLocalizedTextProtoSchema = z.object({
 }) satisfies z.ZodType<pb.OAuthProviderLocalizedText>;
 export type OAuthProviderLocalizedTextProto = z.infer<typeof OAuthProviderLocalizedTextProtoSchema>;
 
+export const OAuthStepDisplayProtoSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  icon: z.string().optional(),
+  i18nMap: z.record(z.string(), z.lazy(() => OAuthStepLocalizedTextProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.OAuthStepDisplay>;
+export type OAuthStepDisplayProto = z.infer<typeof OAuthStepDisplayProtoSchema>;
+
+export const OAuthStepLocalizedTextProtoSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+}) satisfies z.ZodType<pb.OAuthStepLocalizedText>;
+export type OAuthStepLocalizedTextProto = z.infer<typeof OAuthStepLocalizedTextProtoSchema>;
+
+export const OAuthFlowStepProtoSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  icon: z.string().optional(),
+  status: z.string().optional(),
+  detail: z.string().optional(),
+}) satisfies z.ZodType<pb.OAuthFlowStep>;
+export type OAuthFlowStepProto = z.infer<typeof OAuthFlowStepProtoSchema>;
+
 export const OAuthProviderProtoSchema = z.object({
   provider: z.string().optional(),
   authorizationUrl: z.string().optional(),
@@ -426,6 +450,7 @@ export const OAuthProviderProtoSchema = z.object({
   tokenRequest: z.lazy(() => OAuthTokenRequestMappingProtoSchema).optional(),
   tokenResponse: z.lazy(() => OAuthTokenResponseMappingProtoSchema).optional(),
   i18nMap: z.record(z.string(), z.lazy(() => OAuthProviderLocalizedTextProtoSchema)).optional(),
+  authorizationDisplay: z.lazy(() => OAuthStepDisplayProtoSchema).optional(),
 }) satisfies z.ZodType<pb.OAuthProvider>;
 export type OAuthProviderProto = z.infer<typeof OAuthProviderProtoSchema>;
 
@@ -740,6 +765,7 @@ export const HookConfigProtoSchema = z.object({
   webhook: z.lazy(() => HookWebhookConfigProtoSchema).optional(),
   redirectOrigins: z.array(z.string()).optional(),
   authScope: z.string().optional(),
+  display: z.lazy(() => OAuthStepDisplayProtoSchema).optional(),
 }) satisfies z.ZodType<pb.HookConfig>;
 export type HookConfigProto = z.infer<typeof HookConfigProtoSchema>;
 
@@ -753,6 +779,7 @@ export type OAuthFlowHookInputProto = z.infer<typeof OAuthFlowHookInputProtoSche
 export const OAuthFlowHookResultProtoSchema = z.object({
   type: z.string().optional(),
   url: z.string().optional(),
+  detail: z.string().optional(),
 }) satisfies z.ZodType<pb.OAuthFlowHookResult>;
 export type OAuthFlowHookResultProto = z.infer<typeof OAuthFlowHookResultProtoSchema>;
 

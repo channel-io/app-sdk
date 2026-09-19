@@ -26,6 +26,7 @@ const allowedTsEnumTypes = new Set([
   "MessagingPrebuiltEntityType",
   "MessagingWritingTypeAvailabilityState",
   "OAuthAuthScope",
+  "OAuthStepIcon",
   "OAuthProviderSupportedLocale",
   "ParameterCase",
   "TokenRequestContentType",

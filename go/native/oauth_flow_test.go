@@ -11,6 +11,7 @@ import (
 
 func TestOAuthFlowWireContract(t *testing.T) {
 	result := OAuthFlowResult{Flow: &OAuthFlow{
+		Steps:            []*OAuthFlowStep{{Id: "oauth", Title: "Account", Icon: "account", Status: "completed"}},
 		ID:               "flow-1",
 		Phase:            "after",
 		ExpiresAt:        "2026-09-17T12:00:00Z",

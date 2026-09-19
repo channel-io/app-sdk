@@ -17808,6 +17808,52 @@
                       "pattern": "^https:\\/\\/[^/?#@\\\\\\s*]+$"
                     },
                     "default": []
+                  },
+                  "display": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "description": {
+                        "type": "string",
+                        "maxLength": 300
+                      },
+                      "icon": {
+                        "type": "string",
+                        "enum": [
+                          "installation",
+                          "account",
+                          "organization",
+                          "permission",
+                          "settings"
+                        ]
+                      },
+                      "i18nMap": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 80
+                            },
+                            "description": {
+                              "type": "string",
+                              "maxLength": 300
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "title"
+                    ],
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -17850,6 +17896,52 @@
                       "pattern": "^https:\\/\\/[^/?#@\\\\\\s*]+$"
                     },
                     "default": []
+                  },
+                  "display": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "description": {
+                        "type": "string",
+                        "maxLength": 300
+                      },
+                      "icon": {
+                        "type": "string",
+                        "enum": [
+                          "installation",
+                          "account",
+                          "organization",
+                          "permission",
+                          "settings"
+                        ]
+                      },
+                      "i18nMap": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 80
+                            },
+                            "description": {
+                              "type": "string",
+                              "maxLength": 300
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "title"
+                    ],
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -21865,6 +21957,52 @@
         "oauthProvider": {
           "type": "object",
           "properties": {
+            "authorizationDisplay": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 300
+                },
+                "icon": {
+                  "type": "string",
+                  "enum": [
+                    "installation",
+                    "account",
+                    "organization",
+                    "permission",
+                    "settings"
+                  ]
+                },
+                "i18nMap": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "description": {
+                        "type": "string",
+                        "maxLength": 300
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "title"
+              ],
+              "additionalProperties": false
+            },
             "provider": {
               "type": "string",
               "minLength": 1

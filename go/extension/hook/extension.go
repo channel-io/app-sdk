@@ -93,3 +93,14 @@ type TeamChatMessageCreatedInput = sdkv1.HookTeamChatMessageCreatedInput
 type TeamChatMessageCreatedResult = sdkv1.HookTeamChatMessageCreatedResult
 type OAuthFlowHookInput = sdkv1.OAuthFlowHookInput
 type OAuthFlowHookResult = sdkv1.OAuthFlowHookResult
+
+type OAuthStepDisplay = sdkv1.OAuthStepDisplay
+type OAuthStepLocalizedText = sdkv1.OAuthStepLocalizedText
+
+const (
+	OAuthStepIconInstallation = "installation"
+	OAuthStepIconAccount      = "account"
+	OAuthStepIconOrganization = "organization"
+	OAuthStepIconPermission   = "permission"
+	OAuthStepIconSettings     = "settings"
+)
