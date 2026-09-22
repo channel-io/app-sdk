@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.28.0
+
+### Minor Changes
+
+- 97691ac: Add optional `allowChannelFallback` to OAuth configuration so caller-scoped apps can disable channel credential fallback for unconnected managers. Omission preserves the existing enabled behavior; requires App Store support and OAuth extension re-registration.
+
 ## 0.27.0
 
 ### Minor Changes
