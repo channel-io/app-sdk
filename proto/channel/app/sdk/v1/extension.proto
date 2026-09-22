@@ -430,6 +430,8 @@ message OAuthConfig {
   string auth_type = 1;
   string auth_scope = 2;
   OAuthProvider oauth_provider = 3;
+  // Caller scope only: use channel credentials when the manager has none. Defaults to true.
+  optional bool allow_channel_fallback = 4;
 }
 
 message OAuthCredentialValidationInput {

@@ -23,6 +23,11 @@ shop별 secret은 [Config](config.md)에 둡니다.
 - Callback과 token request의 authorization-code field가 다르면 각각 설정합니다. 비표준 nested token
   response에만 dot-separated `tokenResponse` path를 사용합니다.
 - `i18nMap`은 provider name/description을 번역하며 base text는 fallback으로 유지합니다.
+- `authScope: "caller"`에서 최상위 `allowChannelFallback: false`를 설정하면 매니저 OAuth가
+  미등록이어도 채널 토큰을 주입하지 않습니다. 생략 또는 `true`는 fallback을 허용하며, 등록된
+  Credential의 비활성·갱신 실패에는 fallback하지 않습니다. 다른 호출자는 계속 채널 인증을 사용합니다.
+  AppStore 지원을 먼저 배포하고 설정 변경 후 OAuth Extension을 재등록하세요.
+  재등록 시 필드를 생략하면 `true`로 돌아갑니다. 이 설정은 Function 실행 자체를 차단하지 않습니다.
 
 ## TypeScript
 
@@ -38,6 +43,11 @@ Metadata는 `OAuthConfigSchema`, credential은 `CredentialValidationInputSchema`
 err := app.Use(oauth.Extension().
   GetAuthConfig(handler.GetAuthConfig).
   ValidateCredentials(handler.ValidateCredentials))
+```
+
+```go
+// import "google.golang.org/protobuf/proto"
+config.AllowChannelFallback = proto.Bool(false) // *oauth.AuthConfig
 ```
 
 `extension/oauth` DTO를 사용하고 provider token은 app/channel token이 아니라 Function context에서

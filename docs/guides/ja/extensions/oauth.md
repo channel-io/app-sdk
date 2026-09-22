@@ -23,6 +23,11 @@ OAuth は外部 provider の Authorization Code flow にだけ使います。API
 - Callback と token request の authorization-code field が異なる場合は別々に設定します。非標準の
   nested token response にだけ dot-separated `tokenResponse` path を使います。
 - `i18nMap` は provider name/description を翻訳し、base text は fallback として残します。
+- `authScope: "caller"` で最上位の `allowChannelFallback: false` を指定すると、manager OAuth が
+  未登録でも channel token を注入しません。省略または `true` は fallback を許可します。
+  登録済み Credential の無効化・更新失敗では fallback しません。他の caller は引き続き channel 認証を使います。
+  AppStore の対応を先にデプロイし、設定変更後に OAuth Extension を再登録してください。
+  再登録時に省略すると `true` に戻ります。この設定は Function 自体の実行をブロックしません。
 
 ## TypeScript
 
@@ -37,6 +42,11 @@ Metadata は `OAuthConfigSchema`、credential は `CredentialValidationInputSche
 err := app.Use(oauth.Extension().
   GetAuthConfig(handler.GetAuthConfig).
   ValidateCredentials(handler.ValidateCredentials))
+```
+
+```go
+// import "google.golang.org/protobuf/proto"
+config.AllowChannelFallback = proto.Bool(false) // *oauth.AuthConfig
 ```
 
 `extension/oauth` DTO を使い、provider token は app/channel token ではなく Function context から

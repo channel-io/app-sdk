@@ -23,6 +23,11 @@ separately, and injects the connected provider access token as `ctx.authToken`.
 - Use separate authorization-code parameter settings when callback and token request field names
   differ. Use dot-separated `tokenResponse` paths only for non-standard nested token responses.
 - `i18nMap` localizes provider name/description; base text remains the fallback.
+- For `authScope: "caller"`, set top-level `allowChannelFallback: false` to prevent channel token
+  injection when the manager has no registered OAuth credential. Omitted or `true` enables fallback;
+  registered but unusable credentials never fall back. Other callers still use channel credentials.
+  Deploy AppStore support first and re-register the OAuth extension after changing this setting.
+  Omitting it on re-registration resets it to `true`. This option does not block Function execution.
 
 ## TypeScript
 
@@ -37,6 +42,11 @@ client secret from metadata. See the [TypeScript OAuth reference](../../../refer
 err := app.Use(oauth.Extension().
   GetAuthConfig(handler.GetAuthConfig).
   ValidateCredentials(handler.ValidateCredentials))
+```
+
+```go
+// import "google.golang.org/protobuf/proto"
+config.AllowChannelFallback = proto.Bool(false) // *oauth.AuthConfig
 ```
 
 Use `extension/oauth` DTOs and read the provider token from the Function context rather than an app

@@ -3866,8 +3866,10 @@ type OAuthConfig struct {
 	AuthType      string                 `protobuf:"bytes,1,opt,name=auth_type,json=authType,proto3" json:"auth_type,omitempty"`
 	AuthScope     string                 `protobuf:"bytes,2,opt,name=auth_scope,json=authScope,proto3" json:"auth_scope,omitempty"`
 	OauthProvider *OAuthProvider         `protobuf:"bytes,3,opt,name=oauth_provider,json=oauthProvider,proto3" json:"oauth_provider,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Caller scope only: use channel credentials when the manager has none. Defaults to true.
+	AllowChannelFallback *bool `protobuf:"varint,4,opt,name=allow_channel_fallback,json=allowChannelFallback,proto3,oneof" json:"allow_channel_fallback,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *OAuthConfig) Reset() {
@@ -3919,6 +3921,13 @@ func (x *OAuthConfig) GetOauthProvider() *OAuthProvider {
 		return x.OauthProvider
 	}
 	return nil
+}
+
+func (x *OAuthConfig) GetAllowChannelFallback() bool {
+	if x != nil && x.AllowChannelFallback != nil {
+		return *x.AllowChannelFallback
+	}
+	return false
 }
 
 type OAuthCredentialValidationInput struct {
@@ -19028,12 +19037,14 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\fI18nMapEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12D\n" +
 	"\x05value\x18\x02 \x01(\v2..channel.app.sdk.v1.OAuthProviderLocalizedTextR\x05value:\x028\x01\"\x19\n" +
-	"\x17OAuthGetAuthConfigInput\"\x93\x01\n" +
+	"\x17OAuthGetAuthConfigInput\"\xe9\x01\n" +
 	"\vOAuthConfig\x12\x1b\n" +
 	"\tauth_type\x18\x01 \x01(\tR\bauthType\x12\x1d\n" +
 	"\n" +
 	"auth_scope\x18\x02 \x01(\tR\tauthScope\x12H\n" +
-	"\x0eoauth_provider\x18\x03 \x01(\v2!.channel.app.sdk.v1.OAuthProviderR\roauthProvider\"C\n" +
+	"\x0eoauth_provider\x18\x03 \x01(\v2!.channel.app.sdk.v1.OAuthProviderR\roauthProvider\x129\n" +
+	"\x16allow_channel_fallback\x18\x04 \x01(\bH\x00R\x14allowChannelFallback\x88\x01\x01B\x19\n" +
+	"\x17_allow_channel_fallback\"C\n" +
 	"\x1eOAuthCredentialValidationInput\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\"l\n" +
 	"\x1fOAuthCredentialValidationResult\x12\x14\n" +
@@ -20952,6 +20963,7 @@ func file_channel_app_sdk_v1_extension_proto_init() {
 	file_channel_app_sdk_v1_extension_proto_msgTypes[36].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[37].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[38].OneofWrappers = []any{}
+	file_channel_app_sdk_v1_extension_proto_msgTypes[41].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[86].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[88].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[119].OneofWrappers = []any{}

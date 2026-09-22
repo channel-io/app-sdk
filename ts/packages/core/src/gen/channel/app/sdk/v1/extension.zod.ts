@@ -461,6 +461,7 @@ export const OAuthConfigProtoSchema = z.object({
   authType: z.string().optional(),
   authScope: z.string().optional(),
   oauthProvider: z.lazy(() => OAuthProviderProtoSchema).optional(),
+  allowChannelFallback: z.boolean().optional(),
 }) satisfies z.ZodType<pb.OAuthConfig>;
 export type OAuthConfigProto = z.infer<typeof OAuthConfigProtoSchema>;
 
