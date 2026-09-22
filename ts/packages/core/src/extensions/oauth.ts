@@ -36,8 +36,9 @@ export type AuthorizationOpenMode = z.infer<typeof AuthorizationOpenModeSchema>;
  *
  * - channel: always use the shared channel credential
  * - manager: only a manager caller can use that manager's credential
- * - caller: use the manager credential for manager callers and the channel
- *   credential for every other caller
+ * - caller: prefer the manager credential for manager callers, falling back to
+ *   the channel only when none is registered and allowChannelFallback is not false.
+ *   Every other caller uses the channel credential.
  */
 export const OAuthAuthScopeSchema = z.enum(["channel", "manager", "caller"]);
 export type OAuthAuthScope = z.infer<typeof OAuthAuthScopeSchema>;
@@ -213,6 +214,8 @@ export const OAuthConfigSchema = z.object({
   authType: z.literal("oauth"),
   authScope: OAuthAuthScopeSchema,
   oauthProvider: OAuthProviderSchema,
+  /** Caller scope only. Defaults to true; registered but unusable credentials never fall back. */
+  allowChannelFallback: z.boolean().optional(),
 });
 
 export type OAuthConfig = ProtoBacked<z.infer<typeof OAuthConfigSchema>, ProtoOAuthConfig>;

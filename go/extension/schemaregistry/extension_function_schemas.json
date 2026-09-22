@@ -22152,6 +22152,9 @@
             "providerName"
           ],
           "additionalProperties": false
+        },
+        "allowChannelFallback": {
+          "type": "boolean"
         }
       },
       "required": [

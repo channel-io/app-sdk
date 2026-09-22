@@ -6,6 +6,27 @@ import {
 } from "../../extensions/index.js";
 
 describe("oauth extension schema", () => {
+  it.each([undefined, true, false])("preserves allowChannelFallback=%s", (value) => {
+    const config = {
+      authType: "oauth",
+      authScope: "caller",
+      ...(value === undefined ? {} : { allowChannelFallback: value }),
+      oauthProvider: {
+        provider: "provider",
+        authorizationUrl: "https://provider.example/login",
+        tokenUrl: "https://provider.example/token",
+        scopes: ["read"],
+        providerName: "Provider",
+      },
+    };
+
+    const serialized = JSON.parse(JSON.stringify(OAuthConfigSchema.parse(config)));
+    expect(serialized).toEqual(config);
+    expect(OAuthConfigSchema.safeParse({ ...config, allowChannelFallback: "false" }).success).toBe(
+      false
+    );
+  });
+
   it.each(["channel", "manager", "caller"] as const)("accepts %s auth scope", (authScope) => {
     const parsed = OAuthConfigSchema.parse({
       authType: "oauth",

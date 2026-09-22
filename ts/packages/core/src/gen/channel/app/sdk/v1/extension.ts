@@ -513,7 +513,11 @@ export interface OAuthGetAuthConfigInput {
 export interface OAuthConfig {
   authType?: string | undefined;
   authScope?: string | undefined;
-  oauthProvider?: OAuthProvider | undefined;
+  oauthProvider?:
+    | OAuthProvider
+    | undefined;
+  /** Caller scope only: use channel credentials when the manager has none. Defaults to true. */
+  allowChannelFallback?: boolean | undefined;
 }
 
 export interface OAuthCredentialValidationInput {

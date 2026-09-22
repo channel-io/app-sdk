@@ -65,8 +65,27 @@ OAuthConfigSchema.parse(config);
 
 For `caller`, AppStore injects the current manager's credential when the
 Function caller is a manager and the shared channel credential for every other
-caller. A missing or unusable manager credential never falls back to the
-channel credential. OAuth connection UI and native calls select a concrete
+caller. When the manager has no registered credential, channel fallback is enabled
+by default. Set top-level `allowChannelFallback: false` to disable that fallback:
+
+```typescript
+const personalOnly = {
+  ...config,
+  authScope: "caller",
+  allowChannelFallback: false,
+} satisfies OAuthConfig;
+```
+
+Omitted or `true` keeps fallback enabled. Registered but inactive, revoked, or
+failed manager credentials never fall back. This option does not affect other
+auth scopes or channel selection for non-manager callers. AppStore stores it
+when the OAuth extension is registered: deploy platform support first, then
+re-register after changing it. Omitting it on re-registration resets it to `true`.
+Disabling fallback prevents channel token injection; it does not make the general
+Function gateway reject calls without a token. Older platform versions ignore the
+option, including after a rollback.
+
+OAuth connection UI and native calls select a concrete
 `channel` or `manager` target; `caller` is not a stored credential scope.
 
 `oauthProvider.parameterCase` defaults to `snake`; set it to `camel` only for
@@ -192,7 +211,6 @@ targets so a missed lifecycle Hook can be recovered safely.
 ## Reference
 
 - [examples/calendar](../../../../ts/examples/calendar/README.md)
-
 
 ## Optional OAuth step presentation
 
