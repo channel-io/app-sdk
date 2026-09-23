@@ -18983,7 +18983,8 @@
                       "type": {
                         "type": "string",
                         "enum": [
-                          "invalidInput",
+                          "invalidArgument",
+                          "validationFailed",
                           "invalidCursor",
                           "unsupported",
                           "unsupportedFilter",

@@ -17,6 +17,17 @@ const fixture = JSON.parse(
 ) as { functions: { functionSchema: { name: string; outputSchema: { required: string[] } } }[] }[];
 
 describe("Issue v1", () => {
+  it("matches every item error type in the platform fixture", () => {
+    const raw = JSON.parse(
+      readFileSync(new URL("./__fixtures__/issue-contract.json", import.meta.url), "utf8")
+    );
+    const batch = raw[0].functions.find((f: { functionSchema: { name: string } }) =>
+      f.functionSchema.name.endsWith("getIssues")
+    );
+    expect(schemas.IssueErrorSchema.shape.type.options).toEqual(
+      batch.functionSchema.outputSchema.$defs.error.properties.type.enum
+    );
+  });
   it("registers the five functions and the final V266 result envelope", () => {
     const actual = getExtensionFunctionSchemas().filter((s) =>
       s.name.startsWith("extension.issue.")
