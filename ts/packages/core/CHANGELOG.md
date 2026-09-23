@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.29.0
+
+### Minor Changes
+
+- 130c4ff: Add Issue Extension v1 types, validation schemas, canonical functions and server registration support for external issue search, lookup and transitions. Match the App Store V260 + V266 contract, including transition results without operationId.
+
 ## 0.28.0
 
 ### Minor Changes
