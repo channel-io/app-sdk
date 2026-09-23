@@ -1,5 +1,5 @@
 ---
-"@channel.io/app-sdk-wam": minor
+"@channel.io/app-sdk-wam": patch
 "@channel.io/app-sdk-wam-ui": patch
 ---
 
