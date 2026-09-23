@@ -1,4 +1,8 @@
-import { ValidationError } from "@channel.io/app-sdk-core";
+import {
+  ValidationError,
+  FunctionCallError,
+  FunctionCallErrorCode,
+} from "@channel.io/app-sdk-core";
 import type { z } from "zod";
 import {
   isMessagingExtensionMethod,
@@ -32,6 +36,13 @@ export function parseFunctionInputParams<T>(
       : inputSchema.parse(params);
   } catch (error) {
     if (isZodErrorLike(error)) {
+      if (functionName.startsWith("extension.issue.core.")) {
+        const message = "Invalid Issue Extension input";
+        throw new FunctionCallError(message, FunctionCallErrorCode.BadRequest, {
+          type: "invalidInput",
+          data: { type: "invalidInput", message },
+        });
+      }
       throw new ValidationError(`Invalid input for function ${functionName}`, error.issues);
     }
 

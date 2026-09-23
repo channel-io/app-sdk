@@ -44,3 +44,5 @@ Use `@Extension`, `@Func`, and schema decorators from `@channel.io/app-sdk-serve
   subfamily registrations and native claims separately. Treat it as an advanced integration and do
   not assume generic registration alone completes rollout.
 - Notebook apps expose app-managed notebook definitions. AppStore owns extension registration and native proxying; Channel owns notebook storage, revisioning, sync, and UI.
+
+- [Issue](./issue.md): external issue lookup and transitions.

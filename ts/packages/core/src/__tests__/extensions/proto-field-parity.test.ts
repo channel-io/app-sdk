@@ -1,3 +1,20 @@
+import {
+  ExternalIssueSchema,
+  IssueProviderStateSchema,
+  IssueErrorSchema,
+  IssueTransitionInputSchema,
+  IssueTransitionSchema,
+  IssueSearchIssuesInputSchema,
+  IssueSearchIssuesOutputSchema,
+  IssueGetIssueInputSchema,
+  IssueGetIssueOutputSchema,
+  IssueGetIssuesInputSchema,
+  IssueGetIssuesOutputSchema,
+  IssueGetIssueTransitionsInputSchema,
+  IssueGetIssueTransitionsOutputSchema,
+  IssueExecuteIssueTransitionInputSchema,
+  IssueExecuteIssueTransitionOutputSchema,
+} from "../../extensions/issue.js";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -246,6 +263,52 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
+  contract("ExternalIssue", ExternalIssueSchema, "extension", "ExternalIssue"),
+  contract("IssueProviderState", IssueProviderStateSchema, "extension", "IssueProviderState"),
+  contract("IssueError", IssueErrorSchema, "extension", "IssueError"),
+  contract("IssueTransitionInput", IssueTransitionInputSchema, "extension", "IssueTransitionInput"),
+  contract("IssueTransition", IssueTransitionSchema, "extension", "IssueTransition"),
+  contract(
+    "IssueSearchIssuesInput",
+    IssueSearchIssuesInputSchema,
+    "extension",
+    "IssueSearchIssuesInput"
+  ),
+  contract(
+    "IssueSearchIssuesOutput",
+    IssueSearchIssuesOutputSchema,
+    "extension",
+    "IssueSearchIssuesOutput"
+  ),
+  contract("IssueGetIssueInput", IssueGetIssueInputSchema, "extension", "IssueGetIssueInput"),
+  contract("IssueGetIssueOutput", IssueGetIssueOutputSchema, "extension", "IssueGetIssueOutput"),
+  contract("IssueGetIssuesInput", IssueGetIssuesInputSchema, "extension", "IssueGetIssuesInput"),
+  contract("IssueGetIssuesOutput", IssueGetIssuesOutputSchema, "extension", "IssueGetIssuesOutput"),
+  contract(
+    "IssueGetIssueTransitionsInput",
+    IssueGetIssueTransitionsInputSchema,
+    "extension",
+    "IssueGetIssueTransitionsInput"
+  ),
+  contract(
+    "IssueGetIssueTransitionsOutput",
+    IssueGetIssueTransitionsOutputSchema,
+    "extension",
+    "IssueGetIssueTransitionsOutput"
+  ),
+  contract(
+    "IssueExecuteIssueTransitionInput",
+    IssueExecuteIssueTransitionInputSchema,
+    "extension",
+    "IssueExecuteIssueTransitionInput"
+  ),
+  contract(
+    "IssueExecuteIssueTransitionOutput",
+    IssueExecuteIssueTransitionOutputSchema,
+    "extension",
+    "IssueExecuteIssueTransitionOutput"
+  ),
+
   contract("ApiKeyField", ApiKeyFieldSchema, "extension", "ApiKeyField"),
   contract(
     "GetAuthConfigOutput",

@@ -1,3 +1,15 @@
+import {
+  IssueSearchIssuesInputSchema,
+  IssueSearchIssuesOutputSchema,
+  IssueGetIssueInputSchema,
+  IssueGetIssueOutputSchema,
+  IssueGetIssuesInputSchema,
+  IssueGetIssuesOutputSchema,
+  IssueGetIssueTransitionsInputSchema,
+  IssueGetIssueTransitionsOutputSchema,
+  IssueExecuteIssueTransitionInputSchema,
+  IssueExecuteIssueTransitionOutputSchema,
+} from "./issue.js";
 /* eslint-disable @typescript-eslint/no-deprecated -- The canonical registry must include the deprecated API key compatibility extension. */
 import { z } from "zod";
 import { GetAlfTasksResponseSchema } from "./alftask.js";
@@ -443,6 +455,31 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     output: GetHooksOutputSchema,
   },
   {
+    name: "extension.issue.core.executeIssueTransition",
+    input: IssueExecuteIssueTransitionInputSchema,
+    output: IssueExecuteIssueTransitionOutputSchema,
+  },
+  {
+    name: "extension.issue.core.getIssue",
+    input: IssueGetIssueInputSchema,
+    output: IssueGetIssueOutputSchema,
+  },
+  {
+    name: "extension.issue.core.getIssueTransitions",
+    input: IssueGetIssueTransitionsInputSchema,
+    output: IssueGetIssueTransitionsOutputSchema,
+  },
+  {
+    name: "extension.issue.core.getIssues",
+    input: IssueGetIssuesInputSchema,
+    output: IssueGetIssuesOutputSchema,
+  },
+  {
+    name: "extension.issue.core.searchIssues",
+    input: IssueSearchIssuesInputSchema,
+    output: IssueSearchIssuesOutputSchema,
+  },
+  {
     name: "extension.mailRelay.inbound.onMailReceived",
     input: MailRelayInboundInputSchema,
     output: MailRelayInboundOutputSchema,
@@ -701,6 +738,19 @@ export function getExtensionFunctionSchemas(): FunctionSchema[] {
       inputSchema: zodToJsonSchema(definition.input),
       outputSchema: zodToJsonSchema(definition.output),
     };
+    if (definition.name.startsWith("extension.issue.core.")) {
+      // Accept unknown wire input fields, but strip them in the runtime Zod parser.
+      const input = schema.inputSchema;
+      input["additionalProperties"] = true;
+      if (definition.name.endsWith(".getIssue")) {
+        input["oneOf"] = [{ required: ["issueId"] }, { required: ["url"] }];
+      }
+      if (definition.name.endsWith(".getIssues")) {
+        const properties = input["properties"] as Record<string, Record<string, unknown>>;
+        const ids = properties["issueIds"];
+        if (ids) ids["uniqueItems"] = true;
+      }
+    }
     return schema;
   });
 }

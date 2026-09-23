@@ -2155,3 +2155,144 @@ export const ConfigActionResultProtoSchema = z.object({
   redirect: z.lazy(() => ConfigActionRedirectProtoSchema).optional(),
 }) satisfies z.ZodType<pb.ConfigActionResult>;
 export type ConfigActionResultProto = z.infer<typeof ConfigActionResultProtoSchema>;
+
+export const IssueProviderStateProtoSchema = z.object({
+  id: z.string().optional(),
+  category: z.string().optional(),
+  name: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueProviderState>;
+export type IssueProviderStateProto = z.infer<typeof IssueProviderStateProtoSchema>;
+
+export const IssueContainerProtoSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueContainer>;
+export type IssueContainerProto = z.infer<typeof IssueContainerProtoSchema>;
+
+export const IssueActorProtoSchema = z.object({
+  name: z.string().optional(),
+  id: z.string().optional(),
+  url: z.string().optional(),
+  type: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueActor>;
+export type IssueActorProto = z.infer<typeof IssueActorProtoSchema>;
+
+export const ExternalIssueProtoSchema = z.object({
+  issueId: z.string().optional(),
+  identifier: z.string().optional(),
+  title: z.string().optional(),
+  url: z.string().optional(),
+  state: z.string().optional(),
+  providerState: z.lazy(() => IssueProviderStateProtoSchema).optional(),
+  createdAt: z.string().optional(),
+  container: z.lazy(() => IssueContainerProtoSchema).optional(),
+  description: z.string().optional(),
+  updatedAt: z.string().optional(),
+  closedAt: z.string().optional(),
+  closedBy: z.lazy(() => IssueActorProtoSchema).optional(),
+}) satisfies z.ZodType<pb.ExternalIssue>;
+export type ExternalIssueProto = z.infer<typeof ExternalIssueProtoSchema>;
+
+export const IssueErrorProtoSchema = z.object({
+  type: z.string().optional(),
+  message: z.string().optional(),
+  retryAfterMs: z.number().int().optional(),
+}) satisfies z.ZodType<pb.IssueError>;
+export type IssueErrorProto = z.infer<typeof IssueErrorProtoSchema>;
+
+export const IssueTransitionFieldProtoSchema = z.object({
+  type: z.string().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  enum: z.array(z.any()).optional(),
+}) satisfies z.ZodType<pb.IssueTransitionField>;
+export type IssueTransitionFieldProto = z.infer<typeof IssueTransitionFieldProtoSchema>;
+
+export const IssueTransitionInputProtoSchema = z.object({
+  type: z.string().optional(),
+  properties: z.record(z.string(), z.lazy(() => IssueTransitionFieldProtoSchema)).optional(),
+  required: z.array(z.string()).optional(),
+  additionalProperties: z.boolean().optional(),
+}) satisfies z.ZodType<pb.IssueTransitionInput>;
+export type IssueTransitionInputProto = z.infer<typeof IssueTransitionInputProtoSchema>;
+
+export const IssueTransitionProtoSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().optional(),
+  targetState: z.string().optional(),
+  targetProviderState: z.lazy(() => IssueProviderStateProtoSchema).optional(),
+  availability: z.string().optional(),
+  inputSchema: z.lazy(() => IssueTransitionInputProtoSchema).optional(),
+  reason: z.string().optional(),
+  externalUrl: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueTransition>;
+export type IssueTransitionProto = z.infer<typeof IssueTransitionProtoSchema>;
+
+export const IssueSearchIssuesInputProtoSchema = z.object({
+  query: z.string().optional(),
+  containerId: z.string().optional(),
+  since: z.string().optional(),
+  limit: z.number().int().optional(),
+  orderBy: z.string().optional(),
+  orderDirection: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueSearchIssuesInput>;
+export type IssueSearchIssuesInputProto = z.infer<typeof IssueSearchIssuesInputProtoSchema>;
+
+export const IssueSearchIssuesOutputProtoSchema = z.object({
+  issues: z.array(z.lazy(() => ExternalIssueProtoSchema)).optional(),
+  next: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueSearchIssuesOutput>;
+export type IssueSearchIssuesOutputProto = z.infer<typeof IssueSearchIssuesOutputProtoSchema>;
+
+export const IssueGetIssueInputProtoSchema = z.object({
+  issueId: z.string().optional(),
+  url: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueGetIssueInput>;
+export type IssueGetIssueInputProto = z.infer<typeof IssueGetIssueInputProtoSchema>;
+
+export const IssueGetIssueOutputProtoSchema = z.object({
+  issue: z.lazy(() => ExternalIssueProtoSchema).optional(),
+}) satisfies z.ZodType<pb.IssueGetIssueOutput>;
+export type IssueGetIssueOutputProto = z.infer<typeof IssueGetIssueOutputProtoSchema>;
+
+export const IssueGetIssuesInputProtoSchema = z.object({
+  issueIds: z.array(z.string()).optional(),
+}) satisfies z.ZodType<pb.IssueGetIssuesInput>;
+export type IssueGetIssuesInputProto = z.infer<typeof IssueGetIssuesInputProtoSchema>;
+
+export const IssueGetIssuesResultProtoSchema = z.object({
+  issueId: z.string().optional(),
+  issue: z.lazy(() => ExternalIssueProtoSchema).optional(),
+  error: z.lazy(() => IssueErrorProtoSchema).optional(),
+}) satisfies z.ZodType<pb.IssueGetIssuesResult>;
+export type IssueGetIssuesResultProto = z.infer<typeof IssueGetIssuesResultProtoSchema>;
+
+export const IssueGetIssuesOutputProtoSchema = z.object({
+  results: z.array(z.lazy(() => IssueGetIssuesResultProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.IssueGetIssuesOutput>;
+export type IssueGetIssuesOutputProto = z.infer<typeof IssueGetIssuesOutputProtoSchema>;
+
+export const IssueGetIssueTransitionsInputProtoSchema = z.object({
+  issueId: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueGetIssueTransitionsInput>;
+export type IssueGetIssueTransitionsInputProto = z.infer<typeof IssueGetIssueTransitionsInputProtoSchema>;
+
+export const IssueGetIssueTransitionsOutputProtoSchema = z.object({
+  stateToken: z.string().optional(),
+  transitions: z.array(z.lazy(() => IssueTransitionProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.IssueGetIssueTransitionsOutput>;
+export type IssueGetIssueTransitionsOutputProto = z.infer<typeof IssueGetIssueTransitionsOutputProtoSchema>;
+
+export const IssueExecuteIssueTransitionInputProtoSchema = z.object({
+  issueId: z.string().optional(),
+  transitionId: z.string().optional(),
+  stateToken: z.string().optional(),
+  requestId: z.string().optional(),
+  fields: z.record(z.string(), z.any()).optional(),
+}) satisfies z.ZodType<pb.IssueExecuteIssueTransitionInput>;
+export type IssueExecuteIssueTransitionInputProto = z.infer<typeof IssueExecuteIssueTransitionInputProtoSchema>;
+
+export const IssueExecuteIssueTransitionOutputProtoSchema = z.object({
+  issue: z.lazy(() => ExternalIssueProtoSchema).optional(),
+}) satisfies z.ZodType<pb.IssueExecuteIssueTransitionOutput>;
+export type IssueExecuteIssueTransitionOutputProto = z.infer<typeof IssueExecuteIssueTransitionOutputProtoSchema>;

@@ -2061,3 +2061,108 @@ message ConfigActionResult {
   string message = 2;
   ConfigActionRedirect redirect = 3;
 }
+
+// Issue Extension v1. Runtime schemas enforce enum, exclusivity and form constraints.
+message IssueProviderState {
+  optional string id = 1;
+  optional string category = 2;
+  string name = 3;
+}
+message IssueContainer {
+  string id = 1;
+  string name = 2;
+}
+message IssueActor {
+  string name = 1;
+  optional string id = 2;
+  optional string url = 3;
+  optional string type = 4;
+}
+message ExternalIssue {
+  string issue_id = 1;
+  string identifier = 2;
+  string title = 3;
+  string url = 4;
+  string state = 5;
+  IssueProviderState provider_state = 6;
+  string created_at = 7;
+  IssueContainer container = 8;
+  optional string description = 9;
+  optional string updated_at = 10;
+  optional string closed_at = 11;
+  IssueActor closed_by = 12;
+}
+message IssueError {
+  string type = 1;
+  string message = 2;
+  optional int32 retry_after_ms = 3;
+}
+message IssueTransitionField {
+  string type = 1;
+  optional string title = 2;
+  optional string description = 3;
+  repeated google.protobuf.Value enum = 4;
+}
+message IssueTransitionInput {
+  string type = 1;
+  map<string, IssueTransitionField> properties = 2;
+  repeated string required = 3;
+  bool additional_properties = 4;
+}
+message IssueTransition {
+  string id = 1;
+  string name = 2;
+  string target_state = 3;
+  IssueProviderState target_provider_state = 4;
+  string availability = 5;
+  IssueTransitionInput input_schema = 6;
+  optional string reason = 7;
+  optional string external_url = 8;
+}
+message IssueSearchIssuesInput {
+  optional string query = 1;
+  optional string container_id = 2;
+  optional string since = 3;
+  optional int32 limit = 4;
+  optional string order_by = 5;
+  optional string order_direction = 6;
+}
+message IssueSearchIssuesOutput {
+  repeated ExternalIssue issues = 1;
+  optional string next = 2;
+}
+message IssueGetIssueInput {
+  optional string issue_id = 1;
+  optional string url = 2;
+}
+message IssueGetIssueOutput {
+  ExternalIssue issue = 1;
+}
+message IssueGetIssuesInput {
+  repeated string issue_ids = 1;
+}
+message IssueGetIssuesResult {
+  string issue_id = 1;
+  ExternalIssue issue = 2;
+  IssueError error = 3;
+}
+message IssueGetIssuesOutput {
+  repeated IssueGetIssuesResult results = 1;
+}
+message IssueGetIssueTransitionsInput {
+  string issue_id = 1;
+}
+message IssueGetIssueTransitionsOutput {
+  string state_token = 1;
+  repeated IssueTransition transitions = 2;
+}
+message IssueExecuteIssueTransitionInput {
+  string issue_id = 1;
+  string transition_id = 2;
+  string state_token = 3;
+  string request_id = 4;
+  google.protobuf.Struct fields = 5;
+}
+message IssueExecuteIssueTransitionOutput {
+  ExternalIssue issue = 1;
+}
