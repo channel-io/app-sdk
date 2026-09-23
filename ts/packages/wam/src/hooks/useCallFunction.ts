@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import type { OAuthTargetAuthScope } from "../types/wam.js";
 
 /**
  * Options for useCallFunction hook
@@ -8,6 +9,8 @@ export interface UseCallFunctionOptions {
   appId: string;
   /** Function name (e.g., "calendar.booking.createBooking") */
   name: string;
+  /** OAuth credential ownership to use without changing the authenticated caller */
+  targetAuthScope?: OAuthTargetAuthScope;
 }
 
 /**
@@ -83,6 +86,7 @@ export function useCallFunction<T = unknown>(
           appId: options.appId,
           name: options.name,
           params,
+          ...(options.targetAuthScope && { targetAuthScope: options.targetAuthScope }),
         });
         setData(result);
         return result;
@@ -94,7 +98,7 @@ export function useCallFunction<T = unknown>(
         setLoading(false);
       }
     },
-    [options.appId, options.name]
+    [options.appId, options.name, options.targetAuthScope]
   );
 
   const reset = useCallback(() => {

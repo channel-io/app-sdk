@@ -15,6 +15,7 @@ declare global {
         appId: string;
         name: string;
         params: Record<string, unknown>;
+        targetAuthScope?: "channel" | "manager";
       }) => Promise<T>;
       callNativeFunction: <T>(args: {
         name: string;
