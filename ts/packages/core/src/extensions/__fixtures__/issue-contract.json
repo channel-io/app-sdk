@@ -1,0 +1,910 @@
+[
+  {
+    "name": "core",
+    "required": true,
+    "dependencies": [],
+    "functions": [
+      {
+        "functionSchema": {
+          "name": "extension.issue.core.searchIssues",
+          "description": "List or search accessible external issues for the installed app, ordered by external createdAt descending. Blank query lists issues; read-only; cursor pagination; completed issues included.",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "maxLength": 500
+              },
+              "orderBy": {
+                "type": "string",
+                "default": "createdAt",
+                "enum": ["createdAt"]
+              },
+              "orderDirection": {
+                "type": "string",
+                "default": "desc",
+                "enum": ["desc"]
+              },
+              "containerId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "since": {
+                "type": "string",
+                "minLength": 1
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20
+              }
+            }
+          },
+          "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "issues": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/issue"
+                },
+                "maxItems": 100
+              },
+              "next": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["issues"],
+            "additionalProperties": false,
+            "$defs": {
+              "state": {
+                "type": "string",
+                "enum": ["open", "unstarted", "started", "completed", "canceled"]
+              },
+              "issue": {
+                "type": "object",
+                "properties": {
+                  "issueId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "format": "uri"
+                  },
+                  "container": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["id", "name"],
+                    "additionalProperties": false
+                  },
+                  "state": {
+                    "$ref": "#/$defs/state"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "updatedAt": {
+                    "type": ["string", "null"],
+                    "format": "date-time"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "closedAt": {
+                    "type": ["string", "null"],
+                    "format": "date-time"
+                  },
+                  "closedBy": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": ["user", "bot"]
+                          },
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "format": "uri"
+                          }
+                        },
+                        "required": ["name"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "providerState": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": ["string", "null"],
+                        "minLength": 1
+                      },
+                      "category": {
+                        "type": ["string", "null"],
+                        "minLength": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["name"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "issueId",
+                  "identifier",
+                  "title",
+                  "url",
+                  "state",
+                  "providerState",
+                  "createdAt"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "required": true,
+        "dependencies": []
+      },
+      {
+        "functionSchema": {
+          "name": "extension.issue.core.getIssue",
+          "description": "Get one accessible external issue by exactly one stable issueId or supported HTTPS issue URL. Resolve URLs through the provider API and return the same canonical Issue; do not use fuzzy search.",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "issueId": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://[^/\\s?#]+(?:[/?#][^\\s]*)?$"
+              }
+            },
+            "oneOf": [
+              {
+                "required": ["issueId"]
+              },
+              {
+                "required": ["url"]
+              }
+            ]
+          },
+          "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "issue": {
+                "$ref": "#/$defs/issue"
+              }
+            },
+            "required": ["issue"],
+            "additionalProperties": false,
+            "$defs": {
+              "state": {
+                "type": "string",
+                "enum": ["open", "unstarted", "started", "completed", "canceled"]
+              },
+              "issue": {
+                "type": "object",
+                "properties": {
+                  "issueId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "format": "uri"
+                  },
+                  "container": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["id", "name"],
+                    "additionalProperties": false
+                  },
+                  "state": {
+                    "$ref": "#/$defs/state"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "updatedAt": {
+                    "type": ["string", "null"],
+                    "format": "date-time"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "closedAt": {
+                    "type": ["string", "null"],
+                    "format": "date-time"
+                  },
+                  "closedBy": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": ["user", "bot"]
+                          },
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "format": "uri"
+                          }
+                        },
+                        "required": ["name"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "providerState": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": ["string", "null"],
+                        "minLength": 1
+                      },
+                      "category": {
+                        "type": ["string", "null"],
+                        "minLength": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["name"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "issueId",
+                  "identifier",
+                  "title",
+                  "url",
+                  "state",
+                  "providerState",
+                  "createdAt"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "required": true,
+        "dependencies": []
+      },
+      {
+        "functionSchema": {
+          "name": "extension.issue.core.getIssues",
+          "description": "Get 1-100 distinct external IDs in input order. Return one issue or error per ID; never silently omit failures.",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "issueIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "maxItems": 100,
+                "uniqueItems": true
+              }
+            },
+            "required": ["issueIds"]
+          },
+          "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "issueId": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "issue": {
+                      "$ref": "#/$defs/issue"
+                    },
+                    "error": {
+                      "$ref": "#/$defs/error"
+                    }
+                  },
+                  "required": ["issueId"],
+                  "additionalProperties": false,
+                  "oneOf": [
+                    {
+                      "required": ["issue"],
+                      "not": {
+                        "required": ["error"]
+                      }
+                    },
+                    {
+                      "required": ["error"],
+                      "not": {
+                        "required": ["issue"]
+                      }
+                    }
+                  ]
+                },
+                "minItems": 1,
+                "maxItems": 100
+              }
+            },
+            "required": ["results"],
+            "additionalProperties": false,
+            "$defs": {
+              "state": {
+                "type": "string",
+                "enum": ["open", "unstarted", "started", "completed", "canceled"]
+              },
+              "issue": {
+                "type": "object",
+                "properties": {
+                  "issueId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "format": "uri"
+                  },
+                  "container": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["id", "name"],
+                    "additionalProperties": false
+                  },
+                  "state": {
+                    "$ref": "#/$defs/state"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "updatedAt": {
+                    "type": ["string", "null"],
+                    "format": "date-time"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "closedAt": {
+                    "type": ["string", "null"],
+                    "format": "date-time"
+                  },
+                  "closedBy": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": ["user", "bot"]
+                          },
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "format": "uri"
+                          }
+                        },
+                        "required": ["name"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "providerState": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": ["string", "null"],
+                        "minLength": 1
+                      },
+                      "category": {
+                        "type": ["string", "null"],
+                        "minLength": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["name"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "issueId",
+                  "identifier",
+                  "title",
+                  "url",
+                  "state",
+                  "providerState",
+                  "createdAt"
+                ],
+                "additionalProperties": false
+              },
+              "error": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "invalidArgument",
+                      "validationFailed",
+                      "invalidCursor",
+                      "unsupported",
+                      "unsupportedFilter",
+                      "forbidden",
+                      "notFound",
+                      "connectionUnavailable",
+                      "rateLimited",
+                      "temporaryFailure",
+                      "conflict",
+                      "invalidTransition",
+                      "outcomeUnknown"
+                    ]
+                  },
+                  "message": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "retryAfterMs": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": ["type", "message"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "required": true,
+        "dependencies": []
+      },
+      {
+        "functionSchema": {
+          "name": "extension.issue.core.getIssueTransitions",
+          "description": "Get currently available transitions and required input for the caller. stateToken does not reserve or lock the issue.",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "issueId": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["issueId"]
+          },
+          "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "stateToken": {
+                "type": "string",
+                "minLength": 1
+              },
+              "transitions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/transition"
+                }
+              }
+            },
+            "required": ["stateToken", "transitions"],
+            "additionalProperties": false,
+            "$defs": {
+              "state": {
+                "type": "string",
+                "enum": ["open", "unstarted", "started", "completed", "canceled"]
+              },
+              "fieldSchema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "enum": ["string", "number", "integer", "boolean"]
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "enum": {
+                    "type": "array",
+                    "items": {
+                      "type": ["string", "number", "boolean"]
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                  }
+                },
+                "required": ["type"],
+                "additionalProperties": false
+              },
+              "fieldsSchema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "object"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/$defs/fieldSchema"
+                    }
+                  },
+                  "required": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  },
+                  "additionalProperties": {
+                    "const": false
+                  }
+                },
+                "required": ["type", "properties", "additionalProperties"],
+                "additionalProperties": false
+              },
+              "transition": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "targetState": {
+                    "$ref": "#/$defs/state"
+                  },
+                  "targetProviderState": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": ["string", "null"],
+                        "minLength": 1
+                      },
+                      "category": {
+                        "type": ["string", "null"],
+                        "minLength": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["name"],
+                    "additionalProperties": false
+                  },
+                  "availability": {
+                    "enum": ["available", "externalOnly"]
+                  },
+                  "inputSchema": {
+                    "$ref": "#/$defs/fieldsSchema"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "externalUrl": {
+                    "type": "string",
+                    "minLength": 1,
+                    "format": "uri"
+                  }
+                },
+                "required": ["id", "name", "targetState", "availability"],
+                "additionalProperties": false,
+                "oneOf": [
+                  {
+                    "properties": {
+                      "availability": {
+                        "const": "available"
+                      }
+                    },
+                    "required": ["inputSchema"]
+                  },
+                  {
+                    "properties": {
+                      "availability": {
+                        "const": "externalOnly"
+                      }
+                    },
+                    "required": ["reason", "externalUrl"]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "required": false,
+        "dependencies": ["extension.issue.core.executeIssueTransition"]
+      },
+      {
+        "functionSchema": {
+          "name": "extension.issue.core.executeIssueTransition",
+          "description": "Execute a previously offered transition synchronously. Revalidate authorization, stateToken and fields. Deduplicate by requestId; uncertain execution is outcomeUnknown, not safe to repeat with a new key.",
+          "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "issueId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "transitionId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "stateToken": {
+                "type": "string",
+                "minLength": 1
+              },
+              "requestId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": ["string", "number", "boolean"]
+                }
+              }
+            },
+            "required": ["issueId", "transitionId", "stateToken", "requestId"]
+          },
+          "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "issue": {
+                "$ref": "#/$defs/issue"
+              }
+            },
+            "required": ["issue"],
+            "additionalProperties": false,
+            "$defs": {
+              "state": {
+                "type": "string",
+                "enum": ["open", "unstarted", "started", "completed", "canceled"]
+              },
+              "issue": {
+                "type": "object",
+                "properties": {
+                  "issueId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "format": "uri"
+                  },
+                  "container": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["id", "name"],
+                    "additionalProperties": false
+                  },
+                  "state": {
+                    "$ref": "#/$defs/state"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "updatedAt": {
+                    "type": ["string", "null"],
+                    "format": "date-time"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "closedAt": {
+                    "type": ["string", "null"],
+                    "format": "date-time"
+                  },
+                  "closedBy": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": ["user", "bot"]
+                          },
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "format": "uri"
+                          }
+                        },
+                        "required": ["name"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "providerState": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": ["string", "null"],
+                        "minLength": 1
+                      },
+                      "category": {
+                        "type": ["string", "null"],
+                        "minLength": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["name"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "issueId",
+                  "identifier",
+                  "title",
+                  "url",
+                  "state",
+                  "providerState",
+                  "createdAt"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "required": false,
+        "dependencies": ["extension.issue.core.getIssueTransitions"]
+      }
+    ]
+  }
+]

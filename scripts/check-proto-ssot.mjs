@@ -7,6 +7,7 @@ const repoRoot = resolve(new URL("..", import.meta.url).pathname);
 const violations = [];
 
 const allowedTsEnumTypes = new Set([
+  "ExternalIssueState",
   "ApiKeyAuthScope",
   "AuthorizationOpenMode",
   "BookingStatus",

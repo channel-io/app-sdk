@@ -127,7 +127,7 @@ describe("hook metadata schema", () => {
       personType: "manager",
       personId: "manager-1",
       plainText: "Ship the webhook path.",
-      webPage: { url: "https://linear.app/channel/issue/AS-3305" },
+      webPage: { url: "https://linear.app/example/issue/ENG-1" },
     },
   } as const;
 

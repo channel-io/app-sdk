@@ -209,7 +209,7 @@
 
   OrderAddress (order·commerce 공유)
   country_code — ISO 3166-1 alpha-2. country 는 표시용 국가명이라 코드 비교에 쓸 수 없다.
-  shopby·godomall 은 이미 이 값을 갖고 있고 ch-dropwizard 의 주소 모델에도 있다.
+  shopby·godomall 은 이미 이 값을 갖고 있고 the backend 의 주소 모델에도 있다.
 
   OrderFulfillment (order·commerce 공유)
   tracking_company_name — tracking_company 에 택배사 "코드" 가 들어가는 몰이 있어 사람이 읽을

@@ -15,6 +15,7 @@ import (
 	"github.com/channel-io/app-sdk/go/extension/customtab"
 	"github.com/channel-io/app-sdk/go/extension/datasource"
 	"github.com/channel-io/app-sdk/go/extension/hook"
+	"github.com/channel-io/app-sdk/go/extension/issue"
 	"github.com/channel-io/app-sdk/go/extension/mailrelay"
 	"github.com/channel-io/app-sdk/go/extension/messaging"
 	"github.com/channel-io/app-sdk/go/extension/notebook"
@@ -79,6 +80,12 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	use(t, app, hook.Extension().
 		GetHooks(zero[hook.GetHooksRequest, hook.GetHooksResponse]()))
 
+	use(t, app, issue.Extension().
+		ExecuteIssueTransition(zero[issue.ExecuteIssueTransitionRequest, issue.ExecuteIssueTransitionResponse]()).
+		GetIssue(zero[issue.GetIssueRequest, issue.GetIssueResponse]()).
+		GetIssueTransitions(zero[issue.GetIssueTransitionsRequest, issue.GetIssueTransitionsResponse]()).
+		GetIssues(zero[issue.GetIssuesRequest, issue.GetIssuesResponse]()).
+		SearchIssues(zero[issue.SearchIssuesRequest, issue.SearchIssuesResponse]()))
 	use(t, app, mailrelay.Extension().
 		OnMailReceived(zero[mailrelay.InboundInput, mailrelay.InboundOutput]()))
 
@@ -152,11 +159,17 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	got := app.Schemas()
 	want := schemaregistry.Schemas()
 
-	if len(got) != 80 {
-		t.Fatalf("expected 80 registered extension function schemas, got %d", len(got))
+	if len(got) != 85 {
+		t.Fatalf("expected 85 registered extension function schemas, got %d", len(got))
 	}
 	if !reflect.DeepEqual(got, want) {
-		t.Fatalf("registered extension function schemas drifted from canonical registry")
+		for i := range got {
+			if !reflect.DeepEqual(got[i], want[i]) {
+				t.Errorf("schema %d: got %+v want %+v", i, got[i], want[i])
+				break
+			}
+		}
+		t.FailNow()
 	}
 }
 

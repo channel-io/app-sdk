@@ -15,6 +15,7 @@ import (
 	"github.com/channel-io/app-sdk/go/extension/customtab"
 	"github.com/channel-io/app-sdk/go/extension/datasource"
 	"github.com/channel-io/app-sdk/go/extension/hook"
+	"github.com/channel-io/app-sdk/go/extension/issue"
 	"github.com/channel-io/app-sdk/go/extension/mailrelay"
 	"github.com/channel-io/app-sdk/go/extension/messaging"
 	"github.com/channel-io/app-sdk/go/extension/notebook"
@@ -37,6 +38,13 @@ type extensionSmokeSpec struct {
 }
 
 var extensionSmokeSpecs = []extensionSmokeSpec{
+	{name: issue.ExtensionName, systemVersion: issue.SystemVersion, functions: []string{issue.FunctionSearchIssues, issue.FunctionGetIssue, issue.FunctionGetIssues, issue.FunctionGetIssueTransitions, issue.FunctionExecuteIssueTransition}, build: func() appsdk.Extension {
+		return issue.Extension().SearchIssues(smokeZero[issue.SearchIssuesRequest, issue.SearchIssuesResponse]()).
+			GetIssue(smokeZero[issue.GetIssueRequest, issue.GetIssueResponse]()).
+			GetIssues(smokeZero[issue.GetIssuesRequest, issue.GetIssuesResponse]()).
+			GetIssueTransitions(smokeZero[issue.GetIssueTransitionsRequest, issue.GetIssueTransitionsResponse]()).
+			ExecuteIssueTransition(smokeZero[issue.ExecuteIssueTransitionRequest, issue.ExecuteIssueTransitionResponse]())
+	}},
 	{
 		name:          alftask.ExtensionName,
 		systemVersion: alftask.SystemVersion,

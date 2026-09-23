@@ -2400,3 +2400,131 @@ export interface ConfigActionResult {
   message?: string | undefined;
   redirect?: ConfigActionRedirect | undefined;
 }
+
+/** Issue Extension v1. Runtime schemas enforce enum, exclusivity and form constraints. */
+export interface IssueProviderState {
+  id?: string | undefined;
+  category?: string | undefined;
+  name?: string | undefined;
+}
+
+export interface IssueContainer {
+  id?: string | undefined;
+  name?: string | undefined;
+}
+
+export interface IssueActor {
+  name?: string | undefined;
+  id?: string | undefined;
+  url?: string | undefined;
+  type?: string | undefined;
+}
+
+export interface ExternalIssue {
+  issueId?: string | undefined;
+  identifier?: string | undefined;
+  title?: string | undefined;
+  url?: string | undefined;
+  state?: string | undefined;
+  providerState?: IssueProviderState | undefined;
+  createdAt?: string | undefined;
+  container?: IssueContainer | undefined;
+  description?: string | undefined;
+  updatedAt?: string | undefined;
+  closedAt?: string | undefined;
+  closedBy?: IssueActor | undefined;
+}
+
+export interface IssueError {
+  type?: string | undefined;
+  message?: string | undefined;
+  retryAfterMs?: number | undefined;
+}
+
+export interface IssueTransitionField {
+  type?: string | undefined;
+  title?: string | undefined;
+  description?: string | undefined;
+  enum?: any[] | undefined;
+}
+
+export interface IssueTransitionInput {
+  type?: string | undefined;
+  properties?: { [key: string]: IssueTransitionField } | undefined;
+  required?: string[] | undefined;
+  additionalProperties?: boolean | undefined;
+}
+
+export interface IssueTransitionInput_PropertiesEntry {
+  key: string;
+  value?: IssueTransitionField | undefined;
+}
+
+export interface IssueTransition {
+  id?: string | undefined;
+  name?: string | undefined;
+  targetState?: string | undefined;
+  targetProviderState?: IssueProviderState | undefined;
+  availability?: string | undefined;
+  inputSchema?: IssueTransitionInput | undefined;
+  reason?: string | undefined;
+  externalUrl?: string | undefined;
+}
+
+export interface IssueSearchIssuesInput {
+  query?: string | undefined;
+  containerId?: string | undefined;
+  since?: string | undefined;
+  limit?: number | undefined;
+  orderBy?: string | undefined;
+  orderDirection?: string | undefined;
+}
+
+export interface IssueSearchIssuesOutput {
+  issues?: ExternalIssue[] | undefined;
+  next?: string | undefined;
+}
+
+export interface IssueGetIssueInput {
+  issueId?: string | undefined;
+  url?: string | undefined;
+}
+
+export interface IssueGetIssueOutput {
+  issue?: ExternalIssue | undefined;
+}
+
+export interface IssueGetIssuesInput {
+  issueIds?: string[] | undefined;
+}
+
+export interface IssueGetIssuesResult {
+  issueId?: string | undefined;
+  issue?: ExternalIssue | undefined;
+  error?: IssueError | undefined;
+}
+
+export interface IssueGetIssuesOutput {
+  results?: IssueGetIssuesResult[] | undefined;
+}
+
+export interface IssueGetIssueTransitionsInput {
+  issueId?: string | undefined;
+}
+
+export interface IssueGetIssueTransitionsOutput {
+  stateToken?: string | undefined;
+  transitions?: IssueTransition[] | undefined;
+}
+
+export interface IssueExecuteIssueTransitionInput {
+  issueId?: string | undefined;
+  transitionId?: string | undefined;
+  stateToken?: string | undefined;
+  requestId?: string | undefined;
+  fields?: { [key: string]: any } | undefined;
+}
+
+export interface IssueExecuteIssueTransitionOutput {
+  issue?: ExternalIssue | undefined;
+}

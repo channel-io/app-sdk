@@ -1,4 +1,5 @@
 export const SDK_EXTENSION_NAMES = [
+  "issue",
   "oauth",
   "apikey",
   "config",

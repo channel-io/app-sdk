@@ -70,3 +70,18 @@ describe("parseFunctionInputParams", () => {
     );
   });
 });
+
+it("returns the Issue invalidInput contract without copying submitted values", () => {
+  expect(() =>
+    parseFunctionInputParams(
+      "extension.issue.core.getIssues",
+      z.object({ issueIds: z.array(z.string()) }),
+      { issueIds: "private-token" }
+    )
+  ).toThrowError(
+    expect.objectContaining({
+      type: "invalidInput",
+      data: { type: "invalidInput", message: "Invalid Issue Extension input" },
+    })
+  );
+});
