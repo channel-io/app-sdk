@@ -8,7 +8,19 @@ import (
 	"github.com/channel-io/app-sdk/go/extension/datasource"
 	"github.com/channel-io/app-sdk/go/testkit"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
+
+func TestManagerAccessFieldIsDeprecatedCompatibilityMetadata(t *testing.T) {
+	field := (&datasource.Table{}).ProtoReflect().Descriptor().Fields().ByName("manager_access")
+	options, ok := field.Options().(*descriptorpb.FieldOptions)
+	if !ok {
+		t.Fatalf("unexpected manager_access field options: %T", field.Options())
+	}
+	if !options.GetDeprecated() {
+		t.Fatal("expected manager_access to be marked deprecated")
+	}
+}
 
 func TestExtensionRegistersDatasourceMetadataFunctions(t *testing.T) {
 	app := appsdk.New(appsdk.Options{AppID: "app"})
