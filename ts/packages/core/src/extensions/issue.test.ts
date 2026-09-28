@@ -28,6 +28,16 @@ describe("Issue v1", () => {
       batch.functionSchema.outputSchema.$defs.error.properties.type.enum
     );
   });
+  it("uses invalidInput for batch input failures and rejects legacy item types", () => {
+    const response = (type: string) => ({
+      results: [{ issueId: "bad", error: { type, message: "Invalid UUID" } }],
+    });
+    expect(schemas.IssueGetIssuesOutputSchema.safeParse(response("invalidInput")).success).toBe(
+      true
+    );
+    for (const type of ["invalidArgument", "validationFailed"])
+      expect(schemas.IssueGetIssuesOutputSchema.safeParse(response(type)).success).toBe(false);
+  });
   it("registers the five functions and the final V266 result envelope", () => {
     const actual = getExtensionFunctionSchemas().filter((s) =>
       s.name.startsWith("extension.issue.")
