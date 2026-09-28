@@ -539,8 +539,7 @@
                 "properties": {
                   "type": {
                     "enum": [
-                      "invalidArgument",
-                      "validationFailed",
+                      "invalidInput",
                       "invalidCursor",
                       "unsupported",
                       "unsupportedFilter",

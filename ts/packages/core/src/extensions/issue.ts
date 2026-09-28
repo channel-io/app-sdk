@@ -61,8 +61,7 @@ export const ExternalIssueSchema = z
 export const IssueErrorSchema = z
   .object({
     type: z.enum([
-      "invalidArgument",
-      "validationFailed",
+      "invalidInput",
       "invalidCursor",
       "unsupported",
       "unsupportedFilter",

@@ -32,3 +32,8 @@ do not blindly repeat it. Success is `{issue}` without an `operationId` property
 
 The Go SDK exposes the same functions through `extension/issue.Extension()` and generated
 request/response aliases. Wire schemas are shared with the TypeScript canonical registry.
+
+Batch item errors use `invalidInput` for invalid issue IDs, matching function input errors.
+The legacy `invalidArgument` and `validationFailed` item types are no longer accepted.
+Deploy with the corresponding App Store Issue v1 definition update; existing apps must
+upgrade their SDK and return the common error type together.
