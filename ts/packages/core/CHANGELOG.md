@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.30.0
+
+### Minor Changes
+
+- 2fd7500: Align Issue v1 batch item errors with the common invalidInput contract. Replace the legacy invalidArgument/validationFailed item types. Coordinate rollout with the App Store definition migration and provider apps.
+
 ## 0.29.0
 
 ### Minor Changes
