@@ -17675,27 +17675,65 @@
                             "pattern": "^[A-Za-z0-9_-]+$"
                           },
                           "response": {
-                            "type": "object",
-                            "properties": {
-                              "statusCode": {
-                                "type": "integer",
-                                "minimum": 200,
-                                "maximum": 299
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "statusCode": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer",
+                                        "minimum": 200,
+                                        "maximum": 203
+                                      },
+                                      {
+                                        "type": "integer",
+                                        "minimum": 206,
+                                        "maximum": 299
+                                      }
+                                    ]
+                                  },
+                                  "contentType": {
+                                    "type": "string",
+                                    "pattern": "^[ \\t]*[!#$%&'*+.^_`|~0-9A-Za-z-]+\\/[!#$%&'*+.^_`|~0-9A-Za-z-]+(?:[ \\t]*;[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+)[ \\t]*=[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"(?:[^\"\\\\\\r\\n\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]|\\\\[\\t -~])*\"))*[ \\t]*;?[ \\t]*$"
+                                  },
+                                  "body": {
+                                    "type": "string",
+                                    "maxLength": 65536
+                                  }
+                                },
+                                "required": [
+                                  "statusCode",
+                                  "contentType"
+                                ],
+                                "additionalProperties": false
                               },
-                              "contentType": {
-                                "type": "string",
-                                "pattern": "^[ \\t]*[!#$%&'*+.^_`|~0-9A-Za-z-]+\\/[!#$%&'*+.^_`|~0-9A-Za-z-]+(?:[ \\t]*;[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+)[ \\t]*=[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"(?:[^\"\\\\\\r\\n\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]|\\\\[\\t -~])*\"))*[ \\t]*;?[ \\t]*$"
-                              },
-                              "body": {
-                                "type": "string",
-                                "maxLength": 65536
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "statusCode": {
+                                    "type": "number",
+                                    "enum": [
+                                      204,
+                                      205
+                                    ]
+                                  },
+                                  "contentType": {
+                                    "type": "string",
+                                    "pattern": "^[ \\t]*[!#$%&'*+.^_`|~0-9A-Za-z-]+\\/[!#$%&'*+.^_`|~0-9A-Za-z-]+(?:[ \\t]*;[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+)[ \\t]*=[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"(?:[^\"\\\\\\r\\n\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]|\\\\[\\t -~])*\"))*[ \\t]*;?[ \\t]*$"
+                                  },
+                                  "body": {
+                                    "type": "string",
+                                    "const": ""
+                                  }
+                                },
+                                "required": [
+                                  "statusCode",
+                                  "contentType"
+                                ],
+                                "additionalProperties": false
                               }
-                            },
-                            "required": [
-                              "statusCode",
-                              "contentType"
-                            ],
-                            "additionalProperties": false
+                            ]
                           },
                           "executionScope": {
                             "type": "string",
@@ -17715,27 +17753,65 @@
                             "const": "manager"
                           },
                           "response": {
-                            "type": "object",
-                            "properties": {
-                              "statusCode": {
-                                "type": "integer",
-                                "minimum": 200,
-                                "maximum": 299
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "statusCode": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer",
+                                        "minimum": 200,
+                                        "maximum": 203
+                                      },
+                                      {
+                                        "type": "integer",
+                                        "minimum": 206,
+                                        "maximum": 299
+                                      }
+                                    ]
+                                  },
+                                  "contentType": {
+                                    "type": "string",
+                                    "pattern": "^[ \\t]*[!#$%&'*+.^_`|~0-9A-Za-z-]+\\/[!#$%&'*+.^_`|~0-9A-Za-z-]+(?:[ \\t]*;[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+)[ \\t]*=[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"(?:[^\"\\\\\\r\\n\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]|\\\\[\\t -~])*\"))*[ \\t]*;?[ \\t]*$"
+                                  },
+                                  "body": {
+                                    "type": "string",
+                                    "maxLength": 65536
+                                  }
+                                },
+                                "required": [
+                                  "statusCode",
+                                  "contentType"
+                                ],
+                                "additionalProperties": false
                               },
-                              "contentType": {
-                                "type": "string",
-                                "pattern": "^[ \\t]*[!#$%&'*+.^_`|~0-9A-Za-z-]+\\/[!#$%&'*+.^_`|~0-9A-Za-z-]+(?:[ \\t]*;[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+)[ \\t]*=[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"(?:[^\"\\\\\\r\\n\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]|\\\\[\\t -~])*\"))*[ \\t]*;?[ \\t]*$"
-                              },
-                              "body": {
-                                "type": "string",
-                                "maxLength": 65536
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "statusCode": {
+                                    "type": "number",
+                                    "enum": [
+                                      204,
+                                      205
+                                    ]
+                                  },
+                                  "contentType": {
+                                    "type": "string",
+                                    "pattern": "^[ \\t]*[!#$%&'*+.^_`|~0-9A-Za-z-]+\\/[!#$%&'*+.^_`|~0-9A-Za-z-]+(?:[ \\t]*;[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+)[ \\t]*=[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"(?:[^\"\\\\\\r\\n\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]|\\\\[\\t -~])*\"))*[ \\t]*;?[ \\t]*$"
+                                  },
+                                  "body": {
+                                    "type": "string",
+                                    "const": ""
+                                  }
+                                },
+                                "required": [
+                                  "statusCode",
+                                  "contentType"
+                                ],
+                                "additionalProperties": false
                               }
-                            },
-                            "required": [
-                              "statusCode",
-                              "contentType"
-                            ],
-                            "additionalProperties": false
+                            ]
                           }
                         },
                         "required": [

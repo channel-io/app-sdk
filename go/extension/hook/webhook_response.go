@@ -23,7 +23,7 @@ func validateHookMetadata(hooks []*Config) error {
 			return fmt.Errorf("webhook.response.statusCode must be between 200 and 299")
 		}
 		mediaType, _, err := mime.ParseMediaType(response.ContentType)
-		if err != nil || !strings.Contains(mediaType, "/") || strings.ContainsFunc(response.ContentType, func(c rune) bool { return c < 0x20 && c != '\t' || c == 0x7f }) {
+		if err != nil || !utf8.ValidString(response.ContentType) || !strings.Contains(mediaType, "/") || strings.ContainsFunc(response.ContentType, func(c rune) bool { return c < 0x20 && c != '\t' || c == 0x7f }) {
 			return fmt.Errorf("webhook.response.contentType must be a valid MIME type without invalid header characters")
 		}
 		if !utf8.ValidString(response.Body) || len(response.Body) > 64*1024 {

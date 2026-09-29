@@ -49,6 +49,7 @@ func TestFixedWebhookResponse(t *testing.T) {
 		{"invalid MIME", &WebhookResponse{StatusCode: 200, ContentType: "invalid"}, false},
 		{"newline", &WebhookResponse{StatusCode: 200, ContentType: "text/plain\r\nX-Test: injected"}, false},
 		{"header control", &WebhookResponse{StatusCode: 200, ContentType: "text/plain; x=\"\x00\""}, false},
+		{"invalid Content-Type UTF-8", &WebhookResponse{StatusCode: 200, ContentType: "text/plain; x=\"\xff\""}, false},
 		{"conflicting parameters", &WebhookResponse{StatusCode: 200, ContentType: "text/plain; charset=utf-8; charset=ascii"}, false},
 		{"204 body", &WebhookResponse{StatusCode: 204, ContentType: "text/plain", Body: "x"}, false},
 		{"205 body", &WebhookResponse{StatusCode: 205, ContentType: "text/plain", Body: "x"}, false},

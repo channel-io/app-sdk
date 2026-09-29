@@ -228,8 +228,7 @@ const webhookResponseContentType = new RegExp(
   `^[ \\t]*${mimeToken}/${mimeToken}(?:[ \\t]*;[ \\t]*${mimeParameter})*[ \\t]*;?[ \\t]*$`
 );
 
-/** Fixed acknowledgement after outbox persistence; it does not report app completion. */
-export const WebhookResponseSchema = z
+const WebhookResponseBaseSchema = z
   .object({
     statusCode: z.number().int().min(200).max(299),
     contentType: z
@@ -241,7 +240,19 @@ export const WebhookResponseSchema = z
       .max(64 * 1024)
       .optional(),
   })
-  .strict()
+  .strict();
+
+/** Fixed acknowledgement after outbox persistence; it does not report app completion. */
+export const WebhookResponseSchema = z
+  .union([
+    WebhookResponseBaseSchema.extend({
+      statusCode: z.union([z.number().int().min(200).max(203), z.number().int().min(206).max(299)]),
+    }),
+    WebhookResponseBaseSchema.extend({
+      statusCode: z.union([z.literal(204), z.literal(205)]),
+      body: z.literal("").optional(),
+    }),
+  ])
   .superRefine((response, ctx) => {
     const parameters = new Map<string, string>();
     for (const [, attribute = "", raw = ""] of response.contentType.matchAll(
@@ -265,13 +276,6 @@ export const WebhookResponseSchema = z
         code: z.ZodIssueCode.custom,
         path: ["body"],
         message: "Body must be at most 64 KiB",
-      });
-    }
-    if ((response.statusCode === 204 || response.statusCode === 205) && response.body) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["body"],
-        message: "Body must be empty for status 204 or 205",
       });
     }
   });
