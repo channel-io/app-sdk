@@ -9,6 +9,7 @@ import type {
   HookUserChatOpenedInput as ProtoUserChatOpenedHookInput,
   HookUserChatOpenedResult as ProtoUserChatOpenedHookResult,
   HookWebhookConfig as ProtoWebhookConfig,
+  HookWebhookResponse as ProtoWebhookResponse,
   OAuthFlowHookInput as ProtoOAuthFlowHookInput,
   OAuthFlowHookResult as ProtoOAuthFlowHookResult,
 } from "../gen/channel/app/sdk/v1/extension.js";
@@ -221,9 +222,69 @@ export type TeamChatMessageCreatedHookResult = ProtoBacked<
   ProtoTeamChatMessageCreatedHookResult
 >;
 
+const mimeToken = "[!#$%&'*+.^_`|~0-9A-Za-z-]+";
+const mimeParameter = `(${mimeToken})[ \\t]*=[ \\t]*(${mimeToken}|"(?:[^"\\\\\\r\\n\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]|\\\\[\\t -~])*")`;
+const webhookResponseContentType = new RegExp(
+  `^[ \\t]*${mimeToken}/${mimeToken}(?:[ \\t]*;[ \\t]*${mimeParameter})*[ \\t]*;?[ \\t]*$`
+);
+
+/** Fixed acknowledgement after outbox persistence; it does not report app completion. */
+export const WebhookResponseSchema = z
+  .object({
+    statusCode: z.number().int().min(200).max(299),
+    contentType: z
+      .string()
+      .regex(webhookResponseContentType)
+      .refine((value) => !/[\r\n]/.test(value)),
+    body: z
+      .string()
+      .max(64 * 1024)
+      .optional(),
+  })
+  .strict()
+  .superRefine((response, ctx) => {
+    const parameters = new Map<string, string>();
+    for (const [, attribute = "", raw = ""] of response.contentType.matchAll(
+      new RegExp(`;[ \\t]*${mimeParameter}`, "g")
+    )) {
+      const name = attribute.toLowerCase();
+      const value = raw.startsWith('"')
+        ? raw.slice(1, -1).replace(/\\([()<>@,;:\\"/[\]?=])/g, "$1")
+        : raw;
+      if (parameters.has(name) && parameters.get(name) !== value) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["contentType"],
+          message: "Conflicting MIME parameters",
+        });
+      }
+      parameters.set(name, value);
+    }
+    if (new TextEncoder().encode(response.body ?? "").length > 64 * 1024) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["body"],
+        message: "Body must be at most 64 KiB",
+      });
+    }
+    if ((response.statusCode === 204 || response.statusCode === 205) && response.body) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["body"],
+        message: "Body must be empty for status 204 or 205",
+      });
+    }
+  });
+
+export type WebhookResponse = ProtoBacked<
+  z.infer<typeof WebhookResponseSchema>,
+  ProtoWebhookResponse
+>;
+
 const AppWebhookConfigSchema = z
   .object({
     endpointToken: WebhookEndpointTokenSchema,
+    response: WebhookResponseSchema.optional(),
     executionScope: z.literal("app").optional(),
   })
   .strict();
@@ -231,6 +292,7 @@ const AppWebhookConfigSchema = z
 const ManagerWebhookConfigSchema = z
   .object({
     executionScope: z.literal("manager"),
+    response: WebhookResponseSchema.optional(),
   })
   .strict();
 

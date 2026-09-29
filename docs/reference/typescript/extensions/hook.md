@@ -264,7 +264,8 @@ For manager-scoped Hooks, register the complete
 append an app-provided `endpointToken`; AppStore issues the opaque endpoint
 binding URL.
 
-AppStore returns `202 Accepted` and calls the configured ordinary app function
+By default, AppStore returns `202 Accepted` after saving the request to the outbox,
+with `{"deliveryId":"...","status":"accepted"}`, and calls the configured ordinary app function
 with the delivery ID, app ID, target ID, receive time, and original request. The
 request includes headers, query parameters, parsed JSON body when available, and
 `rawBodyBase64` for provider-specific signature verification. App-scoped hooks
@@ -277,6 +278,61 @@ or when the target is removed or changed back to app scope.
 
 The v1 ingress does not support synchronous GET/body challenges or forwarding the
 app function result to the provider response.
+
+### Fixed acknowledgement response
+
+Both app- and manager-scoped hooks support optional `webhook.response`:
+
+```ts
+webhook: {
+  endpointToken,
+  response: {
+    statusCode: 200,
+    contentType: "application/xml; charset=utf-8",
+    body: "<result>OK</result>\n",
+  },
+}
+```
+
+For manager scope, replace `endpointToken` with `executionScope: "manager"`.
+`statusCode` and `contentType` are required. Status codes must be integers from
+200 through 299. Content-Type must be a valid MIME type without header newlines.
+`body` is an optional UTF-8 string, limited to 64 KiB in bytes; omission means an
+empty body. Status 204 and 205 require an empty body:
+
+```ts
+webhook: {
+  executionScope: "manager",
+  response: { statusCode: 204, contentType: "text/plain" },
+}
+```
+
+The response body is emitted verbatim, preserving whitespace and newlines. For
+JSON responses, provide a JSON string (for example, `body: '{"ok":true}'`); it is
+not wrapped in extra quotes. XML is not parsed, and templates are not expanded.
+Custom responses do not include an automatically injected `deliveryId`; the
+internal outbox and app function still receive the delivery ID.
+
+Re-register the Hook Extension to change the setting. Omit `response` on
+re-registration to remove it and restore the default 202 response:
+
+```ts
+webhook: { endpointToken }
+// Manager scope: webhook: { executionScope: "manager" }
+```
+
+Invalid settings are rejected without replacing the previous registration.
+Custom acknowledgements are sent only after durable outbox acceptance. Existing
+authentication, request-size, rate-limit, circuit, and storage failures keep
+their error responses. A configured 200 means acceptance, not completed business
+processing. App execution, retries, and the dead-letter queue remain asynchronous.
+XML input already reaches the app unchanged through `request.rawBodyBase64`;
+there is no new input field or XML parser.
+
+Roll out the database migration, then all AppStore servers, before using the new
+SDK setting and re-registering apps. Existing apps need no re-registration.
+Dynamic request-dependent replies, synchronous app calls, and custom headers
+are not supported.
 
 ## Registration
 

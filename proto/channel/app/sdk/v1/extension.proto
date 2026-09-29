@@ -681,6 +681,15 @@ message CustomTabActionResult {
 message HookWebhookConfig {
   string endpoint_token = 1;
   string execution_scope = 2;
+  // Fixed HTTP acknowledgement after durable acceptance. Omit to retain 202.
+  HookWebhookResponse response = 3;
+}
+
+message HookWebhookResponse {
+  int32 status_code = 1;
+  string content_type = 2;
+  // UTF-8 bytes, at most 64 KiB. Empty for status 204 or 205.
+  string body = 3;
 }
 
 message HookConfig {

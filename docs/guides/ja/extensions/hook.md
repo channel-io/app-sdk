@@ -62,3 +62,17 @@ appsdk.MustRegister(app, "example.hook.receive", handler.Receive)
   の Channel context 不足、manager call の binding context を test します。
 
 [Go Extension reference](../../../reference/go/EXTENSIONS.md) も参照してください。
+
+## Webhook の固定受付レスポンス
+
+app scope と manager scope の両方で任意の `webhook.response` を設定できます。
+必須の `statusCode`（200〜299）と `contentType`（改行を含まない有効な MIME 型）、
+任意の文字列 `body`（UTF-8 で最大 64 KiB）を指定します。本文の省略は空文字列を
+意味し、204 と 205 では空の本文のみ許可します。outbox 保存成功後に本文をそのまま
+返しますが、アプリの処理完了を意味しません。既存のエラー応答と非同期再試行は維持されます。
+
+登録・再登録時に `response` を省略すると、既定の 202 JSON 応答（`deliveryId`、
+`status`）に戻ります。固定応答に `deliveryId` は自動挿入されませんが、内部追跡には
+引き続き使用します。XML 入力は既存の `rawBodyBase64` で受け取れます。
+migration と全プラットフォームサーバーのデプロイ後に新しい SDK 設定を使用してください。
+XML・空の本文・設定解除は [固定応答の例](../../../reference/typescript/extensions/hook.md#fixed-acknowledgement-response) を参照してください。

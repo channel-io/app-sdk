@@ -17674,6 +17674,29 @@
                             "maxLength": 128,
                             "pattern": "^[A-Za-z0-9_-]+$"
                           },
+                          "response": {
+                            "type": "object",
+                            "properties": {
+                              "statusCode": {
+                                "type": "integer",
+                                "minimum": 200,
+                                "maximum": 299
+                              },
+                              "contentType": {
+                                "type": "string",
+                                "pattern": "^[ \\t]*[!#$%&'*+.^_`|~0-9A-Za-z-]+\\/[!#$%&'*+.^_`|~0-9A-Za-z-]+(?:[ \\t]*;[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+)[ \\t]*=[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"(?:[^\"\\\\\\r\\n\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]|\\\\[\\t -~])*\"))*[ \\t]*;?[ \\t]*$"
+                              },
+                              "body": {
+                                "type": "string",
+                                "maxLength": 65536
+                              }
+                            },
+                            "required": [
+                              "statusCode",
+                              "contentType"
+                            ],
+                            "additionalProperties": false
+                          },
                           "executionScope": {
                             "type": "string",
                             "const": "app"
@@ -17690,6 +17713,29 @@
                           "executionScope": {
                             "type": "string",
                             "const": "manager"
+                          },
+                          "response": {
+                            "type": "object",
+                            "properties": {
+                              "statusCode": {
+                                "type": "integer",
+                                "minimum": 200,
+                                "maximum": 299
+                              },
+                              "contentType": {
+                                "type": "string",
+                                "pattern": "^[ \\t]*[!#$%&'*+.^_`|~0-9A-Za-z-]+\\/[!#$%&'*+.^_`|~0-9A-Za-z-]+(?:[ \\t]*;[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+)[ \\t]*=[ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"(?:[^\"\\\\\\r\\n\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]|\\\\[\\t -~])*\"))*[ \\t]*;?[ \\t]*$"
+                              },
+                              "body": {
+                                "type": "string",
+                                "maxLength": 65536
+                              }
+                            },
+                            "required": [
+                              "statusCode",
+                              "contentType"
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "required": [

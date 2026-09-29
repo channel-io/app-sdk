@@ -62,3 +62,19 @@ appsdk.MustRegister(app, "example.hook.receive", handler.Receive)
   calls without Channel context, and manager calls with the bound context.
 
 See the [Go Extension reference](../../../reference/go/EXTENSIONS.md).
+
+## Fixed webhook acknowledgements
+
+Optional `webhook.response` works in both app and manager scopes. Set required
+`statusCode` (200–299) and `contentType` (valid MIME type without newlines), plus
+an optional string `body` (up to 64 KiB in UTF-8). Omitted body is empty; 204 and
+205 require an empty body. The body is returned verbatim after durable outbox
+acceptance, and does not imply that the app finished processing. Existing errors
+and asynchronous retries remain unchanged.
+
+Omitting `response`, including on re-registration, keeps or restores the default
+202 JSON response with `deliveryId` and `status`. Custom responses do not inject
+`deliveryId`; internal tracking retains it. XML input already uses `rawBodyBase64`.
+Deploy the migration and all platform servers before using the new SDK setting.
+See [fixed response examples](../../../reference/typescript/extensions/hook.md#fixed-acknowledgement-response)
+for XML, empty bodies, and removal.

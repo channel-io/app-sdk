@@ -755,8 +755,16 @@ export type CustomTabActionResultProto = z.infer<typeof CustomTabActionResultPro
 export const HookWebhookConfigProtoSchema = z.object({
   endpointToken: z.string().optional(),
   executionScope: z.string().optional(),
+  response: z.lazy(() => HookWebhookResponseProtoSchema).optional(),
 }) satisfies z.ZodType<pb.HookWebhookConfig>;
 export type HookWebhookConfigProto = z.infer<typeof HookWebhookConfigProtoSchema>;
+
+export const HookWebhookResponseProtoSchema = z.object({
+  statusCode: z.number().int().optional(),
+  contentType: z.string().optional(),
+  body: z.string().optional(),
+}) satisfies z.ZodType<pb.HookWebhookResponse>;
+export type HookWebhookResponseProto = z.infer<typeof HookWebhookResponseProtoSchema>;
 
 export const HookConfigProtoSchema = z.object({
   type: z.string().optional(),
