@@ -234,10 +234,11 @@ const WebhookResponseBaseSchema = z
     contentType: z
       .string()
       .regex(webhookResponseContentType)
-      .refine((value) => !/[\r\n]/.test(value)),
+      .refine((value) => !/[\r\n\uD800-\uDFFF]/u.test(value)),
     body: z
       .string()
       .max(64 * 1024)
+      .refine((value) => !/[\uD800-\uDFFF]/u.test(value), "Body must be well-formed Unicode")
       .optional(),
   })
   .strict();

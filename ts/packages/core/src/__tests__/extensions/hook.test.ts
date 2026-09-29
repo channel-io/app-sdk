@@ -389,6 +389,7 @@ describe("fixed webhook response", () => {
 
   it.each([
     { statusCode: 200, contentType: "application/json", body: '{"ok":true}\n' },
+    { statusCode: 200, contentType: "text/plain", body: "\uFEFF😀\n" },
     { statusCode: 200, contentType: 'text/plain; charset=utf-8; charset="utf-8"' },
     { statusCode: 204, contentType: "text/plain" },
     { statusCode: 205, contentType: "text/plain", body: "" },
@@ -406,6 +407,7 @@ describe("fixed webhook response", () => {
     { statusCode: 300, contentType: "text/plain" },
     { statusCode: 200.5, contentType: "text/plain" },
     { statusCode: 200, contentType: 'text/plain; x="\x00"' },
+    { statusCode: 200, contentType: 'text/plain; x="\uD800"' },
     { statusCode: 200, contentType: "text/plain; charset=utf-8; charset=ascii" },
     { statusCode: 200, contentType: "invalid" },
     { statusCode: 200, contentType: "text/plain\r\nX-Test: injected" },
@@ -414,6 +416,8 @@ describe("fixed webhook response", () => {
     { statusCode: 200, contentType: "text/plain; charset" },
     { statusCode: 200, contentType: 'text/plain; charset="unclosed' },
     { statusCode: 200, contentType: "text/plain", body: {} },
+    { statusCode: 200, contentType: "text/plain", body: "\uD800" },
+    { statusCode: 200, contentType: "text/plain", body: "\uDC00" },
     { statusCode: 200, contentType: "text/plain", body: "a".repeat(65537) },
     { statusCode: 200, contentType: "text/plain", body: "한".repeat(21846) },
     { statusCode: 204, contentType: "text/plain", body: "x" },
