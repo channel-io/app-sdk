@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.31.0
+
+### Minor Changes
+
+- e47036b: Add optional fixed webhook acknowledgements with a 2xx status, Content-Type, and UTF-8 body for app and manager scopes. Omitted settings preserve the default 202 response. Requires compatible App Store support.
+
 ## 0.30.0
 
 ### Minor Changes
