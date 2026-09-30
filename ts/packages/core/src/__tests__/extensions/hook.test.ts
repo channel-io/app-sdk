@@ -372,3 +372,57 @@ describe("TeamChatMessageCreatedHookInputSchema", () => {
     expect(TeamChatMessageCreatedHookInputSchema.parse(input)).toEqual(input);
   });
 });
+
+describe("fixed webhook response", () => {
+  it.each([{ endpointToken }, { executionScope: "manager" }])(
+    "accepts responses in %j",
+    (scope) => {
+      const response = {
+        statusCode: 200,
+        contentType: "application/xml; charset=utf-8",
+        body: "<result>OK</result>\n",
+      };
+      expect(WebhookConfigSchema.parse({ ...scope, response })).toEqual({ ...scope, response });
+      expect(WebhookConfigSchema.parse(scope)).toEqual(scope);
+    }
+  );
+
+  it.each([
+    { statusCode: 200, contentType: "application/json", body: '{"ok":true}\n' },
+    { statusCode: 200, contentType: "text/plain", body: "\uFEFF😀\n" },
+    { statusCode: 200, contentType: 'text/plain; charset=utf-8; charset="utf-8"' },
+    { statusCode: 204, contentType: "text/plain" },
+    { statusCode: 205, contentType: "text/plain", body: "" },
+    { statusCode: 299, contentType: 'text/plain; charset="utf-8"', body: "a".repeat(65536) },
+    { statusCode: 200, contentType: "text/plain", body: "한".repeat(21845) },
+  ])("accepts valid response $statusCode $contentType", (response) => {
+    expect(WebhookConfigSchema.safeParse({ endpointToken, response }).success).toBe(true);
+  });
+
+  it.each([
+    {},
+    { statusCode: 200 },
+    { contentType: "text/plain" },
+    { statusCode: 199, contentType: "text/plain" },
+    { statusCode: 300, contentType: "text/plain" },
+    { statusCode: 200.5, contentType: "text/plain" },
+    { statusCode: 200, contentType: 'text/plain; x="\x00"' },
+    { statusCode: 200, contentType: 'text/plain; x="\uD800"' },
+    { statusCode: 200, contentType: "text/plain; charset=utf-8; charset=ascii" },
+    { statusCode: 200, contentType: "invalid" },
+    { statusCode: 200, contentType: "text/plain\r\nX-Test: injected" },
+    { statusCode: 200, contentType: "text/plain\n" },
+    { statusCode: 200, contentType: "text/plain; charset\r\n=utf-8" },
+    { statusCode: 200, contentType: "text/plain; charset" },
+    { statusCode: 200, contentType: 'text/plain; charset="unclosed' },
+    { statusCode: 200, contentType: "text/plain", body: {} },
+    { statusCode: 200, contentType: "text/plain", body: "\uD800" },
+    { statusCode: 200, contentType: "text/plain", body: "\uDC00" },
+    { statusCode: 200, contentType: "text/plain", body: "a".repeat(65537) },
+    { statusCode: 200, contentType: "text/plain", body: "한".repeat(21846) },
+    { statusCode: 204, contentType: "text/plain", body: "x" },
+    { statusCode: 205, contentType: "text/plain", body: "x" },
+  ])("rejects invalid response %#", (response) => {
+    expect(WebhookConfigSchema.safeParse({ endpointToken, response }).success).toBe(false);
+  });
+});

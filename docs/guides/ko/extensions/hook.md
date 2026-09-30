@@ -60,3 +60,17 @@ appsdk.MustRegister(app, "example.hook.receive", handler.Receive)
   Channel context 부재, manager 호출의 binding context를 테스트합니다.
 
 [Go Extension 레퍼런스](../../../reference/go/EXTENSIONS.md)도 확인하세요.
+
+## Webhook 고정 접수 응답
+
+앱 범위와 매니저 범위 모두 선택적 `webhook.response`를 지원합니다. 필수
+`statusCode`(200~299), `contentType`(개행 없는 유효 MIME 타입), 선택적 문자열
+`body`(UTF-8 기준 최대 64 KiB)를 지정합니다. 본문을 생략하면 빈 문자열이며
+204와 205에는 빈 본문만 허용합니다. outbox 저장 성공 후 본문 그대로 응답하며
+앱 업무 처리 완료를 의미하지 않습니다. 기존 오류 응답과 비동기 재시도는 유지합니다.
+
+등록 또는 재등록 시 `response`를 생략하면 기본 202 JSON 응답(`deliveryId`,
+`status`)을 사용합니다. 고정 응답에는 `deliveryId`를 자동 삽입하지 않지만
+내부 추적에는 유지합니다. XML 입력은 이미 `rawBodyBase64`로 전달됩니다.
+DB migration과 전체 서버 배포 후 새 SDK 설정을 사용하세요.
+XML·빈 응답·설정 제거는 [고정 응답 예시](../../../reference/typescript/extensions/hook.md#fixed-acknowledgement-response)를 참고하세요.

@@ -199,6 +199,7 @@ import {
   ValidateCredentialsOutputSchema,
   ValidateStoredConfigOutputSchema,
   WebhookConfigSchema,
+  WebhookResponseSchema,
   WidgetActionResultSchema,
   WidgetConfigSchema,
   WmsDeliverySchema,
@@ -460,6 +461,7 @@ const contracts: Contract[] = [
     "CustomTabActionResult"
   ),
 
+  contract("WebhookResponse", WebhookResponseSchema, "extension", "HookWebhookResponse"),
   contract("WebhookConfig", WebhookConfigSchema, "extension", "HookWebhookConfig"),
   contract("HookConfig", HookConfigSchema, "extension", "HookConfig"),
   contract("OAuthFlowHookInput", OAuthFlowHookInputSchema, "extension", "OAuthFlowHookInput"),

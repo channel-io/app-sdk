@@ -1,6 +1,7 @@
 import { describe, it } from "vitest";
 import type { GetHooksOutput, HookConfig } from "../../extensions/hook.js";
 import type {
+  WebhookResponse,
   OAuthFlowHookInput,
   OAuthFlowHookResult,
   HookExtensionInterface,
@@ -83,5 +84,20 @@ describe("OAuth lifecycle Hook exported types", () => {
     void disconnectedWithWebhook;
     void outputWithConnectedTargetId;
     void outputWithDisconnectedWebhook;
+  });
+});
+
+describe("Webhook response exported types", () => {
+  it("requires status and content type while keeping body optional", () => {
+    const empty: WebhookResponse = { statusCode: 204, contentType: "text/plain" };
+    const xml: WebhookResponse = { statusCode: 200, contentType: "application/xml", body: "<ok/>" };
+    // @ts-expect-error Content-Type is required.
+    const missing: WebhookResponse = { statusCode: 200 };
+    // @ts-expect-error Body is a string, not a JSON object.
+    const invalid: WebhookResponse = { statusCode: 200, contentType: "application/json", body: {} };
+    void empty;
+    void xml;
+    void missing;
+    void invalid;
   });
 });

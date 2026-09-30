@@ -59,7 +59,7 @@ func (b *ExtensionBuilder) GetHooks(handler appsdk.TypedHandlerFunc[GetHooksRequ
 			if err != nil {
 				return nil, err
 			}
-			return response, validateOAuthHookMetadata(response.GetHooks())
+			return response, validateHookMetadata(response.GetHooks())
 		},
 	))...)
 	return b
@@ -81,7 +81,7 @@ func (b *ExtensionBuilder) Register(app *appsdk.App) error {
 
 func StaticHooks(hooks ...*Config) appsdk.TypedHandlerFunc[GetHooksRequest, GetHooksResponse] {
 	return func(context.Context, appsdk.Context, *GetHooksRequest) (*GetHooksResponse, error) {
-		return &GetHooksResponse{Hooks: hooks}, validateOAuthHookMetadata(hooks)
+		return &GetHooksResponse{Hooks: hooks}, validateHookMetadata(hooks)
 	}
 }
 
@@ -89,6 +89,7 @@ type GetHooksRequest = sdkv1.HookGetHooksInput
 type GetHooksResponse = sdkv1.HookGetHooksOutput
 type Config = sdkv1.HookConfig
 type WebhookConfig = sdkv1.HookWebhookConfig
+type WebhookResponse = sdkv1.HookWebhookResponse
 type TeamChatMessageCreatedInput = sdkv1.HookTeamChatMessageCreatedInput
 type TeamChatMessageCreatedResult = sdkv1.HookTeamChatMessageCreatedResult
 type OAuthFlowHookInput = sdkv1.OAuthFlowHookInput

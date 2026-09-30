@@ -804,7 +804,20 @@ export interface CustomTabActionResult {
 
 export interface HookWebhookConfig {
   endpointToken?: string | undefined;
-  executionScope?: string | undefined;
+  executionScope?:
+    | string
+    | undefined;
+  /** Fixed HTTP acknowledgement after durable acceptance. Omit to retain 202. */
+  response?: HookWebhookResponse | undefined;
+}
+
+export interface HookWebhookResponse {
+  statusCode?: number | undefined;
+  contentType?:
+    | string
+    | undefined;
+  /** UTF-8 bytes, at most 64 KiB. Empty for status 204 or 205. */
+  body?: string | undefined;
 }
 
 export interface HookConfig {
