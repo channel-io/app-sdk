@@ -8,6 +8,9 @@ export interface WamSize {
   height: number;
 }
 
+/** OAuth credential ownership to use for an app Function call. */
+export type OAuthTargetAuthScope = "channel" | "manager";
+
 /**
  * Arguments for calling an app function
  */
@@ -18,6 +21,8 @@ export interface CallFunctionArgs {
   name: string;
   /** Function parameters */
   params: Record<string, unknown>;
+  /** OAuth credential ownership to use without changing the authenticated caller */
+  targetAuthScope?: OAuthTargetAuthScope;
 }
 
 /**

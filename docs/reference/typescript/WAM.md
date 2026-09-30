@@ -111,6 +111,20 @@ const { call, loading, error } = useCallFunction({
 });
 ```
 
+For an OAuth extension with `authScope: "caller"`, an authenticated manager can
+select which concrete credential ownership the Function should use. This does
+not change the Function caller: `targetAuthScope: "channel"` uses the shared
+channel credential and `targetAuthScope: "manager"` uses the current manager's
+credential. Explicit targets do not fall back to the other ownership scope.
+
+```tsx
+const { call: listSharedSpreadsheets } = useCallFunction({
+  appId,
+  name: "mcp.tool.list_spreadsheets",
+  targetAuthScope: "channel",
+});
+```
+
 ### `useNativeFunction()`
 
 Call a Channel native function that is exposed to the current role and surface.
