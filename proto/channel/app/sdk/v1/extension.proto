@@ -423,7 +423,9 @@ message OAuthProvider {
   map<string, OAuthProviderLocalizedText> i18n_map = 17;
   OAuthStepDisplay authorization_display = 18;
   OAuthAuthorizationRequestMapping authorization_request = 19;
-  OAuthAuthorizationParamsByAuthScope additional_params_by_auth_scope = 20;
+  // Binary-compatible storage for scoped values. The OAuth extension builder merges
+  // these into additionalParams in its JSON metadata response; field 10 stays unchanged.
+  map<string, OAuthScopedParamValue> scoped_additional_params = 20;
 }
 
 message OAuthGetAuthConfigInput {}
@@ -2180,9 +2182,9 @@ message IssueExecuteIssueTransitionOutput {
 
 // Parameters selected by the platform's resolved credential target, not caller.type.
 // Values apply only to the authorization URL; channel and manager are the only targets.
-message OAuthAuthorizationParamsByAuthScope {
-  map<string, string> channel = 1;
-  map<string, string> manager = 2;
+message OAuthScopedParamValue {
+  optional string channel = 1;
+  optional string manager = 2;
 }
 
 message OAuthAuthorizationRequestMapping {

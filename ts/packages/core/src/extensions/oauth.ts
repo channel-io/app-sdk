@@ -7,7 +7,7 @@ import type {
   OAuthCredentialValidationInput as ProtoCredentialValidationInput,
   OAuthCredentialValidationResult as ProtoCredentialValidationResult,
   OAuthProvider as ProtoOAuthProvider,
-  OAuthAuthorizationParamsByAuthScope as ProtoAuthorizationParamsByAuthScope,
+  OAuthScopedParamValue as ProtoScopedParamValue,
   OAuthAuthorizationRequestMapping as ProtoAuthorizationRequestMapping,
   OAuthProviderLocalizedText as ProtoOAuthProviderLocalizedText,
   OAuthTokenRequestMapping as ProtoTokenRequestMapping,
@@ -134,20 +134,20 @@ const OAuthAuthorizationParamValueSchema = z
   .regex(/\S/, "Authorization parameter values must not be blank")
   .regex(
     // eslint-disable-next-line no-control-regex -- NUL must also be excluded from the generated JSON Schema.
-    /^[^\r\n\u0000]*$/,
+    /^[^\r\n\x00]*$/,
     "Authorization parameter values must not contain CR, LF, or NUL"
   );
 
 /** Only concrete credential targets are valid; caller is a hydration policy. */
-export const OAuthAuthorizationParamsByAuthScopeSchema = z
+export const OAuthScopedParamValueSchema = z
   .object({
-    channel: z.record(OAuthParamNameSchema, OAuthAuthorizationParamValueSchema).optional(),
-    manager: z.record(OAuthParamNameSchema, OAuthAuthorizationParamValueSchema).optional(),
+    channel: OAuthAuthorizationParamValueSchema.optional(),
+    manager: OAuthAuthorizationParamValueSchema.optional(),
   })
   .strict();
-export type OAuthAuthorizationParamsByAuthScope = ProtoBacked<
-  z.infer<typeof OAuthAuthorizationParamsByAuthScopeSchema>,
-  ProtoAuthorizationParamsByAuthScope
+export type OAuthScopedParamValue = ProtoBacked<
+  z.infer<typeof OAuthScopedParamValueSchema>,
+  ProtoScopedParamValue
 >;
 
 /** Authorization URL settings. Requires matching platform support and re-registration. */
@@ -210,9 +210,8 @@ export const OAuthProviderSchema = z.object({
   i18nMap: OAuthProviderI18nMapSchema.optional(),
   providerIconUrl: z.string().url().optional(),
   pkceRequired: z.boolean().optional(),
-  additionalParams: z.record(z.string()).optional(),
-  /** Selected values override static URL and dynamic request params, but never OAuth reserved params. */
-  additionalParamsByAuthScope: OAuthAuthorizationParamsByAuthScopeSchema.optional(),
+  /** Strings are common defaults; objects select the resolved credential target. */
+  additionalParams: z.record(z.union([z.string(), OAuthScopedParamValueSchema])).optional(),
   authorizationRequest: OAuthAuthorizationRequestMappingSchema.optional(),
   /**
    * OAuth standard parameter naming convention. Defaults to `"snake"` (RFC 6749).
@@ -245,7 +244,16 @@ export const OAuthProviderSchema = z.object({
   /** Token endpoint response JSON object paths. */
   tokenResponse: OAuthTokenResponseMappingSchema.optional(),
 });
-export type OAuthProvider = ProtoBacked<z.infer<typeof OAuthProviderSchema>, ProtoOAuthProvider>;
+// JSON metadata folds the additive Proto field into the existing additionalParams key.
+// Preserve Proto field 10 and Go map[string]string source/binary compatibility.
+export type OAuthProvider = ProtoBacked<
+  z.infer<typeof OAuthProviderSchema>,
+  Omit<ProtoOAuthProvider, "additionalParams" | "scopedAdditionalParams"> & {
+    additionalParams?:
+      | Record<string, string | NonNullable<ProtoOAuthProvider["scopedAdditionalParams"]>[string]>
+      | undefined;
+  }
+>;
 
 /**
  * Output schema for extension.oauth.metadata.getAuthConfig.
@@ -258,7 +266,10 @@ export const OAuthConfigSchema = z.object({
   allowChannelFallback: z.boolean().optional(),
 });
 
-export type OAuthConfig = ProtoBacked<z.infer<typeof OAuthConfigSchema>, ProtoOAuthConfig>;
+export type OAuthConfig = ProtoBacked<
+  z.infer<typeof OAuthConfigSchema>,
+  Omit<ProtoOAuthConfig, "oauthProvider"> & { oauthProvider?: OAuthProvider | undefined }
+>;
 
 /**
  * Input schema for extension.oauth.validation.validateCredentials.

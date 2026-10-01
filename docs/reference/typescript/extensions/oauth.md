@@ -138,50 +138,58 @@ APIs/UI.
 
 ## Authorization request settings
 
-Use `oauthProvider.additionalParamsByAuthScope` and `authorizationRequest` with the standard `OAuthConfigSchema`;
-no app-local schema extension is needed:
+Use `oauthProvider.additionalParams` with the standard `OAuthConfigSchema`:
 
 ```ts
 import type { OAuthProvider } from "@channel.io/app-sdk-core";
 
 const providerSettings = {
-  authorizationRequest: { codeChallengeMethod: "S256" },
-  additionalParamsByAuthScope: {
-    channel: { actor: "app" },
-    manager: { actor: "user" },
+  additionalParams: {
+    prompt: "consent",
+    actor: { channel: "app", manager: "user" },
   },
-} satisfies Pick<OAuthProvider, "authorizationRequest" | "additionalParamsByAuthScope">;
+  authorizationRequest: { codeChallengeMethod: "S256" },
+} satisfies Pick<OAuthProvider, "additionalParams" | "authorizationRequest">;
 ```
 
-`authorizationRequest` configures how standard OAuth parameters are generated;
-`additionalParamsByAuthScope` declares extra provider query values. They are
-siblings under `oauthProvider`. The existing `additionalParams` string map keeps
-its location and type; no existing app must move or rewrite it.
+`additionalParams` supplies extra provider values. Strings are common defaults;
+objects select the server-resolved credential target (`channel` or `manager`).
+`caller` is a credential policy, not an object key. An omitted target adds no value.
+`authorizationRequest` independently controls standard parameter generation:
+`clientIdParamName`, `scopeDelimiter`, and optional S256 PKCE.
 
-The platform selects `channel` or `manager` from the resolved credential target.
-It does not select from the metadata function's caller; `caller` is not a valid
-map key. Both scope maps are optional. Omitting a map adds no parameters for that
-target. Selected values override the same keys in the static authorization URL
-or dynamic connection request, and are not copied to token or refresh requests.
+Precedence, highest first: generated standard OAuth/PKCE values, selected scoped
+metadata, static URL query, dynamic initiation params, common string defaults.
+Scoped names cannot replace reserved OAuth/token/secret or custom client ID keys;
+scoped values must be nonblank strings without CR, LF, or NUL. Legacy string maps
+remain accepted, with reserved keys ignored by the platform.
+These values affect authorization URLs only, never token/refresh requests.
 
-Parameter names allow letters, digits, underscore, dot, and hyphen. Values must
-be nonblank strings without CR, LF, or NUL. Platform registration rejects OAuth
-standard parameters, PKCE parameters, credential/token parameters, and the
-configured client ID parameter in these maps. Do not store secrets in them.
+Deploy matching platform support before using objects and re-register metadata.
+The platform also fixes previously ignored metadata string defaults: existing
+unoccupied query keys will now receive these values after re-registration.
+Installing this SDK alone does not activate platform behavior. Existing string
+**declarations** remain valid; code that reads arbitrary values must narrow with
+`typeof value === "string"` because a value may now be a scope object.
 
-`clientIdParamName` can override the authorization query's client ID field name;
-otherwise `parameterCase` determines it. `scopeDelimiter` accepts a space
-(default) or comma. `codeChallengeMethod: "S256"` enables platform-generated
-PKCE; omit it to leave PKCE disabled.
+### Go and Protobuf compatibility
 
-Deploy matching platform support before using these fields, then re-register
-the OAuth metadata. Installing this SDK alone does not add platform behavior.
-This change does not repair the legacy `oauthProvider.additionalParams` field's
-platform handling. For constant query parameters such as `prompt=consent`, keep
-them in `authorizationUrl` until the platform supports that legacy field.
+Released Proto field 10 remains `map<string,string> additional_params`, preserving
+binary encoding and existing Go `AdditionalParams: map[string]string{...}` code.
+The additive field `ScopedAdditionalParams` carries typed `ScopedParamValue`
+objects. `oauth.Extension().GetAuthConfig(...)` projects both maps into the single
+JSON `additionalParams` object above; duplicate names are rejected. The config is
+not mutated. Raw `protojson.Marshal` is the binary DTO representation, not this
+metadata projection; use the OAuth extension builder when registering handlers.
 
-Go apps use `oauth.AuthorizationRequestMapping` and
-`oauth.AuthorizationParamsByAuthScope` for the same JSON contract.
+```go
+provider := &oauth.Provider{
+    AdditionalParams: map[string]string{"prompt": "consent"},
+    ScopedAdditionalParams: map[string]*oauth.ScopedParamValue{
+        "actor": {Channel: proto.String("app"), Manager: proto.String("user")},
+    },
+}
+```
 
 ## Runtime Native Functions
 

@@ -151,7 +151,7 @@ import {
   OAuthConfigSchema,
   OAuthProviderLocalizedTextSchema,
   OAuthProviderSchema,
-  OAuthAuthorizationParamsByAuthScopeSchema,
+  OAuthScopedParamValueSchema,
   OAuthAuthorizationRequestMappingSchema,
   OAuthTokenRequestMappingSchema,
   OAuthTokenResponseMappingSchema,
@@ -396,12 +396,16 @@ const contracts: Contract[] = [
     "extension",
     "OAuthProviderLocalizedText"
   ),
-  contract("OAuthProvider", OAuthProviderSchema, "extension", "OAuthProvider"),
+  // The JSON projection folds this additive binary field into additionalParams.
+  // Its value shape is checked below; runtime projection is covered in Go OAuth tests.
+  contract("OAuthProvider", OAuthProviderSchema, "extension", "OAuthProvider", [
+    "scopedAdditionalParams",
+  ]),
   contract(
-    "OAuthAuthorizationParamsByAuthScope",
-    OAuthAuthorizationParamsByAuthScopeSchema,
+    "OAuthScopedParamValue",
+    OAuthScopedParamValueSchema,
     "extension",
-    "OAuthAuthorizationParamsByAuthScope"
+    "OAuthScopedParamValue"
   ),
   contract(
     "OAuthAuthorizationRequestMapping",

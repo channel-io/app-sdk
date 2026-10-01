@@ -452,7 +452,7 @@ export const OAuthProviderProtoSchema = z.object({
   i18nMap: z.record(z.string(), z.lazy(() => OAuthProviderLocalizedTextProtoSchema)).optional(),
   authorizationDisplay: z.lazy(() => OAuthStepDisplayProtoSchema).optional(),
   authorizationRequest: z.lazy(() => OAuthAuthorizationRequestMappingProtoSchema).optional(),
-  additionalParamsByAuthScope: z.lazy(() => OAuthAuthorizationParamsByAuthScopeProtoSchema).optional(),
+  scopedAdditionalParams: z.record(z.string(), z.lazy(() => OAuthScopedParamValueProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.OAuthProvider>;
 export type OAuthProviderProto = z.infer<typeof OAuthProviderProtoSchema>;
 
@@ -2307,11 +2307,11 @@ export const IssueExecuteIssueTransitionOutputProtoSchema = z.object({
 }) satisfies z.ZodType<pb.IssueExecuteIssueTransitionOutput>;
 export type IssueExecuteIssueTransitionOutputProto = z.infer<typeof IssueExecuteIssueTransitionOutputProtoSchema>;
 
-export const OAuthAuthorizationParamsByAuthScopeProtoSchema = z.object({
-  channel: z.record(z.string(), z.string()).optional(),
-  manager: z.record(z.string(), z.string()).optional(),
-}) satisfies z.ZodType<pb.OAuthAuthorizationParamsByAuthScope>;
-export type OAuthAuthorizationParamsByAuthScopeProto = z.infer<typeof OAuthAuthorizationParamsByAuthScopeProtoSchema>;
+export const OAuthScopedParamValueProtoSchema = z.object({
+  channel: z.string().optional(),
+  manager: z.string().optional(),
+}) satisfies z.ZodType<pb.OAuthScopedParamValue>;
+export type OAuthScopedParamValueProto = z.infer<typeof OAuthScopedParamValueProtoSchema>;
 
 export const OAuthAuthorizationRequestMappingProtoSchema = z.object({
   clientIdParamName: z.string().optional(),

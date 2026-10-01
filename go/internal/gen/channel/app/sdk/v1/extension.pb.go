@@ -3646,29 +3646,31 @@ func (x *OAuthFlowStep) GetDetail() string {
 }
 
 type OAuthProvider struct {
-	state                       protoimpl.MessageState                 `protogen:"open.v1"`
-	Provider                    string                                 `protobuf:"bytes,1,opt,name=provider,proto3" json:"provider,omitempty"`
-	AuthorizationUrl            string                                 `protobuf:"bytes,2,opt,name=authorization_url,json=authorizationUrl,proto3" json:"authorization_url,omitempty"`
-	TokenUrl                    string                                 `protobuf:"bytes,3,opt,name=token_url,json=tokenUrl,proto3" json:"token_url,omitempty"`
-	RefreshTokenUrl             string                                 `protobuf:"bytes,4,opt,name=refresh_token_url,json=refreshTokenUrl,proto3" json:"refresh_token_url,omitempty"`
-	Scopes                      []string                               `protobuf:"bytes,5,rep,name=scopes,proto3" json:"scopes,omitempty"`
-	ProviderName                string                                 `protobuf:"bytes,6,opt,name=provider_name,json=providerName,proto3" json:"provider_name,omitempty"`
-	ProviderDescription         string                                 `protobuf:"bytes,7,opt,name=provider_description,json=providerDescription,proto3" json:"provider_description,omitempty"`
-	ProviderIconUrl             string                                 `protobuf:"bytes,8,opt,name=provider_icon_url,json=providerIconUrl,proto3" json:"provider_icon_url,omitempty"`
-	PkceRequired                bool                                   `protobuf:"varint,9,opt,name=pkce_required,json=pkceRequired,proto3" json:"pkce_required,omitempty"`
-	AdditionalParams            map[string]string                      `protobuf:"bytes,10,rep,name=additional_params,json=additionalParams,proto3" json:"additional_params,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	ParameterCase               string                                 `protobuf:"bytes,11,opt,name=parameter_case,json=parameterCase,proto3" json:"parameter_case,omitempty"`
-	TokenRequestContentType     string                                 `protobuf:"bytes,12,opt,name=token_request_content_type,json=tokenRequestContentType,proto3" json:"token_request_content_type,omitempty"`
-	AuthorizationCodeParamName  string                                 `protobuf:"bytes,13,opt,name=authorization_code_param_name,json=authorizationCodeParamName,proto3" json:"authorization_code_param_name,omitempty"`
-	AuthorizationOpenMode       string                                 `protobuf:"bytes,14,opt,name=authorization_open_mode,json=authorizationOpenMode,proto3" json:"authorization_open_mode,omitempty"`
-	TokenRequest                *OAuthTokenRequestMapping              `protobuf:"bytes,15,opt,name=token_request,json=tokenRequest,proto3" json:"token_request,omitempty"`
-	TokenResponse               *OAuthTokenResponseMapping             `protobuf:"bytes,16,opt,name=token_response,json=tokenResponse,proto3" json:"token_response,omitempty"`
-	I18NMap                     map[string]*OAuthProviderLocalizedText `protobuf:"bytes,17,rep,name=i18n_map,json=i18nMap,proto3" json:"i18n_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	AuthorizationDisplay        *OAuthStepDisplay                      `protobuf:"bytes,18,opt,name=authorization_display,json=authorizationDisplay,proto3" json:"authorization_display,omitempty"`
-	AuthorizationRequest        *OAuthAuthorizationRequestMapping      `protobuf:"bytes,19,opt,name=authorization_request,json=authorizationRequest,proto3" json:"authorization_request,omitempty"`
-	AdditionalParamsByAuthScope *OAuthAuthorizationParamsByAuthScope   `protobuf:"bytes,20,opt,name=additional_params_by_auth_scope,json=additionalParamsByAuthScope,proto3" json:"additional_params_by_auth_scope,omitempty"`
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	state                      protoimpl.MessageState                 `protogen:"open.v1"`
+	Provider                   string                                 `protobuf:"bytes,1,opt,name=provider,proto3" json:"provider,omitempty"`
+	AuthorizationUrl           string                                 `protobuf:"bytes,2,opt,name=authorization_url,json=authorizationUrl,proto3" json:"authorization_url,omitempty"`
+	TokenUrl                   string                                 `protobuf:"bytes,3,opt,name=token_url,json=tokenUrl,proto3" json:"token_url,omitempty"`
+	RefreshTokenUrl            string                                 `protobuf:"bytes,4,opt,name=refresh_token_url,json=refreshTokenUrl,proto3" json:"refresh_token_url,omitempty"`
+	Scopes                     []string                               `protobuf:"bytes,5,rep,name=scopes,proto3" json:"scopes,omitempty"`
+	ProviderName               string                                 `protobuf:"bytes,6,opt,name=provider_name,json=providerName,proto3" json:"provider_name,omitempty"`
+	ProviderDescription        string                                 `protobuf:"bytes,7,opt,name=provider_description,json=providerDescription,proto3" json:"provider_description,omitempty"`
+	ProviderIconUrl            string                                 `protobuf:"bytes,8,opt,name=provider_icon_url,json=providerIconUrl,proto3" json:"provider_icon_url,omitempty"`
+	PkceRequired               bool                                   `protobuf:"varint,9,opt,name=pkce_required,json=pkceRequired,proto3" json:"pkce_required,omitempty"`
+	AdditionalParams           map[string]string                      `protobuf:"bytes,10,rep,name=additional_params,json=additionalParams,proto3" json:"additional_params,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	ParameterCase              string                                 `protobuf:"bytes,11,opt,name=parameter_case,json=parameterCase,proto3" json:"parameter_case,omitempty"`
+	TokenRequestContentType    string                                 `protobuf:"bytes,12,opt,name=token_request_content_type,json=tokenRequestContentType,proto3" json:"token_request_content_type,omitempty"`
+	AuthorizationCodeParamName string                                 `protobuf:"bytes,13,opt,name=authorization_code_param_name,json=authorizationCodeParamName,proto3" json:"authorization_code_param_name,omitempty"`
+	AuthorizationOpenMode      string                                 `protobuf:"bytes,14,opt,name=authorization_open_mode,json=authorizationOpenMode,proto3" json:"authorization_open_mode,omitempty"`
+	TokenRequest               *OAuthTokenRequestMapping              `protobuf:"bytes,15,opt,name=token_request,json=tokenRequest,proto3" json:"token_request,omitempty"`
+	TokenResponse              *OAuthTokenResponseMapping             `protobuf:"bytes,16,opt,name=token_response,json=tokenResponse,proto3" json:"token_response,omitempty"`
+	I18NMap                    map[string]*OAuthProviderLocalizedText `protobuf:"bytes,17,rep,name=i18n_map,json=i18nMap,proto3" json:"i18n_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	AuthorizationDisplay       *OAuthStepDisplay                      `protobuf:"bytes,18,opt,name=authorization_display,json=authorizationDisplay,proto3" json:"authorization_display,omitempty"`
+	AuthorizationRequest       *OAuthAuthorizationRequestMapping      `protobuf:"bytes,19,opt,name=authorization_request,json=authorizationRequest,proto3" json:"authorization_request,omitempty"`
+	// Binary-compatible storage for scoped values. The OAuth extension builder merges
+	// these into additionalParams in its JSON metadata response; field 10 stays unchanged.
+	ScopedAdditionalParams map[string]*OAuthScopedParamValue `protobuf:"bytes,20,rep,name=scoped_additional_params,json=scopedAdditionalParams,proto3" json:"scoped_additional_params,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *OAuthProvider) Reset() {
@@ -3834,9 +3836,9 @@ func (x *OAuthProvider) GetAuthorizationRequest() *OAuthAuthorizationRequestMapp
 	return nil
 }
 
-func (x *OAuthProvider) GetAdditionalParamsByAuthScope() *OAuthAuthorizationParamsByAuthScope {
+func (x *OAuthProvider) GetScopedAdditionalParams() map[string]*OAuthScopedParamValue {
 	if x != nil {
-		return x.AdditionalParamsByAuthScope
+		return x.ScopedAdditionalParams
 	}
 	return nil
 }
@@ -19915,28 +19917,28 @@ func (x *IssueExecuteIssueTransitionOutput) GetIssue() *ExternalIssue {
 
 // Parameters selected by the platform's resolved credential target, not caller.type.
 // Values apply only to the authorization URL; channel and manager are the only targets.
-type OAuthAuthorizationParamsByAuthScope struct {
+type OAuthScopedParamValue struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Channel       map[string]string      `protobuf:"bytes,1,rep,name=channel,proto3" json:"channel,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	Manager       map[string]string      `protobuf:"bytes,2,rep,name=manager,proto3" json:"manager,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Channel       *string                `protobuf:"bytes,1,opt,name=channel,proto3,oneof" json:"channel,omitempty"`
+	Manager       *string                `protobuf:"bytes,2,opt,name=manager,proto3,oneof" json:"manager,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *OAuthAuthorizationParamsByAuthScope) Reset() {
-	*x = OAuthAuthorizationParamsByAuthScope{}
+func (x *OAuthScopedParamValue) Reset() {
+	*x = OAuthScopedParamValue{}
 	mi := &file_channel_app_sdk_v1_extension_proto_msgTypes[284]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *OAuthAuthorizationParamsByAuthScope) String() string {
+func (x *OAuthScopedParamValue) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*OAuthAuthorizationParamsByAuthScope) ProtoMessage() {}
+func (*OAuthScopedParamValue) ProtoMessage() {}
 
-func (x *OAuthAuthorizationParamsByAuthScope) ProtoReflect() protoreflect.Message {
+func (x *OAuthScopedParamValue) ProtoReflect() protoreflect.Message {
 	mi := &file_channel_app_sdk_v1_extension_proto_msgTypes[284]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -19948,23 +19950,23 @@ func (x *OAuthAuthorizationParamsByAuthScope) ProtoReflect() protoreflect.Messag
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use OAuthAuthorizationParamsByAuthScope.ProtoReflect.Descriptor instead.
-func (*OAuthAuthorizationParamsByAuthScope) Descriptor() ([]byte, []int) {
+// Deprecated: Use OAuthScopedParamValue.ProtoReflect.Descriptor instead.
+func (*OAuthScopedParamValue) Descriptor() ([]byte, []int) {
 	return file_channel_app_sdk_v1_extension_proto_rawDescGZIP(), []int{284}
 }
 
-func (x *OAuthAuthorizationParamsByAuthScope) GetChannel() map[string]string {
-	if x != nil {
-		return x.Channel
+func (x *OAuthScopedParamValue) GetChannel() string {
+	if x != nil && x.Channel != nil {
+		return *x.Channel
 	}
-	return nil
+	return ""
 }
 
-func (x *OAuthAuthorizationParamsByAuthScope) GetManager() map[string]string {
-	if x != nil {
-		return x.Manager
+func (x *OAuthScopedParamValue) GetManager() string {
+	if x != nil && x.Manager != nil {
+		return *x.Manager
 	}
-	return nil
+	return ""
 }
 
 type OAuthAuthorizationRequestMapping struct {
@@ -20416,7 +20418,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x06status\x18\x05 \x01(\tR\x06status\x12\x1b\n" +
 	"\x06detail\x18\x06 \x01(\tH\x01R\x06detail\x88\x01\x01B\x0e\n" +
 	"\f_descriptionB\t\n" +
-	"\a_detail\"\x91\v\n" +
+	"\a_detail\"\x81\f\n" +
 	"\rOAuthProvider\x12\x1a\n" +
 	"\bprovider\x18\x01 \x01(\tR\bprovider\x12+\n" +
 	"\x11authorization_url\x18\x02 \x01(\tR\x10authorizationUrl\x12\x1b\n" +
@@ -20437,14 +20439,17 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x0etoken_response\x18\x10 \x01(\v2-.channel.app.sdk.v1.OAuthTokenResponseMappingR\rtokenResponse\x12I\n" +
 	"\bi18n_map\x18\x11 \x03(\v2..channel.app.sdk.v1.OAuthProvider.I18nMapEntryR\ai18nMap\x12Y\n" +
 	"\x15authorization_display\x18\x12 \x01(\v2$.channel.app.sdk.v1.OAuthStepDisplayR\x14authorizationDisplay\x12i\n" +
-	"\x15authorization_request\x18\x13 \x01(\v24.channel.app.sdk.v1.OAuthAuthorizationRequestMappingR\x14authorizationRequest\x12}\n" +
-	"\x1fadditional_params_by_auth_scope\x18\x14 \x01(\v27.channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScopeR\x1badditionalParamsByAuthScope\x1aC\n" +
+	"\x15authorization_request\x18\x13 \x01(\v24.channel.app.sdk.v1.OAuthAuthorizationRequestMappingR\x14authorizationRequest\x12w\n" +
+	"\x18scoped_additional_params\x18\x14 \x03(\v2=.channel.app.sdk.v1.OAuthProvider.ScopedAdditionalParamsEntryR\x16scopedAdditionalParams\x1aC\n" +
 	"\x15AdditionalParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aj\n" +
 	"\fI18nMapEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12D\n" +
-	"\x05value\x18\x02 \x01(\v2..channel.app.sdk.v1.OAuthProviderLocalizedTextR\x05value:\x028\x01\"\x19\n" +
+	"\x05value\x18\x02 \x01(\v2..channel.app.sdk.v1.OAuthProviderLocalizedTextR\x05value:\x028\x01\x1at\n" +
+	"\x1bScopedAdditionalParamsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12?\n" +
+	"\x05value\x18\x02 \x01(\v2).channel.app.sdk.v1.OAuthScopedParamValueR\x05value:\x028\x01\"\x19\n" +
 	"\x17OAuthGetAuthConfigInput\"\xe9\x01\n" +
 	"\vOAuthConfig\x12\x1b\n" +
 	"\tauth_type\x18\x01 \x01(\tR\bauthType\x12\x1d\n" +
@@ -21870,16 +21875,14 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"request_id\x18\x04 \x01(\tR\trequestId\x12/\n" +
 	"\x06fields\x18\x05 \x01(\v2\x17.google.protobuf.StructR\x06fields\"\\\n" +
 	"!IssueExecuteIssueTransitionOutput\x127\n" +
-	"\x05issue\x18\x01 \x01(\v2!.channel.app.sdk.v1.ExternalIssueR\x05issue\"\xdd\x02\n" +
-	"#OAuthAuthorizationParamsByAuthScope\x12^\n" +
-	"\achannel\x18\x01 \x03(\v2D.channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.ChannelEntryR\achannel\x12^\n" +
-	"\amanager\x18\x02 \x03(\v2D.channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.ManagerEntryR\amanager\x1a:\n" +
-	"\fChannelEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a:\n" +
-	"\fManagerEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x86\x02\n" +
+	"\x05issue\x18\x01 \x01(\v2!.channel.app.sdk.v1.ExternalIssueR\x05issue\"m\n" +
+	"\x15OAuthScopedParamValue\x12\x1d\n" +
+	"\achannel\x18\x01 \x01(\tH\x00R\achannel\x88\x01\x01\x12\x1d\n" +
+	"\amanager\x18\x02 \x01(\tH\x01R\amanager\x88\x01\x01B\n" +
+	"\n" +
+	"\b_channelB\n" +
+	"\n" +
+	"\b_manager\"\x86\x02\n" +
 	" OAuthAuthorizationRequestMapping\x124\n" +
 	"\x14client_id_param_name\x18\x01 \x01(\tH\x00R\x11clientIdParamName\x88\x01\x01\x12,\n" +
 	"\x0fscope_delimiter\x18\x02 \x01(\tH\x01R\x0escopeDelimiter\x88\x01\x01\x127\n" +
@@ -21900,7 +21903,7 @@ func file_channel_app_sdk_v1_extension_proto_rawDescGZIP() []byte {
 	return file_channel_app_sdk_v1_extension_proto_rawDescData
 }
 
-var file_channel_app_sdk_v1_extension_proto_msgTypes = make([]protoimpl.MessageInfo, 313)
+var file_channel_app_sdk_v1_extension_proto_msgTypes = make([]protoimpl.MessageInfo, 312)
 var file_channel_app_sdk_v1_extension_proto_goTypes = []any{
 	(*ExtensionEmptyInput)(nil),                                    // 0: channel.app.sdk.v1.ExtensionEmptyInput
 	(*ExtensionChat)(nil),                                          // 1: channel.app.sdk.v1.ExtensionChat
@@ -22186,7 +22189,7 @@ var file_channel_app_sdk_v1_extension_proto_goTypes = []any{
 	(*IssueGetIssueTransitionsOutput)(nil),                         // 281: channel.app.sdk.v1.IssueGetIssueTransitionsOutput
 	(*IssueExecuteIssueTransitionInput)(nil),                       // 282: channel.app.sdk.v1.IssueExecuteIssueTransitionInput
 	(*IssueExecuteIssueTransitionOutput)(nil),                      // 283: channel.app.sdk.v1.IssueExecuteIssueTransitionOutput
-	(*OAuthAuthorizationParamsByAuthScope)(nil),                    // 284: channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope
+	(*OAuthScopedParamValue)(nil),                                  // 284: channel.app.sdk.v1.OAuthScopedParamValue
 	(*OAuthAuthorizationRequestMapping)(nil),                       // 285: channel.app.sdk.v1.OAuthAuthorizationRequestMapping
 	nil,                                                            // 286: channel.app.sdk.v1.ConfigLocalizedText.FieldLabelsEntry
 	nil,                                                            // 287: channel.app.sdk.v1.ConfigChoice.I18nMapEntry
@@ -22202,75 +22205,74 @@ var file_channel_app_sdk_v1_extension_proto_goTypes = []any{
 	nil,                                                            // 297: channel.app.sdk.v1.OAuthStepDisplay.I18nMapEntry
 	nil,                                                            // 298: channel.app.sdk.v1.OAuthProvider.AdditionalParamsEntry
 	nil,                                                            // 299: channel.app.sdk.v1.OAuthProvider.I18nMapEntry
-	nil,                                                            // 300: channel.app.sdk.v1.CommandChoice.NameDescI18nMapEntry
-	nil,                                                            // 301: channel.app.sdk.v1.CommandParamDefinition.NameDescI18nMapEntry
-	nil,                                                            // 302: channel.app.sdk.v1.CommandConfig.ButtonNameI18nMapEntry
-	nil,                                                            // 303: channel.app.sdk.v1.CommandConfig.NameDescI18nMapEntry
-	nil,                                                            // 304: channel.app.sdk.v1.CommandTrigger.AttributesEntry
-	nil,                                                            // 305: channel.app.sdk.v1.WidgetConfig.DefaultNameDescI18nMapEntry
-	nil,                                                            // 306: channel.app.sdk.v1.CustomTabConfig.NameI18nMapEntry
-	nil,                                                            // 307: channel.app.sdk.v1.StoreGetProfileOutput.I18nMapEntry
-	nil,                                                            // 308: channel.app.sdk.v1.OrderOperationOptions.FieldConfigsEntry
-	nil,                                                            // 309: channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntry
-	nil,                                                            // 310: channel.app.sdk.v1.IssueTransitionInput.PropertiesEntry
-	nil,                                                            // 311: channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.ChannelEntry
-	nil,                                                            // 312: channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.ManagerEntry
-	(*structpb.Struct)(nil),                                        // 313: google.protobuf.Struct
-	(*structpb.Value)(nil),                                         // 314: google.protobuf.Value
-	(*ChannelUserChat)(nil),                                        // 315: channel.app.sdk.v1.ChannelUserChat
-	(*ChannelMessage)(nil),                                         // 316: channel.app.sdk.v1.ChannelMessage
-	(*WritingTypeMap)(nil),                                         // 317: channel.app.sdk.v1.WritingTypeMap
-	(*ChannelUser)(nil),                                            // 318: channel.app.sdk.v1.ChannelUser
-	(*PrebuiltMessage)(nil),                                        // 319: channel.app.sdk.v1.PrebuiltMessage
-	(*UnavailableReason)(nil),                                      // 320: channel.app.sdk.v1.UnavailableReason
-	(*MediumProfile)(nil),                                          // 321: channel.app.sdk.v1.MediumProfile
+	nil,                                                            // 300: channel.app.sdk.v1.OAuthProvider.ScopedAdditionalParamsEntry
+	nil,                                                            // 301: channel.app.sdk.v1.CommandChoice.NameDescI18nMapEntry
+	nil,                                                            // 302: channel.app.sdk.v1.CommandParamDefinition.NameDescI18nMapEntry
+	nil,                                                            // 303: channel.app.sdk.v1.CommandConfig.ButtonNameI18nMapEntry
+	nil,                                                            // 304: channel.app.sdk.v1.CommandConfig.NameDescI18nMapEntry
+	nil,                                                            // 305: channel.app.sdk.v1.CommandTrigger.AttributesEntry
+	nil,                                                            // 306: channel.app.sdk.v1.WidgetConfig.DefaultNameDescI18nMapEntry
+	nil,                                                            // 307: channel.app.sdk.v1.CustomTabConfig.NameI18nMapEntry
+	nil,                                                            // 308: channel.app.sdk.v1.StoreGetProfileOutput.I18nMapEntry
+	nil,                                                            // 309: channel.app.sdk.v1.OrderOperationOptions.FieldConfigsEntry
+	nil,                                                            // 310: channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntry
+	nil,                                                            // 311: channel.app.sdk.v1.IssueTransitionInput.PropertiesEntry
+	(*structpb.Struct)(nil),                                        // 312: google.protobuf.Struct
+	(*structpb.Value)(nil),                                         // 313: google.protobuf.Value
+	(*ChannelUserChat)(nil),                                        // 314: channel.app.sdk.v1.ChannelUserChat
+	(*ChannelMessage)(nil),                                         // 315: channel.app.sdk.v1.ChannelMessage
+	(*WritingTypeMap)(nil),                                         // 316: channel.app.sdk.v1.WritingTypeMap
+	(*ChannelUser)(nil),                                            // 317: channel.app.sdk.v1.ChannelUser
+	(*PrebuiltMessage)(nil),                                        // 318: channel.app.sdk.v1.PrebuiltMessage
+	(*UnavailableReason)(nil),                                      // 319: channel.app.sdk.v1.UnavailableReason
+	(*MediumProfile)(nil),                                          // 320: channel.app.sdk.v1.MediumProfile
 }
 var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
-	313, // 0: channel.app.sdk.v1.ExtensionActionResult.attributes:type_name -> google.protobuf.Struct
+	312, // 0: channel.app.sdk.v1.ExtensionActionResult.attributes:type_name -> google.protobuf.Struct
 	3,   // 1: channel.app.sdk.v1.ApiKeyGetAuthConfigOutput.fields:type_name -> channel.app.sdk.v1.ApiKeyField
 	7,   // 2: channel.app.sdk.v1.ApiKeyValidateCredentialsOutput.user_info:type_name -> channel.app.sdk.v1.ApiKeyUserInfo
-	314, // 3: channel.app.sdk.v1.ConfigCondition.value:type_name -> google.protobuf.Value
+	313, // 3: channel.app.sdk.v1.ConfigCondition.value:type_name -> google.protobuf.Value
 	286, // 4: channel.app.sdk.v1.ConfigLocalizedText.field_labels:type_name -> channel.app.sdk.v1.ConfigLocalizedText.FieldLabelsEntry
-	314, // 5: channel.app.sdk.v1.ConfigChoice.value:type_name -> google.protobuf.Value
+	313, // 5: channel.app.sdk.v1.ConfigChoice.value:type_name -> google.protobuf.Value
 	287, // 6: channel.app.sdk.v1.ConfigChoice.i18n_map:type_name -> channel.app.sdk.v1.ConfigChoice.I18nMapEntry
 	288, // 7: channel.app.sdk.v1.ConfigInlineLink.i18n_map:type_name -> channel.app.sdk.v1.ConfigInlineLink.I18nMapEntry
 	289, // 8: channel.app.sdk.v1.ConfigValidationNotice.i18n_map:type_name -> channel.app.sdk.v1.ConfigValidationNotice.I18nMapEntry
 	12,  // 9: channel.app.sdk.v1.ConfigValidationNotice.links:type_name -> channel.app.sdk.v1.ConfigInlineLink
 	15,  // 10: channel.app.sdk.v1.ConfigOAuth.additional_params:type_name -> channel.app.sdk.v1.ConfigOAuthAdditionalParam
 	257, // 11: channel.app.sdk.v1.ConfigOAuth.client_credentials:type_name -> channel.app.sdk.v1.ConfigOAuthClientCredentials
-	313, // 12: channel.app.sdk.v1.ConfigChoicesSource.params:type_name -> google.protobuf.Struct
+	312, // 12: channel.app.sdk.v1.ConfigChoicesSource.params:type_name -> google.protobuf.Struct
 	290, // 13: channel.app.sdk.v1.ConfigOverview.i18n_map:type_name -> channel.app.sdk.v1.ConfigOverview.I18nMapEntry
-	313, // 14: channel.app.sdk.v1.ConfigDefaultSelector.on_change_params:type_name -> google.protobuf.Struct
+	312, // 14: channel.app.sdk.v1.ConfigDefaultSelector.on_change_params:type_name -> google.protobuf.Struct
 	291, // 15: channel.app.sdk.v1.ConfigDefaultSelector.i18n_map:type_name -> channel.app.sdk.v1.ConfigDefaultSelector.I18nMapEntry
 	19,  // 16: channel.app.sdk.v1.ConfigSettings.default_selectors:type_name -> channel.app.sdk.v1.ConfigDefaultSelector
 	292, // 17: channel.app.sdk.v1.ConfigSettings.i18n_map:type_name -> channel.app.sdk.v1.ConfigSettings.I18nMapEntry
-	314, // 18: channel.app.sdk.v1.ConfigDraftResolutionParams.changed_value:type_name -> google.protobuf.Value
-	313, // 19: channel.app.sdk.v1.ConfigDraftResolutionParams.values:type_name -> google.protobuf.Struct
+	313, // 18: channel.app.sdk.v1.ConfigDraftResolutionParams.changed_value:type_name -> google.protobuf.Value
+	312, // 19: channel.app.sdk.v1.ConfigDraftResolutionParams.values:type_name -> google.protobuf.Struct
 	12,  // 20: channel.app.sdk.v1.ConfigField.helper_links:type_name -> channel.app.sdk.v1.ConfigInlineLink
 	22,  // 21: channel.app.sdk.v1.ConfigField.media:type_name -> channel.app.sdk.v1.ConfigMediaOptions
 	23,  // 22: channel.app.sdk.v1.ConfigField.resolves_to:type_name -> channel.app.sdk.v1.ConfigResolvedValueTarget
 	9,   // 23: channel.app.sdk.v1.ConfigField.visible_when:type_name -> channel.app.sdk.v1.ConfigCondition
 	9,   // 24: channel.app.sdk.v1.ConfigField.enabled_when:type_name -> channel.app.sdk.v1.ConfigCondition
-	314, // 25: channel.app.sdk.v1.ConfigField.default_value:type_name -> google.protobuf.Value
+	313, // 25: channel.app.sdk.v1.ConfigField.default_value:type_name -> google.protobuf.Value
 	17,  // 26: channel.app.sdk.v1.ConfigField.choices_source:type_name -> channel.app.sdk.v1.ConfigChoicesSource
 	11,  // 27: channel.app.sdk.v1.ConfigField.choices:type_name -> channel.app.sdk.v1.ConfigChoice
 	11,  // 28: channel.app.sdk.v1.ConfigField.country_code_choices:type_name -> channel.app.sdk.v1.ConfigChoice
-	313, // 29: channel.app.sdk.v1.ConfigField.field_labels:type_name -> google.protobuf.Struct
+	312, // 29: channel.app.sdk.v1.ConfigField.field_labels:type_name -> google.protobuf.Struct
 	293, // 30: channel.app.sdk.v1.ConfigField.i18n_map:type_name -> channel.app.sdk.v1.ConfigField.I18nMapEntry
 	9,   // 31: channel.app.sdk.v1.ConfigBlock.visible_when:type_name -> channel.app.sdk.v1.ConfigCondition
 	12,  // 32: channel.app.sdk.v1.ConfigBlock.helper_links:type_name -> channel.app.sdk.v1.ConfigInlineLink
 	26,  // 33: channel.app.sdk.v1.ConfigBlock.fields:type_name -> channel.app.sdk.v1.ConfigField
-	313, // 34: channel.app.sdk.v1.ConfigBlock.props:type_name -> google.protobuf.Struct
+	312, // 34: channel.app.sdk.v1.ConfigBlock.props:type_name -> google.protobuf.Struct
 	22,  // 35: channel.app.sdk.v1.ConfigBlock.media:type_name -> channel.app.sdk.v1.ConfigMediaOptions
 	23,  // 36: channel.app.sdk.v1.ConfigBlock.resolves_to:type_name -> channel.app.sdk.v1.ConfigResolvedValueTarget
 	9,   // 37: channel.app.sdk.v1.ConfigBlock.enabled_when:type_name -> channel.app.sdk.v1.ConfigCondition
-	314, // 38: channel.app.sdk.v1.ConfigBlock.default_value:type_name -> google.protobuf.Value
+	313, // 38: channel.app.sdk.v1.ConfigBlock.default_value:type_name -> google.protobuf.Value
 	17,  // 39: channel.app.sdk.v1.ConfigBlock.choices_source:type_name -> channel.app.sdk.v1.ConfigChoicesSource
 	11,  // 40: channel.app.sdk.v1.ConfigBlock.choices:type_name -> channel.app.sdk.v1.ConfigChoice
 	11,  // 41: channel.app.sdk.v1.ConfigBlock.country_code_choices:type_name -> channel.app.sdk.v1.ConfigChoice
-	313, // 42: channel.app.sdk.v1.ConfigBlock.field_labels:type_name -> google.protobuf.Struct
+	312, // 42: channel.app.sdk.v1.ConfigBlock.field_labels:type_name -> google.protobuf.Struct
 	294, // 43: channel.app.sdk.v1.ConfigBlock.i18n_map:type_name -> channel.app.sdk.v1.ConfigBlock.I18nMapEntry
-	313, // 44: channel.app.sdk.v1.ConfigBlock.params:type_name -> google.protobuf.Struct
+	312, // 44: channel.app.sdk.v1.ConfigBlock.params:type_name -> google.protobuf.Struct
 	16,  // 45: channel.app.sdk.v1.ConfigGetConfigSchemaOutput.oauth:type_name -> channel.app.sdk.v1.ConfigOAuth
 	14,  // 46: channel.app.sdk.v1.ConfigGetConfigSchemaOutput.hooks:type_name -> channel.app.sdk.v1.ConfigHooks
 	27,  // 47: channel.app.sdk.v1.ConfigGetConfigSchemaOutput.blocks:type_name -> channel.app.sdk.v1.ConfigBlock
@@ -22281,8 +22283,8 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	30,  // 52: channel.app.sdk.v1.ConfigValidateStoredConfigOutput.errors:type_name -> channel.app.sdk.v1.ConfigValidationError
 	13,  // 53: channel.app.sdk.v1.ConfigValidateStoredConfigOutput.notices:type_name -> channel.app.sdk.v1.ConfigValidationNotice
 	11,  // 54: channel.app.sdk.v1.ConfigChoiceList.choices:type_name -> channel.app.sdk.v1.ConfigChoice
-	313, // 55: channel.app.sdk.v1.ConfigDraftResolutionOutput.values_patch:type_name -> google.protobuf.Struct
-	313, // 56: channel.app.sdk.v1.ConfigDraftResolutionOutput.choices_patch:type_name -> google.protobuf.Struct
+	312, // 55: channel.app.sdk.v1.ConfigDraftResolutionOutput.values_patch:type_name -> google.protobuf.Struct
+	312, // 56: channel.app.sdk.v1.ConfigDraftResolutionOutput.choices_patch:type_name -> google.protobuf.Struct
 	297, // 57: channel.app.sdk.v1.OAuthStepDisplay.i18n_map:type_name -> channel.app.sdk.v1.OAuthStepDisplay.I18nMapEntry
 	298, // 58: channel.app.sdk.v1.OAuthProvider.additional_params:type_name -> channel.app.sdk.v1.OAuthProvider.AdditionalParamsEntry
 	248, // 59: channel.app.sdk.v1.OAuthProvider.token_request:type_name -> channel.app.sdk.v1.OAuthTokenRequestMapping
@@ -22290,7 +22292,7 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	299, // 61: channel.app.sdk.v1.OAuthProvider.i18n_map:type_name -> channel.app.sdk.v1.OAuthProvider.I18nMapEntry
 	36,  // 62: channel.app.sdk.v1.OAuthProvider.authorization_display:type_name -> channel.app.sdk.v1.OAuthStepDisplay
 	285, // 63: channel.app.sdk.v1.OAuthProvider.authorization_request:type_name -> channel.app.sdk.v1.OAuthAuthorizationRequestMapping
-	284, // 64: channel.app.sdk.v1.OAuthProvider.additional_params_by_auth_scope:type_name -> channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope
+	300, // 64: channel.app.sdk.v1.OAuthProvider.scoped_additional_params:type_name -> channel.app.sdk.v1.OAuthProvider.ScopedAdditionalParamsEntry
 	39,  // 65: channel.app.sdk.v1.OAuthConfig.oauth_provider:type_name -> channel.app.sdk.v1.OAuthProvider
 	47,  // 66: channel.app.sdk.v1.CalendarBooking.attendee:type_name -> channel.app.sdk.v1.CalendarAttendee
 	44,  // 67: channel.app.sdk.v1.CalendarListCalendarsOutput.calendars:type_name -> channel.app.sdk.v1.Calendar
@@ -22298,37 +22300,37 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	46,  // 69: channel.app.sdk.v1.CalendarGetAvailabilityOutput.slots:type_name -> channel.app.sdk.v1.CalendarTimeSlot
 	47,  // 70: channel.app.sdk.v1.CalendarCreateBookingInput.attendee:type_name -> channel.app.sdk.v1.CalendarAttendee
 	48,  // 71: channel.app.sdk.v1.CalendarCancelBookingOutput.booking:type_name -> channel.app.sdk.v1.CalendarBooking
-	314, // 72: channel.app.sdk.v1.CommandChoice.value:type_name -> google.protobuf.Value
-	300, // 73: channel.app.sdk.v1.CommandChoice.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandChoice.NameDescI18nMapEntry
+	313, // 72: channel.app.sdk.v1.CommandChoice.value:type_name -> google.protobuf.Value
+	301, // 73: channel.app.sdk.v1.CommandChoice.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandChoice.NameDescI18nMapEntry
 	62,  // 74: channel.app.sdk.v1.CommandParamDefinition.choices:type_name -> channel.app.sdk.v1.CommandChoice
-	301, // 75: channel.app.sdk.v1.CommandParamDefinition.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandParamDefinition.NameDescI18nMapEntry
-	302, // 76: channel.app.sdk.v1.CommandConfig.button_name_i18n_map:type_name -> channel.app.sdk.v1.CommandConfig.ButtonNameI18nMapEntry
-	303, // 77: channel.app.sdk.v1.CommandConfig.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandConfig.NameDescI18nMapEntry
+	302, // 75: channel.app.sdk.v1.CommandParamDefinition.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandParamDefinition.NameDescI18nMapEntry
+	303, // 76: channel.app.sdk.v1.CommandConfig.button_name_i18n_map:type_name -> channel.app.sdk.v1.CommandConfig.ButtonNameI18nMapEntry
+	304, // 77: channel.app.sdk.v1.CommandConfig.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandConfig.NameDescI18nMapEntry
 	63,  // 78: channel.app.sdk.v1.CommandConfig.param_definitions:type_name -> channel.app.sdk.v1.CommandParamDefinition
 	64,  // 79: channel.app.sdk.v1.CommandGetCommandsOutput.commands:type_name -> channel.app.sdk.v1.CommandConfig
-	304, // 80: channel.app.sdk.v1.CommandTrigger.attributes:type_name -> channel.app.sdk.v1.CommandTrigger.AttributesEntry
-	314, // 81: channel.app.sdk.v1.CommandAutoCompleteArgument.value:type_name -> google.protobuf.Value
+	305, // 80: channel.app.sdk.v1.CommandTrigger.attributes:type_name -> channel.app.sdk.v1.CommandTrigger.AttributesEntry
+	313, // 81: channel.app.sdk.v1.CommandAutoCompleteArgument.value:type_name -> google.protobuf.Value
 	1,   // 82: channel.app.sdk.v1.CommandGetSuggestionsInput.chat:type_name -> channel.app.sdk.v1.ExtensionChat
 	68,  // 83: channel.app.sdk.v1.CommandGetSuggestionsInput.input:type_name -> channel.app.sdk.v1.CommandAutoCompleteArgument
 	62,  // 84: channel.app.sdk.v1.CommandGetSuggestionsOutput.choices:type_name -> channel.app.sdk.v1.CommandChoice
 	1,   // 85: channel.app.sdk.v1.CommandExecuteInput.chat:type_name -> channel.app.sdk.v1.ExtensionChat
 	67,  // 86: channel.app.sdk.v1.CommandExecuteInput.trigger:type_name -> channel.app.sdk.v1.CommandTrigger
-	313, // 87: channel.app.sdk.v1.CommandExecuteInput.input:type_name -> google.protobuf.Struct
-	313, // 88: channel.app.sdk.v1.CommandResult.attributes:type_name -> google.protobuf.Struct
-	305, // 89: channel.app.sdk.v1.WidgetConfig.default_name_desc_i18n_map:type_name -> channel.app.sdk.v1.WidgetConfig.DefaultNameDescI18nMapEntry
+	312, // 87: channel.app.sdk.v1.CommandExecuteInput.input:type_name -> google.protobuf.Struct
+	312, // 88: channel.app.sdk.v1.CommandResult.attributes:type_name -> google.protobuf.Struct
+	306, // 89: channel.app.sdk.v1.WidgetConfig.default_name_desc_i18n_map:type_name -> channel.app.sdk.v1.WidgetConfig.DefaultNameDescI18nMapEntry
 	74,  // 90: channel.app.sdk.v1.WidgetGetWidgetsOutput.widgets:type_name -> channel.app.sdk.v1.WidgetConfig
 	1,   // 91: channel.app.sdk.v1.WidgetActionInput.chat:type_name -> channel.app.sdk.v1.ExtensionChat
-	313, // 92: channel.app.sdk.v1.WidgetActionResult.attributes:type_name -> google.protobuf.Struct
-	306, // 93: channel.app.sdk.v1.CustomTabConfig.name_i18n_map:type_name -> channel.app.sdk.v1.CustomTabConfig.NameI18nMapEntry
+	312, // 92: channel.app.sdk.v1.WidgetActionResult.attributes:type_name -> google.protobuf.Struct
+	307, // 93: channel.app.sdk.v1.CustomTabConfig.name_i18n_map:type_name -> channel.app.sdk.v1.CustomTabConfig.NameI18nMapEntry
 	80,  // 94: channel.app.sdk.v1.CustomTabGetCustomTabsOutput.custom_tabs:type_name -> channel.app.sdk.v1.CustomTabConfig
-	314, // 95: channel.app.sdk.v1.CustomTabActionInput.wam_args:type_name -> google.protobuf.Value
-	313, // 96: channel.app.sdk.v1.CustomTabActionResult.attributes:type_name -> google.protobuf.Struct
+	313, // 95: channel.app.sdk.v1.CustomTabActionInput.wam_args:type_name -> google.protobuf.Value
+	312, // 96: channel.app.sdk.v1.CustomTabActionResult.attributes:type_name -> google.protobuf.Struct
 	86,  // 97: channel.app.sdk.v1.HookWebhookConfig.response:type_name -> channel.app.sdk.v1.HookWebhookResponse
 	85,  // 98: channel.app.sdk.v1.HookConfig.webhook:type_name -> channel.app.sdk.v1.HookWebhookConfig
 	36,  // 99: channel.app.sdk.v1.HookConfig.display:type_name -> channel.app.sdk.v1.OAuthStepDisplay
 	87,  // 100: channel.app.sdk.v1.HookGetHooksOutput.hooks:type_name -> channel.app.sdk.v1.HookConfig
 	92,  // 101: channel.app.sdk.v1.PollingGetPollersOutput.pollers:type_name -> channel.app.sdk.v1.PollingPoller
-	313, // 102: channel.app.sdk.v1.SuggestionTriggers.keywords:type_name -> google.protobuf.Struct
+	312, // 102: channel.app.sdk.v1.SuggestionTriggers.keywords:type_name -> google.protobuf.Struct
 	97,  // 103: channel.app.sdk.v1.SuggestionGetTriggersOutput.triggers:type_name -> channel.app.sdk.v1.SuggestionTriggers
 	101, // 104: channel.app.sdk.v1.MailRelayMail.common_headers:type_name -> channel.app.sdk.v1.MailRelayCommonHeaders
 	100, // 105: channel.app.sdk.v1.MailRelayMail.headers:type_name -> channel.app.sdk.v1.MailRelayHeader
@@ -22337,9 +22339,9 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	106, // 108: channel.app.sdk.v1.StoreProfileLocalizedContent.images:type_name -> channel.app.sdk.v1.StoreProfileImage
 	107, // 109: channel.app.sdk.v1.StoreProfileLocalizedContent.intro:type_name -> channel.app.sdk.v1.StoreProfileIntro
 	108, // 110: channel.app.sdk.v1.StoreProfileLocalizedContent.faqs:type_name -> channel.app.sdk.v1.StoreFaq
-	307, // 111: channel.app.sdk.v1.StoreGetProfileOutput.i18n_map:type_name -> channel.app.sdk.v1.StoreGetProfileOutput.I18nMapEntry
-	313, // 112: channel.app.sdk.v1.NotebookCell.definition:type_name -> google.protobuf.Struct
-	313, // 113: channel.app.sdk.v1.NotebookCell.presentation:type_name -> google.protobuf.Struct
+	308, // 111: channel.app.sdk.v1.StoreGetProfileOutput.i18n_map:type_name -> channel.app.sdk.v1.StoreGetProfileOutput.I18nMapEntry
+	312, // 112: channel.app.sdk.v1.NotebookCell.definition:type_name -> google.protobuf.Struct
+	312, // 113: channel.app.sdk.v1.NotebookCell.presentation:type_name -> google.protobuf.Struct
 	113, // 114: channel.app.sdk.v1.NotebookLayoutRow.columns:type_name -> channel.app.sdk.v1.NotebookLayoutColumn
 	114, // 115: channel.app.sdk.v1.NotebookTab.layout:type_name -> channel.app.sdk.v1.NotebookLayoutRow
 	112, // 116: channel.app.sdk.v1.NotebookPayload.cells:type_name -> channel.app.sdk.v1.NotebookCell
@@ -22353,7 +22355,7 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	120, // 124: channel.app.sdk.v1.DataSourceListCatalogsOutput.catalogs:type_name -> channel.app.sdk.v1.DataSourceCatalog
 	124, // 125: channel.app.sdk.v1.DataSourceListTablesOutput.tables:type_name -> channel.app.sdk.v1.DataSourceTableListing
 	123, // 126: channel.app.sdk.v1.DataSourceDescribeTableOutput.definition:type_name -> channel.app.sdk.v1.DataSourceTableDefinition
-	313, // 127: channel.app.sdk.v1.DataSourceDescribeTableOutput.sample:type_name -> google.protobuf.Struct
+	312, // 127: channel.app.sdk.v1.DataSourceDescribeTableOutput.sample:type_name -> google.protobuf.Struct
 	135, // 128: channel.app.sdk.v1.OrderItem.claimability:type_name -> channel.app.sdk.v1.OrderClaimability
 	140, // 129: channel.app.sdk.v1.OrderFulfillment.items:type_name -> channel.app.sdk.v1.OrderFulfillmentItem
 	141, // 130: channel.app.sdk.v1.OrderShippingLine.tax_lines:type_name -> channel.app.sdk.v1.OrderTaxLine
@@ -22363,7 +22365,7 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	131, // 134: channel.app.sdk.v1.Order.shipping_address:type_name -> channel.app.sdk.v1.OrderAddress
 	136, // 135: channel.app.sdk.v1.Order.claims:type_name -> channel.app.sdk.v1.OrderClaim
 	147, // 136: channel.app.sdk.v1.OrderFieldConfig.allowed_values:type_name -> channel.app.sdk.v1.OrderAllowedValue
-	308, // 137: channel.app.sdk.v1.OrderOperationOptions.field_configs:type_name -> channel.app.sdk.v1.OrderOperationOptions.FieldConfigsEntry
+	309, // 137: channel.app.sdk.v1.OrderOperationOptions.field_configs:type_name -> channel.app.sdk.v1.OrderOperationOptions.FieldConfigsEntry
 	149, // 138: channel.app.sdk.v1.OrderAppCapabilities.get_orders_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
 	149, // 139: channel.app.sdk.v1.OrderAppCapabilities.cancel_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
 	149, // 140: channel.app.sdk.v1.OrderAppCapabilities.return_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
@@ -22404,7 +22406,7 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	144, // 175: channel.app.sdk.v1.CommerceOrder.transactions:type_name -> channel.app.sdk.v1.OrderTransaction
 	145, // 176: channel.app.sdk.v1.CommerceOrder.metafields:type_name -> channel.app.sdk.v1.OrderMetafield
 	164, // 177: channel.app.sdk.v1.CommerceGetOrdersInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
-	314, // 178: channel.app.sdk.v1.CommerceGetOrdersInput.search_filter:type_name -> google.protobuf.Value
+	313, // 178: channel.app.sdk.v1.CommerceGetOrdersInput.search_filter:type_name -> google.protobuf.Value
 	167, // 179: channel.app.sdk.v1.CommerceGetOrdersOutput.orders:type_name -> channel.app.sdk.v1.CommerceOrder
 	149, // 180: channel.app.sdk.v1.CommerceAppCapabilities.get_orders_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
 	149, // 181: channel.app.sdk.v1.CommerceAppCapabilities.request_cancel_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
@@ -22443,7 +22445,7 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	183, // 214: channel.app.sdk.v1.CommerceExchangeableVariant.options:type_name -> channel.app.sdk.v1.CommerceVariantOption
 	164, // 215: channel.app.sdk.v1.CommerceChangeShippingAddressInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
 	131, // 216: channel.app.sdk.v1.CommerceChangeShippingAddressInput.new_address:type_name -> channel.app.sdk.v1.OrderAddress
-	314, // 217: channel.app.sdk.v1.CommerceGetProductsInput.search_filter:type_name -> google.protobuf.Value
+	313, // 217: channel.app.sdk.v1.CommerceGetProductsInput.search_filter:type_name -> google.protobuf.Value
 	187, // 218: channel.app.sdk.v1.CommerceGetProductsOutput.products:type_name -> channel.app.sdk.v1.CommerceProduct
 	188, // 219: channel.app.sdk.v1.CommerceProduct.variants:type_name -> channel.app.sdk.v1.CommerceProductVariant
 	183, // 220: channel.app.sdk.v1.CommerceProductVariant.options:type_name -> channel.app.sdk.v1.CommerceVariantOption
@@ -22452,19 +22454,19 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	190, // 223: channel.app.sdk.v1.WmsOrder.deliveries:type_name -> channel.app.sdk.v1.WmsDelivery
 	192, // 224: channel.app.sdk.v1.WmsGetOrdersResult.orders:type_name -> channel.app.sdk.v1.WmsOrder
 	192, // 225: channel.app.sdk.v1.WmsGetOrderResult.order:type_name -> channel.app.sdk.v1.WmsOrder
-	314, // 226: channel.app.sdk.v1.WmsGetShopIDResult.shop_id:type_name -> google.protobuf.Value
+	313, // 226: channel.app.sdk.v1.WmsGetShopIDResult.shop_id:type_name -> google.protobuf.Value
 	205, // 227: channel.app.sdk.v1.WmsOrderV2.buyer:type_name -> channel.app.sdk.v1.Buyer
 	207, // 228: channel.app.sdk.v1.WmsOrderV2.items:type_name -> channel.app.sdk.v1.WmsOrderItemV2
 	206, // 229: channel.app.sdk.v1.WmsOrderV2.deliveries:type_name -> channel.app.sdk.v1.WmsDeliveryV2
 	209, // 230: channel.app.sdk.v1.WmsOrderGetOrdersRequest.identifier:type_name -> channel.app.sdk.v1.WmsIdentifier
-	314, // 231: channel.app.sdk.v1.WmsOrderGetOrdersRequest.search_filter:type_name -> google.protobuf.Value
+	313, // 231: channel.app.sdk.v1.WmsOrderGetOrdersRequest.search_filter:type_name -> google.protobuf.Value
 	208, // 232: channel.app.sdk.v1.WmsOrderGetOrdersResult.orders:type_name -> channel.app.sdk.v1.WmsOrderV2
 	209, // 233: channel.app.sdk.v1.WmsOrderActionRequest.identifier:type_name -> channel.app.sdk.v1.WmsIdentifier
 	209, // 234: channel.app.sdk.v1.WmsOrderChangeShippingAddressInput.identifier:type_name -> channel.app.sdk.v1.WmsIdentifier
 	131, // 235: channel.app.sdk.v1.WmsOrderChangeShippingAddressInput.new_address:type_name -> channel.app.sdk.v1.OrderAddress
 	214, // 236: channel.app.sdk.v1.WmsOrderActionResult.result:type_name -> channel.app.sdk.v1.WmsOrderResultBody
 	147, // 237: channel.app.sdk.v1.WmsFieldConfig.allowed_values:type_name -> channel.app.sdk.v1.OrderAllowedValue
-	309, // 238: channel.app.sdk.v1.WmsOperationOptions.field_configs:type_name -> channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntry
+	310, // 238: channel.app.sdk.v1.WmsOperationOptions.field_configs:type_name -> channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntry
 	217, // 239: channel.app.sdk.v1.WmsAppCapabilities.get_orders_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
 	217, // 240: channel.app.sdk.v1.WmsAppCapabilities.request_cancel_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
 	217, // 241: channel.app.sdk.v1.WmsAppCapabilities.restore_canceled_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
@@ -22474,43 +22476,43 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	217, // 245: channel.app.sdk.v1.WmsAppCapabilities.restore_exchanged_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
 	217, // 246: channel.app.sdk.v1.WmsAppCapabilities.change_shipping_address_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
 	218, // 247: channel.app.sdk.v1.WmsGetAppConfigsOutput.app_capabilities:type_name -> channel.app.sdk.v1.WmsAppCapabilities
-	315, // 248: channel.app.sdk.v1.MessagingOnMediumMessageCreatedInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
-	316, // 249: channel.app.sdk.v1.MessagingOnMediumMessageCreatedInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
+	314, // 248: channel.app.sdk.v1.MessagingOnMediumMessageCreatedInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
+	315, // 249: channel.app.sdk.v1.MessagingOnMediumMessageCreatedInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
 	222, // 250: channel.app.sdk.v1.MessagingOnMediumMessageCreatedOutput.send_result:type_name -> channel.app.sdk.v1.MessagingSendResult
-	315, // 251: channel.app.sdk.v1.MessagingInboxOnMediumUserChatClosedInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
-	315, // 252: channel.app.sdk.v1.MessagingInboxGetWritingTypesInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
-	317, // 253: channel.app.sdk.v1.MessagingInboxGetWritingTypesOutput.writing_type_map:type_name -> channel.app.sdk.v1.WritingTypeMap
-	318, // 254: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.user:type_name -> channel.app.sdk.v1.ChannelUser
-	315, // 255: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
-	316, // 256: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
-	318, // 257: channel.app.sdk.v1.MessagingInboxGetMediumTopicSelectorWamInput.user:type_name -> channel.app.sdk.v1.ChannelUser
-	315, // 258: channel.app.sdk.v1.MessagingInboxGetMediumMessageErrorReasonInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
-	316, // 259: channel.app.sdk.v1.MessagingInboxGetMediumMessageErrorReasonInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
-	317, // 260: channel.app.sdk.v1.MessagingPrebuiltGetWritingTypesOutput.writing_type_map:type_name -> channel.app.sdk.v1.WritingTypeMap
-	319, // 261: channel.app.sdk.v1.MessagingPrebuiltValidateEntityInput.message:type_name -> channel.app.sdk.v1.PrebuiltMessage
-	320, // 262: channel.app.sdk.v1.MessagingPrebuiltValidateEntityOutput.reasons:type_name -> channel.app.sdk.v1.UnavailableReason
-	319, // 263: channel.app.sdk.v1.MessagingPrebuiltGetCustomEditorWamInput.message:type_name -> channel.app.sdk.v1.PrebuiltMessage
-	313, // 264: channel.app.sdk.v1.MessagingPrebuiltGetCustomEditorWamInput.trigger_event_name_i18n_map:type_name -> google.protobuf.Struct
-	318, // 265: channel.app.sdk.v1.MessagingPrebuiltBuildMediumTopicsInput.user:type_name -> channel.app.sdk.v1.ChannelUser
-	321, // 266: channel.app.sdk.v1.MessagingPrebuiltBuildMediumTopicsOutput.medium_profile:type_name -> channel.app.sdk.v1.MediumProfile
-	313, // 267: channel.app.sdk.v1.MessagingDefaultOptions.campaign_user_query:type_name -> google.protobuf.Struct
-	313, // 268: channel.app.sdk.v1.MessagingDefaultOptions.one_time_msg_user_query:type_name -> google.protobuf.Struct
+	314, // 251: channel.app.sdk.v1.MessagingInboxOnMediumUserChatClosedInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
+	314, // 252: channel.app.sdk.v1.MessagingInboxGetWritingTypesInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
+	316, // 253: channel.app.sdk.v1.MessagingInboxGetWritingTypesOutput.writing_type_map:type_name -> channel.app.sdk.v1.WritingTypeMap
+	317, // 254: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.user:type_name -> channel.app.sdk.v1.ChannelUser
+	314, // 255: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
+	315, // 256: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
+	317, // 257: channel.app.sdk.v1.MessagingInboxGetMediumTopicSelectorWamInput.user:type_name -> channel.app.sdk.v1.ChannelUser
+	314, // 258: channel.app.sdk.v1.MessagingInboxGetMediumMessageErrorReasonInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
+	315, // 259: channel.app.sdk.v1.MessagingInboxGetMediumMessageErrorReasonInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
+	316, // 260: channel.app.sdk.v1.MessagingPrebuiltGetWritingTypesOutput.writing_type_map:type_name -> channel.app.sdk.v1.WritingTypeMap
+	318, // 261: channel.app.sdk.v1.MessagingPrebuiltValidateEntityInput.message:type_name -> channel.app.sdk.v1.PrebuiltMessage
+	319, // 262: channel.app.sdk.v1.MessagingPrebuiltValidateEntityOutput.reasons:type_name -> channel.app.sdk.v1.UnavailableReason
+	318, // 263: channel.app.sdk.v1.MessagingPrebuiltGetCustomEditorWamInput.message:type_name -> channel.app.sdk.v1.PrebuiltMessage
+	312, // 264: channel.app.sdk.v1.MessagingPrebuiltGetCustomEditorWamInput.trigger_event_name_i18n_map:type_name -> google.protobuf.Struct
+	317, // 265: channel.app.sdk.v1.MessagingPrebuiltBuildMediumTopicsInput.user:type_name -> channel.app.sdk.v1.ChannelUser
+	320, // 266: channel.app.sdk.v1.MessagingPrebuiltBuildMediumTopicsOutput.medium_profile:type_name -> channel.app.sdk.v1.MediumProfile
+	312, // 267: channel.app.sdk.v1.MessagingDefaultOptions.campaign_user_query:type_name -> google.protobuf.Struct
+	312, // 268: channel.app.sdk.v1.MessagingDefaultOptions.one_time_msg_user_query:type_name -> google.protobuf.Struct
 	241, // 269: channel.app.sdk.v1.MessagingPrebuiltGetDefaultOptionsOutput.default_options:type_name -> channel.app.sdk.v1.MessagingDefaultOptions
-	313, // 270: channel.app.sdk.v1.AlfTaskWorkflowNode.config:type_name -> google.protobuf.Struct
+	312, // 270: channel.app.sdk.v1.AlfTaskWorkflowNode.config:type_name -> google.protobuf.Struct
 	243, // 271: channel.app.sdk.v1.AlfTaskPredefinedTask.memory_schema:type_name -> channel.app.sdk.v1.AlfTaskMemoryDefinition
 	244, // 272: channel.app.sdk.v1.AlfTaskPredefinedTask.nodes:type_name -> channel.app.sdk.v1.AlfTaskWorkflowNode
 	245, // 273: channel.app.sdk.v1.AlfTaskGetTasksOutput.predefined_tasks:type_name -> channel.app.sdk.v1.AlfTaskPredefinedTask
 	250, // 274: channel.app.sdk.v1.PollingGetTargetManagersOutput.targets:type_name -> channel.app.sdk.v1.PollingManagerTarget
 	253, // 275: channel.app.sdk.v1.DataSourceAuthorizeQueryInput.tables:type_name -> channel.app.sdk.v1.DataSourceQueryTableAccess
 	254, // 276: channel.app.sdk.v1.DataSourceAuthorizeQueryOutput.filters:type_name -> channel.app.sdk.v1.DataSourceQueryFilter
-	313, // 277: channel.app.sdk.v1.HookTeamChatMessageCreatedInput.snapshot:type_name -> google.protobuf.Struct
-	313, // 278: channel.app.sdk.v1.ConfigActionResult.values_patch:type_name -> google.protobuf.Struct
+	312, // 277: channel.app.sdk.v1.HookTeamChatMessageCreatedInput.snapshot:type_name -> google.protobuf.Struct
+	312, // 278: channel.app.sdk.v1.ConfigActionResult.values_patch:type_name -> google.protobuf.Struct
 	263, // 279: channel.app.sdk.v1.ConfigActionResult.redirect:type_name -> channel.app.sdk.v1.ConfigActionRedirect
 	265, // 280: channel.app.sdk.v1.ExternalIssue.provider_state:type_name -> channel.app.sdk.v1.IssueProviderState
 	266, // 281: channel.app.sdk.v1.ExternalIssue.container:type_name -> channel.app.sdk.v1.IssueContainer
 	267, // 282: channel.app.sdk.v1.ExternalIssue.closed_by:type_name -> channel.app.sdk.v1.IssueActor
-	314, // 283: channel.app.sdk.v1.IssueTransitionField.enum:type_name -> google.protobuf.Value
-	310, // 284: channel.app.sdk.v1.IssueTransitionInput.properties:type_name -> channel.app.sdk.v1.IssueTransitionInput.PropertiesEntry
+	313, // 283: channel.app.sdk.v1.IssueTransitionField.enum:type_name -> google.protobuf.Value
+	311, // 284: channel.app.sdk.v1.IssueTransitionInput.properties:type_name -> channel.app.sdk.v1.IssueTransitionInput.PropertiesEntry
 	265, // 285: channel.app.sdk.v1.IssueTransition.target_provider_state:type_name -> channel.app.sdk.v1.IssueProviderState
 	271, // 286: channel.app.sdk.v1.IssueTransition.input_schema:type_name -> channel.app.sdk.v1.IssueTransitionInput
 	268, // 287: channel.app.sdk.v1.IssueSearchIssuesOutput.issues:type_name -> channel.app.sdk.v1.ExternalIssue
@@ -22519,37 +22521,36 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	269, // 290: channel.app.sdk.v1.IssueGetIssuesResult.error:type_name -> channel.app.sdk.v1.IssueError
 	278, // 291: channel.app.sdk.v1.IssueGetIssuesOutput.results:type_name -> channel.app.sdk.v1.IssueGetIssuesResult
 	272, // 292: channel.app.sdk.v1.IssueGetIssueTransitionsOutput.transitions:type_name -> channel.app.sdk.v1.IssueTransition
-	313, // 293: channel.app.sdk.v1.IssueExecuteIssueTransitionInput.fields:type_name -> google.protobuf.Struct
+	312, // 293: channel.app.sdk.v1.IssueExecuteIssueTransitionInput.fields:type_name -> google.protobuf.Struct
 	268, // 294: channel.app.sdk.v1.IssueExecuteIssueTransitionOutput.issue:type_name -> channel.app.sdk.v1.ExternalIssue
-	311, // 295: channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.channel:type_name -> channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.ChannelEntry
-	312, // 296: channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.manager:type_name -> channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.ManagerEntry
-	10,  // 297: channel.app.sdk.v1.ConfigChoice.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 298: channel.app.sdk.v1.ConfigInlineLink.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 299: channel.app.sdk.v1.ConfigValidationNotice.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 300: channel.app.sdk.v1.ConfigOverview.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 301: channel.app.sdk.v1.ConfigDefaultSelector.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 302: channel.app.sdk.v1.ConfigSettings.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 303: channel.app.sdk.v1.ConfigField.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 304: channel.app.sdk.v1.ConfigBlock.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 305: channel.app.sdk.v1.ConfigGetConfigSchemaOutput.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 306: channel.app.sdk.v1.ConfigValidationError.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	37,  // 307: channel.app.sdk.v1.OAuthStepDisplay.I18nMapEntry.value:type_name -> channel.app.sdk.v1.OAuthStepLocalizedText
-	35,  // 308: channel.app.sdk.v1.OAuthProvider.I18nMapEntry.value:type_name -> channel.app.sdk.v1.OAuthProviderLocalizedText
-	60,  // 309: channel.app.sdk.v1.CommandChoice.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameDescI18n
-	61,  // 310: channel.app.sdk.v1.CommandParamDefinition.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandParamDefI18n
-	59,  // 311: channel.app.sdk.v1.CommandConfig.ButtonNameI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameI18n
-	60,  // 312: channel.app.sdk.v1.CommandConfig.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameDescI18n
-	73,  // 313: channel.app.sdk.v1.WidgetConfig.DefaultNameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.WidgetNameDescI18n
-	79,  // 314: channel.app.sdk.v1.CustomTabConfig.NameI18nMapEntry.value:type_name -> channel.app.sdk.v1.CustomTabNameI18n
-	109, // 315: channel.app.sdk.v1.StoreGetProfileOutput.I18nMapEntry.value:type_name -> channel.app.sdk.v1.StoreProfileLocalizedContent
-	148, // 316: channel.app.sdk.v1.OrderOperationOptions.FieldConfigsEntry.value:type_name -> channel.app.sdk.v1.OrderFieldConfig
-	216, // 317: channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntry.value:type_name -> channel.app.sdk.v1.WmsFieldConfig
-	270, // 318: channel.app.sdk.v1.IssueTransitionInput.PropertiesEntry.value:type_name -> channel.app.sdk.v1.IssueTransitionField
-	319, // [319:319] is the sub-list for method output_type
-	319, // [319:319] is the sub-list for method input_type
-	319, // [319:319] is the sub-list for extension type_name
-	319, // [319:319] is the sub-list for extension extendee
-	0,   // [0:319] is the sub-list for field type_name
+	10,  // 295: channel.app.sdk.v1.ConfigChoice.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 296: channel.app.sdk.v1.ConfigInlineLink.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 297: channel.app.sdk.v1.ConfigValidationNotice.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 298: channel.app.sdk.v1.ConfigOverview.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 299: channel.app.sdk.v1.ConfigDefaultSelector.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 300: channel.app.sdk.v1.ConfigSettings.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 301: channel.app.sdk.v1.ConfigField.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 302: channel.app.sdk.v1.ConfigBlock.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 303: channel.app.sdk.v1.ConfigGetConfigSchemaOutput.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 304: channel.app.sdk.v1.ConfigValidationError.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	37,  // 305: channel.app.sdk.v1.OAuthStepDisplay.I18nMapEntry.value:type_name -> channel.app.sdk.v1.OAuthStepLocalizedText
+	35,  // 306: channel.app.sdk.v1.OAuthProvider.I18nMapEntry.value:type_name -> channel.app.sdk.v1.OAuthProviderLocalizedText
+	284, // 307: channel.app.sdk.v1.OAuthProvider.ScopedAdditionalParamsEntry.value:type_name -> channel.app.sdk.v1.OAuthScopedParamValue
+	60,  // 308: channel.app.sdk.v1.CommandChoice.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameDescI18n
+	61,  // 309: channel.app.sdk.v1.CommandParamDefinition.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandParamDefI18n
+	59,  // 310: channel.app.sdk.v1.CommandConfig.ButtonNameI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameI18n
+	60,  // 311: channel.app.sdk.v1.CommandConfig.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameDescI18n
+	73,  // 312: channel.app.sdk.v1.WidgetConfig.DefaultNameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.WidgetNameDescI18n
+	79,  // 313: channel.app.sdk.v1.CustomTabConfig.NameI18nMapEntry.value:type_name -> channel.app.sdk.v1.CustomTabNameI18n
+	109, // 314: channel.app.sdk.v1.StoreGetProfileOutput.I18nMapEntry.value:type_name -> channel.app.sdk.v1.StoreProfileLocalizedContent
+	148, // 315: channel.app.sdk.v1.OrderOperationOptions.FieldConfigsEntry.value:type_name -> channel.app.sdk.v1.OrderFieldConfig
+	216, // 316: channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntry.value:type_name -> channel.app.sdk.v1.WmsFieldConfig
+	270, // 317: channel.app.sdk.v1.IssueTransitionInput.PropertiesEntry.value:type_name -> channel.app.sdk.v1.IssueTransitionField
+	318, // [318:318] is the sub-list for method output_type
+	318, // [318:318] is the sub-list for method input_type
+	318, // [318:318] is the sub-list for extension type_name
+	318, // [318:318] is the sub-list for extension extendee
+	0,   // [0:318] is the sub-list for field type_name
 }
 
 func init() { file_channel_app_sdk_v1_extension_proto_init() }
@@ -22591,6 +22592,7 @@ func file_channel_app_sdk_v1_extension_proto_init() {
 	file_channel_app_sdk_v1_extension_proto_msgTypes[273].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[274].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[275].OneofWrappers = []any{}
+	file_channel_app_sdk_v1_extension_proto_msgTypes[284].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[285].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -22598,7 +22600,7 @@ func file_channel_app_sdk_v1_extension_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_channel_app_sdk_v1_extension_proto_rawDesc), len(file_channel_app_sdk_v1_extension_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   313,
+			NumMessages:   312,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

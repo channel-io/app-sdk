@@ -23419,48 +23419,40 @@
             "additionalParams": {
               "type": "object",
               "additionalProperties": {
-                "type": "string"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "channel": {
+                        "type": "string",
+                        "allOf": [
+                          {
+                            "pattern": "\\S"
+                          },
+                          {
+                            "pattern": "^[^\\r\\n\\x00]*$"
+                          }
+                        ]
+                      },
+                      "manager": {
+                        "type": "string",
+                        "allOf": [
+                          {
+                            "pattern": "\\S"
+                          },
+                          {
+                            "pattern": "^[^\\r\\n\\x00]*$"
+                          }
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
               }
-            },
-            "additionalParamsByAuthScope": {
-              "type": "object",
-              "properties": {
-                "channel": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string",
-                    "allOf": [
-                      {
-                        "pattern": "\\S"
-                      },
-                      {
-                        "pattern": "^[^\\r\\n\\u0000]*$"
-                      }
-                    ]
-                  },
-                  "propertyNames": {
-                    "pattern": "^[A-Za-z0-9_.-]+$"
-                  }
-                },
-                "manager": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string",
-                    "allOf": [
-                      {
-                        "pattern": "\\S"
-                      },
-                      {
-                        "pattern": "^[^\\r\\n\\u0000]*$"
-                      }
-                    ]
-                  },
-                  "propertyNames": {
-                    "pattern": "^[A-Za-z0-9_.-]+$"
-                  }
-                }
-              },
-              "additionalProperties": false
             },
             "authorizationRequest": {
               "type": "object",

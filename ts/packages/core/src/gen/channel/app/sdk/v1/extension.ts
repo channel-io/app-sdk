@@ -495,8 +495,14 @@ export interface OAuthProvider {
   tokenResponse?: OAuthTokenResponseMapping | undefined;
   i18nMap?: { [key: string]: OAuthProviderLocalizedText } | undefined;
   authorizationDisplay?: OAuthStepDisplay | undefined;
-  authorizationRequest?: OAuthAuthorizationRequestMapping | undefined;
-  additionalParamsByAuthScope?: OAuthAuthorizationParamsByAuthScope | undefined;
+  authorizationRequest?:
+    | OAuthAuthorizationRequestMapping
+    | undefined;
+  /**
+   * Binary-compatible storage for scoped values. The OAuth extension builder merges
+   * these into additionalParams in its JSON metadata response; field 10 stays unchanged.
+   */
+  scopedAdditionalParams?: { [key: string]: OAuthScopedParamValue } | undefined;
 }
 
 export interface OAuthProvider_AdditionalParamsEntry {
@@ -507,6 +513,11 @@ export interface OAuthProvider_AdditionalParamsEntry {
 export interface OAuthProvider_I18nMapEntry {
   key: string;
   value?: OAuthProviderLocalizedText | undefined;
+}
+
+export interface OAuthProvider_ScopedAdditionalParamsEntry {
+  key: string;
+  value?: OAuthScopedParamValue | undefined;
 }
 
 export interface OAuthGetAuthConfigInput {
@@ -2548,19 +2559,9 @@ export interface IssueExecuteIssueTransitionOutput {
  * Parameters selected by the platform's resolved credential target, not caller.type.
  * Values apply only to the authorization URL; channel and manager are the only targets.
  */
-export interface OAuthAuthorizationParamsByAuthScope {
-  channel?: { [key: string]: string } | undefined;
-  manager?: { [key: string]: string } | undefined;
-}
-
-export interface OAuthAuthorizationParamsByAuthScope_ChannelEntry {
-  key: string;
-  value: string;
-}
-
-export interface OAuthAuthorizationParamsByAuthScope_ManagerEntry {
-  key: string;
-  value: string;
+export interface OAuthScopedParamValue {
+  channel?: string | undefined;
+  manager?: string | undefined;
 }
 
 export interface OAuthAuthorizationRequestMapping {

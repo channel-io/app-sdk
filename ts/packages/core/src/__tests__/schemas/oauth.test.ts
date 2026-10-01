@@ -4,7 +4,7 @@ import {
   OAuthConfigSchema,
   OAuthProviderSchema,
   OAuthAuthorizationRequestMappingSchema,
-  OAuthAuthorizationParamsByAuthScopeSchema,
+  OAuthScopedParamValueSchema,
   type OAuthConfig,
 } from "../../extensions/index.js";
 
@@ -20,11 +20,7 @@ describe("oauth extension schema", () => {
         tokenUrl: "https://api.linear.app/oauth/token",
         scopes: ["read", "write"],
         providerName: "Linear",
-        additionalParams: { prompt: "consent" },
-        additionalParamsByAuthScope: {
-          channel: { actor: "app" },
-          manager: { actor: "user" },
-        },
+        additionalParams: { prompt: "consent", actor: { channel: "app", manager: "user" } },
         authorizationRequest: {
           clientIdParamName: "app_id",
           scopeDelimiter: ",",
@@ -36,23 +32,22 @@ describe("oauth extension schema", () => {
     expect(JSON.parse(JSON.stringify(OAuthConfigSchema.parse(config)))).toEqual(config);
   });
 
-  it.each([{}, { channel: { actor: "app" } }, { manager: { actor: "user" } }])(
+  it.each([{}, { channel: "app" }, { manager: "user" }])(
     "allows omitted scope maps without adding defaults: %j",
-    (additionalParamsByAuthScope) => {
-      expect(OAuthAuthorizationParamsByAuthScopeSchema.parse(additionalParamsByAuthScope)).toEqual(
-        additionalParamsByAuthScope
-      );
+    (scopedValue) => {
+      expect(OAuthScopedParamValueSchema.parse(scopedValue)).toEqual(scopedValue);
       expect(OAuthAuthorizationRequestMappingSchema.parse({})).toEqual({});
     }
   );
 
   it.each([
-    { additionalParamsByAuthScope: { caller: { actor: "app" } } },
-    { additionalParamsByAuthScope: { channel: { "bad key": "app" } } },
-    { additionalParamsByAuthScope: { channel: { actor: " " } } },
-    { additionalParamsByAuthScope: { channel: { actor: "app\r\n" } } },
-    { additionalParamsByAuthScope: { channel: { actor: "app\u0000" } } },
-    { additionalParamsByAuthScope: { channel: { actor: true } } },
+    { additionalParams: { actor: { caller: "app" } } },
+    { additionalParams: { actor: { channel: " " } } },
+    { additionalParams: { actor: { channel: "app\r\n" } } },
+    { additionalParams: { actor: { channel: "app\u0000" } } },
+    { additionalParams: { actor: { channel: true } } },
+    { additionalParams: { actor: null } },
+    { additionalParams: { actor: 123 } },
     { authorizationRequest: { codeChallengeMethod: "plain" } },
     { authorizationRequest: { scopeDelimiter: ";" } },
   ])("rejects invalid authorization metadata: %j", (mapping) => {

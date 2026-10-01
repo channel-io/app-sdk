@@ -21,18 +21,21 @@ describe("extension function schema parity fixture", () => {
       (entry) => entry.name === "extension.oauth.metadata.getAuthConfig"
     );
     const valueMap = z.object({
-      additionalProperties: z.object({
-        type: z.literal("string"),
-        allOf: z.array(z.object({ pattern: z.string() })).min(2),
-      }),
+      type: z.literal("string"),
+      allOf: z.array(z.object({ pattern: z.string() })).min(2),
     });
     const schema = z
       .object({
         properties: z.object({
           oauthProvider: z.object({
             properties: z.object({
-              additionalParamsByAuthScope: z.object({
-                properties: z.object({ channel: valueMap, manager: valueMap }),
+              additionalParams: z.object({
+                additionalProperties: z.object({
+                  anyOf: z.tuple([
+                    z.object({ type: z.literal("string") }),
+                    z.object({ properties: z.object({ channel: valueMap, manager: valueMap }) }),
+                  ]),
+                }),
               }),
             }),
           }),
@@ -40,11 +43,10 @@ describe("extension function schema parity fixture", () => {
       })
       .parse(JSON.parse(JSON.stringify(definition?.outputSchema)));
     const scopes =
-      schema.properties.oauthProvider.properties.additionalParamsByAuthScope.properties;
+      schema.properties.oauthProvider.properties.additionalParams.additionalProperties.anyOf[1]
+        .properties;
     for (const scope of ["channel", "manager"] as const) {
-      const patterns = scopes[scope].additionalProperties.allOf.map(
-        ({ pattern }) => new RegExp(pattern)
-      );
+      const patterns = scopes[scope].allOf.map(({ pattern }) => new RegExp(pattern));
       for (const value of ["app", "user", "a b", "앱"]) {
         expect(patterns.every((pattern) => pattern.test(value))).toBe(true);
       }
