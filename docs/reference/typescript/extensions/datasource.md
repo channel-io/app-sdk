@@ -64,7 +64,7 @@ export class DataSourceExtension {
           table: {
             name: "orders",
             localCatalogAlias: "warehouse",
-            managerAccess: "owner",
+            permissions: [{ action: "userChatRead", scope: "all" }],
           },
         },
       ],
@@ -118,11 +118,13 @@ export class DataSourceExtension {
 
 List `DataSourceExtension` in the NestJS module's `providers`. The lower-level `createStaticDataSourceExtension()` export builds an `ExtensionDefinition`; `ChannelAppModule` does not consume that definition directly.
 
-Set `managerAccess` to `"owner"` when only channel Owner-role managers may
-discover, describe, or query a table. Use `"all"`, or omit the field, to allow
-all channel managers. AppStore is the authorization authority; this metadata
-is used by AppStore's table and column authorization. The datasource gRPC runner
-does not re-parse SQL to maintain a second table allowlist.
+Declare `permissions` on each table with the manager permission `action`/`scope`
+pairs accepted by the table. Channel owners are always allowed; other managers
+are allowed when any declared pair matches. `managerAccess` is deprecated and
+remains only as a compatibility fallback when `permissions` is not declared.
+AppStore is the authorization authority; this metadata is used by AppStore's
+table and column authorization. The datasource gRPC runner does not re-parse SQL
+to maintain a second table allowlist.
 
 Samples are optional and must be bounded: at most 10 rows and 64 KiB, with keys
 that match the declared columns.

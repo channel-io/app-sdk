@@ -19,8 +19,10 @@ gRPC query service는 app Function이 아닙니다. Endpoint, authentication, st
 
 - CamelCase JSON field의 `ListCatalogsInput/Output`, `ListTablesInput/Output`,
   `DescribeTableInput/Output`을 사용합니다. Catalog alias와 table name은 stable identifier입니다.
-- `managerAccess: "owner"`는 discovery/query authorization을 channel owner로 제한합니다. `"all"`
-  또는 생략은 모든 channel manager를 허용합니다. Local query allowlist는 같거나 더 엄격해야 합니다.
+- 각 table의 `permissions`에 허용할 manager permission `action`/`scope` 조합을 선언합니다. Owner는
+  항상 허용되며, 그 외 manager는 선언된 조합 중 하나와 일치할 때 허용됩니다. Deprecated된
+  `managerAccess`는 `permissions`를 선언하지 않은 경우에만 호환성 fallback으로 사용됩니다. Local
+  query allowlist는 같거나 더 엄격해야 합니다.
 - Description sample은 선택이며 10 row와 64 KiB로 제한하고 key가 선언 column과 일치해야 합니다.
 - gRPC handler는 검증된 access-token identity를 받습니다. 하나의 endpoint가 여러 app을 제공하면
   identity의 app scope로 signing key와 route를 결정합니다.
