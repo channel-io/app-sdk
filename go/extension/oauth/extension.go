@@ -2,11 +2,14 @@ package oauth
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/channel-io/app-sdk/go/appsdk"
 	extensionkit "github.com/channel-io/app-sdk/go/extension"
 	"github.com/channel-io/app-sdk/go/extension/schemaregistry"
 	sdkv1 "github.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 const (
@@ -40,13 +43,18 @@ func Extension() *ExtensionBuilder {
 }
 
 func (b *ExtensionBuilder) GetAuthConfig(handler appsdk.TypedHandlerFunc[GetAuthConfigRequest, AuthConfig]) *ExtensionBuilder {
-	b.base.Func(FunctionGetAuthConfig, schemaregistry.Append(FunctionGetAuthConfig, appsdk.HandleProto(func(ctx context.Context, fnCtx appsdk.Context, input *GetAuthConfigRequest) (*AuthConfig, error) {
+	handlerOption := appsdk.HandleProtoInput(func(ctx context.Context, fnCtx appsdk.Context, input *GetAuthConfigRequest) (any, error) {
 		result, err := handler(ctx, fnCtx, input)
 		if err != nil {
 			return nil, err
 		}
-		return result, extensionkit.ValidateOAuthStepDisplay(result.GetOauthProvider().GetAuthorizationDisplay())
-	}))...)
+		if err := extensionkit.ValidateOAuthStepDisplay(result.GetOauthProvider().GetAuthorizationDisplay()); err != nil {
+			return nil, err
+		}
+		return marshalAuthConfig(result)
+	})
+	// Restore canonical input/output schemas after HandleProtoInput supplies its inferred input.
+	b.base.Func(FunctionGetAuthConfig, append([]appsdk.FunctionOption{handlerOption}, schemaregistry.FunctionOptions(FunctionGetAuthConfig)...)...)
 	return b
 }
 
@@ -86,6 +94,8 @@ func Invalid(message string) *CredentialValidationResult {
 type GetAuthConfigRequest = sdkv1.OAuthGetAuthConfigInput
 type AuthConfig = sdkv1.OAuthConfig
 type Provider = sdkv1.OAuthProvider
+type ScopedParamValue = sdkv1.OAuthScopedParamValue
+type AuthorizationRequestMapping = sdkv1.OAuthAuthorizationRequestMapping
 type ProviderLocalizedText = sdkv1.OAuthProviderLocalizedText
 type TokenRequestMapping = sdkv1.OAuthTokenRequestMapping
 type TokenResponseMapping = sdkv1.OAuthTokenResponseMapping
@@ -108,3 +118,52 @@ const (
 	OAuthStepIconPermission   = "permission"
 	OAuthStepIconSettings     = "settings"
 )
+
+// marshalAuthConfig projects the binary-compatible Proto representation to metadata JSON.
+// It never mutates the caller's config and rejects ambiguous common/scoped duplicates.
+func marshalAuthConfig(config *AuthConfig) (json.RawMessage, error) {
+	if config == nil {
+		return json.RawMessage(`{}`), nil
+	}
+	encoded, err := protojson.Marshal(config)
+	if err != nil {
+		return nil, err
+	}
+	if len(config.GetOauthProvider().GetScopedAdditionalParams()) == 0 {
+		return encoded, nil
+	}
+	var wire map[string]json.RawMessage
+	if err := json.Unmarshal(encoded, &wire); err != nil {
+		return nil, err
+	}
+	var provider map[string]json.RawMessage
+	if err := json.Unmarshal(wire["oauthProvider"], &provider); err != nil {
+		return nil, err
+	}
+	params := map[string]json.RawMessage{}
+	if raw := provider["additionalParams"]; len(raw) > 0 {
+		if err := json.Unmarshal(raw, &params); err != nil {
+			return nil, err
+		}
+	}
+	scoped := map[string]json.RawMessage{}
+	if err := json.Unmarshal(provider["scopedAdditionalParams"], &scoped); err != nil {
+		return nil, err
+	}
+	for name, value := range scoped {
+		if _, exists := params[name]; exists {
+			return nil, fmt.Errorf("OAuth parameter %q has both common and scoped values", name)
+		}
+		params[name] = value
+	}
+	delete(provider, "scopedAdditionalParams")
+	provider["additionalParams"], err = json.Marshal(params)
+	if err != nil {
+		return nil, err
+	}
+	wire["oauthProvider"], err = json.Marshal(provider)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(wire)
+}

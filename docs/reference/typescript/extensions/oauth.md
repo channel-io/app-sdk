@@ -136,6 +136,61 @@ Do not return provider `clientId` or `clientSecret` from `getAuthConfig`.
 AppStore stores client credentials separately through Desk OAuth credential
 APIs/UI.
 
+## Authorization request settings
+
+Use `oauthProvider.additionalParams` with the standard `OAuthConfigSchema`:
+
+```ts
+import type { OAuthProvider } from "@channel.io/app-sdk-core";
+
+const providerSettings = {
+  additionalParams: {
+    prompt: "consent",
+    actor: { channel: "app", manager: "user" },
+  },
+  authorizationRequest: { codeChallengeMethod: "S256" },
+} satisfies Pick<OAuthProvider, "additionalParams" | "authorizationRequest">;
+```
+
+`additionalParams` supplies extra provider values. Strings are common defaults;
+objects select the server-resolved credential target (`channel` or `manager`).
+`caller` is a credential policy, not an object key. An omitted target adds no value.
+`authorizationRequest` independently controls standard parameter generation:
+`clientIdParamName`, `scopeDelimiter`, and optional S256 PKCE.
+
+Precedence, highest first: generated standard OAuth/PKCE values, selected scoped
+metadata, static URL query, dynamic initiation params, common string defaults.
+Scoped names cannot replace reserved OAuth/token/secret or custom client ID keys;
+scoped values must be nonblank strings without CR, LF, or NUL. Legacy string maps
+remain accepted, with reserved keys ignored by the platform.
+These values affect authorization URLs only, never token/refresh requests.
+
+Deploy matching platform support before using objects and re-register metadata.
+The platform also fixes previously ignored metadata string defaults: existing
+unoccupied query keys will now receive these values after re-registration.
+Installing this SDK alone does not activate platform behavior. Existing string
+**declarations** remain valid; code that reads arbitrary values must narrow with
+`typeof value === "string"` because a value may now be a scope object.
+
+### Go and Protobuf compatibility
+
+Released Proto field 10 remains `map<string,string> additional_params`, preserving
+binary encoding and existing Go `AdditionalParams: map[string]string{...}` code.
+The additive field `ScopedAdditionalParams` carries typed `ScopedParamValue`
+objects. `oauth.Extension().GetAuthConfig(...)` projects both maps into the single
+JSON `additionalParams` object above; duplicate names are rejected. The config is
+not mutated. Raw `protojson.Marshal` is the binary DTO representation, not this
+metadata projection; use the OAuth extension builder when registering handlers.
+
+```go
+provider := &oauth.Provider{
+    AdditionalParams: map[string]string{"prompt": "consent"},
+    ScopedAdditionalParams: map[string]*oauth.ScopedParamValue{
+        "actor": {Channel: proto.String("app"), Manager: proto.String("user")},
+    },
+}
+```
+
 ## Runtime Native Functions
 
 Once the extension is registered, the manager experience depends on manager-scoped native functions that are now public defaults in AppStore:

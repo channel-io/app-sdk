@@ -3,9 +3,66 @@ import {
   CredentialValidationInputSchema,
   OAuthConfigSchema,
   OAuthProviderSchema,
+  OAuthAuthorizationRequestMappingSchema,
+  OAuthScopedParamValueSchema,
+  type OAuthConfig,
 } from "../../extensions/index.js";
 
 describe("oauth extension schema", () => {
+  it("preserves scope-specific authorization and PKCE through the public output schema", () => {
+    const config = {
+      authType: "oauth",
+      authScope: "caller",
+      allowChannelFallback: false,
+      oauthProvider: {
+        provider: "linear",
+        authorizationUrl: "https://linear.app/oauth/authorize?prompt=consent",
+        tokenUrl: "https://api.linear.app/oauth/token",
+        scopes: ["read", "write"],
+        providerName: "Linear",
+        additionalParams: { prompt: "consent", actor: { channel: "app", manager: "user" } },
+        authorizationRequest: {
+          clientIdParamName: "app_id",
+          scopeDelimiter: ",",
+          codeChallengeMethod: "S256",
+        },
+      },
+    } satisfies OAuthConfig;
+
+    expect(JSON.parse(JSON.stringify(OAuthConfigSchema.parse(config)))).toEqual(config);
+  });
+
+  it.each([{}, { channel: "app" }, { manager: "user" }])(
+    "allows omitted scope maps without adding defaults: %j",
+    (scopedValue) => {
+      expect(OAuthScopedParamValueSchema.parse(scopedValue)).toEqual(scopedValue);
+      expect(OAuthAuthorizationRequestMappingSchema.parse({})).toEqual({});
+    }
+  );
+
+  it.each([
+    { additionalParams: { actor: { caller: "app" } } },
+    { additionalParams: { actor: { channel: " " } } },
+    { additionalParams: { actor: { channel: "app\r\n" } } },
+    { additionalParams: { actor: { channel: "app\u0000" } } },
+    { additionalParams: { actor: { channel: true } } },
+    { additionalParams: { actor: null } },
+    { additionalParams: { actor: 123 } },
+    { authorizationRequest: { codeChallengeMethod: "plain" } },
+    { authorizationRequest: { scopeDelimiter: ";" } },
+  ])("rejects invalid authorization metadata: %j", (mapping) => {
+    expect(
+      OAuthProviderSchema.safeParse({
+        provider: "example",
+        providerName: "Example",
+        scopes: ["read"],
+        authorizationUrl: "https://example.com/authorize",
+        tokenUrl: "https://example.com/token",
+        ...mapping,
+      }).success
+    ).toBe(false);
+  });
+
   it.each([undefined, true, false])("preserves allowChannelFallback=%s", (value) => {
     const config = {
       authType: "oauth",

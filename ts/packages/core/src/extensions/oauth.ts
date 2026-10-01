@@ -7,6 +7,8 @@ import type {
   OAuthCredentialValidationInput as ProtoCredentialValidationInput,
   OAuthCredentialValidationResult as ProtoCredentialValidationResult,
   OAuthProvider as ProtoOAuthProvider,
+  OAuthScopedParamValue as ProtoScopedParamValue,
+  OAuthAuthorizationRequestMapping as ProtoAuthorizationRequestMapping,
   OAuthProviderLocalizedText as ProtoOAuthProviderLocalizedText,
   OAuthTokenRequestMapping as ProtoTokenRequestMapping,
   OAuthTokenResponseMapping as ProtoTokenResponseMapping,
@@ -127,6 +129,41 @@ export const OAuthProviderI18nMapSchema = z
   });
 export type OAuthProviderI18nMap = z.infer<typeof OAuthProviderI18nMapSchema>;
 
+const OAuthAuthorizationParamValueSchema = z
+  .string()
+  .regex(/\S/, "Authorization parameter values must not be blank")
+  .regex(
+    // eslint-disable-next-line no-control-regex -- NUL must also be excluded from the generated JSON Schema.
+    /^[^\r\n\x00]*$/,
+    "Authorization parameter values must not contain CR, LF, or NUL"
+  );
+
+/** Only concrete credential targets are valid; caller is a hydration policy. */
+export const OAuthScopedParamValueSchema = z
+  .object({
+    channel: OAuthAuthorizationParamValueSchema.optional(),
+    manager: OAuthAuthorizationParamValueSchema.optional(),
+  })
+  .strict();
+export type OAuthScopedParamValue = ProtoBacked<
+  z.infer<typeof OAuthScopedParamValueSchema>,
+  ProtoScopedParamValue
+>;
+
+/** Authorization URL settings. Requires matching platform support and re-registration. */
+export const OAuthAuthorizationRequestMappingSchema = z.object({
+  /** Defaults to client_id or clientId according to parameterCase. */
+  clientIdParamName: OAuthParamNameSchema.optional(),
+  /** Defaults to a space. */
+  scopeDelimiter: z.enum([" ", ","]).optional(),
+  /** Omit to disable PKCE. The platform generates the verifier and challenge. */
+  codeChallengeMethod: z.literal("S256").optional(),
+});
+export type OAuthAuthorizationRequestMapping = ProtoBacked<
+  z.infer<typeof OAuthAuthorizationRequestMappingSchema>,
+  ProtoAuthorizationRequestMapping
+>;
+
 /** Provider-specific field names used by the outbound token request. */
 export const OAuthTokenRequestMappingSchema = z.object({
   /** Defaults to `"code"` when omitted. */
@@ -173,7 +210,9 @@ export const OAuthProviderSchema = z.object({
   i18nMap: OAuthProviderI18nMapSchema.optional(),
   providerIconUrl: z.string().url().optional(),
   pkceRequired: z.boolean().optional(),
-  additionalParams: z.record(z.string()).optional(),
+  /** Strings are common defaults; objects select the resolved credential target. */
+  additionalParams: z.record(z.union([z.string(), OAuthScopedParamValueSchema])).optional(),
+  authorizationRequest: OAuthAuthorizationRequestMappingSchema.optional(),
   /**
    * OAuth standard parameter naming convention. Defaults to `"snake"` (RFC 6749).
    * Declare `"camel"` when the provider (e.g. Imweb) requires camelCase keys
@@ -205,7 +244,16 @@ export const OAuthProviderSchema = z.object({
   /** Token endpoint response JSON object paths. */
   tokenResponse: OAuthTokenResponseMappingSchema.optional(),
 });
-export type OAuthProvider = ProtoBacked<z.infer<typeof OAuthProviderSchema>, ProtoOAuthProvider>;
+// JSON metadata folds the additive Proto field into the existing additionalParams key.
+// Preserve Proto field 10 and Go map[string]string source/binary compatibility.
+export type OAuthProvider = ProtoBacked<
+  z.infer<typeof OAuthProviderSchema>,
+  Omit<ProtoOAuthProvider, "additionalParams" | "scopedAdditionalParams"> & {
+    additionalParams?:
+      | Record<string, string | NonNullable<ProtoOAuthProvider["scopedAdditionalParams"]>[string]>
+      | undefined;
+  }
+>;
 
 /**
  * Output schema for extension.oauth.metadata.getAuthConfig.
@@ -218,7 +266,10 @@ export const OAuthConfigSchema = z.object({
   allowChannelFallback: z.boolean().optional(),
 });
 
-export type OAuthConfig = ProtoBacked<z.infer<typeof OAuthConfigSchema>, ProtoOAuthConfig>;
+export type OAuthConfig = ProtoBacked<
+  z.infer<typeof OAuthConfigSchema>,
+  Omit<ProtoOAuthConfig, "oauthProvider"> & { oauthProvider?: OAuthProvider | undefined }
+>;
 
 /**
  * Input schema for extension.oauth.validation.validateCredentials.

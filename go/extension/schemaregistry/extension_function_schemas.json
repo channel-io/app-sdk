@@ -23419,8 +23419,61 @@
             "additionalParams": {
               "type": "object",
               "additionalProperties": {
-                "type": "string"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "channel": {
+                        "type": "string",
+                        "allOf": [
+                          {
+                            "pattern": "\\S"
+                          },
+                          {
+                            "pattern": "^[^\\r\\n\\x00]*$"
+                          }
+                        ]
+                      },
+                      "manager": {
+                        "type": "string",
+                        "allOf": [
+                          {
+                            "pattern": "\\S"
+                          },
+                          {
+                            "pattern": "^[^\\r\\n\\x00]*$"
+                          }
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
               }
+            },
+            "authorizationRequest": {
+              "type": "object",
+              "properties": {
+                "clientIdParamName": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_.-]+$"
+                },
+                "scopeDelimiter": {
+                  "type": "string",
+                  "enum": [
+                    " ",
+                    ","
+                  ]
+                },
+                "codeChallengeMethod": {
+                  "type": "string",
+                  "const": "S256"
+                }
+              },
+              "additionalProperties": false
             },
             "parameterCase": {
               "type": "string",

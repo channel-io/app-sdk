@@ -495,6 +495,14 @@ export interface OAuthProvider {
   tokenResponse?: OAuthTokenResponseMapping | undefined;
   i18nMap?: { [key: string]: OAuthProviderLocalizedText } | undefined;
   authorizationDisplay?: OAuthStepDisplay | undefined;
+  authorizationRequest?:
+    | OAuthAuthorizationRequestMapping
+    | undefined;
+  /**
+   * Binary-compatible storage for scoped values. The OAuth extension builder merges
+   * these into additionalParams in its JSON metadata response; field 10 stays unchanged.
+   */
+  scopedAdditionalParams?: { [key: string]: OAuthScopedParamValue } | undefined;
 }
 
 export interface OAuthProvider_AdditionalParamsEntry {
@@ -505,6 +513,11 @@ export interface OAuthProvider_AdditionalParamsEntry {
 export interface OAuthProvider_I18nMapEntry {
   key: string;
   value?: OAuthProviderLocalizedText | undefined;
+}
+
+export interface OAuthProvider_ScopedAdditionalParamsEntry {
+  key: string;
+  value?: OAuthScopedParamValue | undefined;
 }
 
 export interface OAuthGetAuthConfigInput {
@@ -2540,4 +2553,22 @@ export interface IssueExecuteIssueTransitionInput {
 
 export interface IssueExecuteIssueTransitionOutput {
   issue?: ExternalIssue | undefined;
+}
+
+/**
+ * Parameters selected by the platform's resolved credential target, not caller.type.
+ * Values apply only to the authorization URL; channel and manager are the only targets.
+ */
+export interface OAuthScopedParamValue {
+  channel?: string | undefined;
+  manager?: string | undefined;
+}
+
+export interface OAuthAuthorizationRequestMapping {
+  clientIdParamName?: string | undefined;
+  scopeDelimiter?:
+    | string
+    | undefined;
+  /** Omit to disable PKCE. Only S256 is supported. */
+  codeChallengeMethod?: string | undefined;
 }
