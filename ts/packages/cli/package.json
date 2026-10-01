@@ -40,7 +40,7 @@
   "devDependencies": {
     "@types/prompts": "^2.4.9",
     "typescript": "^5.7.2",
-    "vitest": "^3.2.7"
+    "vitest": "^4.1.11"
   },
   "repository": {
     "type": "git",
