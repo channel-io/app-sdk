@@ -422,6 +422,7 @@ message OAuthProvider {
   OAuthTokenResponseMapping token_response = 16;
   map<string, OAuthProviderLocalizedText> i18n_map = 17;
   OAuthStepDisplay authorization_display = 18;
+  OAuthAuthorizationRequestMapping authorization_request = 19;
 }
 
 message OAuthGetAuthConfigInput {}
@@ -2174,4 +2175,19 @@ message IssueExecuteIssueTransitionInput {
 }
 message IssueExecuteIssueTransitionOutput {
   ExternalIssue issue = 1;
+}
+
+// Parameters selected by the platform's resolved credential target, not caller.type.
+// Values apply only to the authorization URL; channel and manager are the only targets.
+message OAuthAuthorizationParamsByAuthScope {
+  map<string, string> channel = 1;
+  map<string, string> manager = 2;
+}
+
+message OAuthAuthorizationRequestMapping {
+  optional string client_id_param_name = 1;
+  optional string scope_delimiter = 2;
+  // Omit to disable PKCE. Only S256 is supported.
+  optional string code_challenge_method = 3;
+  OAuthAuthorizationParamsByAuthScope additional_params_by_auth_scope = 4;
 }

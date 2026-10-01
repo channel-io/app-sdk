@@ -23422,6 +23422,51 @@
                 "type": "string"
               }
             },
+            "authorizationRequest": {
+              "type": "object",
+              "properties": {
+                "clientIdParamName": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_.-]+$"
+                },
+                "scopeDelimiter": {
+                  "type": "string",
+                  "enum": [
+                    " ",
+                    ","
+                  ]
+                },
+                "codeChallengeMethod": {
+                  "type": "string",
+                  "const": "S256"
+                },
+                "additionalParamsByAuthScope": {
+                  "type": "object",
+                  "properties": {
+                    "channel": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "propertyNames": {
+                        "pattern": "^[A-Za-z0-9_.-]+$"
+                      }
+                    },
+                    "manager": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "propertyNames": {
+                        "pattern": "^[A-Za-z0-9_.-]+$"
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
             "parameterCase": {
               "type": "string",
               "enum": [

@@ -36,3 +36,42 @@ func TestAuthConfigPreservesChannelFallbackPresence(t *testing.T) {
 		})
 	}
 }
+
+func TestAuthConfigPreservesScopeAuthorizationParams(t *testing.T) {
+	config := &AuthConfig{
+		AuthType:  AuthTypeOAuth,
+		AuthScope: ScopeCaller,
+		OauthProvider: &Provider{
+			AuthorizationRequest: &AuthorizationRequestMapping{
+				CodeChallengeMethod: proto.String("S256"),
+				AdditionalParamsByAuthScope: &AuthorizationParamsByAuthScope{
+					Channel: map[string]string{"actor": "app"},
+					Manager: map[string]string{"actor": "user"},
+				},
+			},
+		},
+	}
+	encoded, err := protojson.Marshal(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var wire struct {
+		Provider struct {
+			Request struct {
+				Method string                       `json:"codeChallengeMethod"`
+				Params map[string]map[string]string `json:"additionalParamsByAuthScope"`
+			} `json:"authorizationRequest"`
+		} `json:"oauthProvider"`
+	}
+	if err := json.Unmarshal(encoded, &wire); err != nil {
+		t.Fatal(err)
+	}
+	request := wire.Provider.Request
+	if request.Method != "S256" || request.Params["channel"]["actor"] != "app" || request.Params["manager"]["actor"] != "user" {
+		t.Fatalf("unexpected authorization request JSON: %s", encoded)
+	}
+	var decoded AuthConfig
+	if err := protojson.Unmarshal(encoded, &decoded); err != nil || !proto.Equal(config, &decoded) {
+		t.Fatalf("authorization request round trip failed: %v", err)
+	}
+}

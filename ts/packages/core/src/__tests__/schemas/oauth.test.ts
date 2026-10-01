@@ -3,9 +3,59 @@ import {
   CredentialValidationInputSchema,
   OAuthConfigSchema,
   OAuthProviderSchema,
+  OAuthAuthorizationRequestMappingSchema,
+  type OAuthConfig,
 } from "../../extensions/index.js";
 
 describe("oauth extension schema", () => {
+  it("preserves scope-specific authorization and PKCE through the public output schema", () => {
+    const config = {
+      authType: "oauth",
+      authScope: "caller",
+      allowChannelFallback: false,
+      oauthProvider: {
+        provider: "linear",
+        authorizationUrl: "https://linear.app/oauth/authorize?prompt=consent",
+        tokenUrl: "https://api.linear.app/oauth/token",
+        scopes: ["read", "write"],
+        providerName: "Linear",
+        authorizationRequest: {
+          clientIdParamName: "app_id",
+          scopeDelimiter: ",",
+          codeChallengeMethod: "S256",
+          additionalParamsByAuthScope: {
+            channel: { actor: "app" },
+            manager: { actor: "user" },
+          },
+        },
+      },
+    } satisfies OAuthConfig;
+
+    expect(JSON.parse(JSON.stringify(OAuthConfigSchema.parse(config)))).toEqual(config);
+  });
+
+  it.each([{}, { channel: { actor: "app" } }, { manager: { actor: "user" } }])(
+    "allows omitted scope maps without adding defaults: %j",
+    (additionalParamsByAuthScope) => {
+      const mapping = { additionalParamsByAuthScope };
+      expect(OAuthAuthorizationRequestMappingSchema.parse(mapping)).toEqual(mapping);
+      expect(OAuthAuthorizationRequestMappingSchema.parse({})).toEqual({});
+    }
+  );
+
+  it.each([
+    { additionalParamsByAuthScope: { caller: { actor: "app" } } },
+    { additionalParamsByAuthScope: { channel: { "bad key": "app" } } },
+    { additionalParamsByAuthScope: { channel: { actor: " " } } },
+    { additionalParamsByAuthScope: { channel: { actor: "app\r\n" } } },
+    { additionalParamsByAuthScope: { channel: { actor: "app\u0000" } } },
+    { additionalParamsByAuthScope: { channel: { actor: true } } },
+    { codeChallengeMethod: "plain" },
+    { scopeDelimiter: ";" },
+  ])("rejects invalid authorization metadata: %j", (mapping) => {
+    expect(OAuthAuthorizationRequestMappingSchema.safeParse(mapping).success).toBe(false);
+  });
+
   it.each([undefined, true, false])("preserves allowChannelFallback=%s", (value) => {
     const config = {
       authType: "oauth",

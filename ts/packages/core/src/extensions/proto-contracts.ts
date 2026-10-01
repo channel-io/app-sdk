@@ -129,6 +129,8 @@ import type {
   OAuthCredentialValidationInput as ProtoOAuthCredentialValidationInput,
   OAuthCredentialValidationResult as ProtoOAuthCredentialValidationResult,
   OAuthProvider as ProtoOAuthProvider,
+  OAuthAuthorizationParamsByAuthScope as ProtoOAuthAuthorizationParamsByAuthScope,
+  OAuthAuthorizationRequestMapping as ProtoOAuthAuthorizationRequestMapping,
   Order as ProtoOrder,
   OrderAddress as ProtoOrderAddress,
   OrderAppCapabilities as ProtoOrderAppCapabilities,
@@ -798,6 +800,18 @@ export type ExtensionProtoSchemaContracts = [
   >,
 
   Expect<SchemaOutputExtendsProto<typeof OAuthSchemas.OAuthProviderSchema, ProtoOAuthProvider>>,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof OAuthSchemas.OAuthAuthorizationParamsByAuthScopeSchema,
+      ProtoOAuthAuthorizationParamsByAuthScope
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof OAuthSchemas.OAuthAuthorizationRequestMappingSchema,
+      ProtoOAuthAuthorizationRequestMapping
+    >
+  >,
   Expect<SchemaOutputExtendsProto<typeof OAuthSchemas.OAuthConfigSchema, ProtoOAuthConfig>>,
   Expect<
     SchemaOutputExtendsProto<

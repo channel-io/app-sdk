@@ -86,6 +86,8 @@ func Invalid(message string) *CredentialValidationResult {
 type GetAuthConfigRequest = sdkv1.OAuthGetAuthConfigInput
 type AuthConfig = sdkv1.OAuthConfig
 type Provider = sdkv1.OAuthProvider
+type AuthorizationParamsByAuthScope = sdkv1.OAuthAuthorizationParamsByAuthScope
+type AuthorizationRequestMapping = sdkv1.OAuthAuthorizationRequestMapping
 type ProviderLocalizedText = sdkv1.OAuthProviderLocalizedText
 type TokenRequestMapping = sdkv1.OAuthTokenRequestMapping
 type TokenResponseMapping = sdkv1.OAuthTokenResponseMapping

@@ -151,6 +151,8 @@ import {
   OAuthConfigSchema,
   OAuthProviderLocalizedTextSchema,
   OAuthProviderSchema,
+  OAuthAuthorizationParamsByAuthScopeSchema,
+  OAuthAuthorizationRequestMappingSchema,
   OAuthTokenRequestMappingSchema,
   OAuthTokenResponseMappingSchema,
   OnMediumMessageCreatedInputSchema,
@@ -395,6 +397,18 @@ const contracts: Contract[] = [
     "OAuthProviderLocalizedText"
   ),
   contract("OAuthProvider", OAuthProviderSchema, "extension", "OAuthProvider"),
+  contract(
+    "OAuthAuthorizationParamsByAuthScope",
+    OAuthAuthorizationParamsByAuthScopeSchema,
+    "extension",
+    "OAuthAuthorizationParamsByAuthScope"
+  ),
+  contract(
+    "OAuthAuthorizationRequestMapping",
+    OAuthAuthorizationRequestMappingSchema,
+    "extension",
+    "OAuthAuthorizationRequestMapping"
+  ),
   contract(
     "OAuthTokenRequestMapping",
     OAuthTokenRequestMappingSchema,

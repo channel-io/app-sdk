@@ -136,6 +136,48 @@ Do not return provider `clientId` or `clientSecret` from `getAuthConfig`.
 AppStore stores client credentials separately through Desk OAuth credential
 APIs/UI.
 
+## Authorization request settings
+
+Use `oauthProvider.authorizationRequest` with the standard `OAuthConfigSchema`;
+no app-local schema extension is needed:
+
+```ts
+import type { OAuthAuthorizationRequestMapping } from "@channel.io/app-sdk-core";
+
+const authorizationRequest = {
+  codeChallengeMethod: "S256",
+  additionalParamsByAuthScope: {
+    channel: { actor: "app" },
+    manager: { actor: "user" },
+  },
+} satisfies OAuthAuthorizationRequestMapping;
+```
+
+The platform selects `channel` or `manager` from the resolved credential target.
+It does not select from the metadata function's caller; `caller` is not a valid
+map key. Both scope maps are optional. Omitting a map adds no parameters for that
+target. Selected values override the same keys in the static authorization URL
+or dynamic connection request, and are not copied to token or refresh requests.
+
+Parameter names allow letters, digits, underscore, dot, and hyphen. Values must
+be nonblank strings without CR, LF, or NUL. Platform registration rejects OAuth
+standard parameters, PKCE parameters, credential/token parameters, and the
+configured client ID parameter in these maps. Do not store secrets in them.
+
+`clientIdParamName` can override the authorization query's client ID field name;
+otherwise `parameterCase` determines it. `scopeDelimiter` accepts a space
+(default) or comma. `codeChallengeMethod: "S256"` enables platform-generated
+PKCE; omit it to leave PKCE disabled.
+
+Deploy matching platform support before using these fields, then re-register
+the OAuth metadata. Installing this SDK alone does not add platform behavior.
+This change does not repair the legacy `oauthProvider.additionalParams` field's
+platform handling. For constant query parameters such as `prompt=consent`, keep
+them in `authorizationUrl` until the platform supports that legacy field.
+
+Go apps use `oauth.AuthorizationRequestMapping` and
+`oauth.AuthorizationParamsByAuthScope` for the same JSON contract.
+
 ## Runtime Native Functions
 
 Once the extension is registered, the manager experience depends on manager-scoped native functions that are now public defaults in AppStore:

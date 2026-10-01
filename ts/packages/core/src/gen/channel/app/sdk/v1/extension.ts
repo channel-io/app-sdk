@@ -495,6 +495,7 @@ export interface OAuthProvider {
   tokenResponse?: OAuthTokenResponseMapping | undefined;
   i18nMap?: { [key: string]: OAuthProviderLocalizedText } | undefined;
   authorizationDisplay?: OAuthStepDisplay | undefined;
+  authorizationRequest?: OAuthAuthorizationRequestMapping | undefined;
 }
 
 export interface OAuthProvider_AdditionalParamsEntry {
@@ -2540,4 +2541,33 @@ export interface IssueExecuteIssueTransitionInput {
 
 export interface IssueExecuteIssueTransitionOutput {
   issue?: ExternalIssue | undefined;
+}
+
+/**
+ * Parameters selected by the platform's resolved credential target, not caller.type.
+ * Values apply only to the authorization URL; channel and manager are the only targets.
+ */
+export interface OAuthAuthorizationParamsByAuthScope {
+  channel?: { [key: string]: string } | undefined;
+  manager?: { [key: string]: string } | undefined;
+}
+
+export interface OAuthAuthorizationParamsByAuthScope_ChannelEntry {
+  key: string;
+  value: string;
+}
+
+export interface OAuthAuthorizationParamsByAuthScope_ManagerEntry {
+  key: string;
+  value: string;
+}
+
+export interface OAuthAuthorizationRequestMapping {
+  clientIdParamName?: string | undefined;
+  scopeDelimiter?:
+    | string
+    | undefined;
+  /** Omit to disable PKCE. Only S256 is supported. */
+  codeChallengeMethod?: string | undefined;
+  additionalParamsByAuthScope?: OAuthAuthorizationParamsByAuthScope | undefined;
 }

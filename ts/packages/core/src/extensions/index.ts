@@ -3,6 +3,10 @@
 export {
   OAuthConfigSchema,
   OAuthProviderSchema,
+  OAuthAuthorizationParamsByAuthScopeSchema,
+  OAuthAuthorizationRequestMappingSchema,
+  type OAuthAuthorizationParamsByAuthScope,
+  type OAuthAuthorizationRequestMapping,
   OAuthAuthScopeSchema,
   OAuthProviderSupportedLocaleSchema,
   OAuthProviderLocalizedTextSchema,

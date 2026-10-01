@@ -7,6 +7,8 @@ import type {
   OAuthCredentialValidationInput as ProtoCredentialValidationInput,
   OAuthCredentialValidationResult as ProtoCredentialValidationResult,
   OAuthProvider as ProtoOAuthProvider,
+  OAuthAuthorizationParamsByAuthScope as ProtoAuthorizationParamsByAuthScope,
+  OAuthAuthorizationRequestMapping as ProtoAuthorizationRequestMapping,
   OAuthProviderLocalizedText as ProtoOAuthProviderLocalizedText,
   OAuthTokenRequestMapping as ProtoTokenRequestMapping,
   OAuthTokenResponseMapping as ProtoTokenResponseMapping,
@@ -127,6 +129,42 @@ export const OAuthProviderI18nMapSchema = z
   });
 export type OAuthProviderI18nMap = z.infer<typeof OAuthProviderI18nMapSchema>;
 
+const OAuthAuthorizationParamValueSchema = z
+  .string()
+  .refine((value) => value.trim().length > 0, "Authorization parameter values must not be blank")
+  .refine(
+    (value) => !["\r", "\n", "\0"].some((delimiter) => value.includes(delimiter)),
+    "Authorization parameter values must not contain CR, LF, or NUL"
+  );
+
+/** Only concrete credential targets are valid; caller is a hydration policy. */
+export const OAuthAuthorizationParamsByAuthScopeSchema = z
+  .object({
+    channel: z.record(OAuthParamNameSchema, OAuthAuthorizationParamValueSchema).optional(),
+    manager: z.record(OAuthParamNameSchema, OAuthAuthorizationParamValueSchema).optional(),
+  })
+  .strict();
+export type OAuthAuthorizationParamsByAuthScope = ProtoBacked<
+  z.infer<typeof OAuthAuthorizationParamsByAuthScopeSchema>,
+  ProtoAuthorizationParamsByAuthScope
+>;
+
+/** Authorization URL settings. Requires matching platform support and re-registration. */
+export const OAuthAuthorizationRequestMappingSchema = z.object({
+  /** Defaults to client_id or clientId according to parameterCase. */
+  clientIdParamName: OAuthParamNameSchema.optional(),
+  /** Defaults to a space. */
+  scopeDelimiter: z.enum([" ", ","]).optional(),
+  /** Omit to disable PKCE. The platform generates the verifier and challenge. */
+  codeChallengeMethod: z.literal("S256").optional(),
+  /** Selected values override static URL and dynamic request params, but never OAuth reserved params. */
+  additionalParamsByAuthScope: OAuthAuthorizationParamsByAuthScopeSchema.optional(),
+});
+export type OAuthAuthorizationRequestMapping = ProtoBacked<
+  z.infer<typeof OAuthAuthorizationRequestMappingSchema>,
+  ProtoAuthorizationRequestMapping
+>;
+
 /** Provider-specific field names used by the outbound token request. */
 export const OAuthTokenRequestMappingSchema = z.object({
   /** Defaults to `"code"` when omitted. */
@@ -174,6 +212,7 @@ export const OAuthProviderSchema = z.object({
   providerIconUrl: z.string().url().optional(),
   pkceRequired: z.boolean().optional(),
   additionalParams: z.record(z.string()).optional(),
+  authorizationRequest: OAuthAuthorizationRequestMappingSchema.optional(),
   /**
    * OAuth standard parameter naming convention. Defaults to `"snake"` (RFC 6749).
    * Declare `"camel"` when the provider (e.g. Imweb) requires camelCase keys
