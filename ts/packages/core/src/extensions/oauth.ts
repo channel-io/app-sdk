@@ -157,8 +157,6 @@ export const OAuthAuthorizationRequestMappingSchema = z.object({
   scopeDelimiter: z.enum([" ", ","]).optional(),
   /** Omit to disable PKCE. The platform generates the verifier and challenge. */
   codeChallengeMethod: z.literal("S256").optional(),
-  /** Selected values override static URL and dynamic request params, but never OAuth reserved params. */
-  additionalParamsByAuthScope: OAuthAuthorizationParamsByAuthScopeSchema.optional(),
 });
 export type OAuthAuthorizationRequestMapping = ProtoBacked<
   z.infer<typeof OAuthAuthorizationRequestMappingSchema>,
@@ -212,6 +210,8 @@ export const OAuthProviderSchema = z.object({
   providerIconUrl: z.string().url().optional(),
   pkceRequired: z.boolean().optional(),
   additionalParams: z.record(z.string()).optional(),
+  /** Selected values override static URL and dynamic request params, but never OAuth reserved params. */
+  additionalParamsByAuthScope: OAuthAuthorizationParamsByAuthScopeSchema.optional(),
   authorizationRequest: OAuthAuthorizationRequestMappingSchema.optional(),
   /**
    * OAuth standard parameter naming convention. Defaults to `"snake"` (RFC 6749).

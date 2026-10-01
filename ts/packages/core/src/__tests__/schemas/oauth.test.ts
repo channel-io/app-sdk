@@ -4,6 +4,7 @@ import {
   OAuthConfigSchema,
   OAuthProviderSchema,
   OAuthAuthorizationRequestMappingSchema,
+  OAuthAuthorizationParamsByAuthScopeSchema,
   type OAuthConfig,
 } from "../../extensions/index.js";
 
@@ -19,14 +20,15 @@ describe("oauth extension schema", () => {
         tokenUrl: "https://api.linear.app/oauth/token",
         scopes: ["read", "write"],
         providerName: "Linear",
+        additionalParams: { prompt: "consent" },
+        additionalParamsByAuthScope: {
+          channel: { actor: "app" },
+          manager: { actor: "user" },
+        },
         authorizationRequest: {
           clientIdParamName: "app_id",
           scopeDelimiter: ",",
           codeChallengeMethod: "S256",
-          additionalParamsByAuthScope: {
-            channel: { actor: "app" },
-            manager: { actor: "user" },
-          },
         },
       },
     } satisfies OAuthConfig;
@@ -37,8 +39,9 @@ describe("oauth extension schema", () => {
   it.each([{}, { channel: { actor: "app" } }, { manager: { actor: "user" } }])(
     "allows omitted scope maps without adding defaults: %j",
     (additionalParamsByAuthScope) => {
-      const mapping = { additionalParamsByAuthScope };
-      expect(OAuthAuthorizationRequestMappingSchema.parse(mapping)).toEqual(mapping);
+      expect(OAuthAuthorizationParamsByAuthScopeSchema.parse(additionalParamsByAuthScope)).toEqual(
+        additionalParamsByAuthScope
+      );
       expect(OAuthAuthorizationRequestMappingSchema.parse({})).toEqual({});
     }
   );
@@ -50,10 +53,19 @@ describe("oauth extension schema", () => {
     { additionalParamsByAuthScope: { channel: { actor: "app\r\n" } } },
     { additionalParamsByAuthScope: { channel: { actor: "app\u0000" } } },
     { additionalParamsByAuthScope: { channel: { actor: true } } },
-    { codeChallengeMethod: "plain" },
-    { scopeDelimiter: ";" },
+    { authorizationRequest: { codeChallengeMethod: "plain" } },
+    { authorizationRequest: { scopeDelimiter: ";" } },
   ])("rejects invalid authorization metadata: %j", (mapping) => {
-    expect(OAuthAuthorizationRequestMappingSchema.safeParse(mapping).success).toBe(false);
+    expect(
+      OAuthProviderSchema.safeParse({
+        provider: "example",
+        providerName: "Example",
+        scopes: ["read"],
+        authorizationUrl: "https://example.com/authorize",
+        tokenUrl: "https://example.com/token",
+        ...mapping,
+      }).success
+    ).toBe(false);
   });
 
   it.each([undefined, true, false])("preserves allowChannelFallback=%s", (value) => {

@@ -44,10 +44,10 @@ func TestAuthConfigPreservesScopeAuthorizationParams(t *testing.T) {
 		OauthProvider: &Provider{
 			AuthorizationRequest: &AuthorizationRequestMapping{
 				CodeChallengeMethod: proto.String("S256"),
-				AdditionalParamsByAuthScope: &AuthorizationParamsByAuthScope{
-					Channel: map[string]string{"actor": "app"},
-					Manager: map[string]string{"actor": "user"},
-				},
+			},
+			AdditionalParamsByAuthScope: &AuthorizationParamsByAuthScope{
+				Channel: map[string]string{"actor": "app"},
+				Manager: map[string]string{"actor": "user"},
 			},
 		},
 	}
@@ -58,16 +58,16 @@ func TestAuthConfigPreservesScopeAuthorizationParams(t *testing.T) {
 	var wire struct {
 		Provider struct {
 			Request struct {
-				Method string                       `json:"codeChallengeMethod"`
-				Params map[string]map[string]string `json:"additionalParamsByAuthScope"`
+				Method string `json:"codeChallengeMethod"`
 			} `json:"authorizationRequest"`
+			Params map[string]map[string]string `json:"additionalParamsByAuthScope"`
 		} `json:"oauthProvider"`
 	}
 	if err := json.Unmarshal(encoded, &wire); err != nil {
 		t.Fatal(err)
 	}
 	request := wire.Provider.Request
-	if request.Method != "S256" || request.Params["channel"]["actor"] != "app" || request.Params["manager"]["actor"] != "user" {
+	if request.Method != "S256" || wire.Provider.Params["channel"]["actor"] != "app" || wire.Provider.Params["manager"]["actor"] != "user" {
 		t.Fatalf("unexpected authorization request JSON: %s", encoded)
 	}
 	var decoded AuthConfig

@@ -2,4 +2,4 @@
 "@channel.io/app-sdk-core": patch
 ---
 
-Preserve OAuth provider authorizationRequest metadata in the public schemas and generated contracts, including S256 PKCE, authorization query formatting, and additionalParamsByAuthScope for channel and manager credential targets. Apps can use the standard OAuthConfigSchema without a local schema extension. Requires corresponding platform support and OAuth metadata re-registration; this does not change handling of the legacy oauthProvider.additionalParams field.
+Preserve OAuth provider metadata with the standard OAuthConfigSchema: add optional oauthProvider.additionalParamsByAuthScope for channel/manager query values and authorizationRequest for standard parameter formatting and S256 PKCE. Keep the existing additionalParams string map unchanged. Requires matching platform support and metadata re-registration; does not change the platform handling of legacy additionalParams.

@@ -138,20 +138,25 @@ APIs/UI.
 
 ## Authorization request settings
 
-Use `oauthProvider.authorizationRequest` with the standard `OAuthConfigSchema`;
+Use `oauthProvider.additionalParamsByAuthScope` and `authorizationRequest` with the standard `OAuthConfigSchema`;
 no app-local schema extension is needed:
 
 ```ts
-import type { OAuthAuthorizationRequestMapping } from "@channel.io/app-sdk-core";
+import type { OAuthProvider } from "@channel.io/app-sdk-core";
 
-const authorizationRequest = {
-  codeChallengeMethod: "S256",
+const providerSettings = {
+  authorizationRequest: { codeChallengeMethod: "S256" },
   additionalParamsByAuthScope: {
     channel: { actor: "app" },
     manager: { actor: "user" },
   },
-} satisfies OAuthAuthorizationRequestMapping;
+} satisfies Pick<OAuthProvider, "authorizationRequest" | "additionalParamsByAuthScope">;
 ```
+
+`authorizationRequest` configures how standard OAuth parameters are generated;
+`additionalParamsByAuthScope` declares extra provider query values. They are
+siblings under `oauthProvider`. The existing `additionalParams` string map keeps
+its location and type; no existing app must move or rewrite it.
 
 The platform selects `channel` or `manager` from the resolved credential target.
 It does not select from the metadata function's caller; `caller` is not a valid

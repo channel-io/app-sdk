@@ -423,6 +423,7 @@ message OAuthProvider {
   map<string, OAuthProviderLocalizedText> i18n_map = 17;
   OAuthStepDisplay authorization_display = 18;
   OAuthAuthorizationRequestMapping authorization_request = 19;
+  OAuthAuthorizationParamsByAuthScope additional_params_by_auth_scope = 20;
 }
 
 message OAuthGetAuthConfigInput {}
@@ -2189,5 +2190,4 @@ message OAuthAuthorizationRequestMapping {
   optional string scope_delimiter = 2;
   // Omit to disable PKCE. Only S256 is supported.
   optional string code_challenge_method = 3;
-  OAuthAuthorizationParamsByAuthScope additional_params_by_auth_scope = 4;
 }

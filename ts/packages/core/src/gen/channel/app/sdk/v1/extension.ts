@@ -496,6 +496,7 @@ export interface OAuthProvider {
   i18nMap?: { [key: string]: OAuthProviderLocalizedText } | undefined;
   authorizationDisplay?: OAuthStepDisplay | undefined;
   authorizationRequest?: OAuthAuthorizationRequestMapping | undefined;
+  additionalParamsByAuthScope?: OAuthAuthorizationParamsByAuthScope | undefined;
 }
 
 export interface OAuthProvider_AdditionalParamsEntry {
@@ -2569,5 +2570,4 @@ export interface OAuthAuthorizationRequestMapping {
     | undefined;
   /** Omit to disable PKCE. Only S256 is supported. */
   codeChallengeMethod?: string | undefined;
-  additionalParamsByAuthScope?: OAuthAuthorizationParamsByAuthScope | undefined;
 }

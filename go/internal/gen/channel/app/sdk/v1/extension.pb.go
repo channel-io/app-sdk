@@ -3646,28 +3646,29 @@ func (x *OAuthFlowStep) GetDetail() string {
 }
 
 type OAuthProvider struct {
-	state                      protoimpl.MessageState                 `protogen:"open.v1"`
-	Provider                   string                                 `protobuf:"bytes,1,opt,name=provider,proto3" json:"provider,omitempty"`
-	AuthorizationUrl           string                                 `protobuf:"bytes,2,opt,name=authorization_url,json=authorizationUrl,proto3" json:"authorization_url,omitempty"`
-	TokenUrl                   string                                 `protobuf:"bytes,3,opt,name=token_url,json=tokenUrl,proto3" json:"token_url,omitempty"`
-	RefreshTokenUrl            string                                 `protobuf:"bytes,4,opt,name=refresh_token_url,json=refreshTokenUrl,proto3" json:"refresh_token_url,omitempty"`
-	Scopes                     []string                               `protobuf:"bytes,5,rep,name=scopes,proto3" json:"scopes,omitempty"`
-	ProviderName               string                                 `protobuf:"bytes,6,opt,name=provider_name,json=providerName,proto3" json:"provider_name,omitempty"`
-	ProviderDescription        string                                 `protobuf:"bytes,7,opt,name=provider_description,json=providerDescription,proto3" json:"provider_description,omitempty"`
-	ProviderIconUrl            string                                 `protobuf:"bytes,8,opt,name=provider_icon_url,json=providerIconUrl,proto3" json:"provider_icon_url,omitempty"`
-	PkceRequired               bool                                   `protobuf:"varint,9,opt,name=pkce_required,json=pkceRequired,proto3" json:"pkce_required,omitempty"`
-	AdditionalParams           map[string]string                      `protobuf:"bytes,10,rep,name=additional_params,json=additionalParams,proto3" json:"additional_params,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	ParameterCase              string                                 `protobuf:"bytes,11,opt,name=parameter_case,json=parameterCase,proto3" json:"parameter_case,omitempty"`
-	TokenRequestContentType    string                                 `protobuf:"bytes,12,opt,name=token_request_content_type,json=tokenRequestContentType,proto3" json:"token_request_content_type,omitempty"`
-	AuthorizationCodeParamName string                                 `protobuf:"bytes,13,opt,name=authorization_code_param_name,json=authorizationCodeParamName,proto3" json:"authorization_code_param_name,omitempty"`
-	AuthorizationOpenMode      string                                 `protobuf:"bytes,14,opt,name=authorization_open_mode,json=authorizationOpenMode,proto3" json:"authorization_open_mode,omitempty"`
-	TokenRequest               *OAuthTokenRequestMapping              `protobuf:"bytes,15,opt,name=token_request,json=tokenRequest,proto3" json:"token_request,omitempty"`
-	TokenResponse              *OAuthTokenResponseMapping             `protobuf:"bytes,16,opt,name=token_response,json=tokenResponse,proto3" json:"token_response,omitempty"`
-	I18NMap                    map[string]*OAuthProviderLocalizedText `protobuf:"bytes,17,rep,name=i18n_map,json=i18nMap,proto3" json:"i18n_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	AuthorizationDisplay       *OAuthStepDisplay                      `protobuf:"bytes,18,opt,name=authorization_display,json=authorizationDisplay,proto3" json:"authorization_display,omitempty"`
-	AuthorizationRequest       *OAuthAuthorizationRequestMapping      `protobuf:"bytes,19,opt,name=authorization_request,json=authorizationRequest,proto3" json:"authorization_request,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	state                       protoimpl.MessageState                 `protogen:"open.v1"`
+	Provider                    string                                 `protobuf:"bytes,1,opt,name=provider,proto3" json:"provider,omitempty"`
+	AuthorizationUrl            string                                 `protobuf:"bytes,2,opt,name=authorization_url,json=authorizationUrl,proto3" json:"authorization_url,omitempty"`
+	TokenUrl                    string                                 `protobuf:"bytes,3,opt,name=token_url,json=tokenUrl,proto3" json:"token_url,omitempty"`
+	RefreshTokenUrl             string                                 `protobuf:"bytes,4,opt,name=refresh_token_url,json=refreshTokenUrl,proto3" json:"refresh_token_url,omitempty"`
+	Scopes                      []string                               `protobuf:"bytes,5,rep,name=scopes,proto3" json:"scopes,omitempty"`
+	ProviderName                string                                 `protobuf:"bytes,6,opt,name=provider_name,json=providerName,proto3" json:"provider_name,omitempty"`
+	ProviderDescription         string                                 `protobuf:"bytes,7,opt,name=provider_description,json=providerDescription,proto3" json:"provider_description,omitempty"`
+	ProviderIconUrl             string                                 `protobuf:"bytes,8,opt,name=provider_icon_url,json=providerIconUrl,proto3" json:"provider_icon_url,omitempty"`
+	PkceRequired                bool                                   `protobuf:"varint,9,opt,name=pkce_required,json=pkceRequired,proto3" json:"pkce_required,omitempty"`
+	AdditionalParams            map[string]string                      `protobuf:"bytes,10,rep,name=additional_params,json=additionalParams,proto3" json:"additional_params,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	ParameterCase               string                                 `protobuf:"bytes,11,opt,name=parameter_case,json=parameterCase,proto3" json:"parameter_case,omitempty"`
+	TokenRequestContentType     string                                 `protobuf:"bytes,12,opt,name=token_request_content_type,json=tokenRequestContentType,proto3" json:"token_request_content_type,omitempty"`
+	AuthorizationCodeParamName  string                                 `protobuf:"bytes,13,opt,name=authorization_code_param_name,json=authorizationCodeParamName,proto3" json:"authorization_code_param_name,omitempty"`
+	AuthorizationOpenMode       string                                 `protobuf:"bytes,14,opt,name=authorization_open_mode,json=authorizationOpenMode,proto3" json:"authorization_open_mode,omitempty"`
+	TokenRequest                *OAuthTokenRequestMapping              `protobuf:"bytes,15,opt,name=token_request,json=tokenRequest,proto3" json:"token_request,omitempty"`
+	TokenResponse               *OAuthTokenResponseMapping             `protobuf:"bytes,16,opt,name=token_response,json=tokenResponse,proto3" json:"token_response,omitempty"`
+	I18NMap                     map[string]*OAuthProviderLocalizedText `protobuf:"bytes,17,rep,name=i18n_map,json=i18nMap,proto3" json:"i18n_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	AuthorizationDisplay        *OAuthStepDisplay                      `protobuf:"bytes,18,opt,name=authorization_display,json=authorizationDisplay,proto3" json:"authorization_display,omitempty"`
+	AuthorizationRequest        *OAuthAuthorizationRequestMapping      `protobuf:"bytes,19,opt,name=authorization_request,json=authorizationRequest,proto3" json:"authorization_request,omitempty"`
+	AdditionalParamsByAuthScope *OAuthAuthorizationParamsByAuthScope   `protobuf:"bytes,20,opt,name=additional_params_by_auth_scope,json=additionalParamsByAuthScope,proto3" json:"additional_params_by_auth_scope,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *OAuthProvider) Reset() {
@@ -3829,6 +3830,13 @@ func (x *OAuthProvider) GetAuthorizationDisplay() *OAuthStepDisplay {
 func (x *OAuthProvider) GetAuthorizationRequest() *OAuthAuthorizationRequestMapping {
 	if x != nil {
 		return x.AuthorizationRequest
+	}
+	return nil
+}
+
+func (x *OAuthProvider) GetAdditionalParamsByAuthScope() *OAuthAuthorizationParamsByAuthScope {
+	if x != nil {
+		return x.AdditionalParamsByAuthScope
 	}
 	return nil
 }
@@ -19964,10 +19972,9 @@ type OAuthAuthorizationRequestMapping struct {
 	ClientIdParamName *string                `protobuf:"bytes,1,opt,name=client_id_param_name,json=clientIdParamName,proto3,oneof" json:"client_id_param_name,omitempty"`
 	ScopeDelimiter    *string                `protobuf:"bytes,2,opt,name=scope_delimiter,json=scopeDelimiter,proto3,oneof" json:"scope_delimiter,omitempty"`
 	// Omit to disable PKCE. Only S256 is supported.
-	CodeChallengeMethod         *string                              `protobuf:"bytes,3,opt,name=code_challenge_method,json=codeChallengeMethod,proto3,oneof" json:"code_challenge_method,omitempty"`
-	AdditionalParamsByAuthScope *OAuthAuthorizationParamsByAuthScope `protobuf:"bytes,4,opt,name=additional_params_by_auth_scope,json=additionalParamsByAuthScope,proto3" json:"additional_params_by_auth_scope,omitempty"`
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	CodeChallengeMethod *string `protobuf:"bytes,3,opt,name=code_challenge_method,json=codeChallengeMethod,proto3,oneof" json:"code_challenge_method,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *OAuthAuthorizationRequestMapping) Reset() {
@@ -20019,13 +20026,6 @@ func (x *OAuthAuthorizationRequestMapping) GetCodeChallengeMethod() string {
 		return *x.CodeChallengeMethod
 	}
 	return ""
-}
-
-func (x *OAuthAuthorizationRequestMapping) GetAdditionalParamsByAuthScope() *OAuthAuthorizationParamsByAuthScope {
-	if x != nil {
-		return x.AdditionalParamsByAuthScope
-	}
-	return nil
 }
 
 var File_channel_app_sdk_v1_extension_proto protoreflect.FileDescriptor
@@ -20416,8 +20416,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x06status\x18\x05 \x01(\tR\x06status\x12\x1b\n" +
 	"\x06detail\x18\x06 \x01(\tH\x01R\x06detail\x88\x01\x01B\x0e\n" +
 	"\f_descriptionB\t\n" +
-	"\a_detail\"\x92\n" +
-	"\n" +
+	"\a_detail\"\x91\v\n" +
 	"\rOAuthProvider\x12\x1a\n" +
 	"\bprovider\x18\x01 \x01(\tR\bprovider\x12+\n" +
 	"\x11authorization_url\x18\x02 \x01(\tR\x10authorizationUrl\x12\x1b\n" +
@@ -20438,7 +20437,8 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x0etoken_response\x18\x10 \x01(\v2-.channel.app.sdk.v1.OAuthTokenResponseMappingR\rtokenResponse\x12I\n" +
 	"\bi18n_map\x18\x11 \x03(\v2..channel.app.sdk.v1.OAuthProvider.I18nMapEntryR\ai18nMap\x12Y\n" +
 	"\x15authorization_display\x18\x12 \x01(\v2$.channel.app.sdk.v1.OAuthStepDisplayR\x14authorizationDisplay\x12i\n" +
-	"\x15authorization_request\x18\x13 \x01(\v24.channel.app.sdk.v1.OAuthAuthorizationRequestMappingR\x14authorizationRequest\x1aC\n" +
+	"\x15authorization_request\x18\x13 \x01(\v24.channel.app.sdk.v1.OAuthAuthorizationRequestMappingR\x14authorizationRequest\x12}\n" +
+	"\x1fadditional_params_by_auth_scope\x18\x14 \x01(\v27.channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScopeR\x1badditionalParamsByAuthScope\x1aC\n" +
 	"\x15AdditionalParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aj\n" +
@@ -21879,12 +21879,11 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a:\n" +
 	"\fManagerEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x85\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x86\x02\n" +
 	" OAuthAuthorizationRequestMapping\x124\n" +
 	"\x14client_id_param_name\x18\x01 \x01(\tH\x00R\x11clientIdParamName\x88\x01\x01\x12,\n" +
 	"\x0fscope_delimiter\x18\x02 \x01(\tH\x01R\x0escopeDelimiter\x88\x01\x01\x127\n" +
-	"\x15code_challenge_method\x18\x03 \x01(\tH\x02R\x13codeChallengeMethod\x88\x01\x01\x12}\n" +
-	"\x1fadditional_params_by_auth_scope\x18\x04 \x01(\v27.channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScopeR\x1badditionalParamsByAuthScopeB\x17\n" +
+	"\x15code_challenge_method\x18\x03 \x01(\tH\x02R\x13codeChallengeMethod\x88\x01\x01B\x17\n" +
 	"\x15_client_id_param_nameB\x12\n" +
 	"\x10_scope_delimiterB\x18\n" +
 	"\x16_code_challenge_methodBHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
@@ -22291,239 +22290,239 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	299, // 61: channel.app.sdk.v1.OAuthProvider.i18n_map:type_name -> channel.app.sdk.v1.OAuthProvider.I18nMapEntry
 	36,  // 62: channel.app.sdk.v1.OAuthProvider.authorization_display:type_name -> channel.app.sdk.v1.OAuthStepDisplay
 	285, // 63: channel.app.sdk.v1.OAuthProvider.authorization_request:type_name -> channel.app.sdk.v1.OAuthAuthorizationRequestMapping
-	39,  // 64: channel.app.sdk.v1.OAuthConfig.oauth_provider:type_name -> channel.app.sdk.v1.OAuthProvider
-	47,  // 65: channel.app.sdk.v1.CalendarBooking.attendee:type_name -> channel.app.sdk.v1.CalendarAttendee
-	44,  // 66: channel.app.sdk.v1.CalendarListCalendarsOutput.calendars:type_name -> channel.app.sdk.v1.Calendar
-	45,  // 67: channel.app.sdk.v1.CalendarListEventTypesOutput.event_types:type_name -> channel.app.sdk.v1.CalendarEventType
-	46,  // 68: channel.app.sdk.v1.CalendarGetAvailabilityOutput.slots:type_name -> channel.app.sdk.v1.CalendarTimeSlot
-	47,  // 69: channel.app.sdk.v1.CalendarCreateBookingInput.attendee:type_name -> channel.app.sdk.v1.CalendarAttendee
-	48,  // 70: channel.app.sdk.v1.CalendarCancelBookingOutput.booking:type_name -> channel.app.sdk.v1.CalendarBooking
-	314, // 71: channel.app.sdk.v1.CommandChoice.value:type_name -> google.protobuf.Value
-	300, // 72: channel.app.sdk.v1.CommandChoice.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandChoice.NameDescI18nMapEntry
-	62,  // 73: channel.app.sdk.v1.CommandParamDefinition.choices:type_name -> channel.app.sdk.v1.CommandChoice
-	301, // 74: channel.app.sdk.v1.CommandParamDefinition.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandParamDefinition.NameDescI18nMapEntry
-	302, // 75: channel.app.sdk.v1.CommandConfig.button_name_i18n_map:type_name -> channel.app.sdk.v1.CommandConfig.ButtonNameI18nMapEntry
-	303, // 76: channel.app.sdk.v1.CommandConfig.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandConfig.NameDescI18nMapEntry
-	63,  // 77: channel.app.sdk.v1.CommandConfig.param_definitions:type_name -> channel.app.sdk.v1.CommandParamDefinition
-	64,  // 78: channel.app.sdk.v1.CommandGetCommandsOutput.commands:type_name -> channel.app.sdk.v1.CommandConfig
-	304, // 79: channel.app.sdk.v1.CommandTrigger.attributes:type_name -> channel.app.sdk.v1.CommandTrigger.AttributesEntry
-	314, // 80: channel.app.sdk.v1.CommandAutoCompleteArgument.value:type_name -> google.protobuf.Value
-	1,   // 81: channel.app.sdk.v1.CommandGetSuggestionsInput.chat:type_name -> channel.app.sdk.v1.ExtensionChat
-	68,  // 82: channel.app.sdk.v1.CommandGetSuggestionsInput.input:type_name -> channel.app.sdk.v1.CommandAutoCompleteArgument
-	62,  // 83: channel.app.sdk.v1.CommandGetSuggestionsOutput.choices:type_name -> channel.app.sdk.v1.CommandChoice
-	1,   // 84: channel.app.sdk.v1.CommandExecuteInput.chat:type_name -> channel.app.sdk.v1.ExtensionChat
-	67,  // 85: channel.app.sdk.v1.CommandExecuteInput.trigger:type_name -> channel.app.sdk.v1.CommandTrigger
-	313, // 86: channel.app.sdk.v1.CommandExecuteInput.input:type_name -> google.protobuf.Struct
-	313, // 87: channel.app.sdk.v1.CommandResult.attributes:type_name -> google.protobuf.Struct
-	305, // 88: channel.app.sdk.v1.WidgetConfig.default_name_desc_i18n_map:type_name -> channel.app.sdk.v1.WidgetConfig.DefaultNameDescI18nMapEntry
-	74,  // 89: channel.app.sdk.v1.WidgetGetWidgetsOutput.widgets:type_name -> channel.app.sdk.v1.WidgetConfig
-	1,   // 90: channel.app.sdk.v1.WidgetActionInput.chat:type_name -> channel.app.sdk.v1.ExtensionChat
-	313, // 91: channel.app.sdk.v1.WidgetActionResult.attributes:type_name -> google.protobuf.Struct
-	306, // 92: channel.app.sdk.v1.CustomTabConfig.name_i18n_map:type_name -> channel.app.sdk.v1.CustomTabConfig.NameI18nMapEntry
-	80,  // 93: channel.app.sdk.v1.CustomTabGetCustomTabsOutput.custom_tabs:type_name -> channel.app.sdk.v1.CustomTabConfig
-	314, // 94: channel.app.sdk.v1.CustomTabActionInput.wam_args:type_name -> google.protobuf.Value
-	313, // 95: channel.app.sdk.v1.CustomTabActionResult.attributes:type_name -> google.protobuf.Struct
-	86,  // 96: channel.app.sdk.v1.HookWebhookConfig.response:type_name -> channel.app.sdk.v1.HookWebhookResponse
-	85,  // 97: channel.app.sdk.v1.HookConfig.webhook:type_name -> channel.app.sdk.v1.HookWebhookConfig
-	36,  // 98: channel.app.sdk.v1.HookConfig.display:type_name -> channel.app.sdk.v1.OAuthStepDisplay
-	87,  // 99: channel.app.sdk.v1.HookGetHooksOutput.hooks:type_name -> channel.app.sdk.v1.HookConfig
-	92,  // 100: channel.app.sdk.v1.PollingGetPollersOutput.pollers:type_name -> channel.app.sdk.v1.PollingPoller
-	313, // 101: channel.app.sdk.v1.SuggestionTriggers.keywords:type_name -> google.protobuf.Struct
-	97,  // 102: channel.app.sdk.v1.SuggestionGetTriggersOutput.triggers:type_name -> channel.app.sdk.v1.SuggestionTriggers
-	101, // 103: channel.app.sdk.v1.MailRelayMail.common_headers:type_name -> channel.app.sdk.v1.MailRelayCommonHeaders
-	100, // 104: channel.app.sdk.v1.MailRelayMail.headers:type_name -> channel.app.sdk.v1.MailRelayHeader
-	102, // 105: channel.app.sdk.v1.MailRelayInboundInput.mail:type_name -> channel.app.sdk.v1.MailRelayMail
-	103, // 106: channel.app.sdk.v1.MailRelayInboundInput.receipt:type_name -> channel.app.sdk.v1.MailRelayReceipt
-	106, // 107: channel.app.sdk.v1.StoreProfileLocalizedContent.images:type_name -> channel.app.sdk.v1.StoreProfileImage
-	107, // 108: channel.app.sdk.v1.StoreProfileLocalizedContent.intro:type_name -> channel.app.sdk.v1.StoreProfileIntro
-	108, // 109: channel.app.sdk.v1.StoreProfileLocalizedContent.faqs:type_name -> channel.app.sdk.v1.StoreFaq
-	307, // 110: channel.app.sdk.v1.StoreGetProfileOutput.i18n_map:type_name -> channel.app.sdk.v1.StoreGetProfileOutput.I18nMapEntry
-	313, // 111: channel.app.sdk.v1.NotebookCell.definition:type_name -> google.protobuf.Struct
-	313, // 112: channel.app.sdk.v1.NotebookCell.presentation:type_name -> google.protobuf.Struct
-	113, // 113: channel.app.sdk.v1.NotebookLayoutRow.columns:type_name -> channel.app.sdk.v1.NotebookLayoutColumn
-	114, // 114: channel.app.sdk.v1.NotebookTab.layout:type_name -> channel.app.sdk.v1.NotebookLayoutRow
-	112, // 115: channel.app.sdk.v1.NotebookPayload.cells:type_name -> channel.app.sdk.v1.NotebookCell
-	115, // 116: channel.app.sdk.v1.NotebookPayload.tabs:type_name -> channel.app.sdk.v1.NotebookTab
-	116, // 117: channel.app.sdk.v1.AppNotebook.notebook:type_name -> channel.app.sdk.v1.NotebookPayload
-	117, // 118: channel.app.sdk.v1.NotebookGetNotebooksOutput.notebooks:type_name -> channel.app.sdk.v1.AppNotebook
-	262, // 119: channel.app.sdk.v1.DataSourceTable.permissions:type_name -> channel.app.sdk.v1.DataSourceManagerPermission
-	121, // 120: channel.app.sdk.v1.DataSourceTableDefinition.table:type_name -> channel.app.sdk.v1.DataSourceTable
-	122, // 121: channel.app.sdk.v1.DataSourceTableDefinition.columns:type_name -> channel.app.sdk.v1.DataSourceColumn
-	121, // 122: channel.app.sdk.v1.DataSourceTableListing.table:type_name -> channel.app.sdk.v1.DataSourceTable
-	120, // 123: channel.app.sdk.v1.DataSourceListCatalogsOutput.catalogs:type_name -> channel.app.sdk.v1.DataSourceCatalog
-	124, // 124: channel.app.sdk.v1.DataSourceListTablesOutput.tables:type_name -> channel.app.sdk.v1.DataSourceTableListing
-	123, // 125: channel.app.sdk.v1.DataSourceDescribeTableOutput.definition:type_name -> channel.app.sdk.v1.DataSourceTableDefinition
-	313, // 126: channel.app.sdk.v1.DataSourceDescribeTableOutput.sample:type_name -> google.protobuf.Struct
-	135, // 127: channel.app.sdk.v1.OrderItem.claimability:type_name -> channel.app.sdk.v1.OrderClaimability
-	140, // 128: channel.app.sdk.v1.OrderFulfillment.items:type_name -> channel.app.sdk.v1.OrderFulfillmentItem
-	141, // 129: channel.app.sdk.v1.OrderShippingLine.tax_lines:type_name -> channel.app.sdk.v1.OrderTaxLine
-	137, // 130: channel.app.sdk.v1.Order.items:type_name -> channel.app.sdk.v1.OrderItem
-	138, // 131: channel.app.sdk.v1.Order.payment:type_name -> channel.app.sdk.v1.OrderPayment
-	139, // 132: channel.app.sdk.v1.Order.fulfillments:type_name -> channel.app.sdk.v1.OrderFulfillment
-	131, // 133: channel.app.sdk.v1.Order.shipping_address:type_name -> channel.app.sdk.v1.OrderAddress
-	136, // 134: channel.app.sdk.v1.Order.claims:type_name -> channel.app.sdk.v1.OrderClaim
-	147, // 135: channel.app.sdk.v1.OrderFieldConfig.allowed_values:type_name -> channel.app.sdk.v1.OrderAllowedValue
-	308, // 136: channel.app.sdk.v1.OrderOperationOptions.field_configs:type_name -> channel.app.sdk.v1.OrderOperationOptions.FieldConfigsEntry
-	149, // 137: channel.app.sdk.v1.OrderAppCapabilities.get_orders_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	149, // 138: channel.app.sdk.v1.OrderAppCapabilities.cancel_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	149, // 139: channel.app.sdk.v1.OrderAppCapabilities.return_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	149, // 140: channel.app.sdk.v1.OrderAppCapabilities.exchange_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	149, // 141: channel.app.sdk.v1.OrderAppCapabilities.change_address_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	146, // 142: channel.app.sdk.v1.OrderGetOrdersOutput.orders:type_name -> channel.app.sdk.v1.Order
-	150, // 143: channel.app.sdk.v1.OrderGetAppConfigsOutput.app_capabilities:type_name -> channel.app.sdk.v1.OrderAppCapabilities
-	155, // 144: channel.app.sdk.v1.OrderCancelOrderInput.cancel_items:type_name -> channel.app.sdk.v1.OrderClaimItem
-	134, // 145: channel.app.sdk.v1.OrderCancelOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
-	132, // 146: channel.app.sdk.v1.OrderCancelOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
-	155, // 147: channel.app.sdk.v1.OrderReturnOrderInput.return_items:type_name -> channel.app.sdk.v1.OrderClaimItem
-	134, // 148: channel.app.sdk.v1.OrderReturnOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
-	131, // 149: channel.app.sdk.v1.OrderReturnOrderInput.pickup_address:type_name -> channel.app.sdk.v1.OrderAddress
-	132, // 150: channel.app.sdk.v1.OrderReturnOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
-	133, // 151: channel.app.sdk.v1.OrderReturnOrderInput.defect_info:type_name -> channel.app.sdk.v1.OrderDefectInfo
-	155, // 152: channel.app.sdk.v1.OrderExchangeOrderInput.before_exchange_items:type_name -> channel.app.sdk.v1.OrderClaimItem
-	158, // 153: channel.app.sdk.v1.OrderExchangeOrderInput.after_exchange_items:type_name -> channel.app.sdk.v1.OrderExchangeItem
-	134, // 154: channel.app.sdk.v1.OrderExchangeOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
-	131, // 155: channel.app.sdk.v1.OrderExchangeOrderInput.pickup_address:type_name -> channel.app.sdk.v1.OrderAddress
-	132, // 156: channel.app.sdk.v1.OrderExchangeOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
-	133, // 157: channel.app.sdk.v1.OrderExchangeOrderInput.defect_info:type_name -> channel.app.sdk.v1.OrderDefectInfo
-	155, // 158: channel.app.sdk.v1.OrderGetExchangeableItemsInput.items:type_name -> channel.app.sdk.v1.OrderClaimItem
-	137, // 159: channel.app.sdk.v1.OrderGetExchangeableItemsOutput.items:type_name -> channel.app.sdk.v1.OrderItem
-	131, // 160: channel.app.sdk.v1.OrderChangeShippingAddressInput.new_address:type_name -> channel.app.sdk.v1.OrderAddress
-	135, // 161: channel.app.sdk.v1.CommerceOrderItem.claimability:type_name -> channel.app.sdk.v1.OrderClaimability
-	142, // 162: channel.app.sdk.v1.CommerceOrderItem.custom_attributes:type_name -> channel.app.sdk.v1.OrderAttribute
-	141, // 163: channel.app.sdk.v1.CommerceOrderItem.tax_lines:type_name -> channel.app.sdk.v1.OrderTaxLine
-	166, // 164: channel.app.sdk.v1.CommerceOrderItem.bundle_items:type_name -> channel.app.sdk.v1.CommerceOrderBundleItem
-	205, // 165: channel.app.sdk.v1.CommerceOrder.buyer:type_name -> channel.app.sdk.v1.Buyer
-	165, // 166: channel.app.sdk.v1.CommerceOrder.items:type_name -> channel.app.sdk.v1.CommerceOrderItem
-	138, // 167: channel.app.sdk.v1.CommerceOrder.payment:type_name -> channel.app.sdk.v1.OrderPayment
-	139, // 168: channel.app.sdk.v1.CommerceOrder.fulfillments:type_name -> channel.app.sdk.v1.OrderFulfillment
-	131, // 169: channel.app.sdk.v1.CommerceOrder.shipping_address:type_name -> channel.app.sdk.v1.OrderAddress
-	136, // 170: channel.app.sdk.v1.CommerceOrder.claims:type_name -> channel.app.sdk.v1.OrderClaim
-	131, // 171: channel.app.sdk.v1.CommerceOrder.billing_address:type_name -> channel.app.sdk.v1.OrderAddress
-	142, // 172: channel.app.sdk.v1.CommerceOrder.custom_attributes:type_name -> channel.app.sdk.v1.OrderAttribute
-	143, // 173: channel.app.sdk.v1.CommerceOrder.shipping_lines:type_name -> channel.app.sdk.v1.OrderShippingLine
-	144, // 174: channel.app.sdk.v1.CommerceOrder.transactions:type_name -> channel.app.sdk.v1.OrderTransaction
-	145, // 175: channel.app.sdk.v1.CommerceOrder.metafields:type_name -> channel.app.sdk.v1.OrderMetafield
-	164, // 176: channel.app.sdk.v1.CommerceGetOrdersInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
-	314, // 177: channel.app.sdk.v1.CommerceGetOrdersInput.search_filter:type_name -> google.protobuf.Value
-	167, // 178: channel.app.sdk.v1.CommerceGetOrdersOutput.orders:type_name -> channel.app.sdk.v1.CommerceOrder
-	149, // 179: channel.app.sdk.v1.CommerceAppCapabilities.get_orders_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	149, // 180: channel.app.sdk.v1.CommerceAppCapabilities.request_cancel_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	149, // 181: channel.app.sdk.v1.CommerceAppCapabilities.request_return_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	149, // 182: channel.app.sdk.v1.CommerceAppCapabilities.accept_return_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	149, // 183: channel.app.sdk.v1.CommerceAppCapabilities.request_exchange_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	149, // 184: channel.app.sdk.v1.CommerceAppCapabilities.change_shipping_address_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	149, // 185: channel.app.sdk.v1.CommerceAppCapabilities.get_products_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
-	170, // 186: channel.app.sdk.v1.CommerceGetAppConfigsOutput.app_capabilities:type_name -> channel.app.sdk.v1.CommerceAppCapabilities
-	173, // 187: channel.app.sdk.v1.CommerceActionResult.result:type_name -> channel.app.sdk.v1.CommerceResultBody
-	164, // 188: channel.app.sdk.v1.CommerceCancelOrderInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
-	155, // 189: channel.app.sdk.v1.CommerceCancelOrderInput.cancel_items:type_name -> channel.app.sdk.v1.OrderClaimItem
-	134, // 190: channel.app.sdk.v1.CommerceCancelOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
-	132, // 191: channel.app.sdk.v1.CommerceCancelOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
-	164, // 192: channel.app.sdk.v1.CommerceReturnOrderInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
-	155, // 193: channel.app.sdk.v1.CommerceReturnOrderInput.return_items:type_name -> channel.app.sdk.v1.OrderClaimItem
-	134, // 194: channel.app.sdk.v1.CommerceReturnOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
-	131, // 195: channel.app.sdk.v1.CommerceReturnOrderInput.pickup_address:type_name -> channel.app.sdk.v1.OrderAddress
-	132, // 196: channel.app.sdk.v1.CommerceReturnOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
-	133, // 197: channel.app.sdk.v1.CommerceReturnOrderInput.defect_info:type_name -> channel.app.sdk.v1.OrderDefectInfo
-	164, // 198: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
-	155, // 199: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.return_items:type_name -> channel.app.sdk.v1.OrderClaimItem
-	134, // 200: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
-	132, // 201: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
-	164, // 202: channel.app.sdk.v1.CommerceExchangeOrderInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
-	155, // 203: channel.app.sdk.v1.CommerceExchangeOrderInput.before_exchange_items:type_name -> channel.app.sdk.v1.OrderClaimItem
-	158, // 204: channel.app.sdk.v1.CommerceExchangeOrderInput.after_exchange_items:type_name -> channel.app.sdk.v1.OrderExchangeItem
-	134, // 205: channel.app.sdk.v1.CommerceExchangeOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
-	131, // 206: channel.app.sdk.v1.CommerceExchangeOrderInput.pickup_address:type_name -> channel.app.sdk.v1.OrderAddress
-	132, // 207: channel.app.sdk.v1.CommerceExchangeOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
-	133, // 208: channel.app.sdk.v1.CommerceExchangeOrderInput.defect_info:type_name -> channel.app.sdk.v1.OrderDefectInfo
-	164, // 209: channel.app.sdk.v1.CommerceGetExchangeableItemsInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
-	155, // 210: channel.app.sdk.v1.CommerceGetExchangeableItemsInput.items:type_name -> channel.app.sdk.v1.OrderClaimItem
-	181, // 211: channel.app.sdk.v1.CommerceGetExchangeableItemsOutput.exchangeable_items:type_name -> channel.app.sdk.v1.CommerceExchangeableItem
-	182, // 212: channel.app.sdk.v1.CommerceExchangeableItem.variants:type_name -> channel.app.sdk.v1.CommerceExchangeableVariant
-	183, // 213: channel.app.sdk.v1.CommerceExchangeableVariant.options:type_name -> channel.app.sdk.v1.CommerceVariantOption
-	164, // 214: channel.app.sdk.v1.CommerceChangeShippingAddressInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
-	131, // 215: channel.app.sdk.v1.CommerceChangeShippingAddressInput.new_address:type_name -> channel.app.sdk.v1.OrderAddress
-	314, // 216: channel.app.sdk.v1.CommerceGetProductsInput.search_filter:type_name -> google.protobuf.Value
-	187, // 217: channel.app.sdk.v1.CommerceGetProductsOutput.products:type_name -> channel.app.sdk.v1.CommerceProduct
-	188, // 218: channel.app.sdk.v1.CommerceProduct.variants:type_name -> channel.app.sdk.v1.CommerceProductVariant
-	183, // 219: channel.app.sdk.v1.CommerceProductVariant.options:type_name -> channel.app.sdk.v1.CommerceVariantOption
-	189, // 220: channel.app.sdk.v1.WmsOrderItem.shipping_info:type_name -> channel.app.sdk.v1.WmsShippingInfo
-	191, // 221: channel.app.sdk.v1.WmsOrder.items:type_name -> channel.app.sdk.v1.WmsOrderItem
-	190, // 222: channel.app.sdk.v1.WmsOrder.deliveries:type_name -> channel.app.sdk.v1.WmsDelivery
-	192, // 223: channel.app.sdk.v1.WmsGetOrdersResult.orders:type_name -> channel.app.sdk.v1.WmsOrder
-	192, // 224: channel.app.sdk.v1.WmsGetOrderResult.order:type_name -> channel.app.sdk.v1.WmsOrder
-	314, // 225: channel.app.sdk.v1.WmsGetShopIDResult.shop_id:type_name -> google.protobuf.Value
-	205, // 226: channel.app.sdk.v1.WmsOrderV2.buyer:type_name -> channel.app.sdk.v1.Buyer
-	207, // 227: channel.app.sdk.v1.WmsOrderV2.items:type_name -> channel.app.sdk.v1.WmsOrderItemV2
-	206, // 228: channel.app.sdk.v1.WmsOrderV2.deliveries:type_name -> channel.app.sdk.v1.WmsDeliveryV2
-	209, // 229: channel.app.sdk.v1.WmsOrderGetOrdersRequest.identifier:type_name -> channel.app.sdk.v1.WmsIdentifier
-	314, // 230: channel.app.sdk.v1.WmsOrderGetOrdersRequest.search_filter:type_name -> google.protobuf.Value
-	208, // 231: channel.app.sdk.v1.WmsOrderGetOrdersResult.orders:type_name -> channel.app.sdk.v1.WmsOrderV2
-	209, // 232: channel.app.sdk.v1.WmsOrderActionRequest.identifier:type_name -> channel.app.sdk.v1.WmsIdentifier
-	209, // 233: channel.app.sdk.v1.WmsOrderChangeShippingAddressInput.identifier:type_name -> channel.app.sdk.v1.WmsIdentifier
-	131, // 234: channel.app.sdk.v1.WmsOrderChangeShippingAddressInput.new_address:type_name -> channel.app.sdk.v1.OrderAddress
-	214, // 235: channel.app.sdk.v1.WmsOrderActionResult.result:type_name -> channel.app.sdk.v1.WmsOrderResultBody
-	147, // 236: channel.app.sdk.v1.WmsFieldConfig.allowed_values:type_name -> channel.app.sdk.v1.OrderAllowedValue
-	309, // 237: channel.app.sdk.v1.WmsOperationOptions.field_configs:type_name -> channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntry
-	217, // 238: channel.app.sdk.v1.WmsAppCapabilities.get_orders_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	217, // 239: channel.app.sdk.v1.WmsAppCapabilities.request_cancel_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	217, // 240: channel.app.sdk.v1.WmsAppCapabilities.restore_canceled_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	217, // 241: channel.app.sdk.v1.WmsAppCapabilities.request_return_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	217, // 242: channel.app.sdk.v1.WmsAppCapabilities.restore_returned_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	217, // 243: channel.app.sdk.v1.WmsAppCapabilities.request_exchange_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	217, // 244: channel.app.sdk.v1.WmsAppCapabilities.restore_exchanged_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	217, // 245: channel.app.sdk.v1.WmsAppCapabilities.change_shipping_address_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
-	218, // 246: channel.app.sdk.v1.WmsGetAppConfigsOutput.app_capabilities:type_name -> channel.app.sdk.v1.WmsAppCapabilities
-	315, // 247: channel.app.sdk.v1.MessagingOnMediumMessageCreatedInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
-	316, // 248: channel.app.sdk.v1.MessagingOnMediumMessageCreatedInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
-	222, // 249: channel.app.sdk.v1.MessagingOnMediumMessageCreatedOutput.send_result:type_name -> channel.app.sdk.v1.MessagingSendResult
-	315, // 250: channel.app.sdk.v1.MessagingInboxOnMediumUserChatClosedInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
-	315, // 251: channel.app.sdk.v1.MessagingInboxGetWritingTypesInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
-	317, // 252: channel.app.sdk.v1.MessagingInboxGetWritingTypesOutput.writing_type_map:type_name -> channel.app.sdk.v1.WritingTypeMap
-	318, // 253: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.user:type_name -> channel.app.sdk.v1.ChannelUser
-	315, // 254: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
-	316, // 255: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
-	318, // 256: channel.app.sdk.v1.MessagingInboxGetMediumTopicSelectorWamInput.user:type_name -> channel.app.sdk.v1.ChannelUser
-	315, // 257: channel.app.sdk.v1.MessagingInboxGetMediumMessageErrorReasonInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
-	316, // 258: channel.app.sdk.v1.MessagingInboxGetMediumMessageErrorReasonInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
-	317, // 259: channel.app.sdk.v1.MessagingPrebuiltGetWritingTypesOutput.writing_type_map:type_name -> channel.app.sdk.v1.WritingTypeMap
-	319, // 260: channel.app.sdk.v1.MessagingPrebuiltValidateEntityInput.message:type_name -> channel.app.sdk.v1.PrebuiltMessage
-	320, // 261: channel.app.sdk.v1.MessagingPrebuiltValidateEntityOutput.reasons:type_name -> channel.app.sdk.v1.UnavailableReason
-	319, // 262: channel.app.sdk.v1.MessagingPrebuiltGetCustomEditorWamInput.message:type_name -> channel.app.sdk.v1.PrebuiltMessage
-	313, // 263: channel.app.sdk.v1.MessagingPrebuiltGetCustomEditorWamInput.trigger_event_name_i18n_map:type_name -> google.protobuf.Struct
-	318, // 264: channel.app.sdk.v1.MessagingPrebuiltBuildMediumTopicsInput.user:type_name -> channel.app.sdk.v1.ChannelUser
-	321, // 265: channel.app.sdk.v1.MessagingPrebuiltBuildMediumTopicsOutput.medium_profile:type_name -> channel.app.sdk.v1.MediumProfile
-	313, // 266: channel.app.sdk.v1.MessagingDefaultOptions.campaign_user_query:type_name -> google.protobuf.Struct
-	313, // 267: channel.app.sdk.v1.MessagingDefaultOptions.one_time_msg_user_query:type_name -> google.protobuf.Struct
-	241, // 268: channel.app.sdk.v1.MessagingPrebuiltGetDefaultOptionsOutput.default_options:type_name -> channel.app.sdk.v1.MessagingDefaultOptions
-	313, // 269: channel.app.sdk.v1.AlfTaskWorkflowNode.config:type_name -> google.protobuf.Struct
-	243, // 270: channel.app.sdk.v1.AlfTaskPredefinedTask.memory_schema:type_name -> channel.app.sdk.v1.AlfTaskMemoryDefinition
-	244, // 271: channel.app.sdk.v1.AlfTaskPredefinedTask.nodes:type_name -> channel.app.sdk.v1.AlfTaskWorkflowNode
-	245, // 272: channel.app.sdk.v1.AlfTaskGetTasksOutput.predefined_tasks:type_name -> channel.app.sdk.v1.AlfTaskPredefinedTask
-	250, // 273: channel.app.sdk.v1.PollingGetTargetManagersOutput.targets:type_name -> channel.app.sdk.v1.PollingManagerTarget
-	253, // 274: channel.app.sdk.v1.DataSourceAuthorizeQueryInput.tables:type_name -> channel.app.sdk.v1.DataSourceQueryTableAccess
-	254, // 275: channel.app.sdk.v1.DataSourceAuthorizeQueryOutput.filters:type_name -> channel.app.sdk.v1.DataSourceQueryFilter
-	313, // 276: channel.app.sdk.v1.HookTeamChatMessageCreatedInput.snapshot:type_name -> google.protobuf.Struct
-	313, // 277: channel.app.sdk.v1.ConfigActionResult.values_patch:type_name -> google.protobuf.Struct
-	263, // 278: channel.app.sdk.v1.ConfigActionResult.redirect:type_name -> channel.app.sdk.v1.ConfigActionRedirect
-	265, // 279: channel.app.sdk.v1.ExternalIssue.provider_state:type_name -> channel.app.sdk.v1.IssueProviderState
-	266, // 280: channel.app.sdk.v1.ExternalIssue.container:type_name -> channel.app.sdk.v1.IssueContainer
-	267, // 281: channel.app.sdk.v1.ExternalIssue.closed_by:type_name -> channel.app.sdk.v1.IssueActor
-	314, // 282: channel.app.sdk.v1.IssueTransitionField.enum:type_name -> google.protobuf.Value
-	310, // 283: channel.app.sdk.v1.IssueTransitionInput.properties:type_name -> channel.app.sdk.v1.IssueTransitionInput.PropertiesEntry
-	265, // 284: channel.app.sdk.v1.IssueTransition.target_provider_state:type_name -> channel.app.sdk.v1.IssueProviderState
-	271, // 285: channel.app.sdk.v1.IssueTransition.input_schema:type_name -> channel.app.sdk.v1.IssueTransitionInput
-	268, // 286: channel.app.sdk.v1.IssueSearchIssuesOutput.issues:type_name -> channel.app.sdk.v1.ExternalIssue
-	268, // 287: channel.app.sdk.v1.IssueGetIssueOutput.issue:type_name -> channel.app.sdk.v1.ExternalIssue
-	268, // 288: channel.app.sdk.v1.IssueGetIssuesResult.issue:type_name -> channel.app.sdk.v1.ExternalIssue
-	269, // 289: channel.app.sdk.v1.IssueGetIssuesResult.error:type_name -> channel.app.sdk.v1.IssueError
-	278, // 290: channel.app.sdk.v1.IssueGetIssuesOutput.results:type_name -> channel.app.sdk.v1.IssueGetIssuesResult
-	272, // 291: channel.app.sdk.v1.IssueGetIssueTransitionsOutput.transitions:type_name -> channel.app.sdk.v1.IssueTransition
-	313, // 292: channel.app.sdk.v1.IssueExecuteIssueTransitionInput.fields:type_name -> google.protobuf.Struct
-	268, // 293: channel.app.sdk.v1.IssueExecuteIssueTransitionOutput.issue:type_name -> channel.app.sdk.v1.ExternalIssue
-	311, // 294: channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.channel:type_name -> channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.ChannelEntry
-	312, // 295: channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.manager:type_name -> channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.ManagerEntry
-	284, // 296: channel.app.sdk.v1.OAuthAuthorizationRequestMapping.additional_params_by_auth_scope:type_name -> channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope
+	284, // 64: channel.app.sdk.v1.OAuthProvider.additional_params_by_auth_scope:type_name -> channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope
+	39,  // 65: channel.app.sdk.v1.OAuthConfig.oauth_provider:type_name -> channel.app.sdk.v1.OAuthProvider
+	47,  // 66: channel.app.sdk.v1.CalendarBooking.attendee:type_name -> channel.app.sdk.v1.CalendarAttendee
+	44,  // 67: channel.app.sdk.v1.CalendarListCalendarsOutput.calendars:type_name -> channel.app.sdk.v1.Calendar
+	45,  // 68: channel.app.sdk.v1.CalendarListEventTypesOutput.event_types:type_name -> channel.app.sdk.v1.CalendarEventType
+	46,  // 69: channel.app.sdk.v1.CalendarGetAvailabilityOutput.slots:type_name -> channel.app.sdk.v1.CalendarTimeSlot
+	47,  // 70: channel.app.sdk.v1.CalendarCreateBookingInput.attendee:type_name -> channel.app.sdk.v1.CalendarAttendee
+	48,  // 71: channel.app.sdk.v1.CalendarCancelBookingOutput.booking:type_name -> channel.app.sdk.v1.CalendarBooking
+	314, // 72: channel.app.sdk.v1.CommandChoice.value:type_name -> google.protobuf.Value
+	300, // 73: channel.app.sdk.v1.CommandChoice.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandChoice.NameDescI18nMapEntry
+	62,  // 74: channel.app.sdk.v1.CommandParamDefinition.choices:type_name -> channel.app.sdk.v1.CommandChoice
+	301, // 75: channel.app.sdk.v1.CommandParamDefinition.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandParamDefinition.NameDescI18nMapEntry
+	302, // 76: channel.app.sdk.v1.CommandConfig.button_name_i18n_map:type_name -> channel.app.sdk.v1.CommandConfig.ButtonNameI18nMapEntry
+	303, // 77: channel.app.sdk.v1.CommandConfig.name_desc_i18n_map:type_name -> channel.app.sdk.v1.CommandConfig.NameDescI18nMapEntry
+	63,  // 78: channel.app.sdk.v1.CommandConfig.param_definitions:type_name -> channel.app.sdk.v1.CommandParamDefinition
+	64,  // 79: channel.app.sdk.v1.CommandGetCommandsOutput.commands:type_name -> channel.app.sdk.v1.CommandConfig
+	304, // 80: channel.app.sdk.v1.CommandTrigger.attributes:type_name -> channel.app.sdk.v1.CommandTrigger.AttributesEntry
+	314, // 81: channel.app.sdk.v1.CommandAutoCompleteArgument.value:type_name -> google.protobuf.Value
+	1,   // 82: channel.app.sdk.v1.CommandGetSuggestionsInput.chat:type_name -> channel.app.sdk.v1.ExtensionChat
+	68,  // 83: channel.app.sdk.v1.CommandGetSuggestionsInput.input:type_name -> channel.app.sdk.v1.CommandAutoCompleteArgument
+	62,  // 84: channel.app.sdk.v1.CommandGetSuggestionsOutput.choices:type_name -> channel.app.sdk.v1.CommandChoice
+	1,   // 85: channel.app.sdk.v1.CommandExecuteInput.chat:type_name -> channel.app.sdk.v1.ExtensionChat
+	67,  // 86: channel.app.sdk.v1.CommandExecuteInput.trigger:type_name -> channel.app.sdk.v1.CommandTrigger
+	313, // 87: channel.app.sdk.v1.CommandExecuteInput.input:type_name -> google.protobuf.Struct
+	313, // 88: channel.app.sdk.v1.CommandResult.attributes:type_name -> google.protobuf.Struct
+	305, // 89: channel.app.sdk.v1.WidgetConfig.default_name_desc_i18n_map:type_name -> channel.app.sdk.v1.WidgetConfig.DefaultNameDescI18nMapEntry
+	74,  // 90: channel.app.sdk.v1.WidgetGetWidgetsOutput.widgets:type_name -> channel.app.sdk.v1.WidgetConfig
+	1,   // 91: channel.app.sdk.v1.WidgetActionInput.chat:type_name -> channel.app.sdk.v1.ExtensionChat
+	313, // 92: channel.app.sdk.v1.WidgetActionResult.attributes:type_name -> google.protobuf.Struct
+	306, // 93: channel.app.sdk.v1.CustomTabConfig.name_i18n_map:type_name -> channel.app.sdk.v1.CustomTabConfig.NameI18nMapEntry
+	80,  // 94: channel.app.sdk.v1.CustomTabGetCustomTabsOutput.custom_tabs:type_name -> channel.app.sdk.v1.CustomTabConfig
+	314, // 95: channel.app.sdk.v1.CustomTabActionInput.wam_args:type_name -> google.protobuf.Value
+	313, // 96: channel.app.sdk.v1.CustomTabActionResult.attributes:type_name -> google.protobuf.Struct
+	86,  // 97: channel.app.sdk.v1.HookWebhookConfig.response:type_name -> channel.app.sdk.v1.HookWebhookResponse
+	85,  // 98: channel.app.sdk.v1.HookConfig.webhook:type_name -> channel.app.sdk.v1.HookWebhookConfig
+	36,  // 99: channel.app.sdk.v1.HookConfig.display:type_name -> channel.app.sdk.v1.OAuthStepDisplay
+	87,  // 100: channel.app.sdk.v1.HookGetHooksOutput.hooks:type_name -> channel.app.sdk.v1.HookConfig
+	92,  // 101: channel.app.sdk.v1.PollingGetPollersOutput.pollers:type_name -> channel.app.sdk.v1.PollingPoller
+	313, // 102: channel.app.sdk.v1.SuggestionTriggers.keywords:type_name -> google.protobuf.Struct
+	97,  // 103: channel.app.sdk.v1.SuggestionGetTriggersOutput.triggers:type_name -> channel.app.sdk.v1.SuggestionTriggers
+	101, // 104: channel.app.sdk.v1.MailRelayMail.common_headers:type_name -> channel.app.sdk.v1.MailRelayCommonHeaders
+	100, // 105: channel.app.sdk.v1.MailRelayMail.headers:type_name -> channel.app.sdk.v1.MailRelayHeader
+	102, // 106: channel.app.sdk.v1.MailRelayInboundInput.mail:type_name -> channel.app.sdk.v1.MailRelayMail
+	103, // 107: channel.app.sdk.v1.MailRelayInboundInput.receipt:type_name -> channel.app.sdk.v1.MailRelayReceipt
+	106, // 108: channel.app.sdk.v1.StoreProfileLocalizedContent.images:type_name -> channel.app.sdk.v1.StoreProfileImage
+	107, // 109: channel.app.sdk.v1.StoreProfileLocalizedContent.intro:type_name -> channel.app.sdk.v1.StoreProfileIntro
+	108, // 110: channel.app.sdk.v1.StoreProfileLocalizedContent.faqs:type_name -> channel.app.sdk.v1.StoreFaq
+	307, // 111: channel.app.sdk.v1.StoreGetProfileOutput.i18n_map:type_name -> channel.app.sdk.v1.StoreGetProfileOutput.I18nMapEntry
+	313, // 112: channel.app.sdk.v1.NotebookCell.definition:type_name -> google.protobuf.Struct
+	313, // 113: channel.app.sdk.v1.NotebookCell.presentation:type_name -> google.protobuf.Struct
+	113, // 114: channel.app.sdk.v1.NotebookLayoutRow.columns:type_name -> channel.app.sdk.v1.NotebookLayoutColumn
+	114, // 115: channel.app.sdk.v1.NotebookTab.layout:type_name -> channel.app.sdk.v1.NotebookLayoutRow
+	112, // 116: channel.app.sdk.v1.NotebookPayload.cells:type_name -> channel.app.sdk.v1.NotebookCell
+	115, // 117: channel.app.sdk.v1.NotebookPayload.tabs:type_name -> channel.app.sdk.v1.NotebookTab
+	116, // 118: channel.app.sdk.v1.AppNotebook.notebook:type_name -> channel.app.sdk.v1.NotebookPayload
+	117, // 119: channel.app.sdk.v1.NotebookGetNotebooksOutput.notebooks:type_name -> channel.app.sdk.v1.AppNotebook
+	262, // 120: channel.app.sdk.v1.DataSourceTable.permissions:type_name -> channel.app.sdk.v1.DataSourceManagerPermission
+	121, // 121: channel.app.sdk.v1.DataSourceTableDefinition.table:type_name -> channel.app.sdk.v1.DataSourceTable
+	122, // 122: channel.app.sdk.v1.DataSourceTableDefinition.columns:type_name -> channel.app.sdk.v1.DataSourceColumn
+	121, // 123: channel.app.sdk.v1.DataSourceTableListing.table:type_name -> channel.app.sdk.v1.DataSourceTable
+	120, // 124: channel.app.sdk.v1.DataSourceListCatalogsOutput.catalogs:type_name -> channel.app.sdk.v1.DataSourceCatalog
+	124, // 125: channel.app.sdk.v1.DataSourceListTablesOutput.tables:type_name -> channel.app.sdk.v1.DataSourceTableListing
+	123, // 126: channel.app.sdk.v1.DataSourceDescribeTableOutput.definition:type_name -> channel.app.sdk.v1.DataSourceTableDefinition
+	313, // 127: channel.app.sdk.v1.DataSourceDescribeTableOutput.sample:type_name -> google.protobuf.Struct
+	135, // 128: channel.app.sdk.v1.OrderItem.claimability:type_name -> channel.app.sdk.v1.OrderClaimability
+	140, // 129: channel.app.sdk.v1.OrderFulfillment.items:type_name -> channel.app.sdk.v1.OrderFulfillmentItem
+	141, // 130: channel.app.sdk.v1.OrderShippingLine.tax_lines:type_name -> channel.app.sdk.v1.OrderTaxLine
+	137, // 131: channel.app.sdk.v1.Order.items:type_name -> channel.app.sdk.v1.OrderItem
+	138, // 132: channel.app.sdk.v1.Order.payment:type_name -> channel.app.sdk.v1.OrderPayment
+	139, // 133: channel.app.sdk.v1.Order.fulfillments:type_name -> channel.app.sdk.v1.OrderFulfillment
+	131, // 134: channel.app.sdk.v1.Order.shipping_address:type_name -> channel.app.sdk.v1.OrderAddress
+	136, // 135: channel.app.sdk.v1.Order.claims:type_name -> channel.app.sdk.v1.OrderClaim
+	147, // 136: channel.app.sdk.v1.OrderFieldConfig.allowed_values:type_name -> channel.app.sdk.v1.OrderAllowedValue
+	308, // 137: channel.app.sdk.v1.OrderOperationOptions.field_configs:type_name -> channel.app.sdk.v1.OrderOperationOptions.FieldConfigsEntry
+	149, // 138: channel.app.sdk.v1.OrderAppCapabilities.get_orders_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	149, // 139: channel.app.sdk.v1.OrderAppCapabilities.cancel_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	149, // 140: channel.app.sdk.v1.OrderAppCapabilities.return_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	149, // 141: channel.app.sdk.v1.OrderAppCapabilities.exchange_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	149, // 142: channel.app.sdk.v1.OrderAppCapabilities.change_address_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	146, // 143: channel.app.sdk.v1.OrderGetOrdersOutput.orders:type_name -> channel.app.sdk.v1.Order
+	150, // 144: channel.app.sdk.v1.OrderGetAppConfigsOutput.app_capabilities:type_name -> channel.app.sdk.v1.OrderAppCapabilities
+	155, // 145: channel.app.sdk.v1.OrderCancelOrderInput.cancel_items:type_name -> channel.app.sdk.v1.OrderClaimItem
+	134, // 146: channel.app.sdk.v1.OrderCancelOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
+	132, // 147: channel.app.sdk.v1.OrderCancelOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
+	155, // 148: channel.app.sdk.v1.OrderReturnOrderInput.return_items:type_name -> channel.app.sdk.v1.OrderClaimItem
+	134, // 149: channel.app.sdk.v1.OrderReturnOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
+	131, // 150: channel.app.sdk.v1.OrderReturnOrderInput.pickup_address:type_name -> channel.app.sdk.v1.OrderAddress
+	132, // 151: channel.app.sdk.v1.OrderReturnOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
+	133, // 152: channel.app.sdk.v1.OrderReturnOrderInput.defect_info:type_name -> channel.app.sdk.v1.OrderDefectInfo
+	155, // 153: channel.app.sdk.v1.OrderExchangeOrderInput.before_exchange_items:type_name -> channel.app.sdk.v1.OrderClaimItem
+	158, // 154: channel.app.sdk.v1.OrderExchangeOrderInput.after_exchange_items:type_name -> channel.app.sdk.v1.OrderExchangeItem
+	134, // 155: channel.app.sdk.v1.OrderExchangeOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
+	131, // 156: channel.app.sdk.v1.OrderExchangeOrderInput.pickup_address:type_name -> channel.app.sdk.v1.OrderAddress
+	132, // 157: channel.app.sdk.v1.OrderExchangeOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
+	133, // 158: channel.app.sdk.v1.OrderExchangeOrderInput.defect_info:type_name -> channel.app.sdk.v1.OrderDefectInfo
+	155, // 159: channel.app.sdk.v1.OrderGetExchangeableItemsInput.items:type_name -> channel.app.sdk.v1.OrderClaimItem
+	137, // 160: channel.app.sdk.v1.OrderGetExchangeableItemsOutput.items:type_name -> channel.app.sdk.v1.OrderItem
+	131, // 161: channel.app.sdk.v1.OrderChangeShippingAddressInput.new_address:type_name -> channel.app.sdk.v1.OrderAddress
+	135, // 162: channel.app.sdk.v1.CommerceOrderItem.claimability:type_name -> channel.app.sdk.v1.OrderClaimability
+	142, // 163: channel.app.sdk.v1.CommerceOrderItem.custom_attributes:type_name -> channel.app.sdk.v1.OrderAttribute
+	141, // 164: channel.app.sdk.v1.CommerceOrderItem.tax_lines:type_name -> channel.app.sdk.v1.OrderTaxLine
+	166, // 165: channel.app.sdk.v1.CommerceOrderItem.bundle_items:type_name -> channel.app.sdk.v1.CommerceOrderBundleItem
+	205, // 166: channel.app.sdk.v1.CommerceOrder.buyer:type_name -> channel.app.sdk.v1.Buyer
+	165, // 167: channel.app.sdk.v1.CommerceOrder.items:type_name -> channel.app.sdk.v1.CommerceOrderItem
+	138, // 168: channel.app.sdk.v1.CommerceOrder.payment:type_name -> channel.app.sdk.v1.OrderPayment
+	139, // 169: channel.app.sdk.v1.CommerceOrder.fulfillments:type_name -> channel.app.sdk.v1.OrderFulfillment
+	131, // 170: channel.app.sdk.v1.CommerceOrder.shipping_address:type_name -> channel.app.sdk.v1.OrderAddress
+	136, // 171: channel.app.sdk.v1.CommerceOrder.claims:type_name -> channel.app.sdk.v1.OrderClaim
+	131, // 172: channel.app.sdk.v1.CommerceOrder.billing_address:type_name -> channel.app.sdk.v1.OrderAddress
+	142, // 173: channel.app.sdk.v1.CommerceOrder.custom_attributes:type_name -> channel.app.sdk.v1.OrderAttribute
+	143, // 174: channel.app.sdk.v1.CommerceOrder.shipping_lines:type_name -> channel.app.sdk.v1.OrderShippingLine
+	144, // 175: channel.app.sdk.v1.CommerceOrder.transactions:type_name -> channel.app.sdk.v1.OrderTransaction
+	145, // 176: channel.app.sdk.v1.CommerceOrder.metafields:type_name -> channel.app.sdk.v1.OrderMetafield
+	164, // 177: channel.app.sdk.v1.CommerceGetOrdersInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
+	314, // 178: channel.app.sdk.v1.CommerceGetOrdersInput.search_filter:type_name -> google.protobuf.Value
+	167, // 179: channel.app.sdk.v1.CommerceGetOrdersOutput.orders:type_name -> channel.app.sdk.v1.CommerceOrder
+	149, // 180: channel.app.sdk.v1.CommerceAppCapabilities.get_orders_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	149, // 181: channel.app.sdk.v1.CommerceAppCapabilities.request_cancel_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	149, // 182: channel.app.sdk.v1.CommerceAppCapabilities.request_return_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	149, // 183: channel.app.sdk.v1.CommerceAppCapabilities.accept_return_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	149, // 184: channel.app.sdk.v1.CommerceAppCapabilities.request_exchange_order_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	149, // 185: channel.app.sdk.v1.CommerceAppCapabilities.change_shipping_address_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	149, // 186: channel.app.sdk.v1.CommerceAppCapabilities.get_products_options:type_name -> channel.app.sdk.v1.OrderOperationOptions
+	170, // 187: channel.app.sdk.v1.CommerceGetAppConfigsOutput.app_capabilities:type_name -> channel.app.sdk.v1.CommerceAppCapabilities
+	173, // 188: channel.app.sdk.v1.CommerceActionResult.result:type_name -> channel.app.sdk.v1.CommerceResultBody
+	164, // 189: channel.app.sdk.v1.CommerceCancelOrderInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
+	155, // 190: channel.app.sdk.v1.CommerceCancelOrderInput.cancel_items:type_name -> channel.app.sdk.v1.OrderClaimItem
+	134, // 191: channel.app.sdk.v1.CommerceCancelOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
+	132, // 192: channel.app.sdk.v1.CommerceCancelOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
+	164, // 193: channel.app.sdk.v1.CommerceReturnOrderInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
+	155, // 194: channel.app.sdk.v1.CommerceReturnOrderInput.return_items:type_name -> channel.app.sdk.v1.OrderClaimItem
+	134, // 195: channel.app.sdk.v1.CommerceReturnOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
+	131, // 196: channel.app.sdk.v1.CommerceReturnOrderInput.pickup_address:type_name -> channel.app.sdk.v1.OrderAddress
+	132, // 197: channel.app.sdk.v1.CommerceReturnOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
+	133, // 198: channel.app.sdk.v1.CommerceReturnOrderInput.defect_info:type_name -> channel.app.sdk.v1.OrderDefectInfo
+	164, // 199: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
+	155, // 200: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.return_items:type_name -> channel.app.sdk.v1.OrderClaimItem
+	134, // 201: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
+	132, // 202: channel.app.sdk.v1.CommerceAcceptReturnOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
+	164, // 203: channel.app.sdk.v1.CommerceExchangeOrderInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
+	155, // 204: channel.app.sdk.v1.CommerceExchangeOrderInput.before_exchange_items:type_name -> channel.app.sdk.v1.OrderClaimItem
+	158, // 205: channel.app.sdk.v1.CommerceExchangeOrderInput.after_exchange_items:type_name -> channel.app.sdk.v1.OrderExchangeItem
+	134, // 206: channel.app.sdk.v1.CommerceExchangeOrderInput.reason:type_name -> channel.app.sdk.v1.OrderClaimReason
+	131, // 207: channel.app.sdk.v1.CommerceExchangeOrderInput.pickup_address:type_name -> channel.app.sdk.v1.OrderAddress
+	132, // 208: channel.app.sdk.v1.CommerceExchangeOrderInput.refund_bank_account:type_name -> channel.app.sdk.v1.OrderBankAccount
+	133, // 209: channel.app.sdk.v1.CommerceExchangeOrderInput.defect_info:type_name -> channel.app.sdk.v1.OrderDefectInfo
+	164, // 210: channel.app.sdk.v1.CommerceGetExchangeableItemsInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
+	155, // 211: channel.app.sdk.v1.CommerceGetExchangeableItemsInput.items:type_name -> channel.app.sdk.v1.OrderClaimItem
+	181, // 212: channel.app.sdk.v1.CommerceGetExchangeableItemsOutput.exchangeable_items:type_name -> channel.app.sdk.v1.CommerceExchangeableItem
+	182, // 213: channel.app.sdk.v1.CommerceExchangeableItem.variants:type_name -> channel.app.sdk.v1.CommerceExchangeableVariant
+	183, // 214: channel.app.sdk.v1.CommerceExchangeableVariant.options:type_name -> channel.app.sdk.v1.CommerceVariantOption
+	164, // 215: channel.app.sdk.v1.CommerceChangeShippingAddressInput.identifier:type_name -> channel.app.sdk.v1.CommerceIdentifier
+	131, // 216: channel.app.sdk.v1.CommerceChangeShippingAddressInput.new_address:type_name -> channel.app.sdk.v1.OrderAddress
+	314, // 217: channel.app.sdk.v1.CommerceGetProductsInput.search_filter:type_name -> google.protobuf.Value
+	187, // 218: channel.app.sdk.v1.CommerceGetProductsOutput.products:type_name -> channel.app.sdk.v1.CommerceProduct
+	188, // 219: channel.app.sdk.v1.CommerceProduct.variants:type_name -> channel.app.sdk.v1.CommerceProductVariant
+	183, // 220: channel.app.sdk.v1.CommerceProductVariant.options:type_name -> channel.app.sdk.v1.CommerceVariantOption
+	189, // 221: channel.app.sdk.v1.WmsOrderItem.shipping_info:type_name -> channel.app.sdk.v1.WmsShippingInfo
+	191, // 222: channel.app.sdk.v1.WmsOrder.items:type_name -> channel.app.sdk.v1.WmsOrderItem
+	190, // 223: channel.app.sdk.v1.WmsOrder.deliveries:type_name -> channel.app.sdk.v1.WmsDelivery
+	192, // 224: channel.app.sdk.v1.WmsGetOrdersResult.orders:type_name -> channel.app.sdk.v1.WmsOrder
+	192, // 225: channel.app.sdk.v1.WmsGetOrderResult.order:type_name -> channel.app.sdk.v1.WmsOrder
+	314, // 226: channel.app.sdk.v1.WmsGetShopIDResult.shop_id:type_name -> google.protobuf.Value
+	205, // 227: channel.app.sdk.v1.WmsOrderV2.buyer:type_name -> channel.app.sdk.v1.Buyer
+	207, // 228: channel.app.sdk.v1.WmsOrderV2.items:type_name -> channel.app.sdk.v1.WmsOrderItemV2
+	206, // 229: channel.app.sdk.v1.WmsOrderV2.deliveries:type_name -> channel.app.sdk.v1.WmsDeliveryV2
+	209, // 230: channel.app.sdk.v1.WmsOrderGetOrdersRequest.identifier:type_name -> channel.app.sdk.v1.WmsIdentifier
+	314, // 231: channel.app.sdk.v1.WmsOrderGetOrdersRequest.search_filter:type_name -> google.protobuf.Value
+	208, // 232: channel.app.sdk.v1.WmsOrderGetOrdersResult.orders:type_name -> channel.app.sdk.v1.WmsOrderV2
+	209, // 233: channel.app.sdk.v1.WmsOrderActionRequest.identifier:type_name -> channel.app.sdk.v1.WmsIdentifier
+	209, // 234: channel.app.sdk.v1.WmsOrderChangeShippingAddressInput.identifier:type_name -> channel.app.sdk.v1.WmsIdentifier
+	131, // 235: channel.app.sdk.v1.WmsOrderChangeShippingAddressInput.new_address:type_name -> channel.app.sdk.v1.OrderAddress
+	214, // 236: channel.app.sdk.v1.WmsOrderActionResult.result:type_name -> channel.app.sdk.v1.WmsOrderResultBody
+	147, // 237: channel.app.sdk.v1.WmsFieldConfig.allowed_values:type_name -> channel.app.sdk.v1.OrderAllowedValue
+	309, // 238: channel.app.sdk.v1.WmsOperationOptions.field_configs:type_name -> channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntry
+	217, // 239: channel.app.sdk.v1.WmsAppCapabilities.get_orders_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	217, // 240: channel.app.sdk.v1.WmsAppCapabilities.request_cancel_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	217, // 241: channel.app.sdk.v1.WmsAppCapabilities.restore_canceled_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	217, // 242: channel.app.sdk.v1.WmsAppCapabilities.request_return_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	217, // 243: channel.app.sdk.v1.WmsAppCapabilities.restore_returned_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	217, // 244: channel.app.sdk.v1.WmsAppCapabilities.request_exchange_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	217, // 245: channel.app.sdk.v1.WmsAppCapabilities.restore_exchanged_order_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	217, // 246: channel.app.sdk.v1.WmsAppCapabilities.change_shipping_address_options:type_name -> channel.app.sdk.v1.WmsOperationOptions
+	218, // 247: channel.app.sdk.v1.WmsGetAppConfigsOutput.app_capabilities:type_name -> channel.app.sdk.v1.WmsAppCapabilities
+	315, // 248: channel.app.sdk.v1.MessagingOnMediumMessageCreatedInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
+	316, // 249: channel.app.sdk.v1.MessagingOnMediumMessageCreatedInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
+	222, // 250: channel.app.sdk.v1.MessagingOnMediumMessageCreatedOutput.send_result:type_name -> channel.app.sdk.v1.MessagingSendResult
+	315, // 251: channel.app.sdk.v1.MessagingInboxOnMediumUserChatClosedInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
+	315, // 252: channel.app.sdk.v1.MessagingInboxGetWritingTypesInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
+	317, // 253: channel.app.sdk.v1.MessagingInboxGetWritingTypesOutput.writing_type_map:type_name -> channel.app.sdk.v1.WritingTypeMap
+	318, // 254: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.user:type_name -> channel.app.sdk.v1.ChannelUser
+	315, // 255: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
+	316, // 256: channel.app.sdk.v1.MessagingInboxGetCustomEditorWamInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
+	318, // 257: channel.app.sdk.v1.MessagingInboxGetMediumTopicSelectorWamInput.user:type_name -> channel.app.sdk.v1.ChannelUser
+	315, // 258: channel.app.sdk.v1.MessagingInboxGetMediumMessageErrorReasonInput.user_chat:type_name -> channel.app.sdk.v1.ChannelUserChat
+	316, // 259: channel.app.sdk.v1.MessagingInboxGetMediumMessageErrorReasonInput.message:type_name -> channel.app.sdk.v1.ChannelMessage
+	317, // 260: channel.app.sdk.v1.MessagingPrebuiltGetWritingTypesOutput.writing_type_map:type_name -> channel.app.sdk.v1.WritingTypeMap
+	319, // 261: channel.app.sdk.v1.MessagingPrebuiltValidateEntityInput.message:type_name -> channel.app.sdk.v1.PrebuiltMessage
+	320, // 262: channel.app.sdk.v1.MessagingPrebuiltValidateEntityOutput.reasons:type_name -> channel.app.sdk.v1.UnavailableReason
+	319, // 263: channel.app.sdk.v1.MessagingPrebuiltGetCustomEditorWamInput.message:type_name -> channel.app.sdk.v1.PrebuiltMessage
+	313, // 264: channel.app.sdk.v1.MessagingPrebuiltGetCustomEditorWamInput.trigger_event_name_i18n_map:type_name -> google.protobuf.Struct
+	318, // 265: channel.app.sdk.v1.MessagingPrebuiltBuildMediumTopicsInput.user:type_name -> channel.app.sdk.v1.ChannelUser
+	321, // 266: channel.app.sdk.v1.MessagingPrebuiltBuildMediumTopicsOutput.medium_profile:type_name -> channel.app.sdk.v1.MediumProfile
+	313, // 267: channel.app.sdk.v1.MessagingDefaultOptions.campaign_user_query:type_name -> google.protobuf.Struct
+	313, // 268: channel.app.sdk.v1.MessagingDefaultOptions.one_time_msg_user_query:type_name -> google.protobuf.Struct
+	241, // 269: channel.app.sdk.v1.MessagingPrebuiltGetDefaultOptionsOutput.default_options:type_name -> channel.app.sdk.v1.MessagingDefaultOptions
+	313, // 270: channel.app.sdk.v1.AlfTaskWorkflowNode.config:type_name -> google.protobuf.Struct
+	243, // 271: channel.app.sdk.v1.AlfTaskPredefinedTask.memory_schema:type_name -> channel.app.sdk.v1.AlfTaskMemoryDefinition
+	244, // 272: channel.app.sdk.v1.AlfTaskPredefinedTask.nodes:type_name -> channel.app.sdk.v1.AlfTaskWorkflowNode
+	245, // 273: channel.app.sdk.v1.AlfTaskGetTasksOutput.predefined_tasks:type_name -> channel.app.sdk.v1.AlfTaskPredefinedTask
+	250, // 274: channel.app.sdk.v1.PollingGetTargetManagersOutput.targets:type_name -> channel.app.sdk.v1.PollingManagerTarget
+	253, // 275: channel.app.sdk.v1.DataSourceAuthorizeQueryInput.tables:type_name -> channel.app.sdk.v1.DataSourceQueryTableAccess
+	254, // 276: channel.app.sdk.v1.DataSourceAuthorizeQueryOutput.filters:type_name -> channel.app.sdk.v1.DataSourceQueryFilter
+	313, // 277: channel.app.sdk.v1.HookTeamChatMessageCreatedInput.snapshot:type_name -> google.protobuf.Struct
+	313, // 278: channel.app.sdk.v1.ConfigActionResult.values_patch:type_name -> google.protobuf.Struct
+	263, // 279: channel.app.sdk.v1.ConfigActionResult.redirect:type_name -> channel.app.sdk.v1.ConfigActionRedirect
+	265, // 280: channel.app.sdk.v1.ExternalIssue.provider_state:type_name -> channel.app.sdk.v1.IssueProviderState
+	266, // 281: channel.app.sdk.v1.ExternalIssue.container:type_name -> channel.app.sdk.v1.IssueContainer
+	267, // 282: channel.app.sdk.v1.ExternalIssue.closed_by:type_name -> channel.app.sdk.v1.IssueActor
+	314, // 283: channel.app.sdk.v1.IssueTransitionField.enum:type_name -> google.protobuf.Value
+	310, // 284: channel.app.sdk.v1.IssueTransitionInput.properties:type_name -> channel.app.sdk.v1.IssueTransitionInput.PropertiesEntry
+	265, // 285: channel.app.sdk.v1.IssueTransition.target_provider_state:type_name -> channel.app.sdk.v1.IssueProviderState
+	271, // 286: channel.app.sdk.v1.IssueTransition.input_schema:type_name -> channel.app.sdk.v1.IssueTransitionInput
+	268, // 287: channel.app.sdk.v1.IssueSearchIssuesOutput.issues:type_name -> channel.app.sdk.v1.ExternalIssue
+	268, // 288: channel.app.sdk.v1.IssueGetIssueOutput.issue:type_name -> channel.app.sdk.v1.ExternalIssue
+	268, // 289: channel.app.sdk.v1.IssueGetIssuesResult.issue:type_name -> channel.app.sdk.v1.ExternalIssue
+	269, // 290: channel.app.sdk.v1.IssueGetIssuesResult.error:type_name -> channel.app.sdk.v1.IssueError
+	278, // 291: channel.app.sdk.v1.IssueGetIssuesOutput.results:type_name -> channel.app.sdk.v1.IssueGetIssuesResult
+	272, // 292: channel.app.sdk.v1.IssueGetIssueTransitionsOutput.transitions:type_name -> channel.app.sdk.v1.IssueTransition
+	313, // 293: channel.app.sdk.v1.IssueExecuteIssueTransitionInput.fields:type_name -> google.protobuf.Struct
+	268, // 294: channel.app.sdk.v1.IssueExecuteIssueTransitionOutput.issue:type_name -> channel.app.sdk.v1.ExternalIssue
+	311, // 295: channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.channel:type_name -> channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.ChannelEntry
+	312, // 296: channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.manager:type_name -> channel.app.sdk.v1.OAuthAuthorizationParamsByAuthScope.ManagerEntry
 	10,  // 297: channel.app.sdk.v1.ConfigChoice.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
 	10,  // 298: channel.app.sdk.v1.ConfigInlineLink.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
 	10,  // 299: channel.app.sdk.v1.ConfigValidationNotice.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText

@@ -23422,6 +23422,30 @@
                 "type": "string"
               }
             },
+            "additionalParamsByAuthScope": {
+              "type": "object",
+              "properties": {
+                "channel": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "propertyNames": {
+                    "pattern": "^[A-Za-z0-9_.-]+$"
+                  }
+                },
+                "manager": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "propertyNames": {
+                    "pattern": "^[A-Za-z0-9_.-]+$"
+                  }
+                }
+              },
+              "additionalProperties": false
+            },
             "authorizationRequest": {
               "type": "object",
               "properties": {
@@ -23439,30 +23463,6 @@
                 "codeChallengeMethod": {
                   "type": "string",
                   "const": "S256"
-                },
-                "additionalParamsByAuthScope": {
-                  "type": "object",
-                  "properties": {
-                    "channel": {
-                      "type": "object",
-                      "additionalProperties": {
-                        "type": "string"
-                      },
-                      "propertyNames": {
-                        "pattern": "^[A-Za-z0-9_.-]+$"
-                      }
-                    },
-                    "manager": {
-                      "type": "object",
-                      "additionalProperties": {
-                        "type": "string"
-                      },
-                      "propertyNames": {
-                        "pattern": "^[A-Za-z0-9_.-]+$"
-                      }
-                    }
-                  },
-                  "additionalProperties": false
                 }
               },
               "additionalProperties": false
