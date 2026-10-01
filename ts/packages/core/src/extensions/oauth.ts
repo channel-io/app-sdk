@@ -131,9 +131,10 @@ export type OAuthProviderI18nMap = z.infer<typeof OAuthProviderI18nMapSchema>;
 
 const OAuthAuthorizationParamValueSchema = z
   .string()
-  .refine((value) => value.trim().length > 0, "Authorization parameter values must not be blank")
-  .refine(
-    (value) => !["\r", "\n", "\0"].some((delimiter) => value.includes(delimiter)),
+  .regex(/\S/, "Authorization parameter values must not be blank")
+  .regex(
+    // eslint-disable-next-line no-control-regex -- NUL must also be excluded from the generated JSON Schema.
+    /^[^\r\n\u0000]*$/,
     "Authorization parameter values must not contain CR, LF, or NUL"
   );
 

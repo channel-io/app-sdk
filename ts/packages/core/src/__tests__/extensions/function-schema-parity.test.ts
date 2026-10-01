@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { z } from "zod";
 import {
   extensionFunctionSchemaDefinitions,
   getExtensionFunctionSchemas,
@@ -15,6 +16,44 @@ const fixturePath = resolve(
 );
 
 describe("extension function schema parity fixture", () => {
+  it("preserves scoped OAuth value restrictions in the serialized registration schema", () => {
+    const definition = getExtensionFunctionSchemas().find(
+      (entry) => entry.name === "extension.oauth.metadata.getAuthConfig"
+    );
+    const valueMap = z.object({
+      additionalProperties: z.object({
+        type: z.literal("string"),
+        allOf: z.array(z.object({ pattern: z.string() })).min(2),
+      }),
+    });
+    const schema = z
+      .object({
+        properties: z.object({
+          oauthProvider: z.object({
+            properties: z.object({
+              additionalParamsByAuthScope: z.object({
+                properties: z.object({ channel: valueMap, manager: valueMap }),
+              }),
+            }),
+          }),
+        }),
+      })
+      .parse(JSON.parse(JSON.stringify(definition?.outputSchema)));
+    const scopes =
+      schema.properties.oauthProvider.properties.additionalParamsByAuthScope.properties;
+    for (const scope of ["channel", "manager"] as const) {
+      const patterns = scopes[scope].additionalProperties.allOf.map(
+        ({ pattern }) => new RegExp(pattern)
+      );
+      for (const value of ["app", "user", "a b", "앱"]) {
+        expect(patterns.every((pattern) => pattern.test(value))).toBe(true);
+      }
+      for (const value of ["", " ", "\t", "app\r", "app\n", "app\u0000"]) {
+        expect(patterns.every((pattern) => pattern.test(value))).toBe(false);
+      }
+    }
+  });
+
   it("matches the canonical TypeScript zod schema output", () => {
     const expected = readFileSync(fixturePath, "utf8");
     const actual = `${JSON.stringify(getExtensionFunctionSchemas(), null, 2)}\n`;

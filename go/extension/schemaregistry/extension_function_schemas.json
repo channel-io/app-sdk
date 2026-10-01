@@ -23428,7 +23428,15 @@
                 "channel": {
                   "type": "object",
                   "additionalProperties": {
-                    "type": "string"
+                    "type": "string",
+                    "allOf": [
+                      {
+                        "pattern": "\\S"
+                      },
+                      {
+                        "pattern": "^[^\\r\\n\\u0000]*$"
+                      }
+                    ]
                   },
                   "propertyNames": {
                     "pattern": "^[A-Za-z0-9_.-]+$"
@@ -23437,7 +23445,15 @@
                 "manager": {
                   "type": "object",
                   "additionalProperties": {
-                    "type": "string"
+                    "type": "string",
+                    "allOf": [
+                      {
+                        "pattern": "\\S"
+                      },
+                      {
+                        "pattern": "^[^\\r\\n\\u0000]*$"
+                      }
+                    ]
                   },
                   "propertyNames": {
                     "pattern": "^[A-Za-z0-9_.-]+$"
