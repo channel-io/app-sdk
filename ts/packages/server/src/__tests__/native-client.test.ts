@@ -61,6 +61,97 @@ describe("NativeFunctionClient", () => {
     vi.restoreAllMocks();
   });
 
+  describe("per-call transport options", () => {
+    it.each([false, true])(
+      "suppresses payload debug logging (with token: %s)",
+      async (withToken) => {
+        const debug = vi.spyOn(console, "debug").mockImplementation(() => {});
+        const instance = createDebugClient();
+        const controller = new AbortController();
+        const options = { payloadLogging: "metadata-only" as const, signal: controller.signal };
+        mockFetch.mockResolvedValueOnce(
+          mockFetchResponse({ result: { output: "response-payload" } })
+        );
+        const params = { input: "request-payload" };
+        const result = withToken
+          ? await instance.callNativeFunctionWithToken("sampleOperation", params, "token", options)
+          : await instance.callNativeFunction("sampleOperation", params, options);
+        expect(result).toEqual({ output: "response-payload" });
+        expect(parseFetchBody(mockFetch)).toEqual({ method: "sampleOperation", params });
+        expect(getFetchInit(mockFetch).signal).toBe(controller.signal);
+        expect(JSON.stringify(debug.mock.calls)).not.toMatch(/request-payload|response-payload/);
+        expect(debug).toHaveBeenCalledTimes(2);
+        expect(debug.mock.calls.every((args) => args.length === 1)).toBe(true);
+      }
+    );
+
+    it("keeps call options isolated across concurrent responses", async () => {
+      const debug = vi.spyOn(console, "debug").mockImplementation(() => {});
+      let resolveFirst!: (response: Response) => void;
+      mockFetch.mockImplementationOnce(
+        () =>
+          new Promise<Response>((resolve) => {
+            resolveFirst = resolve;
+          })
+      );
+      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: { value: "visible-response" } }));
+      const instance = createDebugClient();
+      const first = instance.callNativeFunction(
+        "sampleOperation",
+        { value: "hidden-request" },
+        {
+          payloadLogging: "metadata-only",
+        }
+      );
+      await instance.callNativeFunction("sampleOperation", { value: "visible-request" });
+      resolveFirst(mockFetchResponse({ result: { value: "hidden-response" } }));
+      await first;
+      const logs = JSON.stringify(debug.mock.calls);
+      expect(logs).toContain("visible-request");
+      expect(logs).toContain("visible-response");
+      expect(logs).not.toMatch(/hidden-request|hidden-response/);
+    });
+
+    it("preserves function and HTTP error details without logging their payloads", async () => {
+      const debug = vi.spyOn(console, "debug").mockImplementation(() => {});
+      const instance = createDebugClient();
+      const options = { payloadLogging: "metadata-only" as const };
+      mockFetch.mockResolvedValueOnce(
+        mockFetchResponse({
+          error: {
+            code: -32802,
+            message: "Denied",
+            data: { detail: "error-payload" },
+          },
+        })
+      );
+      await expect(
+        instance.callNativeFunctionWithToken("sampleOperation", {}, "token", options)
+      ).rejects.toMatchObject({
+        code: -32802,
+        message: "Denied",
+        responseBody: '{"detail":"error-payload"}',
+      });
+      mockFetch.mockResolvedValueOnce(mockFetchResponse({ detail: "http-payload" }, 403));
+      await expect(
+        instance.callNativeFunction("sampleOperation", {}, options)
+      ).rejects.toMatchObject({ code: 403, responseBody: '{"detail":"http-payload"}' });
+      expect(JSON.stringify(debug.mock.calls)).not.toMatch(/error-payload|http-payload/);
+    });
+
+    it("propagates cancellation without retrying", async () => {
+      const controller = new AbortController();
+      controller.abort();
+      const aborted = new DOMException("Aborted", "AbortError");
+      mockFetch.mockRejectedValueOnce(aborted);
+      await expect(
+        client.callNativeFunction("sampleOperation", {}, { signal: controller.signal })
+      ).rejects.toBe(aborted);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(getFetchInit(mockFetch).signal).toBe(controller.signal);
+    });
+  });
+
   // ============================================
   // Auth Functions
   // ============================================
@@ -286,45 +377,6 @@ describe("NativeFunctionClient", () => {
     });
   });
 
-  describe("prepareAppMediaUpload", () => {
-    it("should prepare a public Media upload with a channel-scoped token", async () => {
-      const uploadTarget = {
-        uploadUrl: "https://media.example.com/v1/app-store/media/file",
-        uploadMethod: "POST",
-        headers: { Accept: "application/json" },
-        bodyType: "multipart",
-        fileField: "file",
-        fileName: "guide.pdf",
-        formFields: { managerId: "manager-1" },
-      };
-      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: uploadTarget }));
-
-      const result = await client.prepareAppMediaUpload(
-        {
-          managerId: "manager-1",
-          fileName: "guide.pdf",
-          contentType: "application/pdf",
-          size: 1024,
-        },
-        "channel-token"
-      );
-
-      expect(parseFetchBody(mockFetch)).toEqual({
-        method: "prepareAppMediaUpload",
-        params: {
-          managerId: "manager-1",
-          fileName: "guide.pdf",
-          contentType: "application/pdf",
-          size: 1024,
-        },
-      });
-      const init = getFetchInit(mockFetch);
-      expect((init.headers as Record<string, string>)["x-access-token"]).toBe("channel-token");
-      expect(result).toEqual(uploadTarget);
-      expectTypeOf(result.formFields).toEqualTypeOf<Record<string, string>>();
-    });
-  });
-
   // ============================================
   // AppDataTable Functions
   // ============================================
@@ -480,45 +532,6 @@ describe("NativeFunctionClient", () => {
       expect(result).toEqual(expected);
     });
 
-    it("should call the Manager private-note method with its one-purpose credential", async () => {
-      const expected = { message: { id: "message-private-1" } };
-      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: expected }));
-
-      const result = await client.writeUserChatPrivateNoteWithManagerCredential(
-        {
-          channelId: "ch-1",
-          userChatId: "user-chat-1",
-          requestId: "request-1",
-          lifecycleRevision: 7,
-          dto: {
-            plainText: "private note",
-            customPayload: { source: "synthetic-slack-reply" },
-          },
-        },
-        "manager-private-note-credential"
-      );
-
-      const body = parseFetchBody(mockFetch);
-      expect(body).toEqual({
-        method: "writeUserChatPrivateNoteWithManagerCredential",
-        params: {
-          channelId: "ch-1",
-          userChatId: "user-chat-1",
-          requestId: "request-1",
-          lifecycleRevision: 7,
-          dto: {
-            plainText: "private note",
-            customPayload: { source: "synthetic-slack-reply" },
-          },
-        },
-      });
-      const init = getFetchInit(mockFetch);
-      expect((init.headers as Record<string, string>)["x-access-token"]).toBe(
-        "manager-private-note-credential"
-      );
-      expect(result).toEqual(expected);
-    });
-
     it("should forward an abort signal to authenticated native reads", async () => {
       const controller = new AbortController();
       mockFetch.mockResolvedValueOnce(
@@ -533,31 +546,6 @@ describe("NativeFunctionClient", () => {
       );
 
       expect(getFetchInit(mockFetch).signal).toBe(controller.signal);
-    });
-
-    it("should not debug-log Manager private-note request or response content", async () => {
-      const debugClient = createDebugClient();
-      const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => undefined);
-      mockFetch.mockResolvedValueOnce(
-        mockFetchResponse({
-          result: { message: { id: "message-private-1", plainText: "core-private-response" } },
-        })
-      );
-
-      await debugClient.writeUserChatPrivateNoteWithManagerCredential(
-        {
-          channelId: "ch-1",
-          userChatId: "user-chat-1",
-          requestId: "request-1",
-          lifecycleRevision: 7,
-          dto: { plainText: "slack-private-request" },
-        },
-        "manager-private-note-credential"
-      );
-
-      const debugOutput = JSON.stringify(debugSpy.mock.calls);
-      expect(debugOutput).not.toContain("slack-private-request");
-      expect(debugOutput).not.toContain("core-private-response");
     });
   });
 

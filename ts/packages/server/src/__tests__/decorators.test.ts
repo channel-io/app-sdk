@@ -3,6 +3,7 @@ import "reflect-metadata";
 import { z } from "zod";
 import {
   Extension,
+  createExtensionDecorator,
   EXTENSION_METADATA,
   Func,
   TestFunc,
@@ -385,5 +386,42 @@ describe("Decorators", () => {
         { index: 1, type: FunctionParamType.INPUT },
       ]);
     });
+  });
+});
+
+describe("createExtensionDecorator", () => {
+  it("creates isolated package decorators without changing built-in names", () => {
+    const PackageExtension = createExtensionDecorator("sampleAddon");
+    @PackageExtension({ systemVersion: "v2", exclusive: true, description: "Sample contract" })
+    class Example {}
+    expect(Reflect.getMetadata(EXTENSION_METADATA, Example)).toEqual({
+      name: "sampleAddon",
+      systemVersion: "v2",
+      exclusive: true,
+      description: "Sample contract",
+    });
+    expect(Reflect.getMetadata("__injectable__", Example)).toBe(true);
+    expect(() => Extension("sampleAddon" as any)).toThrow(/not a valid SDK extension name/);
+    expect(SDK_EXTENSION_NAMES).not.toContain("sampleAddon");
+  });
+
+  it.each(["", " spaced", "trailing ", "extension.sample", "sample/path"])(
+    "rejects invalid contract identifier %j",
+    (name) => {
+      expect(() => createExtensionDecorator(name)).toThrow(/single non-empty identifier/);
+    }
+  );
+
+  it.each([undefined, null, 123])("rejects non-string names from JavaScript: %j", (name) => {
+    expect(() => createExtensionDecorator(name as unknown as string)).toThrow(
+      /single non-empty identifier/
+    );
+  });
+
+  it("keeps the bound contract name even when JavaScript passes a name option", () => {
+    const PackageExtension = createExtensionDecorator("sampleAddon");
+    @PackageExtension({ name: "another" } as any)
+    class Example {}
+    expect(Reflect.getMetadata(EXTENSION_METADATA, Example).name).toBe("sampleAddon");
   });
 });

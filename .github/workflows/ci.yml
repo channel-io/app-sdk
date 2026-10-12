@@ -65,6 +65,9 @@ jobs:
         working-directory: ts
         run: pnpm install --frozen-lockfile
 
+      - name: Verify native catalog
+        run: node scripts/check-native-catalog.mjs
+
       - name: Lint
         run: make lint
 
@@ -103,6 +106,9 @@ jobs:
         working-directory: ts
         run: pnpm install --frozen-lockfile
 
+      - name: Verify native catalog
+        run: node scripts/check-native-catalog.mjs
+
       - name: Build
         run: make build
 
@@ -134,6 +140,9 @@ jobs:
       - name: Install TypeScript dependencies
         working-directory: ts
         run: pnpm install --frozen-lockfile
+
+      - name: Verify native catalog
+        run: node scripts/check-native-catalog.mjs
 
       - name: Test
         run: make test

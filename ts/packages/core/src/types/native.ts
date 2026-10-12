@@ -7,7 +7,6 @@ import type {
 } from "../gen/channel/app/sdk/v1/native.js";
 
 export type NativeJsonObject = object;
-export type NativeEmptyResult = Record<string, never>;
 
 export type NativeSortOrder =
   "SORT_ORDER_UNSPECIFIED" | "SORT_ORDER_ASC" | "SORT_ORDER_DESC" | "SORT_ORDER_BOTH";
@@ -18,24 +17,10 @@ export interface NativePagination {
   limit?: number;
 }
 
-export type NativeFieldMask =
-  | string
-  | readonly string[]
-  | {
-      paths: readonly string[];
-    };
-
 export interface NativeDuration {
   seconds?: number | string;
   nanos?: number;
 }
-
-export type NativeMessageState =
-  | "MESSAGE_STATE_UNSPECIFIED"
-  | "MESSAGE_STATE_SENDING"
-  | "MESSAGE_STATE_SENT"
-  | "MESSAGE_STATE_FAILED"
-  | "MESSAGE_STATE_REMOVED";
 
 export type NativeMessageOption =
   | "MESSAGE_OPTION_UNSPECIFIED"
@@ -144,39 +129,25 @@ export interface NativeChannel extends NativeOpaqueModel {
   id: string;
 }
 
-export interface NativePlugin extends NativeOpaqueModel {
-  id: string;
-}
-
-export interface NativeRole extends NativeOpaqueModel {
-  id: string;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface NativeEntityToken extends NativeOpaqueModel {}
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface NativeMediumLink extends NativeOpaqueModel {}
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface NativeEvent extends NativeOpaqueModel {}
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface NativeUserSchema extends NativeOpaqueModel {}
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface NativeUserChatSchema extends NativeOpaqueModel {}
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface NativeEventSchema extends NativeOpaqueModel {}
-
 export type NativeProxyMessage = NativeMessage;
+
 export type NativeProxyManager = NativeManager;
+
 export type NativeProxyUser = NativeUser;
+
 export type NativeProxyUserChat = NativeUserChat;
+
 export type NativeProxyGroup = NativeGroup;
+
 export type NativeProxyChannel = NativeChannel;
+
 export interface NativeMessageButton {
   title?: string;
   colorVariant?: NativeMessageColorVariant;
   action?: NativeJsonObject;
   [key: string]: unknown;
 }
+
 export interface NativeMessageFile {
   url?: string;
   mime?: string;
@@ -185,7 +156,9 @@ export interface NativeMessageFile {
 }
 
 export type NativeProxyMessageButton = NativeMessageButton;
+
 export type NativeProxyMessageFile = NativeMessageFile;
+
 export type NativeProxyMessageOption = NativeMessageOption;
 
 export interface NativeWriteMessageDto {
@@ -251,23 +224,6 @@ export interface NativeWriteUserChatMessageAsManagerParams {
 
 export type NativeWriteUserChatMessageAsManagerResult = NativeWriteUserChatMessageResult;
 
-export interface NativeWritePrivateNoteDto {
-  blocks?: readonly NativeJsonObject[];
-  plainText?: string;
-  customPayload?: NativeJsonObject;
-}
-
-export interface NativeWriteUserChatPrivateNoteWithManagerCredentialParams {
-  channelId: string;
-  userChatId: string;
-  requestId: string;
-  lifecycleRevision: number;
-  dto: NativeWritePrivateNoteDto;
-}
-
-export type NativeWriteUserChatPrivateNoteWithManagerCredentialResult =
-  NativeWriteUserChatMessageResult;
-
 export interface NativeWriteUserChatMessageAsUserParams {
   channelId: string;
   userChatId: string;
@@ -285,24 +241,6 @@ export interface NativeWriteDirectChatMessageAsManagerParams {
 }
 
 export type NativeWriteDirectChatMessageAsManagerResult = NativeWriteUserChatMessageResult;
-
-export interface NativePatchMessageBody {
-  options?: readonly NativeMessageOption[];
-  state?: NativeMessageState;
-}
-
-export interface NativePatchMessageParams {
-  channelId: string;
-  chatId: string;
-  chatType: string;
-  messageId: string;
-  body: NativePatchMessageBody;
-  updateMask: NativeFieldMask;
-}
-
-export interface NativePatchMessageResult {
-  message: NativeMessage;
-}
 
 export interface NativeGetManagerParams {
   channelId: string;
@@ -341,74 +279,6 @@ export interface NativeGetUserResult {
   user: NativeUser;
 }
 
-export interface NativeSearchUserParams {
-  channelId: string;
-  memberId: string;
-}
-
-export interface NativeSearchUserResult {
-  user: NativeUser;
-}
-
-export interface NativeUserPatchBody {
-  mobileNumberQualified?: boolean;
-  emailQualified?: boolean;
-  profile?: NativeJsonObject;
-  profileOnce?: NativeJsonObject;
-  tags?: readonly string[];
-  blocked?: boolean;
-  unsubscribeEmail?: boolean;
-  unsubscribeTexting?: boolean;
-  language?: string;
-}
-
-export interface NativePatchUserParams {
-  channelId: string;
-  userId: string;
-  body: NativeUserPatchBody;
-  updateMask: NativeFieldMask;
-}
-
-export interface NativePatchUserResult {
-  user: NativeUser;
-}
-
-export interface NativeCreateLeadParams {
-  channelId: string;
-  profile: NativeJsonObject;
-}
-
-export interface NativeCreateLeadResult {
-  user: NativeUser;
-}
-
-export interface NativeCreateUserParams {
-  channelId: string;
-  profile: NativeJsonObject;
-}
-
-export interface NativeCreateUserResult {
-  user: NativeUser;
-}
-
-export interface NativeUpsertMemberParams {
-  channelId: string;
-  memberId: string;
-  body: NativeUserPatchBody;
-  updateMask: NativeFieldMask;
-}
-
-export interface NativeUpsertMemberResult {
-  user: NativeUser;
-}
-
-export interface NativeDeleteUserParams {
-  channelId: string;
-  userId: string;
-}
-
-export type NativeDeleteUserResult = NativeEmptyResult;
-
 export interface NativeGetUserChatParams {
   channelId: string;
   userChatId: string;
@@ -424,15 +294,6 @@ export interface NativeManageUserChatParams {
 }
 
 export interface NativeManageUserChatResult {
-  userChat: NativeUserChat;
-}
-
-export interface NativeCreateUserChatParams {
-  channelId: string;
-  userId: string;
-}
-
-export interface NativeCreateUserChatResult {
   userChat: NativeUserChat;
 }
 
@@ -453,42 +314,6 @@ export interface FindOrCreateUserChatByMediumResult {
   userChat: NativeUserChat;
 }
 
-export interface NativeSearchUserChatsByContactParams {
-  channelId: string;
-  mediumType: string;
-  mediumId?: string;
-  address: string;
-  pagination?: NativePagination;
-}
-
-export interface NativeSearchUserChatsByContactResult {
-  userChats: NativeUserChat[];
-  next?: string;
-}
-
-export interface NativeSearchUserChatsByMediumParams {
-  userId: string;
-  mediumType: string;
-  mediumId?: string;
-  mediumTopicKey?: string;
-}
-
-export interface NativeSearchUserChatsByMediumResult {
-  userChats: NativeUserChat[];
-}
-
-export interface NativeUpdateUserChatStateParams {
-  channelId: string;
-  userChatId: string;
-  state: NativeUserChatState;
-  duration?: NativeDuration;
-  botName: string;
-}
-
-export interface NativeUpdateUserChatStateResult {
-  userChat: NativeUserChat;
-}
-
 export interface NativeUpdateUserChatStateByUserParams {
   channelId: string;
   userChatId: string;
@@ -497,20 +322,6 @@ export interface NativeUpdateUserChatStateByUserParams {
 }
 
 export interface NativeUpdateUserChatStateByUserResult {
-  userChat: NativeUserChat;
-}
-
-export interface NativeStartUserChatFromUserByMediumParams {
-  channelId: string;
-  userChatId: string;
-  mediumType: string;
-  mediumId?: string;
-  useQuickDeploy?: boolean;
-  showWelcomeMessage?: boolean;
-  tryOpen?: boolean;
-}
-
-export interface NativeStartUserChatFromUserByMediumResult {
   userChat: NativeUserChat;
 }
 
@@ -555,26 +366,6 @@ export interface NativeFindContactsByUserResult {
   contacts: NativeContact[];
 }
 
-export interface NativeFindContactsByAddressParams {
-  channelId: string;
-  mediumType: string;
-  mediumId?: string;
-  address: string;
-}
-
-export interface NativeFindContactsByAddressResult {
-  contacts: NativeContact[];
-}
-
-export interface NativeCreateDirectChatParams {
-  channelId: string;
-  managerIds: readonly string[];
-}
-
-export interface NativeCreateDirectChatResult {
-  directChat: NativeDirectChat;
-}
-
 export interface NativeFindOrCreateDirectChatParams {
   channelId: string;
   managerIds: readonly string[];
@@ -609,128 +400,6 @@ export interface NativeGetChannelParams {
 
 export interface NativeGetChannelResult {
   channel: NativeChannel;
-}
-
-export interface NativeGetPluginParams {
-  channelId: string;
-  pluginId: string;
-}
-
-export interface NativeGetPluginResult {
-  plugin: NativePlugin;
-}
-
-export interface NativeAppCommerceParams {
-  appCommerceType: string;
-  appCommerceId: string;
-  appCommerceDomain?: string;
-}
-
-export interface NativeRegisterCommerceParams {
-  channelId: string;
-  pluginId: string;
-  memberHash?: boolean;
-  appCommerce: NativeAppCommerceParams;
-}
-
-export interface NativeRegisterCommerceResult {
-  channel: NativeChannel;
-  plugin: NativePlugin;
-}
-
-export interface NativeDeregisterCommerceParams {
-  channelId: string;
-  pluginId: string;
-  appCommerce: NativeAppCommerceParams;
-}
-
-export type NativeDeregisterCommerceResult = NativeEmptyResult;
-
-export interface NativeCreateEventParams {
-  channelId: string;
-  userId: string;
-  name: string;
-  property?: NativeJsonObject;
-}
-
-export interface NativeCreateEventResult {
-  event: NativeEvent;
-}
-
-export interface NativeCreateMediumLinkParams {
-  channelId: string;
-  mediumId?: string;
-  mediumType: string;
-}
-
-export interface NativeCreateMediumLinkResult {
-  mediumLink: NativeMediumLink;
-}
-
-export interface NativeDeleteMediumLinkParams {
-  channelId: string;
-  mediumId?: string;
-  mediumType: string;
-}
-
-export type NativeDeleteMediumLinkResult = NativeEmptyResult;
-
-export interface NativeGetRoleParams {
-  channelId: string;
-  roleId: string;
-}
-
-export interface NativeGetRoleResult {
-  role: NativeRole;
-}
-
-export interface NativeSearchUserChatSchemasParams {
-  channelId: string;
-  pagination?: NativePagination;
-}
-
-export interface NativeSearchUserChatSchemasResult {
-  schemas: NativeUserChatSchema[];
-  next?: string;
-}
-
-export interface NativeSearchUserSchemasParams {
-  channelId: string;
-  pagination?: NativePagination;
-}
-
-export interface NativeSearchUserSchemasResult {
-  schemas: NativeUserSchema[];
-  next?: string;
-}
-
-export interface NativeSearchEventSchemasByEventNameParams {
-  channelId: string;
-  eventName: string;
-  pagination?: NativePagination;
-}
-
-export interface NativeSearchEventSchemasByEventNameResult {
-  schemas: NativeEventSchema[];
-  next?: string;
-}
-
-export interface NativeAppSchemaDto {
-  key: string;
-  type?: NativeOperatorType;
-  name: string;
-  defaultWatch?: boolean;
-  defaultWidth?: number;
-}
-
-export interface NativeCreateAppSchemasParams {
-  channelId: string;
-  schemas: readonly NativeAppSchemaDto[];
-}
-
-export interface NativeCreateAppSchemasResult {
-  schemas: NativeUserSchema[];
-  skippedKeys: string[];
 }
 
 export interface NativeCreateAppDataTableParams {
@@ -796,23 +465,6 @@ export interface NativeGetAppNotebookVersionsResult {
   notebooks: NativeAppNotebookVersion[];
 }
 
-export interface NativePrepareAppMediaUploadParams {
-  managerId?: string;
-  fileName: string;
-  contentType?: string;
-  size?: number;
-}
-
-export interface NativePrepareAppMediaUploadResult {
-  uploadUrl: string;
-  uploadMethod: string;
-  headers: Record<string, string>;
-  bodyType?: string;
-  fileField?: string;
-  fileName?: string;
-  formFields: Record<string, string>;
-}
-
 export interface NativeActiveOAuthManagerTarget {
   channelId: string;
   managerId: string;
@@ -834,44 +486,31 @@ export interface NativeOAuthFlow extends OAuthFlow {
   phase: "before" | "oauth" | "after" | "completed" | "canceled";
   expiresAt: string;
 }
+
 export interface NativeGetOAuthFlowParams extends GetOAuthFlowParams {
   flowId: string;
 }
+
 export interface NativeResumeOAuthFlowParams extends ResumeOAuthFlowParams {
   flowId: string;
 }
+
 export interface NativeCancelOAuthFlowParams extends CancelOAuthFlowParams {
   flowId: string;
 }
+
 export interface NativeOAuthFlowResult extends OAuthFlowResult {
   flow?: NativeOAuthFlow;
 }
-
-export interface NativeIssueEntityTokenParams {
-  channelId: string;
-  entityType: string;
-  entityId: string;
-}
-
-export interface NativeIssueEntityTokenResult {
-  entityToken: NativeEntityToken;
-}
-
-// Channel App platform also routes document native functions (`searchArticles`,
-// `getRevision`, `getArticle`), but they are intentionally omitted here until
-// the document-api request/result DTOs are modeled in this SDK.
 export interface NativeFunctionTypeMap {
-  /** Requires the initiating manager's authenticated WAM session. */
   getOAuthFlow: {
     params: NativeGetOAuthFlowParams;
     result: NativeOAuthFlowResult;
   };
-  /** Requires the initiating manager's authenticated WAM session. */
   resumeOAuthFlow: {
     params: NativeResumeOAuthFlowParams;
     result: NativeOAuthFlowResult;
   };
-  /** Requires the initiating manager's authenticated WAM session. */
   cancelOAuthFlow: {
     params: NativeCancelOAuthFlowParams;
     result: NativeOAuthFlowResult;
@@ -920,10 +559,6 @@ export interface NativeFunctionTypeMap {
     params: NativeWriteUserChatMessageAsManagerParams;
     result: NativeWriteUserChatMessageAsManagerResult;
   };
-  writeUserChatPrivateNoteWithManagerCredential: {
-    params: NativeWriteUserChatPrivateNoteWithManagerCredentialParams;
-    result: NativeWriteUserChatPrivateNoteWithManagerCredentialResult;
-  };
   writeDirectChatMessageAsManager: {
     params: NativeWriteDirectChatMessageAsManagerParams;
     result: NativeWriteDirectChatMessageAsManagerResult;
@@ -931,10 +566,6 @@ export interface NativeFunctionTypeMap {
   writeUserChatMessageAsUser: {
     params: NativeWriteUserChatMessageAsUserParams;
     result: NativeWriteUserChatMessageAsUserResult;
-  };
-  createDirectChat: {
-    params: NativeCreateDirectChatParams;
-    result: NativeCreateDirectChatResult;
   };
   findOrCreateDirectChat: {
     params: NativeFindOrCreateDirectChatParams;
@@ -948,42 +579,6 @@ export interface NativeFunctionTypeMap {
     params: NativeSearchGroupsParams;
     result: NativeSearchGroupsResult;
   };
-  searchUser: {
-    params: NativeSearchUserParams;
-    result: NativeSearchUserResult;
-  };
-  createLead: {
-    params: NativeCreateLeadParams;
-    result: NativeCreateLeadResult;
-  };
-  createUser: {
-    params: NativeCreateUserParams;
-    result: NativeCreateUserResult;
-  };
-  patchUser: {
-    params: NativePatchUserParams;
-    result: NativePatchUserResult;
-  };
-  deleteUser: {
-    params: NativeDeleteUserParams;
-    result: NativeDeleteUserResult;
-  };
-  upsertMember: {
-    params: NativeUpsertMemberParams;
-    result: NativeUpsertMemberResult;
-  };
-  searchUserChatsByContact: {
-    params: NativeSearchUserChatsByContactParams;
-    result: NativeSearchUserChatsByContactResult;
-  };
-  updateUserChatState: {
-    params: NativeUpdateUserChatStateParams;
-    result: NativeUpdateUserChatStateResult;
-  };
-  createUserChat: {
-    params: NativeCreateUserChatParams;
-    result: NativeCreateUserChatResult;
-  };
   findOrCreateUserChatByMedium: {
     params: FindOrCreateUserChatByMediumParams;
     result: FindOrCreateUserChatByMediumResult;
@@ -992,37 +587,9 @@ export interface NativeFunctionTypeMap {
     params: NativeSubmitHandlingWorkflowButtonParams;
     result: NativeSubmitHandlingWorkflowButtonResult;
   };
-  searchUserChatsByMedium: {
-    params: NativeSearchUserChatsByMediumParams;
-    result: NativeSearchUserChatsByMediumResult;
-  };
   updateUserChatStateByUser: {
     params: NativeUpdateUserChatStateByUserParams;
     result: NativeUpdateUserChatStateByUserResult;
-  };
-  startUserChatFromUserByMedium: {
-    params: NativeStartUserChatFromUserByMediumParams;
-    result: NativeStartUserChatFromUserByMediumResult;
-  };
-  patchMessage: {
-    params: NativePatchMessageParams;
-    result: NativePatchMessageResult;
-  };
-  getPlugin: {
-    params: NativeGetPluginParams;
-    result: NativeGetPluginResult;
-  };
-  registerCommerce: {
-    params: NativeRegisterCommerceParams;
-    result: NativeRegisterCommerceResult;
-  };
-  deregisterCommerce: {
-    params: NativeDeregisterCommerceParams;
-    result: NativeDeregisterCommerceResult;
-  };
-  createEvent: {
-    params: NativeCreateEventParams;
-    result: NativeCreateEventResult;
   };
   findContactsByUser: {
     params: NativeFindContactsByUserParams;
@@ -1031,38 +598,6 @@ export interface NativeFunctionTypeMap {
   findOrCreateContactAndUser: {
     params: FindOrCreateContactAndUserParams;
     result: FindOrCreateContactAndUserResult;
-  };
-  findContactsByAddress: {
-    params: NativeFindContactsByAddressParams;
-    result: NativeFindContactsByAddressResult;
-  };
-  createMediumLink: {
-    params: NativeCreateMediumLinkParams;
-    result: NativeCreateMediumLinkResult;
-  };
-  deleteMediumLink: {
-    params: NativeDeleteMediumLinkParams;
-    result: NativeDeleteMediumLinkResult;
-  };
-  getRole: {
-    params: NativeGetRoleParams;
-    result: NativeGetRoleResult;
-  };
-  searchUserChatSchemas: {
-    params: NativeSearchUserChatSchemasParams;
-    result: NativeSearchUserChatSchemasResult;
-  };
-  searchUserSchemas: {
-    params: NativeSearchUserSchemasParams;
-    result: NativeSearchUserSchemasResult;
-  };
-  searchEventSchemasByEventName: {
-    params: NativeSearchEventSchemasByEventNameParams;
-    result: NativeSearchEventSchemasByEventNameResult;
-  };
-  createAppSchemas: {
-    params: NativeCreateAppSchemasParams;
-    result: NativeCreateAppSchemasResult;
   };
   createAppDataTable: {
     params: NativeCreateAppDataTableParams;
@@ -1084,24 +619,14 @@ export interface NativeFunctionTypeMap {
     params: NativeGetAppNotebookVersionsParams;
     result: NativeGetAppNotebookVersionsResult;
   };
-  prepareAppMediaUpload: {
-    params: NativePrepareAppMediaUploadParams;
-    result: NativePrepareAppMediaUploadResult;
-  };
   listActiveOAuthManagerTargets: {
     params: NativeListActiveOAuthManagerTargetsParams;
     result: NativeListActiveOAuthManagerTargetsResult;
   };
-  issueEntityToken: {
-    params: NativeIssueEntityTokenParams;
-    result: NativeIssueEntityTokenResult;
-  };
 }
 
 export type NativeFunctionMethod = keyof NativeFunctionTypeMap;
-
 export type NativeFunctionParams<TMethod extends NativeFunctionMethod> =
   NativeFunctionTypeMap[TMethod]["params"];
-
 export type NativeFunctionResult<TMethod extends NativeFunctionMethod> =
   NativeFunctionTypeMap[TMethod]["result"];

@@ -1,4 +1,4 @@
-import { describe, it, expect, expectTypeOf, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NativeFunctionClient } from "../native/client.js";
 import { ProxyApi } from "../native/proxy-api.js";
 import type {
@@ -8,15 +8,10 @@ import type {
   WriteUserChatMessageAsManagerRequest,
   WriteUserChatMessageAsUserRequest,
   WriteDirectChatMessageAsManagerRequest,
-  WriteUserChatPrivateNoteWithManagerCredentialRequest,
-  WriteUserChatPrivateNoteWithManagerCredentialResult,
-  PatchMessageRequest,
   GetManagerRequest,
   BatchGetManagersRequest,
   SearchManagersRequest,
   GetUserRequest,
-  SearchUserRequest,
-  PatchUserRequest,
   GetUserChatRequest,
   ManageUserChatRequest,
   GetGroupRequest,
@@ -56,19 +51,6 @@ describe("ProxyApi", () => {
   // ============================================
 
   describe("Message API", () => {
-    it("exports the narrow Manager private-note request and result aliases", () => {
-      expectTypeOf<WriteUserChatPrivateNoteWithManagerCredentialRequest>().toMatchTypeOf<{
-        channelId: string;
-        userChatId: string;
-        requestId: string;
-        lifecycleRevision: number;
-        dto: { blocks?: readonly object[]; plainText?: string; customPayload?: object };
-      }>();
-      expectTypeOf<WriteUserChatPrivateNoteWithManagerCredentialResult>().toMatchTypeOf<{
-        message: object;
-      }>();
-    });
-
     it("writeGroupMessage should call with correct method and params", async () => {
       const params: WriteGroupMessageRequest = {
         channelId: "ch-1",
@@ -177,24 +159,6 @@ describe("ProxyApi", () => {
       expect(spy).toHaveBeenCalledWith("writeDirectChatMessageAsManager", params, accessToken);
       expect(result).toEqual(expected);
     });
-
-    it("patchMessage should call with correct method and params", async () => {
-      const params: PatchMessageRequest = {
-        channelId: "ch-1",
-        chatId: "chat-1",
-        chatType: "group",
-        messageId: "msg-1",
-        body: { options: ["MESSAGE_OPTION_PRIVATE"], state: "MESSAGE_STATE_SENT" },
-        updateMask: ["options", "state"],
-      };
-      const expected = { message: { id: "msg-1", state: "MESSAGE_STATE_SENT" } };
-      const spy = mockCall(expected);
-
-      const result = await api.patchMessage(params);
-
-      expect(spy).toHaveBeenCalledWith("patchMessage", params, accessToken);
-      expect(result).toEqual(expected);
-    });
   });
 
   // ============================================
@@ -269,40 +233,6 @@ describe("ProxyApi", () => {
       const result = await api.getUser(params);
 
       expect(spy).toHaveBeenCalledWith("getUser", params, accessToken);
-      expect(result).toEqual(expected);
-    });
-
-    it("searchUser should call with correct method and params", async () => {
-      const params: SearchUserRequest = {
-        channelId: "ch-1",
-        memberId: "member-1",
-      };
-      const expected = { user: { id: "user-1", memberId: "member-1" } };
-      const spy = mockCall(expected);
-
-      const result = await api.searchUser(params);
-
-      expect(spy).toHaveBeenCalledWith("searchUser", params, accessToken);
-      expect(result).toEqual(expected);
-    });
-
-    it("patchUser should call with correct method and params", async () => {
-      const params: PatchUserRequest = {
-        channelId: "ch-1",
-        userId: "user-1",
-        body: {
-          tags: ["vip", "premium"],
-          blocked: false,
-          profile: { company: "Acme" },
-        },
-        updateMask: ["tags", "blocked", "profile"],
-      };
-      const expected = { user: { id: "user-1", tags: ["vip", "premium"] } };
-      const spy = mockCall(expected);
-
-      const result = await api.patchUser(params);
-
-      expect(spy).toHaveBeenCalledWith("patchUser", params, accessToken);
       expect(result).toEqual(expected);
     });
   });

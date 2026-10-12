@@ -11,12 +11,8 @@ import type {
   NativeGetAppDataTableSchemaResult,
   NativeListActiveOAuthManagerTargetsParams,
   NativeListActiveOAuthManagerTargetsResult,
-  NativePrepareAppMediaUploadParams,
-  NativePrepareAppMediaUploadResult,
   NativeUpsertAppDataTableRowsParams,
   NativeUpsertAppDataTableRowsResult,
-  NativeWriteUserChatPrivateNoteWithManagerCredentialParams,
-  NativeWriteUserChatPrivateNoteWithManagerCredentialResult,
 } from "@channel.io/app-sdk-core";
 import type {
   NativeFunctionClientConfig,
@@ -42,7 +38,6 @@ import { sanitizeForLogging } from "../utils/sanitize-for-logging.js";
  * Default AppStore API URL
  */
 const DEFAULT_APPSTORE_URL = "https://app-store-api.channel.io";
-const CONTENT_SENSITIVE_NATIVE_METHODS = new Set(["writeUserChatPrivateNoteWithManagerCredential"]);
 
 /**
  * HTTP transport client for Channel App platform native functions.
@@ -216,19 +211,6 @@ export class NativeFunctionClient {
     >("getAppNotebookVersions", params, accessToken);
   }
 
-  /**
-   * Prepare a public Media upload for an app-owned file.
-   *
-   * Use a channel-scoped token. The returned target describes the authenticated
-   * upload request that the caller must send directly to the Media service.
-   */
-  prepareAppMediaUpload(
-    params: NativePrepareAppMediaUploadParams,
-    accessToken: string
-  ): Promise<NativePrepareAppMediaUploadResult> {
-    return this.callNativeFunctionWithToken("prepareAppMediaUpload", params, accessToken);
-  }
-
   // ============================================
   // AppDataTable Functions
   // ============================================
@@ -313,24 +295,6 @@ export class NativeFunctionClient {
     >("listActiveOAuthManagerTargets", params, accessToken);
   }
 
-  /**
-   * Write a private UserChat note as the exact Manager bound by a one-purpose credential.
-   *
-   * The credential is issued for one Channel, UserChat, Manager, request, and lifecycle
-   * revision. It is passed as the native bearer token and must not be replaced with an
-   * app- or Channel-scoped access token.
-   */
-  writeUserChatPrivateNoteWithManagerCredential(
-    params: NativeWriteUserChatPrivateNoteWithManagerCredentialParams,
-    managerCredential: string
-  ): Promise<NativeWriteUserChatPrivateNoteWithManagerCredentialResult> {
-    return this.callNativeFunctionWithToken(
-      "writeUserChatPrivateNoteWithManagerCredential",
-      params,
-      managerCredential
-    );
-  }
-
   // ============================================
   // ProxyAPI (typed wrappers for core API)
   // ============================================
@@ -365,7 +329,8 @@ export class NativeFunctionClient {
   // ============================================
 
   /**
-   * Call any native function (no authentication required for public functions)
+   * Call a native function without attaching a token.
+   * Use only for contracts that support unauthenticated invocation.
    *
    * @param method Function method name
    * @param params Function params
@@ -373,10 +338,19 @@ export class NativeFunctionClient {
    */
   async callNativeFunction<TMethod extends NativeFunctionMethod>(
     method: TMethod,
-    params: NativeFunctionParams<TMethod>
+    params: NativeFunctionParams<TMethod>,
+    options?: NativeFunctionCallOptions
   ): Promise<NativeFunctionResult<TMethod>>;
-  async callNativeFunction<TParams, TResult>(method: string, params?: TParams): Promise<TResult>;
-  async callNativeFunction<TParams, TResult>(method: string, params?: TParams): Promise<TResult> {
+  async callNativeFunction<TParams, TResult>(
+    method: string,
+    params?: TParams,
+    options?: NativeFunctionCallOptions
+  ): Promise<TResult>;
+  async callNativeFunction<TParams, TResult>(
+    method: string,
+    params?: TParams,
+    options: NativeFunctionCallOptions = {}
+  ): Promise<TResult> {
     const url = `${this.appStoreUrl}/general/v1/native/functions`;
 
     const request: NativeFunctionRequest<TParams> = {
@@ -384,7 +358,7 @@ export class NativeFunctionClient {
       ...(params && { params }),
     };
 
-    this.log(`Calling native function: ${method}`, params);
+    this.log(`Calling native function: ${method}`, this.omitPayload(options) ? undefined : params);
 
     const response = await fetch(url, {
       method: "PUT",
@@ -392,9 +366,10 @@ export class NativeFunctionClient {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(request),
+      ...(options.signal && { signal: options.signal }),
     });
 
-    return this.handleResponse<TResult>(response, method);
+    return this.handleResponse<TResult>(response, method, options);
   }
 
   /**
@@ -433,7 +408,7 @@ export class NativeFunctionClient {
 
     this.log(
       `Calling native function with token: ${method}`,
-      CONTENT_SENSITIVE_NATIVE_METHODS.has(method) ? undefined : params
+      this.omitPayload(options) ? undefined : params
     );
 
     const response = await fetch(url, {
@@ -446,7 +421,7 @@ export class NativeFunctionClient {
       ...(options.signal && { signal: options.signal }),
     });
 
-    return this.handleResponse<TResult>(response, method);
+    return this.handleResponse<TResult>(response, method, options);
   }
 
   /**
@@ -491,10 +466,16 @@ export class NativeFunctionClient {
     return this.handleResponse<TResult>(response, method);
   }
 
-  /**
-   * Handle API response
-   */
-  private async handleResponse<TResult>(response: Response, method: string): Promise<TResult> {
+  private omitPayload(options: NativeFunctionCallOptions): boolean {
+    return options.payloadLogging === "metadata-only";
+  }
+
+  /** Handle the wire response without changing its error semantics. */
+  private async handleResponse<TResult>(
+    response: Response,
+    method: string,
+    options: NativeFunctionCallOptions = {}
+  ): Promise<TResult> {
     if (!response.ok) {
       const errorBody = await response.text();
       throw new NativeFunctionError(
@@ -514,10 +495,7 @@ export class NativeFunctionClient {
       );
     }
 
-    this.log(
-      `${method} response`,
-      CONTENT_SENSITIVE_NATIVE_METHODS.has(method) ? undefined : jsonResponse.result
-    );
+    this.log(`${method} response`, this.omitPayload(options) ? undefined : jsonResponse.result);
 
     return jsonResponse.result as TResult;
   }
