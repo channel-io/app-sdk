@@ -4,6 +4,31 @@ import type { FunctionSchema } from "../types/function.js";
 import { zodToJsonSchema } from "../utils/zod-to-json-schema.js";
 
 const NativeNonEmptyStringSchema = z.string().min(1);
+export const NativeOAuthConnectionReferenceSchema = z.object({
+  id: z.string().min(1),
+  revision: z.string().min(1),
+});
+export const NativeGetOAuthConnectionParamsSchema = z.object({
+  appId: z.string().min(1),
+  channelId: z.string().min(1),
+  targetAuthScope: z.enum(["channel", "manager"]),
+  managerId: z.string().min(1).optional(),
+  key: z.string().min(1).optional(),
+});
+export const NativeGetOAuthConnectionResultSchema = z.object({
+  appId: z.string(),
+  channelId: z.string(),
+  isConnected: z.boolean(),
+  id: z.string().optional(),
+  connectionRevision: z.string().optional(),
+  key: z.string().optional(),
+});
+export const NativeDisconnectOAuthParamsSchema = NativeGetOAuthConnectionParamsSchema.extend({
+  expectedConnection: NativeOAuthConnectionReferenceSchema.optional(),
+  expectedChannelConnection: NativeOAuthConnectionReferenceSchema.optional(),
+  reason: z.literal("workspace_mismatch").optional(),
+});
+export const NativeDisconnectOAuthResultSchema = z.object({ success: z.boolean() });
 
 export const NativeOperatorTypeSchema = z.enum([
   "OPERATOR_TYPE_UNSPECIFIED",
@@ -211,6 +236,20 @@ export const nativeFunctionSchemaDefinitions = [
     description: "Page active manager-scoped OAuth targets within the app token's own app scope.",
     input: NativeListActiveOAuthManagerTargetsParamsSchema,
     output: NativeListActiveOAuthManagerTargetsResultSchema,
+  },
+  {
+    name: "getOAuthConnection",
+    description:
+      "Read a non-secret OAuth connection reference using an explicit own-app permission.",
+    input: NativeGetOAuthConnectionParamsSchema,
+    output: NativeGetOAuthConnectionResultSchema,
+  },
+  {
+    name: "disconnectOAuth",
+    description:
+      "Disconnect OAuth. App calls require a manager target, both current connection references and workspace_mismatch reason.",
+    input: NativeDisconnectOAuthParamsSchema,
+    output: NativeDisconnectOAuthResultSchema,
   },
 ] satisfies NativeFunctionSchemaDefinition[];
 

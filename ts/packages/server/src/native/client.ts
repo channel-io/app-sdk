@@ -1,4 +1,10 @@
 import type {
+  NativeGetOAuthConnectionParams,
+  NativeGetOAuthConnectionResult,
+  NativeDisconnectOAuthParams,
+  NativeDisconnectOAuthResult,
+} from "@channel.io/app-sdk-core";
+import type {
   Context,
   NativeCreateAppDataTableParams,
   NativeCreateAppDataTableResult,
@@ -285,6 +291,26 @@ export class NativeFunctionClient {
    * Use an app token from `TokenManager.getAppToken()` or one issued without a
    * `channelId`. Channel- and manager-scoped tokens are rejected.
    */
+  getOAuthConnection(
+    params: NativeGetOAuthConnectionParams,
+    accessToken: string
+  ): Promise<NativeGetOAuthConnectionResult> {
+    return this.callNativeFunctionWithToken<
+      NativeGetOAuthConnectionParams,
+      NativeGetOAuthConnectionResult
+    >("getOAuthConnection", params, accessToken);
+  }
+
+  disconnectOAuth(
+    params: NativeDisconnectOAuthParams,
+    accessToken: string
+  ): Promise<NativeDisconnectOAuthResult> {
+    return this.callNativeFunctionWithToken<
+      NativeDisconnectOAuthParams,
+      NativeDisconnectOAuthResult
+    >("disconnectOAuth", params, accessToken);
+  }
+
   listActiveOAuthManagerTargets(
     params: NativeListActiveOAuthManagerTargetsParams,
     accessToken: string

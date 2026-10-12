@@ -61,6 +61,35 @@ describe("NativeFunctionClient", () => {
     vi.restoreAllMocks();
   });
 
+  describe("OAuth connection management", () => {
+    it("reads only the selected connection using an explicit app token", async () => {
+      const result = { isConnected: true, id: "credential", connectionRevision: "revision" };
+      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result }));
+      const params = {
+        appId: APP_ID,
+        channelId: "channel",
+        managerId: "manager",
+        targetAuthScope: "manager" as const,
+      };
+      expect(await client.getOAuthConnection(params, "app-token")).toEqual(result);
+      expect(parseFetchBody(mockFetch)).toEqual({ method: "getOAuthConnection", params });
+    });
+    it("preserves both conditional references on manager disconnect", async () => {
+      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: { success: true } }));
+      const params = {
+        appId: APP_ID,
+        channelId: "channel",
+        managerId: "manager",
+        targetAuthScope: "manager" as const,
+        reason: "workspace_mismatch" as const,
+        expectedConnection: { id: "manager-id", revision: "manager-revision" },
+        expectedChannelConnection: { id: "channel-id", revision: "channel-revision" },
+      };
+      expect(await client.disconnectOAuth(params, "app-token")).toEqual({ success: true });
+      expect(parseFetchBody(mockFetch)).toEqual({ method: "disconnectOAuth", params });
+    });
+  });
+
   describe("per-call transport options", () => {
     it.each([false, true])(
       "omits native payloads by default (with token: %s)",

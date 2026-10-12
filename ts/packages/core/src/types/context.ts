@@ -96,6 +96,16 @@ export interface Context extends Omit<
   webhooks?: Record<string, WebhookEndpointContext>;
   /** Target and initiating actor for system-invoked OAuth flow hooks. */
   oauthFlow?: OAuthFlowContext;
+  /** OAuth credentials supplied by App Store. Single caller-scoped connections use `default`. */
+  oauth?: Record<
+    string,
+    {
+      authToken?: string;
+      provider?: string;
+      authScope?: string;
+      metadata?: Record<string, unknown>;
+    }
+  >;
   /** Sandbox mode flag (for LLM mock testing) */
   sandbox?: boolean;
   /** Sandbox session ID (stateful mode) */

@@ -502,7 +502,42 @@ export interface NativeCancelOAuthFlowParams extends CancelOAuthFlowParams {
 export interface NativeOAuthFlowResult extends OAuthFlowResult {
   flow?: NativeOAuthFlow;
 }
+/** Non-secret authorization identity. Revisions survive token refreshes. */
+export interface NativeOAuthConnectionReference {
+  id: string;
+  revision: string;
+}
+export interface NativeGetOAuthConnectionParams {
+  appId: string;
+  channelId: string;
+  targetAuthScope: "channel" | "manager";
+  managerId?: string;
+  key?: string;
+}
+export interface NativeGetOAuthConnectionResult {
+  appId: string;
+  channelId: string;
+  isConnected: boolean;
+  id?: string;
+  connectionRevision?: string;
+  key?: string;
+}
+/** App-token calls require both references and an explicit manager target. */
+export interface NativeDisconnectOAuthParams extends NativeGetOAuthConnectionParams {
+  expectedConnection?: NativeOAuthConnectionReference;
+  expectedChannelConnection?: NativeOAuthConnectionReference;
+  reason?: "workspace_mismatch";
+}
+export interface NativeDisconnectOAuthResult {
+  success: boolean;
+}
+
 export interface NativeFunctionTypeMap {
+  getOAuthConnection: {
+    params: NativeGetOAuthConnectionParams;
+    result: NativeGetOAuthConnectionResult;
+  };
+  disconnectOAuth: { params: NativeDisconnectOAuthParams; result: NativeDisconnectOAuthResult };
   getOAuthFlow: {
     params: NativeGetOAuthFlowParams;
     result: NativeOAuthFlowResult;

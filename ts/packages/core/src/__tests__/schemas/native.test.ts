@@ -36,8 +36,10 @@ describe("native function schemas", () => {
       "upsertAppDataTableRows",
       "getAppNotebookVersions",
       "listActiveOAuthManagerTargets",
+      "getOAuthConnection",
+      "disconnectOAuth",
     ]);
-    expect(nativeFunctionSchemaDefinitions).toHaveLength(9);
+    expect(nativeFunctionSchemaDefinitions).toHaveLength(11);
   });
 
   it("validates createAppDataTable input", () => {
