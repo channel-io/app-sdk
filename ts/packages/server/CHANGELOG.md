@@ -1,5 +1,17 @@
 # @channel.io/app-sdk-server
 
+## 0.32.0
+
+### Minor Changes
+
+- 78ec26e: Align the typed native API with the supported function catalog. This release removes APIs outside that catalog; use the exported native types and reference documentation when upgrading. Add scoped extension decorators and per-call transport logging and cancellation controls.
+- ebaa4d5: Native Function debug logs now omit request and result payloads by default. Explicitly select `payloadLogging: "sanitized"` to log payloads with known sensitive keys redacted; arbitrary content is not redacted. API results and errors are unchanged.
+
+### Patch Changes
+
+- Updated dependencies [78ec26e]
+  - @channel.io/app-sdk-core@0.32.0
+
 ## 0.31.1
 
 ### Patch Changes
