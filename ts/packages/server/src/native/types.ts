@@ -19,7 +19,11 @@ export interface NativeFunctionClientConfig {
 export interface NativeFunctionCallOptions {
   /** Cancels the underlying HTTP request when aborted. */
   signal?: AbortSignal | undefined;
-  /** Suppress request/result debug payloads without changing returned values or errors. */
+  /**
+   * Native request/result debug logs default to "metadata-only", omitting payloads.
+   * "sanitized" opts into payload logging with known sensitive keys redacted;
+   * arbitrary content is not removed. Returned values and errors are unchanged.
+   */
   payloadLogging?: "sanitized" | "metadata-only" | undefined;
 }
 

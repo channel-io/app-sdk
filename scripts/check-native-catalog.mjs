@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 
 const root = path.resolve(import.meta.dirname, "..");
@@ -55,27 +56,11 @@ for (const file of files) {
   }
   visit(source);
 }
-// Go exposes the same operation catalog through constants and transport calls.
-for (const filename of fs.readdirSync(path.join(root, "go/native"))) {
-  if (!filename.endsWith(".go") || filename.endsWith("_test.go")) continue;
-  const contents = fs.readFileSync(
-    path.join(root, "go/native", filename),
-    "utf8",
-  );
-  const patterns = [
-    /\bFunction\w+\s*=\s*"([^"\n]+)"/g,
-    /(?:CallNativeFunction|callNative(?:\[[^\]]+\])?)\([^\n]*?,\s*"([^"\n]+)"/g,
-  ];
-  for (const pattern of patterns) {
-    for (const match of contents.matchAll(pattern)) {
-      if (!allowed.has(match[1])) {
-        throw new Error(
-          `Native operation is not in the supported catalog: go/native/${filename}`,
-        );
-      }
-    }
-  }
-}
+execFileSync(
+  process.env.GO ?? "go",
+  ["run", path.join(root, "scripts/native-catalog/main.go"), root],
+  { stdio: "inherit" },
+);
 if (observed.size !== allowed.size)
   throw new Error("Native catalog contains unmodeled operations");
 console.log(`Native catalog verified: ${allowed.size} operations`);

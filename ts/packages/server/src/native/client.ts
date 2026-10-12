@@ -463,11 +463,11 @@ export class NativeFunctionClient {
       body: JSON.stringify(request),
     });
 
-    return this.handleResponse<TResult>(response, method);
+    return this.handleResponse<TResult>(response, method, { payloadLogging: "sanitized" });
   }
 
   private omitPayload(options: NativeFunctionCallOptions): boolean {
-    return options.payloadLogging === "metadata-only";
+    return options.payloadLogging !== "sanitized";
   }
 
   /** Handle the wire response without changing its error semantics. */
