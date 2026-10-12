@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.32.0
+
+### Minor Changes
+
+- 78ec26e: Align the typed native API with the supported function catalog. This release removes APIs outside that catalog; use the exported native types and reference documentation when upgrading. Add scoped extension decorators and per-call transport logging and cancellation controls.
+
 ## 0.31.1
 
 ### Patch Changes
