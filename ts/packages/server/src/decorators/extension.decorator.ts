@@ -47,6 +47,23 @@ export function Extension(
     );
   }
 
+  return decorateExtension(options);
+}
+
+/**
+ * Creates a decorator for an explicitly named extension contract supplied by another package.
+ * The platform must support and authorize that contract before registration can succeed.
+ * This does not add the name to the built-in SDK catalog or grant any permissions.
+ */
+export function createExtensionDecorator(name: string) {
+  if (typeof name !== "string" || !/^[A-Za-z][A-Za-z0-9_-]*$/.test(name)) {
+    throw new Error("Extension name must be a single non-empty identifier.");
+  }
+  return (options: Omit<ExtensionOptions, "name"> = {}): ClassDecorator =>
+    decorateExtension({ ...options, name });
+}
+
+function decorateExtension(options: ExtensionOptions): ClassDecorator {
   return (target) => {
     SetMetadata(EXTENSION_METADATA, {
       name: options.name,

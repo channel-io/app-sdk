@@ -4,7 +4,7 @@
  * These methods wrap `callNativeFunctionWithToken` for proxy native functions
  * that route through Channel App platform to Channel Core API's REST API.
  *
- * All proxy functions are PRIVATE and require an access token.
+ * These operations require an access token.
  *
  * @example
  * ```typescript
@@ -49,8 +49,6 @@ import type {
   WriteUserChatMessageAsUserResult,
   WriteDirectChatMessageAsManagerRequest,
   WriteDirectChatMessageAsManagerResult,
-  PatchMessageRequest,
-  PatchMessageResult,
   GetManagerRequest,
   GetManagerResult,
   BatchGetManagersRequest,
@@ -59,10 +57,6 @@ import type {
   SearchManagersResult,
   GetUserRequest,
   GetUserResult,
-  SearchUserRequest,
-  SearchUserResult,
-  PatchUserRequest,
-  PatchUserResult,
   GetUserChatRequest,
   GetUserChatResult,
   ManageUserChatRequest,
@@ -78,7 +72,7 @@ import type {
 /**
  * Typed wrapper for Channel Talk ProxyAPI native functions.
  *
- * All methods are PRIVATE native functions requiring an access token.
+ * All methods require an access token.
  * Use `NativeFunctionClient.createProxyApi(accessToken)` to create an instance.
  */
 export class ProxyApi {
@@ -161,13 +155,6 @@ export class ProxyApi {
     );
   }
 
-  /**
-   * Patch (edit) an existing message
-   */
-  patchMessage(params: PatchMessageRequest): Promise<PatchMessageResult> {
-    return this.client.callNativeFunctionWithToken("patchMessage", params, this.accessToken);
-  }
-
   // ============================================
   // Manager API
   // ============================================
@@ -202,20 +189,6 @@ export class ProxyApi {
    */
   getUser(params: GetUserRequest): Promise<GetUserResult> {
     return this.client.callNativeFunctionWithToken("getUser", params, this.accessToken);
-  }
-
-  /**
-   * Search for a user by member ID
-   */
-  searchUser(params: SearchUserRequest): Promise<SearchUserResult> {
-    return this.client.callNativeFunctionWithToken("searchUser", params, this.accessToken);
-  }
-
-  /**
-   * Patch (update) a user's properties
-   */
-  patchUser(params: PatchUserRequest): Promise<PatchUserResult> {
-    return this.client.callNativeFunctionWithToken("patchUser", params, this.accessToken);
   }
 
   // ============================================

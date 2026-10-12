@@ -39,6 +39,9 @@ jobs:
         working-directory: ts
         run: pnpm install --frozen-lockfile
 
+      - name: Verify native catalog
+        run: node scripts/check-native-catalog.mjs
+
       - name: Build
         working-directory: ts
         run: pnpm build

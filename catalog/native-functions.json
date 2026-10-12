@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "functions": [
+    {
+      "name": "batchGetManagers",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "cancelOAuthFlow",
+      "surfaces": ["wam"]
+    },
+    {
+      "name": "createAppDataTable",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "createAppDataTableSchema",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "findContactsByUser",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "findOrCreateContactAndUser",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "findOrCreateDirectChat",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "findOrCreateUserChatByMedium",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "getAlfTaskVersions",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "getAppDataTableSchema",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "getAppNotebookVersions",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "getChannel",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "getGroup",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "getManager",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "getOAuthFlow",
+      "surfaces": ["wam"]
+    },
+    {
+      "name": "getUser",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "getUserChat",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "issueToken",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "listActiveOAuthManagerTargets",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "manageUserChat",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "refreshToken",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "registerExtension",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "resumeOAuthFlow",
+      "surfaces": ["wam"]
+    },
+    {
+      "name": "searchGroups",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "searchManagers",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "submitHandlingWorkflowButton",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "unregisterExtension",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "updateUserChatStateByUser",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "upsertAppDataTableRows",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "writeDirectChatMessageAsManager",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "writeGroupMessage",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "writeGroupMessageAsManager",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "writeUserChatMessage",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "writeUserChatMessageAsManager",
+      "surfaces": ["server"]
+    },
+    {
+      "name": "writeUserChatMessageAsUser",
+      "surfaces": ["server"]
+    }
+  ]
+}

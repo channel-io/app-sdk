@@ -2,7 +2,7 @@ import "reflect-metadata";
 import type { DiscoveryService } from "@nestjs/core";
 import { Reflector } from "@nestjs/core";
 import { describe, expect, it } from "vitest";
-import { Extension, Func, TestFunc } from "../decorators/index.js";
+import { Extension, createExtensionDecorator, Func, TestFunc } from "../decorators/index.js";
 import { ExtensionDiscoveryService } from "./extension-discovery.service.js";
 
 class StandaloneFunctions {
@@ -92,4 +92,22 @@ describe("ExtensionDiscoveryService", () => {
       methodName: "getConfig",
     });
   });
+});
+
+it("discovers and invokes a package extension through the existing function registry", async () => {
+  const PackageExtension = createExtensionDecorator("sampleAddon");
+  @PackageExtension({ systemVersion: "v2" })
+  class Example {
+    @Func("metadata.describe")
+    describe() {
+      return { supported: true };
+    }
+  }
+  const service = createDiscoveryService([{ instance: new Example(), metatype: Example }]);
+  expect(service.getExtensions()).toEqual(
+    expect.arrayContaining([expect.objectContaining({ name: "sampleAddon", systemVersion: "v2" })])
+  );
+  const fn = service.getFunction("extension.sampleAddon.metadata.describe");
+  expect(fn).toBeDefined();
+  await expect(fn!.handler({}, {})).resolves.toEqual({ supported: true });
 });

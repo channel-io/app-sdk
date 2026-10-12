@@ -114,8 +114,6 @@
 
 ### Patch Changes
 
-- 186ad95: Expose the typed `prepareAppMediaUpload` native function and server client helper for app-owned
-  public Media uploads.
 - Updated dependencies [186ad95]
   - @channel.io/app-sdk-core@0.23.1
 
@@ -123,9 +121,8 @@
 
 ### Minor Changes
 
-- 2e304e0: Add the snapshot-free `userChat.opened` lifecycle Hook contract and the one-purpose Manager
-  private-note native call. Authenticated native calls accept an optional abort signal, and Manager
-  private-note debug logs omit request and response content.
+- 2e304e0: Add the snapshot-free `userChat.opened` lifecycle Hook contract.
+  Authenticated native calls accept an optional abort signal.
 
 ### Patch Changes
 

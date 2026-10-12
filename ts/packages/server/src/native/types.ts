@@ -19,6 +19,8 @@ export interface NativeFunctionClientConfig {
 export interface NativeFunctionCallOptions {
   /** Cancels the underlying HTTP request when aborted. */
   signal?: AbortSignal | undefined;
+  /** Suppress request/result debug payloads without changing returned values or errors. */
+  payloadLogging?: "sanitized" | "metadata-only" | undefined;
 }
 
 import type { Context } from "@channel.io/app-sdk-core";

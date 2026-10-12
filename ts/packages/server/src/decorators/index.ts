@@ -1,5 +1,10 @@
 // Extension decorator
-export { Extension, EXTENSION_METADATA, type ExtensionOptions } from "./extension.decorator.js";
+export {
+  Extension,
+  createExtensionDecorator,
+  EXTENSION_METADATA,
+  type ExtensionOptions,
+} from "./extension.decorator.js";
 
 // SDK extension names
 export { SDK_EXTENSION_NAMES, type SdkExtensionName } from "./extension-names.js";

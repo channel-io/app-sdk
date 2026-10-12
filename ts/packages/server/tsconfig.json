@@ -8,5 +8,10 @@
     "composite": true
   },
   "include": ["src/**/*"],
-  "references": [{ "path": "../core" }]
+  "references": [
+    {
+      "path": "../core"
+    }
+  ],
+  "exclude": ["src/**/__tests__/**/*", "src/**/*.test.ts"]
 }
