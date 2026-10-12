@@ -18,6 +18,10 @@
       "surfaces": ["server"]
     },
     {
+      "name": "createGroupAsManager",
+      "surfaces": ["server"]
+    },
+    {
       "name": "findContactsByUser",
       "surfaces": ["server"]
     },
