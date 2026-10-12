@@ -61,6 +61,8 @@ import type {
   GetUserChatResult,
   ManageUserChatRequest,
   ManageUserChatResult,
+  CreateGroupAsManagerRequest,
+  CreateGroupAsManagerResult,
   GetGroupRequest,
   GetGroupResult,
   SearchGroupsRequest,
@@ -212,6 +214,20 @@ export class ProxyApi {
   // ============================================
   // Group API
   // ============================================
+
+  /**
+   * Create a PUBLIC group with the authenticated invoking manager as its sole initial member.
+   * Requires a token carrying manager context with teamChatRead/all permission;
+   * an ordinary channel app token is insufficient. Duplicate titles are rejected.
+   * Unknown outcomes must be reconciled before any manual retry.
+   */
+  createGroupAsManager(params: CreateGroupAsManagerRequest): Promise<CreateGroupAsManagerResult> {
+    return this.client.callNativeFunctionWithToken(
+      "createGroupAsManager",
+      params,
+      this.accessToken
+    );
+  }
 
   /**
    * Get a team chat group by ID

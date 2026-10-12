@@ -34,6 +34,8 @@ export type {
   NativeGetUserChatResult as GetUserChatResult,
   NativeManageUserChatParams as ManageUserChatRequest,
   NativeManageUserChatResult as ManageUserChatResult,
+  NativeCreateGroupAsManagerParams as CreateGroupAsManagerRequest,
+  NativeCreateGroupAsManagerResult as CreateGroupAsManagerResult,
   NativeGetGroupParams as GetGroupRequest,
   NativeGetGroupResult as GetGroupResult,
   NativeSearchGroupsParams as SearchGroupsRequest,

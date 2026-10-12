@@ -99,3 +99,37 @@ The public SDK exports are the source of truth for supported TypeScript calls. C
 types. Keep request and response models limited to that public surface, use camelCase JSON fields,
 and treat intentionally open result models as opaque. The shared envelope is summarized in the
 [cross-language protocol](../protocol.md).
+
+## Create a group as the invoking manager (TypeScript)
+
+`createGroupAsManager` creates a PUBLIC TeamChat group with the authenticated
+invoking manager as its sole initial member. The request contains only
+`channelId` and `title`; callers cannot supply `scope`, `memberId`, or
+`managerIds`. Core resolves the manager from the trusted authentication context
+and requires `teamChatRead/all`. An ordinary channel app token issued with
+`issueToken` does not provide this manager context.
+
+The core package exports `NativeCreateGroupAsManagerParams` and
+`NativeCreateGroupAsManagerResult` and registers the method in
+`NativeFunctionTypeMap`. The server package exposes the same contract as
+`CreateGroupAsManagerRequest`, `CreateGroupAsManagerResult`, and the
+`ProxyApi.createGroupAsManager` wrapper:
+
+```typescript
+// managerContextToken must already carry the authenticated invoking manager.
+const api = client.createProxyApi(managerContextToken);
+const { group } = await api.createGroupAsManager({
+  channelId: "channel-1",
+  title: "Support",
+});
+// group has type NativeGroup.
+```
+
+The typed `callNativeFunctionWithToken("createGroupAsManager", params, token)`
+surface is also available. A duplicate title rejects the operation; it does
+not return an existing group. The SDK does not automatically retry this
+mutation. After a timeout or lost response, reconcile the unknown outcome
+before deciding whether to retry. SDK types do not grant native-function
+permission or establish manager authentication; the deployed Core function and
+the app's native-function permission must also be available. Existing installed
+SDK versions gain this type only after upgrading to a release containing it.

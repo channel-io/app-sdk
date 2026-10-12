@@ -375,6 +375,20 @@ export interface NativeFindOrCreateDirectChatResult {
   directChat: NativeDirectChat;
 }
 
+/**
+ * Create a PUBLIC group with the authenticated invoking manager as its sole initial member.
+ * Requires manager context with teamChatRead/all; an ordinary channel app token is insufficient.
+ * Duplicate titles are rejected. Do not automatically retry an unknown outcome.
+ */
+export interface NativeCreateGroupAsManagerParams {
+  channelId: string;
+  title: string;
+}
+
+export interface NativeCreateGroupAsManagerResult {
+  group: NativeGroup;
+}
+
 export interface NativeGetGroupParams {
   channelId: string;
   groupId: string;
@@ -570,6 +584,10 @@ export interface NativeFunctionTypeMap {
   findOrCreateDirectChat: {
     params: NativeFindOrCreateDirectChatParams;
     result: NativeFindOrCreateDirectChatResult;
+  };
+  createGroupAsManager: {
+    params: NativeCreateGroupAsManagerParams;
+    result: NativeCreateGroupAsManagerResult;
   };
   getGroup: {
     params: NativeGetGroupParams;
