@@ -65,7 +65,11 @@ build-go:
 	cd $(GO_DIR) && $(GO) build ./...
 
 .PHONY: test test-ts test-go
-test: test-ts test-go
+test: test-native-catalog test-ts test-go
+
+.PHONY: test-native-catalog
+test-native-catalog:
+	$(GO) test scripts/native-catalog/main.go scripts/native-catalog/main_test.go
 
 test-ts: build-ts
 	cd $(TS_DIR) && $(PNPM) test

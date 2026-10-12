@@ -35,6 +35,12 @@ jobs:
           cache-dependency-path: "ts/pnpm-lock.yaml"
           registry-url: "https://registry.npmjs.org"
 
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go/go.mod"
+          cache-dependency-path: "go/go.sum"
+
       - name: Install dependencies
         working-directory: ts
         run: pnpm install --frozen-lockfile

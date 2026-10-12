@@ -63,6 +63,34 @@ describe("NativeFunctionClient", () => {
 
   describe("per-call transport options", () => {
     it.each([false, true])(
+      "omits native payloads by default (with token: %s)",
+      async (withToken) => {
+        const debug = vi.spyOn(console, "debug").mockImplementation(() => {});
+        const instance = createDebugClient();
+        mockFetch.mockResolvedValueOnce(
+          mockFetchResponse({ result: { plainText: "response-content" } })
+        );
+        const params = {
+          dto: {
+            plainText: "request-content",
+            blocks: ["block-content"],
+            customPayload: { note: "custom-content" },
+          },
+        };
+        const result = withToken
+          ? await instance.callNativeFunctionWithToken("sampleOperation", params, "token")
+          : await instance.callNativeFunction("sampleOperation", params);
+        expect(result).toEqual({ plainText: "response-content" });
+        expect(parseFetchBody(mockFetch)).toEqual({ method: "sampleOperation", params });
+        expect(debug).toHaveBeenCalledTimes(2);
+        expect(debug.mock.calls.every((args) => args.length === 1)).toBe(true);
+        expect(JSON.stringify(debug.mock.calls)).not.toMatch(
+          /request-content|response-content|block-content|custom-content/
+        );
+      }
+    );
+
+    it.each([false, true])(
       "suppresses payload debug logging (with token: %s)",
       async (withToken) => {
         const debug = vi.spyOn(console, "debug").mockImplementation(() => {});
@@ -103,7 +131,11 @@ describe("NativeFunctionClient", () => {
           payloadLogging: "metadata-only",
         }
       );
-      await instance.callNativeFunction("sampleOperation", { value: "visible-request" });
+      await instance.callNativeFunction(
+        "sampleOperation",
+        { value: "visible-request" },
+        { payloadLogging: "sanitized" }
+      );
       resolveFirst(mockFetchResponse({ result: { value: "hidden-response" } }));
       await first;
       const logs = JSON.stringify(debug.mock.calls);
@@ -600,7 +632,11 @@ describe("NativeFunctionClient", () => {
       };
       mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: tokenResult }));
 
-      await debugClient.issueToken(APP_SECRET);
+      await debugClient.callNativeFunction(
+        "issueToken",
+        { secret: APP_SECRET },
+        { payloadLogging: "sanitized" }
+      );
 
       expect(debugSpy).toHaveBeenNthCalledWith(
         1,
