@@ -10,8 +10,7 @@ After App Store deploys support, set `hideSettingsTab: true` at the top level of
 the standard tab. Re-register the Config extension after changing this option.
 Stored values, `syncChannelConfig`, required-field readiness, and installation
 guide rules are unchanged. Independent OAuth/API Key tabs and custom tabs remain.
-Old hidden Config tab links open Introduction; `?tab=settings` still opens a
-remaining standard authentication tab when available. This is not an access control.
+Existing link and tab navigation behavior is unchanged. This is not an access control.
 
 ```ts
 {
