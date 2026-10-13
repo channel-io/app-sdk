@@ -37,6 +37,29 @@ For read-only values that should appear in the setup UI without being persisted,
 It covers `config.display.load`, ordinary Function registration, response validation, scoped inputs,
 and compatibility with the current SDK schema helpers.
 
+## Hide the standard settings tab
+
+After App Store deploys support, set `hideSettingsTab: true` at the top level of
+`getConfigSchema` when your app owns its settings UI. Omitted or `false` preserves
+the standard tab. Re-register the Config extension after changing this option.
+Stored values, `syncChannelConfig`, required-field readiness, and installation
+guide rules are unchanged. Independent OAuth/API Key tabs and custom tabs remain.
+Old hidden Config tab links open Introduction; `?tab=settings` still opens a
+remaining standard authentication tab when available. This is not an access control.
+
+```ts
+{
+  schemaVersion: "v1",
+  configScope: "channel",
+  providerName: "Example",
+  hideSettingsTab: true,
+  blocks: [{
+    type: "text", key: "connectionId", label: "Connection ID",
+    readOnly: true, required: true, storageClass: "config",
+  }],
+}
+```
+
 ## Action redirects
 
 After App Store deploys Config action redirect support, a clicked action may return

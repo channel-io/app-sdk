@@ -3,6 +3,31 @@
 Channel/manager 単位の設定、API key、`client_credentials`、shop ID、credential には Config を
 使います。Config は新規アプリの標準 setup surface です。
 
+## 標準設定タブを非表示にする
+
+App Store の対応版がデプロイされた後、アプリ独自の設定 UI を使う場合は、
+`getConfigSchema` のトップレベルに `hideSettingsTab: true` を指定します。
+省略または `false` では既存のタブを維持します。変更後は Config extension を
+再登録してください。保存値、`syncChannelConfig`、必須値による連携判定、
+インストールガイドの条件は変更しません。独立した OAuth/API Key 認証タブと
+カスタムタブも維持します。非表示にした Config タブへの旧リンクは紹介へ移動し、
+`?tab=settings` は標準認証タブが残っていればそのタブを開きます。
+このオプションはアクセス権限を制限しません。
+
+```ts
+{
+  schemaVersion: "v1",
+  configScope: "channel",
+  providerName: "Example",
+  hideSettingsTab: true,
+  blocks: [{
+    type: "text", key: "connectionId", label: "Connection ID",
+    readOnly: true, required: true, storageClass: "config",
+  }],
+}
+```
+
+
 ## Contract
 
 | Function                                           | 必須 | 役割                              |
