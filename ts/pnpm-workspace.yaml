@@ -3,10 +3,12 @@ packages:
   - "examples/*/apps/*"
   - "examples/*/packages/*"
 
+strictDepBuilds: true
+
 allowBuilds:
-  core-js: true
-  esbuild: true
-  protobufjs: true
+  core-js@3.49.0: true
+  esbuild@0.25.12: true
+  protobufjs@7.6.5: true
 
 overrides:
   "ajv@<6.14.0": "6.15.0"
