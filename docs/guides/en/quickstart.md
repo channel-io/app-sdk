@@ -19,7 +19,7 @@ The SDK verifies signed Function requests, registers the Extension, and connects
 You need:
 
 - an account with access to the Channel developer portal;
-- Node.js 20.11 or newer and Corepack;
+- Node.js 24 or newer and Corepack;
 - Git;
 - an HTTPS tunnel tool that can expose your local server, such as [ngrok](https://ngrok.com/).
 

@@ -1,2 +1,9 @@
 packages:
   - "apps/*"
+
+# Only these dependencies may run install scripts; pnpm stops the install if another one asks to.
+strictDepBuilds: true
+
+allowBuilds:
+  esbuild: true
+  protobufjs: true

@@ -52,8 +52,8 @@ export async function createApp(name: string, options: CreateAppOptions = {}): P
       name,
       version: "0.0.1",
       private: true,
-      packageManager: "pnpm@9.15.4",
-      engines: { node: ">=20.11.0" },
+      packageManager: "pnpm@11.24.0",
+      engines: { node: ">=22.13.0", pnpm: ">=11.22.0" },
       scripts: {
         build: "turbo run build",
         dev: "turbo run dev",
@@ -64,7 +64,7 @@ export async function createApp(name: string, options: CreateAppOptions = {}): P
         typescript: "^5.7.2",
       },
     }),
-    "pnpm-workspace.yaml": `packages:\n  - "apps/*"\n  - "packages/*"\n`,
+    "pnpm-workspace.yaml": `packages:\n  - "apps/*"\n  - "packages/*"\n\n# Only these dependencies may run install scripts; pnpm stops the install if another one asks to.\nstrictDepBuilds: true\n\nallowBuilds:\n  esbuild: true\n  protobufjs: true\n`,
     "turbo.json": json({
       $schema: "https://turbo.build/schema.json",
       tasks: {

@@ -23,6 +23,8 @@ describe("createApp", () => {
     const main = await readFile(join(target, "apps/server/src/main.ts"), "utf8");
     const module = await readFile(join(target, "apps/server/src/app.module.ts"), "utf8");
     const environment = await readFile(join(target, "apps/server/.env.example"), "utf8");
+    const rootPackage = JSON.parse(await readFile(join(target, "package.json"), "utf8"));
+    const workspace = await readFile(join(target, "pnpm-workspace.yaml"), "utf8");
 
     expect(serverPackage.dependencies["@channel.io/app-sdk-server"]).toBe("9.8.7");
     expect(wamPackage.dependencies["@channel.io/app-sdk-wam"]).toBe("9.8.7");
@@ -31,6 +33,10 @@ describe("createApp", () => {
     expect(main).toContain("rawBody: true");
     expect(module).toContain("SignatureGuard");
     expect(environment).toContain("SIGNING_KEY=");
+    expect(rootPackage.packageManager).toBe("pnpm@11.24.0");
+    expect(rootPackage.engines).toEqual({ node: ">=22.13.0", pnpm: ">=11.22.0" });
+    expect(workspace).toContain("\nstrictDepBuilds: true\n");
+    expect(workspace).toContain("\nallowBuilds:\n  esbuild: true\n  protobufjs: true\n");
   });
 
   it("rejects names that cannot be used as package scopes", async () => {
