@@ -19,7 +19,7 @@ SDK가 Function 요청의 서명 확인, Extension 등록, WAM과 서버의 연�
 다음 항목이 필요합니다.
 
 - Channel 개발자 포털에 접근할 수 있는 계정
-- Node.js 20.11 이상과 Corepack
+- Node.js 24 이상과 Corepack
 - Git
 - 로컬 서버를 외부에 공개할 HTTPS tunnel 도구(예: [ngrok](https://ngrok.com/))
 

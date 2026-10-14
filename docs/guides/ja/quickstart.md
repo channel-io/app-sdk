@@ -19,7 +19,7 @@ Function リクエストの署名検証、Extension の登録、WAM とサーバ
 次のものが必要です。
 
 - Channel developer portal にアクセスできるアカウント
-- Node.js 20.11 以上と Corepack
+- Node.js 24 以上と Corepack
 - Git
 - ローカルサーバーを公開できる HTTPS tunnel ツール（例: [ngrok](https://ngrok.com/)）
 
