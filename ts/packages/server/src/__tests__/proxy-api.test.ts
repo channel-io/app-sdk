@@ -85,15 +85,18 @@ describe("ProxyApi", () => {
       expect(spy).toHaveBeenCalledWith("writeGroupMessage", params, accessToken);
     });
 
-    it("writeGroupMessage serializes the bot key separately from its initial profile", async () => {
+    it("writeGroupMessage serializes message sender metadata without a per-sender bot", async () => {
       const params: WriteGroupMessageRequest = {
         channelId: "ch-1",
         groupId: "grp-1",
         dto: {
           plainText: "Message from Slack",
-          botName: "slack-" + "a".repeat(24),
-          botDisplayName: "루카 (Slack)",
-          botAvatarUrl: "https://avatars.slack-edge.com/team-user_192.png",
+          botName: "Channel-bot",
+          senderProfile: {
+            key: "slack-user-1",
+            displayName: "루카 (Slack)",
+            avatarUrl: "https://avatars.slack-edge.com/team-user_192.png",
+          },
         },
       };
       const fetchSpy = vi
@@ -112,9 +115,12 @@ describe("ProxyApi", () => {
             groupId: "grp-1",
             dto: {
               plainText: "Message from Slack",
-              botName: "slack-aaaaaaaaaaaaaaaaaaaaaaaa",
-              botDisplayName: "루카 (Slack)",
-              botAvatarUrl: "https://avatars.slack-edge.com/team-user_192.png",
+              botName: "Channel-bot",
+              senderProfile: {
+                key: "slack-user-1",
+                displayName: "루카 (Slack)",
+                avatarUrl: "https://avatars.slack-edge.com/team-user_192.png",
+              },
             },
           },
         });
