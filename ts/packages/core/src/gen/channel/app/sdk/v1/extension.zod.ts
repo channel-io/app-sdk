@@ -276,6 +276,7 @@ export const ConfigFieldProtoSchema = z.object({
   overviewLabel: z.string().optional(),
   overviewDescription: z.string().optional(),
   hidden: z.boolean().optional(),
+  readOnly: z.boolean().optional(),
 }) satisfies z.ZodType<pb.ConfigField>;
 export type ConfigFieldProto = z.infer<typeof ConfigFieldProtoSchema>;
 
@@ -346,6 +347,7 @@ export const ConfigBlockProtoSchema = z.object({
   showInOverviewMenu: z.boolean().optional(),
   hidden: z.boolean().optional(),
   redirectOrigins: z.array(z.string()).optional(),
+  readOnly: z.boolean().optional(),
 }) satisfies z.ZodType<pb.ConfigBlock>;
 export type ConfigBlockProto = z.infer<typeof ConfigBlockProtoSchema>;
 
@@ -367,6 +369,7 @@ export const ConfigGetConfigSchemaOutputProtoSchema = z.object({
   i18nMap: z.record(z.string(), z.lazy(() => ConfigLocalizedTextProtoSchema)).optional(),
   overview: z.lazy(() => ConfigOverviewProtoSchema).optional(),
   settings: z.lazy(() => ConfigSettingsProtoSchema).optional(),
+  hideSettingsTab: z.boolean().optional(),
 }) satisfies z.ZodType<pb.ConfigGetConfigSchemaOutput>;
 export type ConfigGetConfigSchemaOutputProto = z.infer<typeof ConfigGetConfigSchemaOutputProtoSchema>;
 

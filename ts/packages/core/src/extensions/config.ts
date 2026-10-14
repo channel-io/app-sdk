@@ -292,6 +292,7 @@ const BaseConfigFieldSchema = z.object({
   helperText: z.string().optional(),
   helperLinks: z.array(ConfigInlineLinkSchema).optional(),
   required: z.boolean().optional(),
+  readOnly: z.boolean().optional(),
   hidden: z.boolean().optional(),
   placeholder: z.string().optional(),
   validationRegex: z.string().optional(),
@@ -539,6 +540,7 @@ export const GetConfigSchemaOutputSchema = z.object({
   keyResolverFunctionName: z.string().optional(),
   overview: ConfigOverviewSchema.optional(),
   settings: ConfigSettingsSchema.optional(),
+  hideSettingsTab: z.boolean().optional(),
 });
 export type GetConfigSchemaOutput = ProtoBacked<
   z.infer<typeof GetConfigSchemaOutputSchema>,

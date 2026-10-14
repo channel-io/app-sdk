@@ -4318,6 +4318,9 @@
                             "required": {
                               "type": "boolean"
                             },
+                            "readOnly": {
+                              "type": "boolean"
+                            },
                             "hidden": {
                               "type": "boolean"
                             },
@@ -4740,6 +4743,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "readOnly": {
                               "type": "boolean"
                             },
                             "hidden": {
@@ -5170,6 +5176,9 @@
                             "required": {
                               "type": "boolean"
                             },
+                            "readOnly": {
+                              "type": "boolean"
+                            },
                             "hidden": {
                               "type": "boolean"
                             },
@@ -5595,6 +5604,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "readOnly": {
                               "type": "boolean"
                             },
                             "hidden": {
@@ -6028,6 +6040,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "readOnly": {
                               "type": "boolean"
                             },
                             "hidden": {
@@ -6571,6 +6586,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "readOnly": {
                               "type": "boolean"
                             },
                             "hidden": {
@@ -7124,6 +7142,9 @@
                             "required": {
                               "type": "boolean"
                             },
+                            "readOnly": {
+                              "type": "boolean"
+                            },
                             "hidden": {
                               "type": "boolean"
                             },
@@ -7667,6 +7688,9 @@
                             "required": {
                               "type": "boolean"
                             },
+                            "readOnly": {
+                              "type": "boolean"
+                            },
                             "hidden": {
                               "type": "boolean"
                             },
@@ -8091,6 +8115,9 @@
                             "required": {
                               "type": "boolean"
                             },
+                            "readOnly": {
+                              "type": "boolean"
+                            },
                             "hidden": {
                               "type": "boolean"
                             },
@@ -8513,6 +8540,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "readOnly": {
                               "type": "boolean"
                             },
                             "hidden": {
@@ -9081,6 +9111,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "readOnly": {
                               "type": "boolean"
                             },
                             "hidden": {
@@ -9672,6 +9705,9 @@
                               }
                             },
                             "required": {
+                              "type": "boolean"
+                            },
+                            "readOnly": {
                               "type": "boolean"
                             },
                             "hidden": {
@@ -10474,6 +10510,9 @@
                   "required": {
                     "type": "boolean"
                   },
+                  "readOnly": {
+                    "type": "boolean"
+                  },
                   "hidden": {
                     "type": "boolean"
                   },
@@ -10896,6 +10935,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "readOnly": {
                     "type": "boolean"
                   },
                   "hidden": {
@@ -11326,6 +11368,9 @@
                   "required": {
                     "type": "boolean"
                   },
+                  "readOnly": {
+                    "type": "boolean"
+                  },
                   "hidden": {
                     "type": "boolean"
                   },
@@ -11751,6 +11796,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "readOnly": {
                     "type": "boolean"
                   },
                   "hidden": {
@@ -12184,6 +12232,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "readOnly": {
                     "type": "boolean"
                   },
                   "hidden": {
@@ -12727,6 +12778,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "readOnly": {
                     "type": "boolean"
                   },
                   "hidden": {
@@ -13280,6 +13334,9 @@
                   "required": {
                     "type": "boolean"
                   },
+                  "readOnly": {
+                    "type": "boolean"
+                  },
                   "hidden": {
                     "type": "boolean"
                   },
@@ -13823,6 +13880,9 @@
                   "required": {
                     "type": "boolean"
                   },
+                  "readOnly": {
+                    "type": "boolean"
+                  },
                   "hidden": {
                     "type": "boolean"
                   },
@@ -14247,6 +14307,9 @@
                   "required": {
                     "type": "boolean"
                   },
+                  "readOnly": {
+                    "type": "boolean"
+                  },
                   "hidden": {
                     "type": "boolean"
                   },
@@ -14669,6 +14732,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "readOnly": {
                     "type": "boolean"
                   },
                   "hidden": {
@@ -15237,6 +15303,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "readOnly": {
                     "type": "boolean"
                   },
                   "hidden": {
@@ -15828,6 +15897,9 @@
                     }
                   },
                   "required": {
+                    "type": "boolean"
+                  },
+                  "readOnly": {
                     "type": "boolean"
                   },
                   "hidden": {
@@ -16511,6 +16583,9 @@
             }
           },
           "additionalProperties": false
+        },
+        "hideSettingsTab": {
+          "type": "boolean"
         }
       },
       "required": [

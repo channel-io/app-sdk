@@ -3,6 +3,29 @@
 채널·매니저 단위 설정, API key, `client_credentials`, shop ID와 credential은 Config로
 관리합니다. Config는 신규 앱의 표준 설정 화면입니다.
 
+## 표준 설정 탭 숨기기
+
+앱스토어 지원 배포 후 앱이 자체 설정 UI를 제공하는 경우 `getConfigSchema`의
+최상위에 `hideSettingsTab: true`를 선언합니다. 생략하거나 `false`이면 기존 탭을
+유지합니다. 값을 변경한 뒤 Config extension을 재등록해야 반영됩니다.
+저장값, `syncChannelConfig`, 필수값 기반 연동 판정, 설치 가이드 조건은 바뀌지
+않습니다. 별도 OAuth/API Key 인증 탭과 커스텀 탭도 유지합니다.
+기존 링크와 탭 이동 동작은 바뀌지 않습니다. 이 옵션은 접근 권한을 제한하지 않습니다.
+
+```ts
+{
+  schemaVersion: "v1",
+  configScope: "channel",
+  providerName: "Example",
+  hideSettingsTab: true,
+  blocks: [{
+    type: "text", key: "connectionId", label: "Connection ID",
+    readOnly: true, required: true, storageClass: "config",
+  }],
+}
+```
+
+
 ## 계약
 
 | Function                                           | 필수 여부 | 역할                            |
