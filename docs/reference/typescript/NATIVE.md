@@ -35,7 +35,7 @@ Check `NativeFunctionTypeMap` in `packages/core/src/types/native.ts` for the mod
 const result = await client.callNativeFunctionWithToken(
   "findOrCreateUserChatByMedium",
   params,
-  accessToken,
+  accessToken
 );
 ```
 
@@ -84,7 +84,7 @@ const result = await nativeClient.callAppFunction<Input, Output>(
   "orders.get",
   { orderId: "order-1" },
   ctx,
-  channelToken.accessToken,
+  channelToken.accessToken
 );
 ```
 
@@ -99,3 +99,45 @@ The public SDK exports are the source of truth for supported TypeScript calls. C
 types. Keep request and response models limited to that public surface, use camelCase JSON fields,
 and treat intentionally open result models as opaque. The shared envelope is summarized in the
 [cross-language protocol](../protocol.md).
+
+## Team chat bot profiles (TypeScript)
+
+`writeGroupMessage` accepts optional `botDisplayName` and `botAvatarUrl` fields
+in its `NativeWriteMessageDto`. These fields initialize a new custom bot for
+`botName`; they do not update a bot that already exists under that key.
+
+For a Slack sender, keep `botName` as an opaque, profile-specific key such as
+`slack-` followed by the first 24 hex characters of a SHA-256 digest (96 bits),
+separate from the name shown in TeamChat. This keeps the key within the bot name's
+30-character limit:
+
+```typescript
+await api.writeGroupMessage({
+  channelId,
+  groupId,
+  dto: {
+    plainText: "Message from Slack",
+    botName: profileKey, // e.g. slack-<first 24 hex characters of SHA-256>
+    botDisplayName: "루카 (Slack)",
+    botAvatarUrl: "https://avatars.slack-edge.com/team-user_192.png",
+  },
+});
+```
+
+The app must generate and reuse a key for each sender profile revision, including
+the sender identity, display name, and avatar revision. Use a new key when that
+profile changes. Reusing an existing key retains its original display name and
+avatar, even when different initialization values are sent. This preserves the
+profile associated with earlier messages.
+
+`botDisplayName` allows up to 30 UTF-16 code units and cannot contain `@`, `#`,
+`$`, `%`, `:`, `/`, or backslash. Supplying only `botDisplayName` initializes the
+name with a default avatar. `botAvatarUrl` also requires `botDisplayName`.
+
+The avatar must use HTTPS on a backend-allowed Slack CDN. On bot creation, the
+backend copies the image through its media service once; subsequent sends reuse
+the stored profile. These fields require `botName` and are only supported by the
+bot writer for `writeGroupMessage`, not manager/user writers or user-chat
+methods. Omitting both fields preserves the existing bot-name behavior. The
+backend must support these fields before an app starts sending them; adding SDK
+types alone does not enable backend support.

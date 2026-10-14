@@ -170,7 +170,21 @@ export interface NativeWriteMessageDto {
   form?: NativeJsonObject;
   options?: readonly NativeMessageOption[];
   requestId?: string;
+  /** Bot lookup key. With profile initialization fields, use an opaque key per profile revision. */
   botName?: string;
+  /**
+   * Initial display name for a new custom bot in writeGroupMessage only.
+   * Requires botName; existing bots are never updated. Not supported for manager/user writers.
+   * At most 30 UTF-16 code units, excluding @, #, $, %, :, /, and backslash.
+   */
+  botDisplayName?: string;
+  /**
+   * Initial avatar URL for a new custom bot in writeGroupMessage only.
+   * Requires botName, botDisplayName, and an HTTPS URL on an allowed Slack CDN.
+   * The backend copies it once; existing bots are never updated.
+   * Not supported for manager/user writers.
+   */
+  botAvatarUrl?: string;
   managerId?: string;
   userId?: string;
   customPayload?: NativeJsonObject;
