@@ -20,7 +20,7 @@ node "$root_dir/ts/packages/cli/dist/cli.js" create smoke-app
 cd smoke-app
 
 ROOT_DIR="$root_dir" PACKS_DIR="$packs_dir" node <<'NODE'
-const { readFileSync, writeFileSync } = require("node:fs");
+const { appendFileSync, readFileSync } = require("node:fs");
 const { join } = require("node:path");
 
 const packageDirectories = ["core", "server", "wam", "wam-ui"];
@@ -34,16 +34,9 @@ const overrides = Object.fromEntries(
   })
 );
 
-const rootPackagePath = join(process.cwd(), "package.json");
-const rootPackage = JSON.parse(readFileSync(rootPackagePath, "utf8"));
-rootPackage.pnpm = {
-  ...(rootPackage.pnpm ?? {}),
-  overrides: {
-    ...(rootPackage.pnpm?.overrides ?? {}),
-    ...overrides,
-  },
-};
-writeFileSync(rootPackagePath, `${JSON.stringify(rootPackage, null, 2)}\n`);
+// pnpm 11 reads overrides only from pnpm-workspace.yaml; it ignores the "pnpm" field in package.json.
+const overrideLines = Object.entries(overrides).map(([name, spec]) => `  "${name}": "${spec}"`);
+appendFileSync(join(process.cwd(), "pnpm-workspace.yaml"), `\noverrides:\n${overrideLines.join("\n")}\n`);
 NODE
 
 # Run the starter with the pnpm version it pins in packageManager, not whatever pnpm is on PATH.
@@ -54,6 +47,7 @@ mkdir -p "$corepack_bin_dir"
 corepack enable --install-directory "$corepack_bin_dir" pnpm
 export PATH="$corepack_bin_dir:$PATH"
 
-corepack pnpm install --ignore-scripts --reporter=silent
+# Install scripts run, so the starter's allowBuilds list is checked: strictDepBuilds fails on any other one.
+corepack pnpm install --reporter=silent
 corepack pnpm build
 corepack pnpm typecheck
