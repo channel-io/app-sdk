@@ -104,9 +104,11 @@ and treat intentionally open result models as opaque. The shared envelope is sum
 
 `writeGroupMessage` accepts optional `externalSenderProfile: { key, displayName, avatarUrl? }`.
 DW validates this typed input and converts it into the message's `writerProfile`
-map for storage and responses: `key` becomes `externalSenderKey`, `displayName`
-becomes `externalSenderName`, and `avatarUrl` becomes `externalSenderAvatarUrl`.
-These map entries are optional string values; they are display metadata only.
+map for storage and responses. Its common keys are optional strings: `displayName`
+from the input's `displayName`, and `displayAvatarUrl` from `avatarUrl`.
+The integration boundary may retain input `key` as the opaque custom map field
+`externalSenderKey`. It is not a common or enum-backed writer-profile key; message
+core preserves unknown map fields without interpreting them.
 Native output represents the map as `google.protobuf.Struct writer_profile`.
 The SDK keeps `NativeMessage` opaque and preserves the typed input serialization.
 `personType`/`personId` still identify the actual writer. `botName` must identify an
