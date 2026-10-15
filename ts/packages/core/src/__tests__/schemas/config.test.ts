@@ -10,6 +10,28 @@ import {
 } from "../../extensions/index.js";
 
 describe("config extension schema", () => {
+  it.each([undefined, false, true])("preserves hideSettingsTab=%s", (hideSettingsTab) => {
+    const schema = {
+      schemaVersion: "v1",
+      configScope: "channel",
+      providerName: "Provider",
+      hideSettingsTab,
+      blocks: [
+        {
+          type: "text",
+          key: "connectionId",
+          label: "Connection ID",
+          readOnly: true,
+          required: true,
+        },
+      ],
+    };
+    expect(GetConfigSchemaOutputSchema.parse(schema)).toEqual(schema);
+    expect(
+      GetConfigSchemaOutputSchema.safeParse({ ...schema, hideSettingsTab: "true" }).success
+    ).toBe(false);
+  });
+
   it("preserves action redirect metadata and optional results", () => {
     const block = {
       type: "action",

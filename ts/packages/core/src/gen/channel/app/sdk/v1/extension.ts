@@ -301,6 +301,7 @@ export interface ConfigField {
   overviewLabel?: string | undefined;
   overviewDescription?: string | undefined;
   hidden?: boolean | undefined;
+  readOnly?: boolean | undefined;
 }
 
 export interface ConfigField_I18nMapEntry {
@@ -378,6 +379,7 @@ export interface ConfigBlock {
     | undefined;
   /** Action-only allowlist of exact canonical HTTPS origins; no wildcards or paths. */
   redirectOrigins?: string[] | undefined;
+  readOnly?: boolean | undefined;
 }
 
 export interface ConfigBlock_I18nMapEntry {
@@ -402,7 +404,11 @@ export interface ConfigGetConfigSchemaOutput {
   keyResolverFunctionName?: string | undefined;
   i18nMap?: { [key: string]: ConfigLocalizedText } | undefined;
   overview?: ConfigOverview | undefined;
-  settings?: ConfigSettings | undefined;
+  settings?:
+    | ConfigSettings
+    | undefined;
+  /** Hide only the standard Config tab; stored values and readiness are unchanged. */
+  hideSettingsTab?: boolean | undefined;
 }
 
 export interface ConfigGetConfigSchemaOutput_I18nMapEntry {

@@ -3,6 +3,29 @@
 Use Config for channel- or manager-scoped settings, API keys, `client_credentials`, shop IDs, and
 other credentials. It is the standard setup surface for new apps.
 
+## Hide the standard settings tab
+
+After App Store deploys support, set `hideSettingsTab: true` at the top level of
+`getConfigSchema` when your app owns its settings UI. Omitted or `false` preserves
+the standard tab. Re-register the Config extension after changing this option.
+Stored values, `syncChannelConfig`, required-field readiness, and installation
+guide rules are unchanged. Independent OAuth/API Key tabs and custom tabs remain.
+Existing link and tab navigation behavior is unchanged. This is not an access control.
+
+```ts
+{
+  schemaVersion: "v1",
+  configScope: "channel",
+  providerName: "Example",
+  hideSettingsTab: true,
+  blocks: [{
+    type: "text", key: "connectionId", label: "Connection ID",
+    readOnly: true, required: true, storageClass: "config",
+  }],
+}
+```
+
+
 ## Contract
 
 | Function                                           | Requirement | Purpose                                   |

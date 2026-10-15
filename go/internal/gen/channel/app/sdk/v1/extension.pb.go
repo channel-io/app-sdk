@@ -2005,6 +2005,7 @@ type ConfigField struct {
 	OverviewLabel          string                          `protobuf:"bytes,45,opt,name=overview_label,json=overviewLabel,proto3" json:"overview_label,omitempty"`
 	OverviewDescription    string                          `protobuf:"bytes,46,opt,name=overview_description,json=overviewDescription,proto3" json:"overview_description,omitempty"`
 	Hidden                 bool                            `protobuf:"varint,47,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	ReadOnly               bool                            `protobuf:"varint,48,opt,name=read_only,json=readOnly,proto3" json:"read_only,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -2354,6 +2355,13 @@ func (x *ConfigField) GetHidden() bool {
 	return false
 }
 
+func (x *ConfigField) GetReadOnly() bool {
+	if x != nil {
+		return x.ReadOnly
+	}
+	return false
+}
+
 type ConfigBlock struct {
 	state                  protoimpl.MessageState          `protogen:"open.v1"`
 	Type                   string                          `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
@@ -2423,6 +2431,7 @@ type ConfigBlock struct {
 	Hidden                 bool                            `protobuf:"varint,67,opt,name=hidden,proto3" json:"hidden,omitempty"`
 	// Action-only allowlist of exact canonical HTTPS origins; no wildcards or paths.
 	RedirectOrigins []string `protobuf:"bytes,68,rep,name=redirect_origins,json=redirectOrigins,proto3" json:"redirect_origins,omitempty"`
+	ReadOnly        bool     `protobuf:"varint,69,opt,name=read_only,json=readOnly,proto3" json:"read_only,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -2919,6 +2928,13 @@ func (x *ConfigBlock) GetRedirectOrigins() []string {
 	return nil
 }
 
+func (x *ConfigBlock) GetReadOnly() bool {
+	if x != nil {
+		return x.ReadOnly
+	}
+	return false
+}
+
 type ConfigGetConfigSchemaInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -2971,8 +2987,10 @@ type ConfigGetConfigSchemaOutput struct {
 	I18NMap                  map[string]*ConfigLocalizedText `protobuf:"bytes,12,rep,name=i18n_map,json=i18nMap,proto3" json:"i18n_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Overview                 *ConfigOverview                 `protobuf:"bytes,13,opt,name=overview,proto3" json:"overview,omitempty"`
 	Settings                 *ConfigSettings                 `protobuf:"bytes,14,opt,name=settings,proto3" json:"settings,omitempty"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	// Hide only the standard Config tab; stored values and readiness are unchanged.
+	HideSettingsTab bool `protobuf:"varint,15,opt,name=hide_settings_tab,json=hideSettingsTab,proto3" json:"hide_settings_tab,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *ConfigGetConfigSchemaOutput) Reset() {
@@ -3101,6 +3119,13 @@ func (x *ConfigGetConfigSchemaOutput) GetSettings() *ConfigSettings {
 		return x.Settings
 	}
 	return nil
+}
+
+func (x *ConfigGetConfigSchemaOutput) GetHideSettingsTab() bool {
+	if x != nil {
+		return x.HideSettingsTab
+	}
+	return false
 }
 
 type ConfigValidationError struct {
@@ -20222,7 +20247,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x05phone\x18\x03 \x01(\tR\x05phone\x12\x1a\n" +
 	"\bpostcode\x18\x04 \x01(\tR\bpostcode\x12\x1a\n" +
 	"\baddress1\x18\x05 \x01(\tR\baddress1\x12\x1a\n" +
-	"\baddress2\x18\x06 \x01(\tR\baddress2\"\xc3\x10\n" +
+	"\baddress2\x18\x06 \x01(\tR\baddress2\"\xe0\x10\n" +
 	"\vConfigField\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x10\n" +
 	"\x03key\x18\x02 \x01(\tR\x03key\x12\x14\n" +
@@ -20271,10 +20296,11 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x10overview_feature\x18, \x01(\bR\x0foverviewFeature\x12%\n" +
 	"\x0eoverview_label\x18- \x01(\tR\roverviewLabel\x121\n" +
 	"\x14overview_description\x18. \x01(\tR\x13overviewDescription\x12\x16\n" +
-	"\x06hidden\x18/ \x01(\bR\x06hidden\x1ac\n" +
+	"\x06hidden\x18/ \x01(\bR\x06hidden\x12\x1b\n" +
+	"\tread_only\x180 \x01(\bR\breadOnly\x1ac\n" +
 	"\fI18nMapEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
-	"\x05value\x18\x02 \x01(\v2'.channel.app.sdk.v1.ConfigLocalizedTextR\x05value:\x028\x01J\x04\b\x1b\x10\x1cJ\x04\b\x1c\x10\x1d\"\xb1\x16\n" +
+	"\x05value\x18\x02 \x01(\v2'.channel.app.sdk.v1.ConfigLocalizedTextR\x05value:\x028\x01J\x04\b\x1b\x10\x1cJ\x04\b\x1c\x10\x1d\"\xce\x16\n" +
 	"\vConfigBlock\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x14\n" +
@@ -20345,11 +20371,12 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x0fsuccess_message\x18A \x01(\tR\x0esuccessMessage\x121\n" +
 	"\x15show_in_overview_menu\x18B \x01(\bR\x12showInOverviewMenu\x12\x16\n" +
 	"\x06hidden\x18C \x01(\bR\x06hidden\x12)\n" +
-	"\x10redirect_origins\x18D \x03(\tR\x0fredirectOrigins\x1ac\n" +
+	"\x10redirect_origins\x18D \x03(\tR\x0fredirectOrigins\x12\x1b\n" +
+	"\tread_only\x18E \x01(\bR\breadOnly\x1ac\n" +
 	"\fI18nMapEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.channel.app.sdk.v1.ConfigLocalizedTextR\x05value:\x028\x01J\x04\b\r\x10\x0eJ\x04\b\x11\x10\x12\"\x1c\n" +
-	"\x1aConfigGetConfigSchemaInput\"\xd1\x06\n" +
+	"\x1aConfigGetConfigSchemaInput\"\xfd\x06\n" +
 	"\x1bConfigGetConfigSchemaOutput\x12%\n" +
 	"\x0eschema_version\x18\x01 \x01(\tR\rschemaVersion\x12!\n" +
 	"\fconfig_scope\x18\x02 \x01(\tR\vconfigScope\x12#\n" +
@@ -20365,7 +20392,8 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x1akey_resolver_function_name\x18\v \x01(\tR\x17keyResolverFunctionName\x12W\n" +
 	"\bi18n_map\x18\f \x03(\v2<.channel.app.sdk.v1.ConfigGetConfigSchemaOutput.I18nMapEntryR\ai18nMap\x12>\n" +
 	"\boverview\x18\r \x01(\v2\".channel.app.sdk.v1.ConfigOverviewR\boverview\x12>\n" +
-	"\bsettings\x18\x0e \x01(\v2\".channel.app.sdk.v1.ConfigSettingsR\bsettings\x1ac\n" +
+	"\bsettings\x18\x0e \x01(\v2\".channel.app.sdk.v1.ConfigSettingsR\bsettings\x12*\n" +
+	"\x11hide_settings_tab\x18\x0f \x01(\bR\x0fhideSettingsTab\x1ac\n" +
 	"\fI18nMapEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.channel.app.sdk.v1.ConfigLocalizedTextR\x05value:\x028\x01\"\xa7\x02\n" +

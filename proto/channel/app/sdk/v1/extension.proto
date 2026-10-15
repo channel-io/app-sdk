@@ -254,6 +254,7 @@ message ConfigField {
   string overview_label = 45;
   string overview_description = 46;
   bool hidden = 47;
+  bool read_only = 48;
 }
 
 message ConfigBlock {
@@ -326,6 +327,7 @@ message ConfigBlock {
   bool hidden = 67;
   // Action-only allowlist of exact canonical HTTPS origins; no wildcards or paths.
   repeated string redirect_origins = 68;
+  bool read_only = 69;
 }
 
 message ConfigGetConfigSchemaInput {}
@@ -345,6 +347,8 @@ message ConfigGetConfigSchemaOutput {
   map<string, ConfigLocalizedText> i18n_map = 12;
   ConfigOverview overview = 13;
   ConfigSettings settings = 14;
+  // Hide only the standard Config tab; stored values and readiness are unchanged.
+  bool hide_settings_tab = 15;
 }
 
 message ConfigValidationError {

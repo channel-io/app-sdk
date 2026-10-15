@@ -49,14 +49,16 @@ func TestExtensionRegistersConfigSchema(t *testing.T) {
 	app := appsdk.New(appsdk.Options{AppID: "app"})
 	if err := app.Use(config.Extension().
 		GetConfigSchema(config.StaticSchema(&config.GetConfigSchemaResponse{
-			SchemaVersion: "v1",
-			ConfigScope:   config.ScopeChannel,
-			ProviderName:  "Provider",
+			SchemaVersion:   "v1",
+			ConfigScope:     config.ScopeChannel,
+			ProviderName:    "Provider",
+			HideSettingsTab: true,
 			Blocks: []*config.Block{{
 				Type:         "text",
 				Key:          "storeId",
 				Label:        "Store ID",
 				Required:     true,
+				ReadOnly:     true,
 				StorageClass: config.StorageClassConfig,
 			}},
 		})).
@@ -77,6 +79,12 @@ func TestExtensionRegistersConfigSchema(t *testing.T) {
 	}
 	if out.ProviderName != "Provider" || len(out.Blocks) != 1 {
 		t.Fatalf("unexpected schema: providerName=%q blocks=%d", out.GetProviderName(), len(out.GetBlocks()))
+	}
+	if !out.HideSettingsTab {
+		t.Fatal("hideSettingsTab was lost from the registered schema")
+	}
+	if !out.Blocks[0].ReadOnly {
+		t.Fatal("readOnly was lost from the registered schema")
 	}
 }
 
