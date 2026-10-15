@@ -46,6 +46,14 @@ rootPackage.pnpm = {
 writeFileSync(rootPackagePath, `${JSON.stringify(rootPackage, null, 2)}\n`);
 NODE
 
+# Run the starter with the pnpm version it pins in packageManager, not whatever pnpm is on PATH.
+# turbo spawns `pnpm` from PATH for each package; a different PATH pnpm then runs under corepack's
+# environment and refuses to switch versions.
+corepack_bin_dir="$temporary_dir/corepack-bin"
+mkdir -p "$corepack_bin_dir"
+corepack enable --install-directory "$corepack_bin_dir" pnpm
+export PATH="$corepack_bin_dir:$PATH"
+
 corepack pnpm install --ignore-scripts --reporter=silent
 corepack pnpm build
 corepack pnpm typecheck
