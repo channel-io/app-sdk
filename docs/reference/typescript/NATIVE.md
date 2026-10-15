@@ -103,9 +103,14 @@ and treat intentionally open result models as opaque. The shared envelope is sum
 ## Team chat sender presentation
 
 `writeGroupMessage` accepts optional `externalSenderProfile: { key, displayName, avatarUrl? }`.
-It is persisted on each message for display only; `personType`/`personId` still
-identify the actual writer. `botName` must identify an existing bot when this
-field is supplied. The operation never creates or updates a bot for the sender.
+DW validates this typed input and converts it into the message's `writerProfile`
+map for storage and responses: `key` becomes `externalSenderKey`, `displayName`
+becomes `externalSenderName`, and `avatarUrl` becomes `externalSenderAvatarUrl`.
+These map entries are optional string values; they are display metadata only.
+Native output represents the map as `google.protobuf.Struct writer_profile`.
+The SDK keeps `NativeMessage` opaque and preserves the typed input serialization.
+`personType`/`personId` still identify the actual writer. `botName` must identify an
+existing bot when this field is supplied. The operation never creates or updates a bot for the sender.
 
 Use an opaque key per external sender/profile revision to keep consecutive
 messages by different senders visually separate. `displayName` allows 128 UTF-16
