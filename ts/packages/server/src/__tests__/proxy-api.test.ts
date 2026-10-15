@@ -95,7 +95,7 @@ describe("ProxyApi", () => {
           externalSenderProfile: {
             key: "slack-user-1",
             displayName: "루카 (Slack)",
-            avatarUrl: "https://avatars.slack-edge.com/team-user_192.png",
+            avatarUrl: "https://cf.channel.io/app-store/app/media/channel/object/slack-avatar.png",
           },
         },
       };
@@ -119,7 +119,7 @@ describe("ProxyApi", () => {
               externalSenderProfile: {
                 key: "slack-user-1",
                 displayName: "루카 (Slack)",
-                avatarUrl: "https://avatars.slack-edge.com/team-user_192.png",
+                avatarUrl: "https://cf.channel.io/app-store/app/media/channel/object/slack-avatar.png",
               },
             },
           },

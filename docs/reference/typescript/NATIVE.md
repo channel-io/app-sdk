@@ -109,8 +109,11 @@ field is supplied. The operation never creates or updates a bot for the sender.
 
 Use an opaque key per external sender/profile revision to keep consecutive
 messages by different senders visually separate. `displayName` allows 128 UTF-16
-units without control/format characters. `avatarUrl` must be HTTPS on an allowed
-Slack image host and is stored as a URL without a per-message media upload.
+units without control/format characters. `avatarUrl` accepts permanent, unsigned HTTPS app media URLs on `cf.channel.io`
+or `cf.exp.channel.io` (`/app-store/{appId}/media/{channelId}/{uuid}/{filename}`).
+Legacy allowed Slack image hosts remain supported. Import provider photos during
+profile synchronization and reuse the stored CDN URL; DW stores the URL without
+a per-message upload, and Desk needs no separate App Store profile lookup.
 Omitting the avatar uses the existing bot avatar. Other writer endpoints reject
 `externalSenderProfile`; omitting the entire field preserves legacy behavior.
 
