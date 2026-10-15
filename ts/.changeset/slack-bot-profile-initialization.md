@@ -3,4 +3,4 @@
 "@channel.io/app-sdk-server": minor
 ---
 
-Add display-only senderProfile snapshots to TeamChat writes without creating sender bots.
+Add display-only externalSenderProfile snapshots to TeamChat writes without creating sender bots.

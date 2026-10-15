@@ -92,7 +92,7 @@ describe("ProxyApi", () => {
         dto: {
           plainText: "Message from Slack",
           botName: "Channel-bot",
-          senderProfile: {
+          externalSenderProfile: {
             key: "slack-user-1",
             displayName: "루카 (Slack)",
             avatarUrl: "https://avatars.slack-edge.com/team-user_192.png",
@@ -116,7 +116,7 @@ describe("ProxyApi", () => {
             dto: {
               plainText: "Message from Slack",
               botName: "Channel-bot",
-              senderProfile: {
+              externalSenderProfile: {
                 key: "slack-user-1",
                 displayName: "루카 (Slack)",
                 avatarUrl: "https://avatars.slack-edge.com/team-user_192.png",
