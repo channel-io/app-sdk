@@ -27,16 +27,21 @@ describe("sanitizeForLogging", () => {
     "OPENSSH PRIVATE KEY",
   ])("redacts %s regardless of field name, serialization, or URL encoding", (kind) => {
     const pem = privateKey(kind);
+    const form = new URLSearchParams({ credential: pem }).toString();
     expect(
       sanitizeForLogging({
         message: `Failed with config: ${pem}`,
         serialized: JSON.stringify({ credential: pem }),
         values: [pem, encodeURIComponent(pem), encodeURIComponent(encodeURIComponent(pem))],
+        form,
+        nestedForm: { redirect: `https://example.com/?next=${encodeURIComponent(form)}` },
       })
     ).toEqual({
       message: "[REDACTED]",
       serialized: "[REDACTED]",
       values: ["[REDACTED]", "[REDACTED]", "[REDACTED]"],
+      form: "[REDACTED]",
+      nestedForm: { redirect: "[REDACTED]" },
     });
   });
 
@@ -72,7 +77,7 @@ describe("sanitizeForLogging", () => {
     const array: unknown[] = [{ private_key: "synthetic-key-material" }];
     const object: Record<string, unknown> = { array, status: "ok" };
     array.push(array, object);
-    object.self = object;
+    object["self"] = object;
     const sanitized = sanitizeForLogging(object);
     expect(sanitized).toEqual({
       array: [{ private_key: "[REDACTED]" }, "[Circular]", "[Circular]"],

@@ -2,7 +2,7 @@ const REDACTED_LOG_VALUE = "[REDACTED]";
 const CIRCULAR_LOG_VALUE = "[Circular]";
 const OAUTH_FLOW_NONCE_NAME = /oauth[-_ +]?flow[-_ +]?nonce/i;
 // Match the opening boundary too: truncated or escaped PEM must never be logged.
-const PRIVATE_KEY_BOUNDARY = /-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY-----/i;
+const PRIVATE_KEY_BOUNDARY = /-----BEGIN[ +](?:[A-Z0-9]+[ +])*PRIVATE[ +]KEY-----/i;
 const SENSITIVE_LOG_KEYS = new Set([
   "secret",
   "appsecret",

@@ -630,6 +630,9 @@ describe("NativeFunctionClient", () => {
         refreshToken: "refresh-456",
         expiresIn: 3600,
         privateKey: "synthetic-native-key",
+        form: new URLSearchParams({
+          credential: `-----BEGIN ${"PRIVATE KEY"}-----\nsynthetic-form-key`,
+        }).toString(),
       };
       mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: tokenResult }));
 
@@ -649,9 +652,11 @@ describe("NativeFunctionClient", () => {
         refreshToken: "[REDACTED]",
         expiresIn: 3600,
         privateKey: "[REDACTED]",
+        form: "[REDACTED]",
       });
       expect(result).toEqual(tokenResult);
       expect(JSON.stringify(debugSpy.mock.calls)).not.toContain("synthetic-native-key");
+      expect(JSON.stringify(debugSpy.mock.calls)).not.toContain("synthetic-form-key");
     });
 
     it("should redact nested app function credentials in debug logs", async () => {
