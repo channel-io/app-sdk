@@ -494,11 +494,12 @@ describe("ChannelAppService", () => {
           authToken: "result-auth-token",
           nested: {
             accessToken: "nested-access-token",
+            private_key: "synthetic-output-key",
           },
         }),
       });
 
-      await service.handleFunctionCall({
+      const result = await service.handleFunctionCall({
         method: "extension.messaging.thread.sync",
         context: {
           channelId: "ch-1",
@@ -511,6 +512,7 @@ describe("ChannelAppService", () => {
         params: {
           refreshToken: "refresh-token-123",
           plainText: "hello",
+          config: { privateKey: "synthetic-request-key", privateKeyId: "key-1" },
         },
       });
 
@@ -520,12 +522,18 @@ describe("ChannelAppService", () => {
       );
       expect(logger.debug).toHaveBeenNthCalledWith(
         2,
-        'Request: {"method":"extension.messaging.thread.sync","context":{"channelId":"ch-1","authToken":"[REDACTED]","apiCredentials":"[REDACTED]"},"params":{"refreshToken":"[REDACTED]","plainText":"hello"}}'
+        'Request: {"method":"extension.messaging.thread.sync","context":{"channelId":"ch-1","authToken":"[REDACTED]","apiCredentials":"[REDACTED]"},"params":{"refreshToken":"[REDACTED]","plainText":"hello","config":{"privateKey":"[REDACTED]","privateKeyId":"key-1"}}}'
       );
       expect(logger.debug).toHaveBeenNthCalledWith(
         3,
-        'Output: {"ok":true,"authToken":"[REDACTED]","nested":{"accessToken":"[REDACTED]"}}'
+        'Output: {"ok":true,"authToken":"[REDACTED]","nested":{"accessToken":"[REDACTED]","private_key":"[REDACTED]"}}'
       );
+      expect(result.result).toEqual({
+        ok: true,
+        authToken: "result-auth-token",
+        nested: { accessToken: "nested-access-token", private_key: "synthetic-output-key" },
+      });
+      expect(JSON.stringify(logger.debug.mock.calls)).not.toMatch(/synthetic-(request|output)-key/);
     });
   });
 

@@ -1,6 +1,8 @@
 const REDACTED_LOG_VALUE = "[REDACTED]";
 const CIRCULAR_LOG_VALUE = "[Circular]";
 const OAUTH_FLOW_NONCE_NAME = /oauth[-_ +]?flow[-_ +]?nonce/i;
+// Match the opening boundary too: truncated or escaped PEM must never be logged.
+const PRIVATE_KEY_BOUNDARY = /-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY-----/i;
 const SENSITIVE_LOG_KEYS = new Set([
   "secret",
   "appsecret",
@@ -13,6 +15,7 @@ const SENSITIVE_LOG_KEYS = new Set([
   "authorization",
   "clientsecret",
   "password",
+  "privatekey",
   "xaccesstoken",
   "resumeurl",
   "resumenonce",
@@ -23,9 +26,9 @@ function normalizeSensitiveLogKey(key: string): string {
   return key.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-function shouldRedactOAuthFlowURL(value: string): boolean {
+function shouldRedactSensitiveString(value: string): boolean {
   for (let depth = 0; depth < 4; depth++) {
-    if (OAUTH_FLOW_NONCE_NAME.test(value)) {
+    if (OAUTH_FLOW_NONCE_NAME.test(value) || PRIVATE_KEY_BOUNDARY.test(value)) {
       return true;
     }
     // Decode bytes only for detection; malformed escapes must not stop masking.
@@ -38,7 +41,11 @@ function shouldRedactOAuthFlowURL(value: string): boolean {
     value = decoded;
   }
   // Bound work for deeply nested redirects and hide values we cannot fully inspect.
-  return OAUTH_FLOW_NONCE_NAME.test(value) || /%[0-9a-f]{2}/i.test(value);
+  return (
+    OAUTH_FLOW_NONCE_NAME.test(value) ||
+    PRIVATE_KEY_BOUNDARY.test(value) ||
+    /%[0-9a-f]{2}/i.test(value)
+  );
 }
 
 export function sanitizeForLogging(value: unknown, key?: string, seen = new WeakSet()): unknown {
@@ -46,13 +53,9 @@ export function sanitizeForLogging(value: unknown, key?: string, seen = new Weak
     return REDACTED_LOG_VALUE;
   }
 
-  // Redirect destinations can embed the signed resume URL as an encoded query value.
-  if (typeof value === "string" && shouldRedactOAuthFlowURL(value)) {
+  // Sensitive material can appear inside a serialized config or an encoded URL.
+  if (typeof value === "string" && shouldRedactSensitiveString(value)) {
     return REDACTED_LOG_VALUE;
-  }
-
-  if (Array.isArray(value)) {
-    return value.map((item) => sanitizeForLogging(item, undefined, seen));
   }
 
   if (value && typeof value === "object") {
@@ -60,6 +63,10 @@ export function sanitizeForLogging(value: unknown, key?: string, seen = new Weak
       return CIRCULAR_LOG_VALUE;
     }
     seen.add(value);
+
+    if (Array.isArray(value)) {
+      return value.map((item) => sanitizeForLogging(item, undefined, seen));
+    }
 
     return Object.fromEntries(
       Object.entries(value).map(([entryKey, entryValue]) => [

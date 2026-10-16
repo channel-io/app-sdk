@@ -629,10 +629,11 @@ describe("NativeFunctionClient", () => {
         accessToken: "access-123",
         refreshToken: "refresh-456",
         expiresIn: 3600,
+        privateKey: "synthetic-native-key",
       };
       mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: tokenResult }));
 
-      await debugClient.callNativeFunction(
+      const result = await debugClient.callNativeFunction(
         "issueToken",
         { secret: APP_SECRET },
         { payloadLogging: "sanitized" }
@@ -647,7 +648,10 @@ describe("NativeFunctionClient", () => {
         accessToken: "[REDACTED]",
         refreshToken: "[REDACTED]",
         expiresIn: 3600,
+        privateKey: "[REDACTED]",
       });
+      expect(result).toEqual(tokenResult);
+      expect(JSON.stringify(debugSpy.mock.calls)).not.toContain("synthetic-native-key");
     });
 
     it("should redact nested app function credentials in debug logs", async () => {
