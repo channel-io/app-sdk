@@ -35,7 +35,7 @@ Check `NativeFunctionTypeMap` in `packages/core/src/types/native.ts` for the mod
 const result = await client.callNativeFunctionWithToken(
   "findOrCreateUserChatByMedium",
   params,
-  accessToken,
+  accessToken
 );
 ```
 
@@ -84,7 +84,7 @@ const result = await nativeClient.callAppFunction<Input, Output>(
   "orders.get",
   { orderId: "order-1" },
   ctx,
-  channelToken.accessToken,
+  channelToken.accessToken
 );
 ```
 
@@ -99,3 +99,31 @@ The public SDK exports are the source of truth for supported TypeScript calls. C
 types. Keep request and response models limited to that public surface, use camelCase JSON fields,
 and treat intentionally open result models as opaque. The shared envelope is summarized in the
 [cross-language protocol](../protocol.md).
+
+## Team chat sender presentation
+
+`writeGroupMessage` accepts optional `externalSenderProfile: { key, displayName, avatarUrl? }`.
+DW validates this typed input and converts it into the message's `writerProfile`
+map for storage and responses. Its common keys are optional strings: `displayName`
+from the input's `displayName`, and `displayAvatarUrl` from `avatarUrl`.
+The integration boundary may retain input `key` as the opaque custom map field
+`externalSenderKey`. It is not a common or enum-backed writer-profile key; message
+core preserves unknown map fields without interpreting them.
+Native output represents the map as `google.protobuf.Struct writer_profile`.
+The SDK keeps `NativeMessage` opaque and preserves the typed input serialization.
+`personType`/`personId` still identify the actual writer. `botName` must identify an
+existing bot when this field is supplied. The operation never creates or updates a bot for the sender.
+
+Use an opaque key per external sender/profile revision to keep consecutive
+messages by different senders visually separate. `displayName` allows 128 UTF-16
+units without control/format characters. `avatarUrl` accepts permanent, unsigned HTTPS app media URLs on `cf.channel.io`
+or `cf.exp.channel.io` (`/app-store/{appId}/media/{channelId}/{uuid}/{filename}`).
+Legacy allowed Slack image hosts remain supported. Import provider photos during
+profile synchronization and reuse the stored CDN URL; DW stores the URL without
+a per-message upload, and Desk needs no separate App Store profile lookup.
+Omitting the avatar uses the existing bot avatar. Other writer endpoints reject
+`externalSenderProfile`; omitting the entire field preserves legacy behavior.
+
+Deploy proto/DW and Desk display support before enabling the Slack caller.
+The caller retains provider profiles in its own cache/database. Existing messages
+keep their stored snapshot. No manager permissions or identity are inferred.

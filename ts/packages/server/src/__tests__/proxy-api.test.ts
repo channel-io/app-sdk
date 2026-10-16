@@ -85,6 +85,52 @@ describe("ProxyApi", () => {
       expect(spy).toHaveBeenCalledWith("writeGroupMessage", params, accessToken);
     });
 
+    it("writeGroupMessage serializes message sender metadata without a per-sender bot", async () => {
+      const params: WriteGroupMessageRequest = {
+        channelId: "ch-1",
+        groupId: "grp-1",
+        dto: {
+          plainText: "Message from Slack",
+          botName: "Channel-bot",
+          externalSenderProfile: {
+            key: "slack-user-1",
+            displayName: "루카 (Slack)",
+            avatarUrl: "https://cf.channel.io/app-store/app/media/channel/object/slack-avatar.png",
+          },
+        },
+      };
+      const fetchSpy = vi
+        .spyOn(globalThis, "fetch")
+        .mockResolvedValue(Response.json({ result: { message: { id: "msg-slack" } } }));
+
+      try {
+        const result = await api.writeGroupMessage(params);
+
+        expect(fetchSpy).toHaveBeenCalledOnce();
+        const request = fetchSpy.mock.calls[0]?.[1];
+        expect(JSON.parse(request?.body as string)).toEqual({
+          method: "writeGroupMessage",
+          params: {
+            channelId: "ch-1",
+            groupId: "grp-1",
+            dto: {
+              plainText: "Message from Slack",
+              botName: "Channel-bot",
+              externalSenderProfile: {
+                key: "slack-user-1",
+                displayName: "루카 (Slack)",
+                avatarUrl:
+                  "https://cf.channel.io/app-store/app/media/channel/object/slack-avatar.png",
+              },
+            },
+          },
+        });
+        expect(result).toEqual({ message: { id: "msg-slack" } });
+      } finally {
+        fetchSpy.mockRestore();
+      }
+    });
+
     it("writeGroupMessageAsManager should call with correct method and params", async () => {
       const params: WriteGroupMessageAsManagerRequest = {
         channelId: "ch-1",

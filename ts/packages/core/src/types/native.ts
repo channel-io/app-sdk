@@ -171,6 +171,11 @@ export interface NativeWriteMessageDto {
   options?: readonly NativeMessageOption[];
   requestId?: string;
   botName?: string;
+  /** Display-only snapshot for writeGroupMessage; requires an existing botName.
+   * Never creates/updates a bot or grants manager identity. Name <= 128 UTF-16 units.
+   * Avatar accepts permanent app media CDN URLs; legacy allowed Slack image URLs remain supported.
+   */
+  externalSenderProfile?: { key: string; displayName: string; avatarUrl?: string };
   managerId?: string;
   userId?: string;
   customPayload?: NativeJsonObject;
