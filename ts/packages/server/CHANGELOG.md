@@ -1,5 +1,12 @@
 # @channel.io/app-sdk-server
 
+## 0.33.1
+
+### Patch Changes
+
+- a6ac801: Mask private-key fields and PEM private-key strings in SDK diagnostic logs, including nested and encoded values. Handle circular arrays without interrupting logging.
+  - @channel.io/app-sdk-core@0.33.1
+
 ## 0.33.0
 
 ### Patch Changes
