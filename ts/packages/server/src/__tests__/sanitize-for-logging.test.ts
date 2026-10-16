@@ -2,6 +2,91 @@ import { describe, expect, it } from "vitest";
 import { sanitizeForLogging } from "../utils/sanitize-for-logging.js";
 
 describe("sanitizeForLogging", () => {
+  it.each(["privateKey", "private_key", "private-key", "PRIVATE_KEY"])(
+    "redacts nested %s fields without changing the input or unrelated config",
+    (key) => {
+      const request = {
+        config: [{ [key]: "synthetic-key-material", privateKeyId: "key-1", enabled: true }],
+      };
+      expect(sanitizeForLogging(request)).toEqual({
+        config: [{ [key]: "[REDACTED]", privateKeyId: "key-1", enabled: true }],
+      });
+      expect(request.config[0]?.[key]).toBe("synthetic-key-material");
+    }
+  );
+
+  // Construct synthetic boundaries rather than keeping credential-shaped fixtures.
+  const privateKey = (kind: string) =>
+    `-----BEGIN ${kind}-----\nsynthetic-key-material\n-----END ${kind}-----`;
+
+  it.each([
+    "PRIVATE KEY",
+    "RSA PRIVATE KEY",
+    "EC PRIVATE KEY",
+    "ENCRYPTED PRIVATE KEY",
+    "OPENSSH PRIVATE KEY",
+  ])("redacts %s regardless of field name, serialization, or URL encoding", (kind) => {
+    const pem = privateKey(kind);
+    const form = new URLSearchParams({ credential: pem }).toString();
+    expect(
+      sanitizeForLogging({
+        message: `Failed with config: ${pem}`,
+        serialized: JSON.stringify({ credential: pem }),
+        values: [pem, encodeURIComponent(pem), encodeURIComponent(encodeURIComponent(pem))],
+        form,
+        nestedForm: { redirect: `https://example.com/?next=${encodeURIComponent(form)}` },
+      })
+    ).toEqual({
+      message: "[REDACTED]",
+      serialized: "[REDACTED]",
+      values: ["[REDACTED]", "[REDACTED]", "[REDACTED]"],
+      form: "[REDACTED]",
+      nestedForm: { redirect: "[REDACTED]" },
+    });
+  });
+
+  it("redacts incomplete PEM and malformed or deeply encoded credential strings", () => {
+    const pem = privateKey("PRIVATE KEY");
+    let deeplyEncoded = pem;
+    for (let i = 0; i < 8; i++) deeplyEncoded = encodeURIComponent(deeplyEncoded);
+    expect(
+      sanitizeForLogging([
+        pem.slice(0, pem.indexOf("synthetic")) + "partial",
+        `%FF% ${encodeURIComponent(pem)}`,
+        deeplyEncoded,
+      ])
+    ).toEqual(["[REDACTED]", "[REDACTED]", "[REDACTED]"]);
+  });
+
+  it("preserves public material, ordinary strings, and non-secret config", () => {
+    const value = {
+      publicKey: "-----BEGIN PUBLIC KEY-----\\nsynthetic-public-data\\n-----END PUBLIC KEY-----",
+      certificate:
+        "-----BEGIN CERTIFICATE-----\\nsynthetic-certificate\\n-----END CERTIFICATE-----",
+      privateKeyId: "public-key-identifier",
+      message: "A private key is configured",
+      empty: "",
+      count: 0,
+      enabled: false,
+      optional: null,
+    };
+    expect(sanitizeForLogging(value)).toEqual(value);
+  });
+
+  it("handles circular arrays and objects while still redacting their sibling values", () => {
+    const array: unknown[] = [{ private_key: "synthetic-key-material" }];
+    const object: Record<string, unknown> = { array, status: "ok" };
+    array.push(array, object);
+    object["self"] = object;
+    const sanitized = sanitizeForLogging(object);
+    expect(sanitized).toEqual({
+      array: [{ private_key: "[REDACTED]" }, "[Circular]", "[Circular]"],
+      status: "ok",
+      self: "[Circular]",
+    });
+    expect(() => JSON.stringify(sanitized)).not.toThrow();
+  });
+
   it("redacts OAuth resume nonces and redirect URLs that embed them", () => {
     expect(
       sanitizeForLogging({
