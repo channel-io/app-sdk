@@ -1827,6 +1827,39 @@ export const WmsOrderActionRequestProtoSchema = z.object({
 }) satisfies z.ZodType<pb.WmsOrderActionRequest>;
 export type WmsOrderActionRequestProto = z.infer<typeof WmsOrderActionRequestProtoSchema>;
 
+export const WmsOrderClaimItemProtoSchema = z.object({
+  id: z.string().optional(),
+  quantity: z.number().int().optional(),
+}) satisfies z.ZodType<pb.WmsOrderClaimItem>;
+export type WmsOrderClaimItemProto = z.infer<typeof WmsOrderClaimItemProtoSchema>;
+
+export const WmsOrderCancelRequestProtoSchema = z.object({
+  identifier: z.lazy(() => WmsIdentifierProtoSchema).optional(),
+  orderIds: z.array(z.string()).optional(),
+  reason: z.string().optional(),
+  memo: z.string().optional(),
+  cancelItems: z.array(z.lazy(() => WmsOrderClaimItemProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.WmsOrderCancelRequest>;
+export type WmsOrderCancelRequestProto = z.infer<typeof WmsOrderCancelRequestProtoSchema>;
+
+export const WmsOrderReturnRequestProtoSchema = z.object({
+  identifier: z.lazy(() => WmsIdentifierProtoSchema).optional(),
+  orderIds: z.array(z.string()).optional(),
+  reason: z.string().optional(),
+  memo: z.string().optional(),
+  returnItems: z.array(z.lazy(() => WmsOrderClaimItemProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.WmsOrderReturnRequest>;
+export type WmsOrderReturnRequestProto = z.infer<typeof WmsOrderReturnRequestProtoSchema>;
+
+export const WmsOrderExchangeRequestProtoSchema = z.object({
+  identifier: z.lazy(() => WmsIdentifierProtoSchema).optional(),
+  orderIds: z.array(z.string()).optional(),
+  reason: z.string().optional(),
+  memo: z.string().optional(),
+  exchangeItems: z.array(z.lazy(() => WmsOrderClaimItemProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.WmsOrderExchangeRequest>;
+export type WmsOrderExchangeRequestProto = z.infer<typeof WmsOrderExchangeRequestProtoSchema>;
+
 export const WmsOrderChangeShippingAddressInputProtoSchema = z.object({
   identifier: z.lazy(() => WmsIdentifierProtoSchema).optional(),
   orderId: z.string().optional(),

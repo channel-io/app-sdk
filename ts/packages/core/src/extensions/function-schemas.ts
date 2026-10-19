@@ -125,9 +125,12 @@ import {
   WmsGetAppConfigsOutputSchema,
   WmsOrderActionInputSchema,
   WmsOrderActionOutputSchema,
+  WmsOrderCancelInputSchema,
   WmsOrderChangeShippingAddressInputSchema,
+  WmsOrderExchangeInputSchema,
   WmsOrderGetOrdersInputSchema,
   WmsOrderGetOrdersOutputSchema,
+  WmsOrderReturnInputSchema,
   WmsSuccessOutputSchema,
 } from "./wms.js";
 import { zodToJsonSchema } from "../utils/zod-to-json-schema.js";
@@ -691,17 +694,17 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
   },
   {
     name: "extension.wms.order.requestCancelOrder",
-    input: WmsOrderActionInputSchema,
+    input: WmsOrderCancelInputSchema,
     output: WmsOrderActionOutputSchema,
   },
   {
     name: "extension.wms.order.requestExchangeOrder",
-    input: WmsOrderActionInputSchema,
+    input: WmsOrderExchangeInputSchema,
     output: WmsOrderActionOutputSchema,
   },
   {
     name: "extension.wms.order.requestReturnOrder",
-    input: WmsOrderActionInputSchema,
+    input: WmsOrderReturnInputSchema,
     output: WmsOrderActionOutputSchema,
   },
   {

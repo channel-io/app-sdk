@@ -186,7 +186,11 @@ import type {
   WmsIdentifier as ProtoWmsIdentifier,
   WmsOrderActionRequest as ProtoWmsOrderActionRequest,
   WmsOrderActionResult as ProtoWmsOrderActionResult,
+  WmsOrderCancelRequest as ProtoWmsOrderCancelRequest,
   WmsOrderChangeShippingAddressInput as ProtoWmsOrderChangeShippingAddressInput,
+  WmsOrderClaimItem as ProtoWmsOrderClaimItem,
+  WmsOrderExchangeRequest as ProtoWmsOrderExchangeRequest,
+  WmsOrderReturnRequest as ProtoWmsOrderReturnRequest,
   WmsOrderGetOrdersRequest as ProtoWmsOrderGetOrdersRequest,
   WmsOrderGetOrdersResult as ProtoWmsOrderGetOrdersResult,
   WmsOrderItemV2 as ProtoWmsOrderItemV2,
@@ -1091,6 +1095,27 @@ export type ExtensionProtoSchemaContracts = [
     SchemaOutputExtendsProto<
       typeof WmsSchemas.WmsOrderActionInputSchema,
       ProtoWmsOrderActionRequest
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<typeof WmsSchemas.WmsOrderClaimItemSchema, ProtoWmsOrderClaimItem>
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof WmsSchemas.WmsOrderCancelInputSchema,
+      ProtoWmsOrderCancelRequest
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof WmsSchemas.WmsOrderReturnInputSchema,
+      ProtoWmsOrderReturnRequest
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof WmsSchemas.WmsOrderExchangeInputSchema,
+      ProtoWmsOrderExchangeRequest
     >
   >,
   Expect<

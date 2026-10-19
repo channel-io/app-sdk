@@ -147,9 +147,9 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 		GetSupportedCommerces(zero[wms.GetSupportedCommercesRequest, wms.GetSupportedCommercesResponse]()).
 		OrderChangeShippingAddress(zero[wms.OrderChangeShippingAddressRequest, wms.OrderActionResponse]()).
 		OrderGetOrders(zero[wms.OrderGetOrdersRequest, wms.OrderGetOrdersResponse]()).
-		OrderRequestCancelOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-		OrderRequestExchangeOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-		OrderRequestReturnOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+		OrderRequestCancelOrder(zero[wms.OrderCancelRequest, wms.OrderActionResponse]()).
+		OrderRequestExchangeOrder(zero[wms.OrderExchangeRequest, wms.OrderActionResponse]()).
+		OrderRequestReturnOrder(zero[wms.OrderReturnRequest, wms.OrderActionResponse]()).
 		OrderRestoreCanceledOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
 		OrderRestoreExchangedOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).
 		OrderRestoreReturnedOrder(zero[wms.OrderActionRequest, wms.OrderActionResponse]()).

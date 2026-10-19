@@ -223,7 +223,11 @@ import {
   WmsOperationOptionsSchema,
   WmsOrderActionInputSchema,
   WmsOrderActionOutputSchema,
+  WmsOrderCancelInputSchema,
   WmsOrderChangeShippingAddressInputSchema,
+  WmsOrderClaimItemSchema,
+  WmsOrderExchangeInputSchema,
+  WmsOrderReturnInputSchema,
   WmsOrderGetOrdersInputSchema,
   WmsOrderGetOrdersOutputSchema,
   WmsOrderItemV2Schema,
@@ -830,6 +834,15 @@ const contracts: Contract[] = [
     "WmsOrderGetOrdersResult"
   ),
   contract("WmsOrderActionInput", WmsOrderActionInputSchema, "extension", "WmsOrderActionRequest"),
+  contract("WmsOrderClaimItem", WmsOrderClaimItemSchema, "extension", "WmsOrderClaimItem"),
+  contract("WmsOrderCancelInput", WmsOrderCancelInputSchema, "extension", "WmsOrderCancelRequest"),
+  contract("WmsOrderReturnInput", WmsOrderReturnInputSchema, "extension", "WmsOrderReturnRequest"),
+  contract(
+    "WmsOrderExchangeInput",
+    WmsOrderExchangeInputSchema,
+    "extension",
+    "WmsOrderExchangeRequest"
+  ),
   contract("WmsOrderActionOutput", WmsOrderActionOutputSchema, "extension", "WmsOrderActionResult"),
   contract(
     "WmsOrderChangeShippingAddressInput",

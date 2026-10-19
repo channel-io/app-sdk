@@ -36,9 +36,14 @@ Current methods:
 ## TypeScript
 
 Use `@Extension({ name: "wms", systemVersion: "v1" })` with the exported WMS schemas:
-`WmsGetAppConfigs*`, `WmsOrderGetOrders*`, `WmsOrderAction*`, and
-`WmsOrderChangeShippingAddress*`. Register each Function under its exact
-`extension.wms.order.*` name.
+`WmsGetAppConfigs*`, `WmsOrderGetOrders*`, `WmsOrderAction*`, `WmsOrderCancel*`,
+`WmsOrderReturn*`, `WmsOrderExchange*`, and `WmsOrderChangeShippingAddress*`. Register each
+Function under its exact `extension.wms.order.*` name.
+
+`requestCancelOrder`, `requestReturnOrder`, and `requestExchangeOrder` accept partial requests
+through `cancelItems`, `returnItems`, and `exchangeItems`. Each item `id` is an `items[].id` from
+`order.getOrders`; an empty `quantity` means the item's whole quantity. An empty item list targets
+every item of the orders in `orderIds`.
 
 ## Authentication, reliability, and testing
 

@@ -83,7 +83,7 @@ func (b *ExtensionBuilder) OrderGetOrders(handler appsdk.TypedHandlerFunc[OrderG
 	return b
 }
 
-func (b *ExtensionBuilder) OrderRequestCancelOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
+func (b *ExtensionBuilder) OrderRequestCancelOrder(handler appsdk.TypedHandlerFunc[OrderCancelRequest, OrderActionResponse]) *ExtensionBuilder {
 	b.base.Func(FunctionOrderRequestCancelOrder, schemaregistry.Append(FunctionOrderRequestCancelOrder, appsdk.HandleProto(handler))...)
 	return b
 }
@@ -93,7 +93,7 @@ func (b *ExtensionBuilder) OrderRestoreCanceledOrder(handler appsdk.TypedHandler
 	return b
 }
 
-func (b *ExtensionBuilder) OrderRequestReturnOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
+func (b *ExtensionBuilder) OrderRequestReturnOrder(handler appsdk.TypedHandlerFunc[OrderReturnRequest, OrderActionResponse]) *ExtensionBuilder {
 	b.base.Func(FunctionOrderRequestReturnOrder, schemaregistry.Append(FunctionOrderRequestReturnOrder, appsdk.HandleProto(handler))...)
 	return b
 }
@@ -103,7 +103,7 @@ func (b *ExtensionBuilder) OrderRestoreReturnedOrder(handler appsdk.TypedHandler
 	return b
 }
 
-func (b *ExtensionBuilder) OrderRequestExchangeOrder(handler appsdk.TypedHandlerFunc[OrderActionRequest, OrderActionResponse]) *ExtensionBuilder {
+func (b *ExtensionBuilder) OrderRequestExchangeOrder(handler appsdk.TypedHandlerFunc[OrderExchangeRequest, OrderActionResponse]) *ExtensionBuilder {
 	b.base.Func(FunctionOrderRequestExchangeOrder, schemaregistry.Append(FunctionOrderRequestExchangeOrder, appsdk.HandleProto(handler))...)
 	return b
 }
