@@ -27164,10 +27164,13 @@
             "type": "object",
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               },
               "quantity": {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2147483647
               }
             },
             "required": [
@@ -27253,10 +27256,13 @@
             "type": "object",
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               },
               "quantity": {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2147483647
               }
             },
             "required": [
@@ -27342,10 +27348,13 @@
             "type": "object",
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               },
               "quantity": {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2147483647
               }
             },
             "required": [

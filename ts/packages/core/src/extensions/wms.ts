@@ -370,8 +370,9 @@ export type WmsOrderActionInput = ProtoBacked<
 
 // id는 order.getOrders의 items[].id, quantity를 비우면 그 품목의 전체 수량이다.
 export const WmsOrderClaimItemSchema = z.object({
-  id: z.string(),
-  quantity: z.number().int().optional(),
+  id: z.string().min(1),
+  // proto int32 범위. 0은 proto에서 "비움"과 같아 전체 수량으로 본다.
+  quantity: z.number().int().nonnegative().max(2147483647).optional(),
 });
 export type WmsOrderClaimItem = ProtoBacked<
   z.infer<typeof WmsOrderClaimItemSchema>,

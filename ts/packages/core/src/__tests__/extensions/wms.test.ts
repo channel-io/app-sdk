@@ -237,6 +237,21 @@ describe("WMS extension helpers", () => {
       WmsOrderReturnInputSchema.parse({ orderIds: ["order-1"], returnItems: [{ quantity: 1 }] })
     ).toThrow();
     expect(() =>
+      WmsOrderReturnInputSchema.parse({ orderIds: ["order-1"], returnItems: [{ id: "" }] })
+    ).toThrow();
+    expect(() =>
+      WmsOrderReturnInputSchema.parse({
+        orderIds: ["order-1"],
+        returnItems: [{ id: "item-1", quantity: -1 }],
+      })
+    ).toThrow();
+    expect(() =>
+      WmsOrderReturnInputSchema.parse({
+        orderIds: ["order-1"],
+        returnItems: [{ id: "item-1", quantity: 2147483648 }],
+      })
+    ).toThrow();
+    expect(() =>
       WmsOrderCancelInputSchema.parse({
         orderIds: ["order-1"],
         cancelItems: [{ id: "item-1", quantity: 1.5 }],
