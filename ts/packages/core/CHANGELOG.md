@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.34.0
+
+### Minor Changes
+
+- a952c8e: Add optional item-level claims to the WMS order group: `requestCancelOrder`, `requestReturnOrder`, and `requestExchangeOrder` now accept `cancelItems`, `returnItems`, and `exchangeItems` (`{ id, quantity? }[]`, where `id` is an `order.getOrders` `items[].id`). Omitting the items keeps the existing whole-order behavior. Requires App Store schema support before callers send the new fields.
+
 ## 0.33.1
 
 ## 0.33.0
