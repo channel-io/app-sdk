@@ -12,6 +12,9 @@ import {
   GetWmsSupportedCommercesOutputSchema,
   RestoreWmsOrderInputSchema,
   ReturnWmsOrderInputSchema,
+  WmsOrderCancelInputSchema,
+  WmsOrderExchangeInputSchema,
+  WmsOrderReturnInputSchema,
   WmsOrderSchema,
   WmsSuccessOutputSchema,
 } from "../../extensions/wms.js";
@@ -208,5 +211,51 @@ describe("WMS extension helpers", () => {
     expect(() => CancelWmsOrderInputSchema.parse({ reason: "sold out" })).toThrow();
     expect(() => ReturnWmsOrderInputSchema.parse({ reason: "return" })).toThrow();
     expect(() => ExchangeWmsOrderInputSchema.parse({ reason: "exchange" })).toThrow();
+  });
+
+  it("should accept item-level quantities on order-group request actions", () => {
+    expect(
+      WmsOrderCancelInputSchema.parse({
+        orderIds: ["order-1"],
+        cancelItems: [{ id: "item-1", quantity: 1 }],
+      })
+    ).toEqual({ orderIds: ["order-1"], cancelItems: [{ id: "item-1", quantity: 1 }] });
+    expect(
+      WmsOrderReturnInputSchema.parse({ orderIds: ["order-1"], returnItems: [{ id: "item-1" }] })
+    ).toEqual({ orderIds: ["order-1"], returnItems: [{ id: "item-1" }] });
+    expect(
+      WmsOrderExchangeInputSchema.parse({
+        orderIds: ["order-1"],
+        exchangeItems: [{ id: "item-1", quantity: 2 }],
+      })
+    ).toEqual({ orderIds: ["order-1"], exchangeItems: [{ id: "item-1", quantity: 2 }] });
+    // Omitting the items keeps the whole-order request valid.
+    expect(WmsOrderReturnInputSchema.parse({ orderIds: ["order-1"] })).toEqual({
+      orderIds: ["order-1"],
+    });
+    expect(() =>
+      WmsOrderReturnInputSchema.parse({ orderIds: ["order-1"], returnItems: [{ quantity: 1 }] })
+    ).toThrow();
+    expect(() =>
+      WmsOrderReturnInputSchema.parse({ orderIds: ["order-1"], returnItems: [{ id: "" }] })
+    ).toThrow();
+    expect(() =>
+      WmsOrderReturnInputSchema.parse({
+        orderIds: ["order-1"],
+        returnItems: [{ id: "item-1", quantity: -1 }],
+      })
+    ).toThrow();
+    expect(() =>
+      WmsOrderReturnInputSchema.parse({
+        orderIds: ["order-1"],
+        returnItems: [{ id: "item-1", quantity: 2147483648 }],
+      })
+    ).toThrow();
+    expect(() =>
+      WmsOrderCancelInputSchema.parse({
+        orderIds: ["order-1"],
+        cancelItems: [{ id: "item-1", quantity: 1.5 }],
+      })
+    ).toThrow();
   });
 });

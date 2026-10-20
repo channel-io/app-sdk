@@ -1779,6 +1779,39 @@ message WmsOrderActionRequest {
   string memo = 4;
 }
 
+// Selects part of an order for requestCancelOrder / requestReturnOrder / requestExchangeOrder.
+// id is a WmsOrderItemV2.id from order.getOrders; quantity 0 means the item's whole quantity.
+message WmsOrderClaimItem {
+  string id = 1;
+  int32 quantity = 2;
+}
+
+// Fields 1-4 mirror WmsOrderActionRequest so existing callers stay wire-compatible.
+// Empty *_items means every item of the orders in order_ids.
+message WmsOrderCancelRequest {
+  WmsIdentifier identifier = 1;
+  repeated string order_ids = 2;
+  string reason = 3;
+  string memo = 4;
+  repeated WmsOrderClaimItem cancel_items = 5;
+}
+
+message WmsOrderReturnRequest {
+  WmsIdentifier identifier = 1;
+  repeated string order_ids = 2;
+  string reason = 3;
+  string memo = 4;
+  repeated WmsOrderClaimItem return_items = 5;
+}
+
+message WmsOrderExchangeRequest {
+  WmsIdentifier identifier = 1;
+  repeated string order_ids = 2;
+  string reason = 3;
+  string memo = 4;
+  repeated WmsOrderClaimItem exchange_items = 5;
+}
+
 message WmsOrderChangeShippingAddressInput {
   WmsIdentifier identifier = 1;
   string order_id = 2;

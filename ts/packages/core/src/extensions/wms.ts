@@ -24,7 +24,11 @@ import type {
   WmsOperationOptions as ProtoWmsOperationOptions,
   WmsOrderActionRequest as ProtoWmsOrderActionRequest,
   WmsOrderActionResult as ProtoWmsOrderActionResult,
+  WmsOrderCancelRequest as ProtoWmsOrderCancelRequest,
   WmsOrderChangeShippingAddressInput as ProtoWmsOrderChangeShippingAddressInput,
+  WmsOrderClaimItem as ProtoWmsOrderClaimItem,
+  WmsOrderExchangeRequest as ProtoWmsOrderExchangeRequest,
+  WmsOrderReturnRequest as ProtoWmsOrderReturnRequest,
   WmsOrderGetOrdersRequest as ProtoWmsOrderGetOrdersRequest,
   WmsOrderGetOrdersResult as ProtoWmsOrderGetOrdersResult,
   WmsOrderItemV2 as ProtoWmsOrderItemV2,
@@ -360,6 +364,44 @@ export const WmsOrderActionInputSchema = z.object({
 export type WmsOrderActionInput = ProtoBacked<
   z.infer<typeof WmsOrderActionInputSchema>,
   ProtoWmsOrderActionRequest
+>;
+
+// --- order.requestCancelOrder / requestReturnOrder / requestExchangeOrder (부분 처리) ---
+
+// id는 order.getOrders의 items[].id, quantity를 비우면 그 품목의 전체 수량이다.
+export const WmsOrderClaimItemSchema = z.object({
+  id: z.string().min(1),
+  // proto int32 범위. 0은 proto에서 "비움"과 같아 전체 수량으로 본다.
+  quantity: z.number().int().nonnegative().max(2147483647).optional(),
+});
+export type WmsOrderClaimItem = ProtoBacked<
+  z.infer<typeof WmsOrderClaimItemSchema>,
+  ProtoWmsOrderClaimItem
+>;
+
+// *Items를 비우면 orderIds 주문의 품목 전부가 대상이다.
+export const WmsOrderCancelInputSchema = WmsOrderActionInputSchema.extend({
+  cancelItems: z.array(WmsOrderClaimItemSchema).optional(),
+});
+export type WmsOrderCancelInput = ProtoBacked<
+  z.infer<typeof WmsOrderCancelInputSchema>,
+  ProtoWmsOrderCancelRequest
+>;
+
+export const WmsOrderReturnInputSchema = WmsOrderActionInputSchema.extend({
+  returnItems: z.array(WmsOrderClaimItemSchema).optional(),
+});
+export type WmsOrderReturnInput = ProtoBacked<
+  z.infer<typeof WmsOrderReturnInputSchema>,
+  ProtoWmsOrderReturnRequest
+>;
+
+export const WmsOrderExchangeInputSchema = WmsOrderActionInputSchema.extend({
+  exchangeItems: z.array(WmsOrderClaimItemSchema).optional(),
+});
+export type WmsOrderExchangeInput = ProtoBacked<
+  z.infer<typeof WmsOrderExchangeInputSchema>,
+  ProtoWmsOrderExchangeRequest
 >;
 
 const WmsOrderResultBodySchema = z.object({

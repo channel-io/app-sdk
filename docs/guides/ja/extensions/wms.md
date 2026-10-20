@@ -36,9 +36,14 @@ err := app.Use(wms.Extension().
 ## TypeScript
 
 `@Extension({ name: "wms", systemVersion: "v1" })` と公開 WMS schema の
-`WmsGetAppConfigs*`、`WmsOrderGetOrders*`、`WmsOrderAction*`、
-`WmsOrderChangeShippingAddress*` を使います。各 Function は正確な
-`extension.wms.order.*` name で登録します。
+`WmsGetAppConfigs*`、`WmsOrderGetOrders*`、`WmsOrderAction*`、`WmsOrderCancel*`、
+`WmsOrderReturn*`、`WmsOrderExchange*`、`WmsOrderChangeShippingAddress*` を使います。
+各 Function は正確な `extension.wms.order.*` name で登録します。
+
+`requestCancelOrder`、`requestReturnOrder`、`requestExchangeOrder` は `cancelItems`、
+`returnItems`、`exchangeItems` で部分的な処理を受け付けます。各 item の `id` は `order.getOrders` の
+`items[].id` で、`quantity` を省略するとその item の全数量になります。item リストを省略すると
+`orderIds` の注文に含まれる全 item が対象です。
 
 ## 認証・信頼性・test
 

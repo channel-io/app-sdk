@@ -367,11 +367,11 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 				ReturnOrder(smokeZero[wms.ReturnOrderRequest, wms.SuccessResponse]()).
 				GetAppConfigs(smokeZero[wms.GetAppConfigsRequest, wms.GetAppConfigsResponse]()).
 				OrderGetOrders(smokeZero[wms.OrderGetOrdersRequest, wms.OrderGetOrdersResponse]()).
-				OrderRequestCancelOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+				OrderRequestCancelOrder(smokeZero[wms.OrderCancelRequest, wms.OrderActionResponse]()).
 				OrderRestoreCanceledOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-				OrderRequestReturnOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+				OrderRequestReturnOrder(smokeZero[wms.OrderReturnRequest, wms.OrderActionResponse]()).
 				OrderRestoreReturnedOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-				OrderRequestExchangeOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
+				OrderRequestExchangeOrder(smokeZero[wms.OrderExchangeRequest, wms.OrderActionResponse]()).
 				OrderRestoreExchangedOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
 				OrderChangeShippingAddress(smokeZero[wms.OrderChangeShippingAddressRequest, wms.OrderActionResponse]())
 		},

@@ -2119,6 +2119,43 @@ export interface WmsOrderActionRequest {
   memo?: string | undefined;
 }
 
+/**
+ * Selects part of an order for requestCancelOrder / requestReturnOrder / requestExchangeOrder.
+ * id is a WmsOrderItemV2.id from order.getOrders; quantity 0 means the item's whole quantity.
+ */
+export interface WmsOrderClaimItem {
+  id?: string | undefined;
+  quantity?: number | undefined;
+}
+
+/**
+ * Fields 1-4 mirror WmsOrderActionRequest so existing callers stay wire-compatible.
+ * Empty *_items means every item of the orders in order_ids.
+ */
+export interface WmsOrderCancelRequest {
+  identifier?: WmsIdentifier | undefined;
+  orderIds?: string[] | undefined;
+  reason?: string | undefined;
+  memo?: string | undefined;
+  cancelItems?: WmsOrderClaimItem[] | undefined;
+}
+
+export interface WmsOrderReturnRequest {
+  identifier?: WmsIdentifier | undefined;
+  orderIds?: string[] | undefined;
+  reason?: string | undefined;
+  memo?: string | undefined;
+  returnItems?: WmsOrderClaimItem[] | undefined;
+}
+
+export interface WmsOrderExchangeRequest {
+  identifier?: WmsIdentifier | undefined;
+  orderIds?: string[] | undefined;
+  reason?: string | undefined;
+  memo?: string | undefined;
+  exchangeItems?: WmsOrderClaimItem[] | undefined;
+}
+
 export interface WmsOrderChangeShippingAddressInput {
   identifier?: WmsIdentifier | undefined;
   orderId?: string | undefined;

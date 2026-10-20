@@ -27157,6 +27157,27 @@
         },
         "memo": {
           "type": "string"
+        },
+        "cancelItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2147483647
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
@@ -27228,6 +27249,27 @@
         },
         "memo": {
           "type": "string"
+        },
+        "exchangeItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2147483647
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
@@ -27299,6 +27341,27 @@
         },
         "memo": {
           "type": "string"
+        },
+        "returnItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2147483647
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
