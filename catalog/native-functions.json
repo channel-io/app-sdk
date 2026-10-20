@@ -138,6 +138,10 @@
       "surfaces": ["server"]
     },
     {
+      "name": "writeUserChatMessageAsParticipant",
+      "surfaces": ["server"]
+    },
+    {
       "name": "writeUserChatMessageAsUser",
       "surfaces": ["server"]
     }

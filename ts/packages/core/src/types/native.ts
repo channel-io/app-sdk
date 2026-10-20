@@ -232,6 +232,13 @@ export interface NativeWriteUserChatMessageAsUserParams {
 
 export type NativeWriteUserChatMessageAsUserResult = NativeWriteUserChatMessageResult;
 
+/** Relay a customer message in the caller app's medium; the app verifies participation. */
+export interface NativeWriteUserChatMessageAsParticipantParams extends NativeWriteUserChatMessageAsUserParams {
+  appId: string;
+}
+
+export type NativeWriteUserChatMessageAsParticipantResult = NativeWriteUserChatMessageResult;
+
 export interface NativeWriteDirectChatMessageAsManagerParams {
   directChatId: string;
   channelId: string;
@@ -562,6 +569,10 @@ export interface NativeFunctionTypeMap {
   writeDirectChatMessageAsManager: {
     params: NativeWriteDirectChatMessageAsManagerParams;
     result: NativeWriteDirectChatMessageAsManagerResult;
+  };
+  writeUserChatMessageAsParticipant: {
+    params: NativeWriteUserChatMessageAsParticipantParams;
+    result: NativeWriteUserChatMessageAsParticipantResult;
   };
   writeUserChatMessageAsUser: {
     params: NativeWriteUserChatMessageAsUserParams;

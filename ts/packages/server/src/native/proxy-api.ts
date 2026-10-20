@@ -45,6 +45,8 @@ import type {
   WriteUserChatMessageResult,
   WriteUserChatMessageAsManagerRequest,
   WriteUserChatMessageAsManagerResult,
+  WriteUserChatMessageAsParticipantRequest,
+  WriteUserChatMessageAsParticipantResult,
   WriteUserChatMessageAsUserRequest,
   WriteUserChatMessageAsUserResult,
   WriteDirectChatMessageAsManagerRequest,
@@ -137,6 +139,21 @@ export class ProxyApi {
   ): Promise<WriteUserChatMessageAsUserResult> {
     return this.client.callNativeFunctionWithToken(
       "writeUserChatMessageAsUser",
+      params,
+      this.accessToken
+    );
+  }
+
+  /**
+   * Relay a participant's customer message in this app's UserChat medium.
+   * Requires an explicitly granted channel/app token and the participant's app Contact.
+   * The caller verifies conversation participation; private and manager options are forbidden.
+   */
+  writeUserChatMessageAsParticipant(
+    params: WriteUserChatMessageAsParticipantRequest
+  ): Promise<WriteUserChatMessageAsParticipantResult> {
+    return this.client.callNativeFunctionWithToken(
+      "writeUserChatMessageAsParticipant",
       params,
       this.accessToken
     );
