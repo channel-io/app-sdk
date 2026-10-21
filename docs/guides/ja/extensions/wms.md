@@ -43,6 +43,12 @@ err := app.Use(wms.Extension().
 `WmsOrderChangeShippingAddress*` を使います。
 各 Function は正確な `extension.wms.order.*` name で登録します。
 
+`order.getOrders` の注文には、受取人・配送先 `shippingAddress`(commerce と同じ `OrderAddress`。氏名を
+分けられない場合は全体を `lastName` に)、注文日 `orderedAt`(unix ms)、販売先 `shopId`・`shopName` を
+含めます。item には `option`、出荷可否 `shippingAvailability`(WMS の原文文字列。注文単位でしか返さない
+WMS は同じ値を各 item に)、入荷予定日 `estimatedRestockDate`、`barcode`、WMS オプション ID `variantId` を
+含めます。すべて任意フィールドです。
+
 `requestCancelOrder`、`requestReturnOrder` は `cancelItems`、`returnItems` で部分的な処理を受け付けます。各 item の `id` は `order.getOrders` の
 `items[].id` で、`quantity` を省略するとその item の全数量になります。item リストを省略すると
 `orderIds` の注文に含まれる全 item が対象です。

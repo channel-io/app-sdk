@@ -317,6 +317,13 @@ export const WmsOrderItemV2Schema = z.object({
   estimatedShipDate: z.string().optional(),
   invoiceNumber: z.string().optional(),
   deliveryCompany: z.string().optional(),
+  option: z.string().optional(),
+  // WMS마다 값이 달라 enum 으로 묶지 않는다.
+  shippingAvailability: z.string().optional(),
+  estimatedRestockDate: z.string().optional(),
+  // WMS 옵션 ID (commerce variantId 와 다른 값). 교환 접수의 afterExchangeItems[].variantId 로 넘긴다.
+  variantId: z.string().optional(),
+  barcode: z.string().optional(),
 });
 export type WmsOrderItemV2 = ProtoBacked<z.infer<typeof WmsOrderItemV2Schema>, ProtoWmsOrderItemV2>;
 
@@ -326,6 +333,11 @@ export const WmsOrderV2Schema = z.object({
   buyer: BuyerSchema.optional(),
   items: z.array(WmsOrderItemV2Schema),
   deliveries: z.array(WmsDeliveryV2Schema),
+  shippingAddress: AddressSchema.optional(),
+  // unix ms (commerce orderedAt 과 같은 단위)
+  orderedAt: z.number().optional(),
+  shopId: z.string().optional(),
+  shopName: z.string().optional(),
 });
 export type WmsOrderV2 = ProtoBacked<z.infer<typeof WmsOrderV2Schema>, ProtoWmsOrderV2>;
 

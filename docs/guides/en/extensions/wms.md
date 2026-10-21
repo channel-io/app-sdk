@@ -43,6 +43,13 @@ Use `@Extension({ name: "wms", systemVersion: "v1" })` with the exported WMS sch
 `WmsOrderChangeShippingAddress*`. Register each
 Function under its exact `extension.wms.order.*` name.
 
+Orders from `order.getOrders` carry the recipient and destination in `shippingAddress` (the same
+`OrderAddress` as commerce; put the full name in `lastName` when it cannot be split), the order date
+`orderedAt` (unix ms), and the sales channel `shopId`/`shopName`. Items carry `option`, the shipping
+availability `shippingAvailability` (the WMS's own string; a WMS that only reports it per order repeats
+the value on every item), the restock date `estimatedRestockDate`, `barcode`, and the WMS option id
+`variantId`. All of them are optional.
+
 `requestCancelOrder` and `requestReturnOrder` accept partial requests through `cancelItems` and
 `returnItems`. Each item `id` is an `items[].id` from
 `order.getOrders`; an empty `quantity` means the item's whole quantity. An empty item list targets

@@ -16,6 +16,7 @@ import {
   WmsOrderExchangeInputSchema,
   WmsOrderGetExchangeableItemsInputSchema,
   WmsOrderGetExchangeableItemsOutputSchema,
+  WmsOrderGetOrdersOutputSchema,
   WmsOrderReturnInputSchema,
   WmsOrderSchema,
   WmsSuccessOutputSchema,
@@ -320,6 +321,56 @@ describe("WMS extension helpers", () => {
     expect(() =>
       WmsOrderGetExchangeableItemsOutputSchema.parse({
         exchangeableItems: [{ id: "item-1", variants: [{ additionalAmount: 0 }] }],
+      })
+    ).toThrow();
+  });
+
+  it("should carry shipping address, order date, shop and item details on order-group orders", () => {
+    const output = {
+      orders: [
+        {
+          id: "order-1",
+          commerceOrderId: "commerce-order-1",
+          items: [
+            {
+              id: "item-1",
+              commerceOrderItemId: "commerce-item-1",
+              option: "색상: 빨강 / 사이즈: M",
+              shippingAvailability: "available",
+              estimatedRestockDate: "2026-11-01",
+              variantId: "option-M",
+              barcode: "8801234567890",
+            },
+          ],
+          deliveries: [],
+          shippingAddress: {
+            lastName: "홍길동",
+            cellPhoneNumber: "010-0000-0000",
+            zipcode: "06236",
+          },
+          orderedAt: 1761004800000,
+          shopId: "shop-1",
+          shopName: "자사몰",
+        },
+      ],
+    };
+    expect(WmsOrderGetOrdersOutputSchema.parse(output)).toEqual(output);
+
+    const minimal = {
+      orders: [
+        {
+          id: "order-1",
+          commerceOrderId: "commerce-order-1",
+          items: [{ id: "item-1", commerceOrderItemId: "commerce-item-1" }],
+          deliveries: [],
+        },
+      ],
+    };
+    expect(WmsOrderGetOrdersOutputSchema.parse(minimal)).toEqual(minimal);
+
+    expect(() =>
+      WmsOrderGetOrdersOutputSchema.parse({
+        orders: [{ ...minimal.orders[0], orderedAt: "2026-10-21" }],
       })
     ).toThrow();
   });
