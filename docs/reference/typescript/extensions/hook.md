@@ -367,9 +367,7 @@ Re-register the Hook Extension to change the setting. Omit `response` on
 re-registration to remove it and restore the default 202 response:
 
 ```ts
-webhook: {
-  endpointToken;
-}
+const hookConfig = { webhook: { endpointToken } };
 // Manager scope: webhook: { executionScope: "manager" }
 ```
 
