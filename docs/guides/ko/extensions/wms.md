@@ -43,6 +43,12 @@ err := app.Use(wms.Extension().
 `WmsOrderChangeShippingAddress*`를 사용합니다.
 각 Function은 정확한 `extension.wms.order.*` 이름으로 등록합니다.
 
+`order.getOrders`의 주문에는 수령자·배송지 `shippingAddress`(commerce와 같은 `OrderAddress`, 이름을
+나누지 못하면 전체 이름을 `lastName`에), 주문일 `orderedAt`(unix ms), 판매처 `shopId`·`shopName`을
+담습니다. 품목에는 `option`, 출고 가능 여부 `shippingAvailability`(WMS 원문 문자열, 주문 단위로만 주는
+WMS는 같은 값을 품목마다), 입고예정일 `estimatedRestockDate`, `barcode`, WMS 옵션 ID `variantId`를
+담습니다. 모두 선택 필드입니다.
+
 `requestCancelOrder`, `requestReturnOrder`는 `cancelItems`, `returnItems`로 부분 처리를 받습니다. 각 품목의 `id`는 `order.getOrders`의
 `items[].id`이고 `quantity`를 비우면 그 품목의 전체 수량입니다. 품목 목록을 비우면 `orderIds` 주문의
 품목 전부가 대상입니다.

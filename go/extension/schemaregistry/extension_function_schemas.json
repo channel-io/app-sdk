@@ -27266,6 +27266,21 @@
                     },
                     "deliveryCompany": {
                       "type": "string"
+                    },
+                    "option": {
+                      "type": "string"
+                    },
+                    "shippingAvailability": {
+                      "type": "string"
+                    },
+                    "estimatedRestockDate": {
+                      "type": "string"
+                    },
+                    "variantId": {
+                      "type": "string"
+                    },
+                    "barcode": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -27296,6 +27311,60 @@
                   ],
                   "additionalProperties": false
                 }
+              },
+              "shippingAddress": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "cellPhoneNumber": {
+                    "type": "string"
+                  },
+                  "zipcode": {
+                    "type": "string"
+                  },
+                  "address1": {
+                    "type": "string"
+                  },
+                  "address2": {
+                    "type": "string"
+                  },
+                  "shippingMessage": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "province": {
+                    "type": "string"
+                  },
+                  "countryCode": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "orderedAt": {
+                "type": "number"
+              },
+              "shopId": {
+                "type": "string"
+              },
+              "shopName": {
+                "type": "string"
               }
             },
             "required": [

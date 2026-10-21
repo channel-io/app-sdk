@@ -2083,7 +2083,30 @@ export interface WmsOrderItemV2 {
   packageId?: string | undefined;
   estimatedShipDate?: string | undefined;
   invoiceNumber?: string | undefined;
-  deliveryCompany?: string | undefined;
+  deliveryCompany?:
+    | string
+    | undefined;
+  /** 옵션 표시 문자열(예: 색상: 빨강 / 사이즈: M). */
+  option?:
+    | string
+    | undefined;
+  /**
+   * 출고 가능 여부. WMS마다 값이 달라 enum 으로 묶지 않는다. 주문 단위로만 주는 WMS는
+   * 같은 값을 품목마다 넣는다.
+   */
+  shippingAvailability?:
+    | string
+    | undefined;
+  /** 입고예정일. estimated_ship_date 와 같은 형식이다. */
+  estimatedRestockDate?:
+    | string
+    | undefined;
+  /**
+   * WMS 옵션 ID. commerce variant_id 와 다른 값이며, 교환 접수
+   * (requestExchangeOrder.after_exchange_items[].variant_id)에 이 값을 넘긴다.
+   */
+  variantId?: string | undefined;
+  barcode?: string | undefined;
 }
 
 export interface WmsOrderV2 {
@@ -2091,7 +2114,20 @@ export interface WmsOrderV2 {
   commerceOrderId?: string | undefined;
   buyer?: Buyer | undefined;
   items?: WmsOrderItemV2[] | undefined;
-  deliveries?: WmsDeliveryV2[] | undefined;
+  deliveries?:
+    | WmsDeliveryV2[]
+    | undefined;
+  /** 수령자·배송지. 이름을 나누지 못하면 전체 이름을 last_name 에 넣는다. */
+  shippingAddress?:
+    | OrderAddress
+    | undefined;
+  /** 주문일(unix ms). commerce ordered_at 과 같은 단위다. */
+  orderedAt?:
+    | number
+    | undefined;
+  /** 판매처. getShopId·getOrders 입력의 shop_id 와 같은 값이다. */
+  shopId?: string | undefined;
+  shopName?: string | undefined;
 }
 
 export interface WmsIdentifier {

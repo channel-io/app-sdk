@@ -1786,6 +1786,11 @@ export const WmsOrderItemV2ProtoSchema = z.object({
   estimatedShipDate: z.string().optional(),
   invoiceNumber: z.string().optional(),
   deliveryCompany: z.string().optional(),
+  option: z.string().optional(),
+  shippingAvailability: z.string().optional(),
+  estimatedRestockDate: z.string().optional(),
+  variantId: z.string().optional(),
+  barcode: z.string().optional(),
 }) satisfies z.ZodType<pb.WmsOrderItemV2>;
 export type WmsOrderItemV2Proto = z.infer<typeof WmsOrderItemV2ProtoSchema>;
 
@@ -1795,6 +1800,10 @@ export const WmsOrderV2ProtoSchema = z.object({
   buyer: z.lazy(() => BuyerProtoSchema).optional(),
   items: z.array(z.lazy(() => WmsOrderItemV2ProtoSchema)).optional(),
   deliveries: z.array(z.lazy(() => WmsDeliveryV2ProtoSchema)).optional(),
+  shippingAddress: z.lazy(() => OrderAddressProtoSchema).optional(),
+  orderedAt: z.number().optional(),
+  shopId: z.string().optional(),
+  shopName: z.string().optional(),
 }) satisfies z.ZodType<pb.WmsOrderV2>;
 export type WmsOrderV2Proto = z.infer<typeof WmsOrderV2ProtoSchema>;
 
