@@ -243,6 +243,22 @@ describe("WMS extension helpers", () => {
         exchangeItems: [{ id: "item-1" }],
       })
     ).toEqual({ orderIds: ["order-1"] });
+    // A WMS exchange cannot be filed without the target option, and quantities stay in int32.
+    expect(() =>
+      WmsOrderExchangeInputSchema.parse({ orderIds: ["order-1"], afterExchangeItems: [{}] })
+    ).toThrow();
+    expect(() =>
+      WmsOrderExchangeInputSchema.parse({
+        orderIds: ["order-1"],
+        afterExchangeItems: [{ variantId: "option-L", quantity: -1 }],
+      })
+    ).toThrow();
+    expect(() =>
+      WmsOrderExchangeInputSchema.parse({
+        orderIds: ["order-1"],
+        afterExchangeItems: [{ variantId: "option-L", quantity: 2147483648 }],
+      })
+    ).toThrow();
     // Omitting the items keeps the whole-order request valid.
     expect(WmsOrderReturnInputSchema.parse({ orderIds: ["order-1"] })).toEqual({
       orderIds: ["order-1"],

@@ -401,11 +401,18 @@ export type WmsOrderReturnInput = ProtoBacked<
   ProtoWmsOrderReturnRequest
 >;
 
+// 교환 후 품목. proto는 공용 OrderExchangeItem이지만, WMS는 옵션 없이 교환을 접수할 수 없어 variantId를
+// 필수로 두고 quantity를 WmsOrderClaimItem과 같은 범위로 맞춘다. 공용 스키마는 commerce 계약이라 건드리지 않는다.
+const WmsOrderExchangeItemSchema = OrderExchangeItemSchema.extend({
+  variantId: z.string().min(1),
+  quantity: z.number().int().nonnegative().max(2147483647).optional(),
+});
+
 export const WmsOrderExchangeInputSchema = WmsOrderActionInputSchema.extend({
   // 돌려받을 품목. 비우면 orderIds 주문의 품목 전부가 대상이다.
   beforeExchangeItems: z.array(WmsOrderClaimItemSchema).optional(),
   // 대신 보낼 품목. variantId는 getExchangeableItems의 WMS 옵션 ID다(commerce variantId와 다른 값).
-  afterExchangeItems: z.array(OrderExchangeItemSchema).optional(),
+  afterExchangeItems: z.array(WmsOrderExchangeItemSchema).optional(),
 });
 export type WmsOrderExchangeInput = ProtoBacked<
   z.infer<typeof WmsOrderExchangeInputSchema>,
