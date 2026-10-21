@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.36.0
+
+### Minor Changes
+
+- 9dfedc7: WMS order group: `extension.wms.order.getOrders` orders now carry optional `shippingAddress` (`OrderAddress`, same as commerce), `orderedAt` (unix ms), `shopId`, and `shopName`. Order items carry optional `option`, `shippingAvailability` (free-form string), `estimatedRestockDate`, `variantId` (WMS option id, not the commerce variant id), and `barcode`. Required fields are unchanged.
+
 ## 0.35.0
 
 ### Minor Changes
