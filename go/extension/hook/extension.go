@@ -28,6 +28,11 @@ const (
 	TypeOAuthBeforeAuthorization = "oauth.beforeAuthorization"
 	TypeOAuthAfterAuthorization  = "oauth.afterAuthorization"
 	TypeTeamChatMessageCreated   = "teamChat.messageCreated"
+	TypeAppPersonInvoked         = "appPerson.invoked"
+
+	AppPersonInvokedResultSucceeded = "succeeded"
+	AppPersonInvokedResultSkipped   = "skipped"
+	AppPersonInvokedResultFailed    = "failed"
 
 	TeamChatMessageCreatedResultSucceeded                   = "succeeded"
 	TeamChatMessageCreatedResultSkippedSourceApp            = "skipped_source_app"
@@ -92,6 +97,8 @@ type WebhookConfig = sdkv1.HookWebhookConfig
 type WebhookResponse = sdkv1.HookWebhookResponse
 type TeamChatMessageCreatedInput = sdkv1.HookTeamChatMessageCreatedInput
 type TeamChatMessageCreatedResult = sdkv1.HookTeamChatMessageCreatedResult
+type AppPersonInvokedInput = sdkv1.HookAppPersonInvokedInput
+type AppPersonInvokedResult = sdkv1.HookAppPersonInvokedResult
 type OAuthFlowHookInput = sdkv1.OAuthFlowHookInput
 type OAuthFlowHookResult = sdkv1.OAuthFlowHookResult
 

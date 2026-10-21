@@ -3,6 +3,8 @@ import { OAuthStepDisplaySchema } from "./oauth.js";
 import { HTTPSRedirectOriginSchema, HTTPSRedirectURLSchema } from "../schemas/redirect.js";
 import type {
   HookConfig as ProtoHookConfig,
+  HookAppPersonInvokedInput as ProtoAppPersonInvokedHookInput,
+  HookAppPersonInvokedResult as ProtoAppPersonInvokedHookResult,
   HookGetHooksOutput as ProtoGetHooksOutput,
   HookTeamChatMessageCreatedInput as ProtoTeamChatMessageCreatedHookInput,
   HookTeamChatMessageCreatedResult as ProtoTeamChatMessageCreatedHookResult,
@@ -34,6 +36,7 @@ export const HookTypeSchema = z.enum([
   "oauth.afterAuthorization",
   "userChat.opened",
   "teamChat.messageCreated",
+  "appPerson.invoked",
 ]);
 
 export type HookType = z.infer<typeof HookTypeSchema>;
@@ -113,10 +116,14 @@ export type UserChatOpenedActorKind = ProtoBacked<
 
 const UserChatOpenedIdentifierSchema = z.string().min(1).max(255);
 const MAX_SIGNED_INT64 = 9_223_372_036_854_775_807n;
-const UserChatOpenedVersionSchema = z
+const nonNegativeInt64Pattern = /^(0|[1-9]\d{0,18})$/;
+const NonNegativeInt64StringSchema = z
   .string()
-  .regex(/^(0|[1-9]\d*)$/)
-  .refine((value) => BigInt(value) <= MAX_SIGNED_INT64, "version exceeds signed int64");
+  .regex(nonNegativeInt64Pattern)
+  .refine(
+    (value) => nonNegativeInt64Pattern.test(value) && BigInt(value) <= MAX_SIGNED_INT64,
+    "value exceeds signed int64"
+  );
 
 export const UserChatOpenedHookInputSchema = z
   .object({
@@ -129,7 +136,7 @@ export const UserChatOpenedHookInputSchema = z
     actorKind: UserChatOpenedActorKindSchema,
     triggerMessageId: UserChatOpenedIdentifierSchema.optional(),
     occurredAt: z.string().datetime({ offset: true }),
-    version: UserChatOpenedVersionSchema,
+    version: NonNegativeInt64StringSchema,
   })
   .strict();
 
@@ -167,6 +174,60 @@ export type UserChatOpenedHookResult = ProtoBacked<
 >;
 
 const TeamChatMessageCreatedIdentifierSchema = z.string().min(1).max(255);
+
+const AppPersonInvokedIdentifierSchema = z.string().min(1).max(255);
+
+/** Explicit single-app invocation. The initiating manager is separate from credential scope. */
+export const AppPersonInvokedHookInputSchema = z
+  .object({
+    type: z.literal("appPerson.invoked"),
+    version: z.literal(1),
+    eventId: AppPersonInvokedIdentifierSchema,
+    invocationId: AppPersonInvokedIdentifierSchema,
+    requestId: AppPersonInvokedIdentifierSchema,
+    sourceEventId: AppPersonInvokedIdentifierSchema,
+    channelId: AppPersonInvokedIdentifierSchema,
+    chatType: z.enum(["group", "directChat"]),
+    chatId: AppPersonInvokedIdentifierSchema,
+    threadId: AppPersonInvokedIdentifierSchema.optional(),
+    sourceMessageId: AppPersonInvokedIdentifierSchema,
+    sourceContentRevision: NonNegativeInt64StringSchema,
+    requestedAt: z.string().datetime({ offset: true }),
+    appId: AppPersonInvokedIdentifierSchema,
+    appPersonId: AppPersonInvokedIdentifierSchema,
+    installationId: AppPersonInvokedIdentifierSchema,
+    invokingManagerId: AppPersonInvokedIdentifierSchema,
+    credentialScope: z.enum(["channel", "manager"]),
+    prompt: z.string(),
+  })
+  .strict()
+  .superRefine((input, ctx) => {
+    const expectedScope = input.chatType === "group" ? "channel" : "manager";
+    if (input.credentialScope !== expectedScope) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["credentialScope"],
+        message: "Group uses channel credentials; directChat uses manager credentials",
+      });
+    }
+  });
+
+export type AppPersonInvokedHookInput = ProtoBacked<
+  z.infer<typeof AppPersonInvokedHookInputSchema>,
+  ProtoAppPersonInvokedHookInput
+>;
+
+export const AppPersonInvokedHookResultSchema = z
+  .object({
+    hookHandlingResult: z.enum(["succeeded", "skipped", "failed"]),
+    terminal: z.literal(true),
+  })
+  .strict();
+
+export type AppPersonInvokedHookResult = ProtoBacked<
+  z.infer<typeof AppPersonInvokedHookResultSchema>,
+  ProtoAppPersonInvokedHookResult
+>;
 
 const TeamChatMessageCreatedSnapshotSchema = z.record(z.string(), z.unknown());
 
@@ -372,6 +433,9 @@ export const HookConfigSchema = z.discriminatedUnion("type", [
   }).strict(),
   BaseHookConfigSchema.extend({
     type: z.literal("teamChat.messageCreated"),
+  }).strict(),
+  BaseHookConfigSchema.extend({
+    type: z.literal("appPerson.invoked"),
   }).strict(),
 ]);
 

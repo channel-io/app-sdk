@@ -20,7 +20,7 @@ metadata가 가리키는 handler는 standalone app Function이며 새 Extension 
 `command.toggle`, `config.saved`, `config.deleted`, `widget.installed`, `widget.uninstalled`,
 `webhook.received`, `oauth.connected`, `oauth.disconnected`, `oauth.beforeAuthorization`,
 `oauth.afterAuthorization`, `userChat.opened`,
-`teamChat.messageCreated`입니다.
+`teamChat.messageCreated`, `appPerson.invoked`입니다.
 
 Widget hook은 widget name과 같은 `targetId`가 필요합니다. App, command, Config hook에는 target을
 넣지 않습니다. Public webhook target은 1-64자의 URL-safe identifier입니다. `executionScope`의
@@ -31,6 +31,33 @@ type에는 webhook object를 넣을 수 없습니다.
 모든 root/reply를 전체 Channel Message snapshot과 함께 전달합니다. 앱은 snapshot의 `personType`과
 `personId`에서 작성자를, `rootMessageId`에서 thread 관계를, `plainText`와 `blocks`에서 콘텐츠를 읽어
 자체 eligibility rule을 적용합니다. 정확한 DTO는 TypeScript 레퍼런스를 확인하세요.
+
+## 명시적 앱 호출
+
+`appPerson.invoked`는 `actionFunctionName`과 선택적인 `systemVersion`으로
+등록합니다. TypeScript는 `AppPersonInvokedHookInputSchema`,
+`AppPersonInvokedHookResultSchema`와 추론 타입을 제공합니다. Go에서는
+`hook.TypeAppPersonInvoked`, `hook.AppPersonInvokedInput`,
+`hook.AppPersonInvokedResult`를 사용합니다.
+
+그룹에서 앱 하나를 멘션하면 채널 자격 증명을, 앱 DM에서는 매니저 자격 증명을
+사용합니다. `invokingManagerId`는 호출한 매니저이며 `credentialScope`와 별개입니다.
+필요한 자격 증명이 없더라도 다른 범위의 자격 증명을 대신 사용하지 않습니다.
+`sourceContentRevision`은 음수가 아닌 signed-int64 십진 문자열이며 JavaScript
+숫자로 변환하면 안 됩니다. `prompt`는 빈 문자열일 수 있습니다.
+
+등록된 함수가 호출을 처리합니다. 결과는
+`{ hookHandlingResult: "succeeded" | "skipped" | "failed", terminal: true }`인
+최종 확인 응답입니다. 사용자에게 답장하려면 권한이 있는 메시징 API를 사용하세요.
+훅 오류나 결과 불명 상태에서 기본 실행이나 자동 답장이 이어지지 않습니다.
+안정적인 `eventId`로 중복 처리를 막으세요. 자동 재전송이나 최종 전달은 보장하지
+않습니다. 훅을 등록하지 않으면 기본 앱 컨텍스트 실행을 사용합니다.
+
+서로 다른 앱을 여러 개 멘션하면 한 번 실행하고 App Agent가 한 번 답합니다.
+개별 앱 호출 이벤트는 보내지 않습니다. 일반 메시지를 관찰하는
+`teamChat.messageCreated`는 별개입니다. 호환 플랫폼을 배포한 뒤 이 훅을 사용하세요.
+등록, 두 자격 증명 범위, 큰 revision 문자열, 중복 처리를 테스트하세요.
+전체 입력은 [Hook 레퍼런스](../../../reference/typescript/extensions/hook.md#explicit-app-invocation)를 참고하세요.
 
 ## TypeScript
 
