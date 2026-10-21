@@ -227,6 +227,11 @@ import {
   WmsOrderChangeShippingAddressInputSchema,
   WmsOrderClaimItemSchema,
   WmsOrderExchangeInputSchema,
+  WmsOrderGetExchangeableItemsInputSchema,
+  WmsOrderGetExchangeableItemsOutputSchema,
+  WmsExchangeableItemSchema,
+  WmsExchangeableVariantSchema,
+  WmsVariantOptionSchema,
   WmsOrderReturnInputSchema,
   WmsOrderGetOrdersInputSchema,
   WmsOrderGetOrdersOutputSchema,
@@ -850,6 +855,26 @@ const contracts: Contract[] = [
     "extension",
     "WmsOrderChangeShippingAddressInput"
   ),
+  contract(
+    "WmsOrderGetExchangeableItemsInput",
+    WmsOrderGetExchangeableItemsInputSchema,
+    "extension",
+    "WmsOrderGetExchangeableItemsRequest"
+  ),
+  contract(
+    "WmsOrderGetExchangeableItemsOutput",
+    WmsOrderGetExchangeableItemsOutputSchema,
+    "extension",
+    "WmsOrderGetExchangeableItemsResult"
+  ),
+  contract("WmsExchangeableItem", WmsExchangeableItemSchema, "extension", "WmsExchangeableItem"),
+  contract(
+    "WmsExchangeableVariant",
+    WmsExchangeableVariantSchema,
+    "extension",
+    "WmsExchangeableVariant"
+  ),
+  contract("WmsVariantOption", WmsVariantOptionSchema, "extension", "WmsVariantOption"),
   contract(
     "WmsGetAppConfigsInput",
     WmsGetAppConfigsInputSchema,

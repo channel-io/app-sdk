@@ -17,7 +17,8 @@ err := app.Use(wms.Extension().
   OrderRestoreReturnedOrder(handler.OrderRestoreReturnedOrder).
   OrderRequestExchangeOrder(handler.OrderRequestExchangeOrder).
   OrderRestoreExchangedOrder(handler.OrderRestoreExchangedOrder).
-  OrderChangeShippingAddress(handler.OrderChangeShippingAddress),
+  OrderChangeShippingAddress(handler.OrderChangeShippingAddress).
+  OrderGetExchangeableItems(handler.OrderGetExchangeableItems),
 )
 ```
 
@@ -32,18 +33,26 @@ Current methods:
 - `extension.wms.order.requestExchangeOrder`
 - `extension.wms.order.restoreExchangedOrder`
 - `extension.wms.order.changeShippingAddress`
+- `extension.wms.order.getExchangeableItems`
 
 ## TypeScript
 
 Use `@Extension({ name: "wms", systemVersion: "v1" })` with the exported WMS schemas:
 `WmsGetAppConfigs*`, `WmsOrderGetOrders*`, `WmsOrderAction*`, `WmsOrderCancel*`,
-`WmsOrderReturn*`, `WmsOrderExchange*`, and `WmsOrderChangeShippingAddress*`. Register each
+`WmsOrderReturn*`, `WmsOrderExchange*`, `WmsOrderGetExchangeableItems*`, and
+`WmsOrderChangeShippingAddress*`. Register each
 Function under its exact `extension.wms.order.*` name.
 
-`requestCancelOrder`, `requestReturnOrder`, and `requestExchangeOrder` accept partial requests
-through `cancelItems`, `returnItems`, and `exchangeItems`. Each item `id` is an `items[].id` from
+`requestCancelOrder` and `requestReturnOrder` accept partial requests through `cancelItems` and
+`returnItems`. Each item `id` is an `items[].id` from
 `order.getOrders`; an empty `quantity` means the item's whole quantity. An empty item list targets
 every item of the orders in `orderIds`.
+
+`requestExchangeOrder` takes `beforeExchangeItems` (items sent back, same rules) and
+`afterExchangeItems` (the `productId`, `variantId`, and `quantity` to send instead). `variantId` is a
+WMS option id returned by `getExchangeableItems`, not a commerce variant id. Look up the candidates with
+`getExchangeableItems` (`orderId`, optional `items`), then pass `exchangeableItems[].id` as
+`beforeExchangeItems[].id` and `variants[].id` as `afterExchangeItems[].variantId`.
 
 ## Authentication, reliability, and testing
 

@@ -118,6 +118,11 @@ func (b *ExtensionBuilder) OrderChangeShippingAddress(handler appsdk.TypedHandle
 	return b
 }
 
+func (b *ExtensionBuilder) OrderGetExchangeableItems(handler appsdk.TypedHandlerFunc[OrderGetExchangeableItemsRequest, OrderGetExchangeableItemsResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionOrderGetExchangeableItems, schemaregistry.Append(FunctionOrderGetExchangeableItems, appsdk.HandleProto(handler))...)
+	return b
+}
+
 func (b *ExtensionBuilder) Function(name string, opts ...appsdk.FunctionOption) *ExtensionBuilder {
 	b.base.Func(name, opts...)
 	return b

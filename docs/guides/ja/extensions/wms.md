@@ -17,7 +17,8 @@ err := app.Use(wms.Extension().
   OrderRestoreReturnedOrder(handler.OrderRestoreReturnedOrder).
   OrderRequestExchangeOrder(handler.OrderRequestExchangeOrder).
   OrderRestoreExchangedOrder(handler.OrderRestoreExchangedOrder).
-  OrderChangeShippingAddress(handler.OrderChangeShippingAddress),
+  OrderChangeShippingAddress(handler.OrderChangeShippingAddress).
+  OrderGetExchangeableItems(handler.OrderGetExchangeableItems),
 )
 ```
 
@@ -32,18 +33,25 @@ err := app.Use(wms.Extension().
 - `extension.wms.order.requestExchangeOrder`
 - `extension.wms.order.restoreExchangedOrder`
 - `extension.wms.order.changeShippingAddress`
+- `extension.wms.order.getExchangeableItems`
 
 ## TypeScript
 
 `@Extension({ name: "wms", systemVersion: "v1" })` と公開 WMS schema の
 `WmsGetAppConfigs*`、`WmsOrderGetOrders*`、`WmsOrderAction*`、`WmsOrderCancel*`、
-`WmsOrderReturn*`、`WmsOrderExchange*`、`WmsOrderChangeShippingAddress*` を使います。
+`WmsOrderReturn*`、`WmsOrderExchange*`、`WmsOrderGetExchangeableItems*`、
+`WmsOrderChangeShippingAddress*` を使います。
 各 Function は正確な `extension.wms.order.*` name で登録します。
 
-`requestCancelOrder`、`requestReturnOrder`、`requestExchangeOrder` は `cancelItems`、
-`returnItems`、`exchangeItems` で部分的な処理を受け付けます。各 item の `id` は `order.getOrders` の
+`requestCancelOrder`、`requestReturnOrder` は `cancelItems`、`returnItems` で部分的な処理を受け付けます。各 item の `id` は `order.getOrders` の
 `items[].id` で、`quantity` を省略するとその item の全数量になります。item リストを省略すると
 `orderIds` の注文に含まれる全 item が対象です。
+
+交換は `requestExchangeOrder` の `beforeExchangeItems`(返送される item、同じ規則)と
+`afterExchangeItems`(代わりに送る `productId`・`variantId`・`quantity`)で受け付けます。`variantId` は
+commerce の variant id ではなく、`getExchangeableItems` が返す WMS オプション ID です。交換可能な
+オプションは `getExchangeableItems`(`orderId`、任意の `items`)で取得し、`exchangeableItems[].id` を
+`beforeExchangeItems[].id` に、`variants[].id` を `afterExchangeItems[].variantId` に渡します。
 
 ## 認証・信頼性・test
 

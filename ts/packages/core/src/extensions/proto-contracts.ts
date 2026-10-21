@@ -190,6 +190,11 @@ import type {
   WmsOrderChangeShippingAddressInput as ProtoWmsOrderChangeShippingAddressInput,
   WmsOrderClaimItem as ProtoWmsOrderClaimItem,
   WmsOrderExchangeRequest as ProtoWmsOrderExchangeRequest,
+  WmsOrderGetExchangeableItemsRequest as ProtoWmsOrderGetExchangeableItemsRequest,
+  WmsOrderGetExchangeableItemsResult as ProtoWmsOrderGetExchangeableItemsResult,
+  WmsExchangeableItem as ProtoWmsExchangeableItem,
+  WmsExchangeableVariant as ProtoWmsExchangeableVariant,
+  WmsVariantOption as ProtoWmsVariantOption,
   WmsOrderReturnRequest as ProtoWmsOrderReturnRequest,
   WmsOrderGetOrdersRequest as ProtoWmsOrderGetOrdersRequest,
   WmsOrderGetOrdersResult as ProtoWmsOrderGetOrdersResult,
@@ -1130,6 +1135,28 @@ export type ExtensionProtoSchemaContracts = [
       ProtoWmsOrderChangeShippingAddressInput
     >
   >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof WmsSchemas.WmsOrderGetExchangeableItemsInputSchema,
+      ProtoWmsOrderGetExchangeableItemsRequest
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof WmsSchemas.WmsOrderGetExchangeableItemsOutputSchema,
+      ProtoWmsOrderGetExchangeableItemsResult
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<typeof WmsSchemas.WmsExchangeableItemSchema, ProtoWmsExchangeableItem>
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof WmsSchemas.WmsExchangeableVariantSchema,
+      ProtoWmsExchangeableVariant
+    >
+  >,
+  Expect<SchemaOutputExtendsProto<typeof WmsSchemas.WmsVariantOptionSchema, ProtoWmsVariantOption>>,
   Expect<
     SchemaOutputExtendsProto<
       typeof WmsSchemas.WmsGetAppConfigsInputSchema,
