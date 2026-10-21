@@ -187,9 +187,12 @@ export const AppPersonInvokedHookInputSchema = z
     requestId: AppPersonInvokedIdentifierSchema,
     sourceEventId: AppPersonInvokedIdentifierSchema,
     channelId: AppPersonInvokedIdentifierSchema,
-    chatType: z.enum(["group", "directChat"]),
+    chatType: z.enum(["group", "directChat", "userChat"]),
     chatId: AppPersonInvokedIdentifierSchema,
-    threadId: AppPersonInvokedIdentifierSchema.optional(),
+    threadId: z.preprocess(
+      (value) => (value === null ? undefined : value),
+      AppPersonInvokedIdentifierSchema.optional()
+    ),
     sourceMessageId: AppPersonInvokedIdentifierSchema,
     sourceContentRevision: NonNegativeInt64StringSchema,
     requestedAt: z.string().datetime({ offset: true }),
@@ -202,13 +205,29 @@ export const AppPersonInvokedHookInputSchema = z
   })
   .strict()
   .superRefine((input, ctx) => {
-    const expectedScope = input.chatType === "group" ? "channel" : "manager";
+    const expectedScope = input.chatType === "directChat" ? "manager" : "channel";
     if (input.credentialScope !== expectedScope) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["credentialScope"],
-        message: "Group uses channel credentials; directChat uses manager credentials",
+        message: "Group and userChat use channel credentials; directChat uses manager credentials",
       });
+    }
+    if (input.chatType === "userChat") {
+      if (input.threadId !== undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["threadId"],
+          message: "UserChat private-note invocations do not have a thread",
+        });
+      }
+      if (input.sourceContentRevision === "0") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["sourceContentRevision"],
+          message: "UserChat source content revision must be positive",
+        });
+      }
     }
   });
 

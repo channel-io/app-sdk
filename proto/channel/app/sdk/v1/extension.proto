@@ -2152,8 +2152,8 @@ message HookTeamChatMessageCreatedResult {
   bool terminal = 2;
 }
 
-// An explicit single-app Group mention or app direct message. This is distinct
-// from message observation and is not emitted for a multi-app invocation.
+// An explicit single-app Group or UserChat private-note mention, or app direct
+// message. Distinct from observation; not emitted for a multi-app invocation.
 message HookAppPersonInvokedInput {
   string type = 1;
   int32 version = 2;

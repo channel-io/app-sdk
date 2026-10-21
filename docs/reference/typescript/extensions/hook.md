@@ -97,8 +97,7 @@ type OAuthFlowHookInput = {
   expiresAt: string; // ISO 8601 datetime
 };
 type OAuthFlowHookResult =
-  | { type: "continue" }
-  | { type: "redirect"; url: string };
+  { type: "continue" } | { type: "redirect"; url: string };
 ```
 
 Input and result objects are strict. A continue result cannot include `url`, and
@@ -206,7 +205,9 @@ method is required on `HookExtensionInterface`.
 
 ```ts
 return {
-  hooks: [{ type: "appPerson.invoked", actionFunctionName: "hooks.onInvocation" }],
+  hooks: [
+    { type: "appPerson.invoked", actionFunctionName: "hooks.onInvocation" },
+  ],
 };
 ```
 
@@ -219,8 +220,12 @@ and `prompt`. `sourceContentRevision` is a canonical non-negative signed-int64
 decimal **string**, including values above JavaScript's safe integer range.
 `requestedAt` is an ISO 8601 datetime. `prompt` may be empty.
 
-A single-app Group mention uses `chatType: "group"` and
-`credentialScope: "channel"`. An app direct message uses
+A single-app Group mention uses `chatType: "group"`; a UserChat private-note
+mention uses `chatType: "userChat"`. Both require `credentialScope: "channel"`.
+UserChat requires a positive revision and no thread (`threadId` absent or null;
+the schema normalizes null to absent). Responses must remain private notes,
+invisible to customers. An edit is a separate invocation for the new exact
+source content revision. An app direct message uses
 `chatType: "directChat"` and `credentialScope: "manager"`. The initiating
 `invokingManagerId` remains separate from the credential scope. The platform
 must not use the other scope's credentials when the required credentials are
@@ -362,7 +367,9 @@ Re-register the Hook Extension to change the setting. Omit `response` on
 re-registration to remove it and restore the default 202 response:
 
 ```ts
-webhook: { endpointToken }
+webhook: {
+  endpointToken;
+}
 // Manager scope: webhook: { executionScope: "manager" }
 ```
 
@@ -411,9 +418,20 @@ uses `authScope: "caller"`; `caller` is not a valid hook scope.
 ```typescript
 return {
   hooks: [
-    { type: "oauth.connected", authScope: "channel", actionFunctionName: "hooks.channelConnected" },
-    { type: "oauth.connected", authScope: "manager", actionFunctionName: "hooks.managerConnected" },
-    { type: "oauth.disconnected", actionFunctionName: "hooks.sharedDisconnected" },
+    {
+      type: "oauth.connected",
+      authScope: "channel",
+      actionFunctionName: "hooks.channelConnected",
+    },
+    {
+      type: "oauth.connected",
+      authScope: "manager",
+      actionFunctionName: "hooks.managerConnected",
+    },
+    {
+      type: "oauth.disconnected",
+      actionFunctionName: "hooks.sharedDisconnected",
+    },
   ],
 };
 ```
@@ -425,7 +443,6 @@ the hook is skipped; the other scope's hook is never used. Existing registration
 without `authScope` retain their behavior. `targetId` remains forbidden on OAuth
 hooks, and `redirectOrigins` remains exclusive to the two authorization hooks.
 Deploy platform support before using scoped registrations.
-
 
 ## Optional OAuth step presentation
 

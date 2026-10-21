@@ -41,11 +41,14 @@ TypeScript は `AppPersonInvokedHookInputSchema`、`AppPersonInvokedHookResultSc
 と推論型を公開します。Go では `hook.TypeAppPersonInvoked`、
 `hook.AppPersonInvokedInput`、`hook.AppPersonInvokedResult` を使用します。
 
-Group で単一アプリをメンションすると Channel の認証情報を、アプリ DM では
-Manager の認証情報を使用します。`invokingManagerId` は呼び出した Manager であり、
+Group または UserChat の内部メモで単一アプリをメンションすると Channel の
+共通認証情報を、アプリ DM では Manager の認証情報を使用します。`invokingManagerId` は呼び出した Manager であり、
 `credentialScope` とは別です。必要な認証情報がなくても別スコープへフォールバックしません。
 `sourceContentRevision` は非負 signed-int64 の十進文字列です。JavaScript の数値へ
-変換しないでください。`prompt` は空文字列でも有効です。
+変換しないでください。`prompt` は空文字列でも有効です。UserChat の revision は
+正数で、thread はありません。`threadId` は省略または null を使用し、スキーマは
+null を省略値へ正規化します。UserChat の返信は顧客に見えない内部メモとして
+送信してください。元のメモを編集すると、新しい revision の別の呼び出しになります。
 
 登録した関数が処理を担当します。結果は
 `{ hookHandlingResult: "succeeded" | "skipped" | "failed", terminal: true }`

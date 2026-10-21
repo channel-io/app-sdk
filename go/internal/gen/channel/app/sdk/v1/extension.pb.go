@@ -19241,8 +19241,8 @@ func (x *HookTeamChatMessageCreatedResult) GetTerminal() bool {
 	return false
 }
 
-// An explicit single-app Group mention or app direct message. This is distinct
-// from message observation and is not emitted for a multi-app invocation.
+// An explicit single-app Group or UserChat private-note mention, or app direct
+// message. Distinct from observation; not emitted for a multi-app invocation.
 type HookAppPersonInvokedInput struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
 	Type                  string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
