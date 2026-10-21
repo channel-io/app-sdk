@@ -168,6 +168,7 @@ func TestCanonicalFunctionSchemasMatchRegistry(t *testing.T) {
 		wms.FunctionOrderRequestExchangeOrder,
 		wms.FunctionOrderRestoreExchangedOrder,
 		wms.FunctionOrderChangeShippingAddress,
+		wms.FunctionOrderGetExchangeableItems,
 	}
 
 	want := make([]appsdk.FunctionSchema, 0, len(names))

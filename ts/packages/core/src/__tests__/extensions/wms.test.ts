@@ -14,6 +14,8 @@ import {
   ReturnWmsOrderInputSchema,
   WmsOrderCancelInputSchema,
   WmsOrderExchangeInputSchema,
+  WmsOrderGetExchangeableItemsInputSchema,
+  WmsOrderGetExchangeableItemsOutputSchema,
   WmsOrderReturnInputSchema,
   WmsOrderSchema,
   WmsSuccessOutputSchema,
@@ -226,9 +228,37 @@ describe("WMS extension helpers", () => {
     expect(
       WmsOrderExchangeInputSchema.parse({
         orderIds: ["order-1"],
-        exchangeItems: [{ id: "item-1", quantity: 2 }],
+        beforeExchangeItems: [{ id: "item-1", quantity: 2 }],
+        afterExchangeItems: [{ productId: "product-1", variantId: "option-L", quantity: 2 }],
       })
-    ).toEqual({ orderIds: ["order-1"], exchangeItems: [{ id: "item-1", quantity: 2 }] });
+    ).toEqual({
+      orderIds: ["order-1"],
+      beforeExchangeItems: [{ id: "item-1", quantity: 2 }],
+      afterExchangeItems: [{ productId: "product-1", variantId: "option-L", quantity: 2 }],
+    });
+    // The removed exchangeItems field is no longer part of the contract.
+    expect(
+      WmsOrderExchangeInputSchema.parse({
+        orderIds: ["order-1"],
+        exchangeItems: [{ id: "item-1" }],
+      })
+    ).toEqual({ orderIds: ["order-1"] });
+    // A WMS exchange cannot be filed without the target option, and quantities stay in int32.
+    expect(() =>
+      WmsOrderExchangeInputSchema.parse({ orderIds: ["order-1"], afterExchangeItems: [{}] })
+    ).toThrow();
+    expect(() =>
+      WmsOrderExchangeInputSchema.parse({
+        orderIds: ["order-1"],
+        afterExchangeItems: [{ variantId: "option-L", quantity: -1 }],
+      })
+    ).toThrow();
+    expect(() =>
+      WmsOrderExchangeInputSchema.parse({
+        orderIds: ["order-1"],
+        afterExchangeItems: [{ variantId: "option-L", quantity: 2147483648 }],
+      })
+    ).toThrow();
     // Omitting the items keeps the whole-order request valid.
     expect(WmsOrderReturnInputSchema.parse({ orderIds: ["order-1"] })).toEqual({
       orderIds: ["order-1"],
@@ -255,6 +285,41 @@ describe("WMS extension helpers", () => {
       WmsOrderCancelInputSchema.parse({
         orderIds: ["order-1"],
         cancelItems: [{ id: "item-1", quantity: 1.5 }],
+      })
+    ).toThrow();
+  });
+
+  it("should describe exchange candidates with WMS option ids", () => {
+    expect(
+      WmsOrderGetExchangeableItemsInputSchema.parse({
+        orderId: "order-1",
+        items: [{ id: "item-1" }],
+      })
+    ).toEqual({ orderId: "order-1", items: [{ id: "item-1" }] });
+    expect(() => WmsOrderGetExchangeableItemsInputSchema.parse({ items: [] })).toThrow();
+
+    const output = {
+      exchangeableItems: [
+        {
+          id: "item-1",
+          productId: "product-1",
+          variants: [
+            {
+              id: "option-L",
+              additionalAmount: 0,
+              options: [{ name: "사이즈", value: "L" }],
+              stockQuantity: 3,
+            },
+            { id: "option-XL", options: [{ name: "사이즈", value: "XL" }] },
+          ],
+        },
+      ],
+    };
+    expect(WmsOrderGetExchangeableItemsOutputSchema.parse(output)).toEqual(output);
+    expect(WmsOrderGetExchangeableItemsOutputSchema.parse({})).toEqual({});
+    expect(() =>
+      WmsOrderGetExchangeableItemsOutputSchema.parse({
+        exchangeableItems: [{ id: "item-1", variants: [{ additionalAmount: 0 }] }],
       })
     ).toThrow();
   });

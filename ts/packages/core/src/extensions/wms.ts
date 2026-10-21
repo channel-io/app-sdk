@@ -28,13 +28,18 @@ import type {
   WmsOrderChangeShippingAddressInput as ProtoWmsOrderChangeShippingAddressInput,
   WmsOrderClaimItem as ProtoWmsOrderClaimItem,
   WmsOrderExchangeRequest as ProtoWmsOrderExchangeRequest,
+  WmsOrderGetExchangeableItemsRequest as ProtoWmsOrderGetExchangeableItemsRequest,
+  WmsOrderGetExchangeableItemsResult as ProtoWmsOrderGetExchangeableItemsResult,
+  WmsExchangeableItem as ProtoWmsExchangeableItem,
+  WmsExchangeableVariant as ProtoWmsExchangeableVariant,
+  WmsVariantOption as ProtoWmsVariantOption,
   WmsOrderReturnRequest as ProtoWmsOrderReturnRequest,
   WmsOrderGetOrdersRequest as ProtoWmsOrderGetOrdersRequest,
   WmsOrderGetOrdersResult as ProtoWmsOrderGetOrdersResult,
   WmsOrderItemV2 as ProtoWmsOrderItemV2,
   WmsOrderV2 as ProtoWmsOrderV2,
 } from "../gen/channel/app/sdk/v1/extension.js";
-import { AddressSchema, BuyerSchema, FieldConfigSchema } from "./order.js";
+import { AddressSchema, BuyerSchema, FieldConfigSchema, OrderExchangeItemSchema } from "./order.js";
 
 type ProtoBacked<T, Proto> = T & Proto;
 
@@ -396,12 +401,76 @@ export type WmsOrderReturnInput = ProtoBacked<
   ProtoWmsOrderReturnRequest
 >;
 
+// 교환 후 품목. proto는 공용 OrderExchangeItem이지만, WMS는 옵션 없이 교환을 접수할 수 없어 variantId를
+// 필수로 두고 quantity를 WmsOrderClaimItem과 같은 범위로 맞춘다. 공용 스키마는 commerce 계약이라 건드리지 않는다.
+const WmsOrderExchangeItemSchema = OrderExchangeItemSchema.extend({
+  variantId: z.string().min(1),
+  quantity: z.number().int().nonnegative().max(2147483647).optional(),
+});
+
 export const WmsOrderExchangeInputSchema = WmsOrderActionInputSchema.extend({
-  exchangeItems: z.array(WmsOrderClaimItemSchema).optional(),
+  // 돌려받을 품목. 비우면 orderIds 주문의 품목 전부가 대상이다.
+  beforeExchangeItems: z.array(WmsOrderClaimItemSchema).optional(),
+  // 대신 보낼 품목. variantId는 getExchangeableItems의 WMS 옵션 ID다(commerce variantId와 다른 값).
+  afterExchangeItems: z.array(WmsOrderExchangeItemSchema).optional(),
 });
 export type WmsOrderExchangeInput = ProtoBacked<
   z.infer<typeof WmsOrderExchangeInputSchema>,
   ProtoWmsOrderExchangeRequest
+>;
+
+// --- order.getExchangeableItems ---
+
+export const WmsOrderGetExchangeableItemsInputSchema = z.object({
+  identifier: WmsIdentifierSchema.optional(),
+  orderId: z.string(),
+  // 조회할 품목(order.getOrders의 items[].id). 비우면 주문의 품목 전부다.
+  items: z.array(WmsOrderClaimItemSchema).optional(),
+});
+export type WmsOrderGetExchangeableItemsInput = ProtoBacked<
+  z.infer<typeof WmsOrderGetExchangeableItemsInputSchema>,
+  ProtoWmsOrderGetExchangeableItemsRequest
+>;
+
+export const WmsVariantOptionSchema = z.object({
+  name: z.string(),
+  value: z.string(),
+});
+export type WmsVariantOption = ProtoBacked<
+  z.infer<typeof WmsVariantOptionSchema>,
+  ProtoWmsVariantOption
+>;
+
+// id는 WMS 옵션 ID로, requestExchangeOrder의 afterExchangeItems[].variantId로 그대로 넘긴다.
+export const WmsExchangeableVariantSchema = z.object({
+  id: z.string(),
+  additionalAmount: z.number().optional(),
+  options: z.array(WmsVariantOptionSchema).optional(),
+  // 재고를 관리하지 않으면 비운다. 0은 품절이다.
+  stockQuantity: z.number().optional(),
+});
+export type WmsExchangeableVariant = ProtoBacked<
+  z.infer<typeof WmsExchangeableVariantSchema>,
+  ProtoWmsExchangeableVariant
+>;
+
+// id는 order.getOrders의 items[].id로, requestExchangeOrder의 beforeExchangeItems[].id로 넘긴다.
+export const WmsExchangeableItemSchema = z.object({
+  id: z.string(),
+  productId: z.string().optional(),
+  variants: z.array(WmsExchangeableVariantSchema).optional(),
+});
+export type WmsExchangeableItem = ProtoBacked<
+  z.infer<typeof WmsExchangeableItemSchema>,
+  ProtoWmsExchangeableItem
+>;
+
+export const WmsOrderGetExchangeableItemsOutputSchema = z.object({
+  exchangeableItems: z.array(WmsExchangeableItemSchema).optional(),
+});
+export type WmsOrderGetExchangeableItemsOutput = ProtoBacked<
+  z.infer<typeof WmsOrderGetExchangeableItemsOutputSchema>,
+  ProtoWmsOrderGetExchangeableItemsResult
 >;
 
 const WmsOrderResultBodySchema = z.object({
@@ -452,6 +521,7 @@ export const WmsAppCapabilitiesSchema = z.object({
   requestExchangeOrderOptions: WmsOperationOptionsSchema.optional(),
   restoreExchangedOrderOptions: WmsOperationOptionsSchema.optional(),
   changeShippingAddressOptions: WmsOperationOptionsSchema.optional(),
+  getExchangeableItemsOptions: WmsOperationOptionsSchema.optional(),
 });
 export type WmsAppCapabilities = ProtoBacked<
   z.infer<typeof WmsAppCapabilitiesSchema>,

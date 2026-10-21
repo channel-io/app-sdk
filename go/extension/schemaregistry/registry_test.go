@@ -146,6 +146,7 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 		RestoreExchangedOrder(zero[wms.RestoreOrderRequest, wms.SuccessResponse]()).
 		GetSupportedCommerces(zero[wms.GetSupportedCommercesRequest, wms.GetSupportedCommercesResponse]()).
 		OrderChangeShippingAddress(zero[wms.OrderChangeShippingAddressRequest, wms.OrderActionResponse]()).
+		OrderGetExchangeableItems(zero[wms.OrderGetExchangeableItemsRequest, wms.OrderGetExchangeableItemsResponse]()).
 		OrderGetOrders(zero[wms.OrderGetOrdersRequest, wms.OrderGetOrdersResponse]()).
 		OrderRequestCancelOrder(zero[wms.OrderCancelRequest, wms.OrderActionResponse]()).
 		OrderRequestExchangeOrder(zero[wms.OrderExchangeRequest, wms.OrderActionResponse]()).
@@ -159,8 +160,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	got := app.Schemas()
 	want := schemaregistry.Schemas()
 
-	if len(got) != 85 {
-		t.Fatalf("expected 85 registered extension function schemas, got %d", len(got))
+	if len(got) != 86 {
+		t.Fatalf("expected 86 registered extension function schemas, got %d", len(got))
 	}
 	if !reflect.DeepEqual(got, want) {
 		for i := range got {

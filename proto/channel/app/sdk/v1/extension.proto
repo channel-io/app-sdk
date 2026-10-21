@@ -1805,11 +1805,52 @@ message WmsOrderReturnRequest {
 }
 
 message WmsOrderExchangeRequest {
+  // 5 was exchange_items (go/v0.21.0, 0.34.0), replaced by the before/after pair below.
+  reserved 5;
+  reserved "exchange_items";
   WmsIdentifier identifier = 1;
   repeated string order_ids = 2;
   string reason = 3;
   string memo = 4;
-  repeated WmsOrderClaimItem exchange_items = 5;
+  // Items being sent back. Empty means every item of the orders in order_ids.
+  repeated WmsOrderClaimItem before_exchange_items = 6;
+  // Items to send instead. variant_id is a WMS option id from getExchangeableItems,
+  // not a commerce variant id.
+  repeated OrderExchangeItem after_exchange_items = 7;
+}
+
+message WmsOrderGetExchangeableItemsRequest {
+  WmsIdentifier identifier = 1;
+  string order_id = 2;
+  // Order items to look up (items[].id from order.getOrders). Empty means every item.
+  repeated WmsOrderClaimItem items = 3;
+}
+
+message WmsOrderGetExchangeableItemsResult {
+  repeated WmsExchangeableItem exchangeable_items = 1;
+}
+
+// Exchange candidates for one order item. Same shape as CommerceExchangeableItem, but the ids
+// are WMS ids: id is an order.getOrders items[].id (pass it as before_exchange_items[].id) and
+// variants[].id is a WMS option id (pass it as after_exchange_items[].variant_id).
+message WmsExchangeableItem {
+  string id = 1;
+  string product_id = 2;
+  repeated WmsExchangeableVariant variants = 3;
+}
+
+message WmsExchangeableVariant {
+  string id = 1;
+  // Extra charge versus the original item. 0 is the common case, hence presence.
+  optional double additional_amount = 2;
+  repeated WmsVariantOption options = 3;
+  // Omitted when the WMS does not track stock for this option; 0 means out of stock.
+  optional double stock_quantity = 4;
+}
+
+message WmsVariantOption {
+  string name = 1;
+  string value = 2;
 }
 
 message WmsOrderChangeShippingAddressInput {
@@ -1850,6 +1891,7 @@ message WmsAppCapabilities {
   WmsOperationOptions request_exchange_order_options = 6;
   WmsOperationOptions restore_exchanged_order_options = 7;
   WmsOperationOptions change_shipping_address_options = 8;
+  WmsOperationOptions get_exchangeable_items_options = 9;
 }
 
 message WmsGetAppConfigsInput {}

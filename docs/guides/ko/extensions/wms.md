@@ -17,7 +17,8 @@ err := app.Use(wms.Extension().
   OrderRestoreReturnedOrder(handler.OrderRestoreReturnedOrder).
   OrderRequestExchangeOrder(handler.OrderRequestExchangeOrder).
   OrderRestoreExchangedOrder(handler.OrderRestoreExchangedOrder).
-  OrderChangeShippingAddress(handler.OrderChangeShippingAddress),
+  OrderChangeShippingAddress(handler.OrderChangeShippingAddress).
+  OrderGetExchangeableItems(handler.OrderGetExchangeableItems),
 )
 ```
 
@@ -32,18 +33,25 @@ err := app.Use(wms.Extension().
 - `extension.wms.order.requestExchangeOrder`
 - `extension.wms.order.restoreExchangedOrder`
 - `extension.wms.order.changeShippingAddress`
+- `extension.wms.order.getExchangeableItems`
 
 ## TypeScript
 
 `@Extension({ name: "wms", systemVersion: "v1" })`과 공개 WMS schema인
 `WmsGetAppConfigs*`, `WmsOrderGetOrders*`, `WmsOrderAction*`, `WmsOrderCancel*`,
-`WmsOrderReturn*`, `WmsOrderExchange*`, `WmsOrderChangeShippingAddress*`를 사용합니다.
+`WmsOrderReturn*`, `WmsOrderExchange*`, `WmsOrderGetExchangeableItems*`,
+`WmsOrderChangeShippingAddress*`를 사용합니다.
 각 Function은 정확한 `extension.wms.order.*` 이름으로 등록합니다.
 
-`requestCancelOrder`, `requestReturnOrder`, `requestExchangeOrder`는 `cancelItems`,
-`returnItems`, `exchangeItems`로 부분 처리를 받습니다. 각 품목의 `id`는 `order.getOrders`의
+`requestCancelOrder`, `requestReturnOrder`는 `cancelItems`, `returnItems`로 부분 처리를 받습니다. 각 품목의 `id`는 `order.getOrders`의
 `items[].id`이고 `quantity`를 비우면 그 품목의 전체 수량입니다. 품목 목록을 비우면 `orderIds` 주문의
 품목 전부가 대상입니다.
+
+교환은 `requestExchangeOrder`의 `beforeExchangeItems`(돌려받을 품목, 같은 규칙)와
+`afterExchangeItems`(대신 보낼 `productId`·`variantId`·`quantity`)로 받습니다. `variantId`는
+commerce variant id가 아니라 `getExchangeableItems`가 돌려준 WMS 옵션 ID입니다. 교환 가능한 옵션은
+`getExchangeableItems`(`orderId`, 선택 `items`)로 조회하고, 응답의 `exchangeableItems[].id`를
+`beforeExchangeItems[].id`로, `variants[].id`를 `afterExchangeItems[].variantId`로 넘깁니다.
 
 ## 인증·신뢰성·테스트
 

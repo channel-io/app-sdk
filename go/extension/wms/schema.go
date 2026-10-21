@@ -31,6 +31,7 @@ func CanonicalFunctionSchemas() []appsdk.FunctionSchema {
 		FunctionOrderRequestExchangeOrder,
 		FunctionOrderRestoreExchangedOrder,
 		FunctionOrderChangeShippingAddress,
+		FunctionOrderGetExchangeableItems,
 	}
 
 	functions := make([]appsdk.FunctionSchema, 0, len(names))

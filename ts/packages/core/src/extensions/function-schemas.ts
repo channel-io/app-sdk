@@ -128,6 +128,8 @@ import {
   WmsOrderCancelInputSchema,
   WmsOrderChangeShippingAddressInputSchema,
   WmsOrderExchangeInputSchema,
+  WmsOrderGetExchangeableItemsInputSchema,
+  WmsOrderGetExchangeableItemsOutputSchema,
   WmsOrderGetOrdersInputSchema,
   WmsOrderGetOrdersOutputSchema,
   WmsOrderReturnInputSchema,
@@ -686,6 +688,11 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     name: "extension.wms.order.changeShippingAddress",
     input: WmsOrderChangeShippingAddressInputSchema,
     output: WmsOrderActionOutputSchema,
+  },
+  {
+    name: "extension.wms.order.getExchangeableItems",
+    input: WmsOrderGetExchangeableItemsInputSchema,
+    output: WmsOrderGetExchangeableItemsOutputSchema,
   },
   {
     name: "extension.wms.order.getOrders",

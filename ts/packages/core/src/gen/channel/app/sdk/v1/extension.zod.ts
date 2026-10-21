@@ -1856,9 +1856,43 @@ export const WmsOrderExchangeRequestProtoSchema = z.object({
   orderIds: z.array(z.string()).optional(),
   reason: z.string().optional(),
   memo: z.string().optional(),
-  exchangeItems: z.array(z.lazy(() => WmsOrderClaimItemProtoSchema)).optional(),
+  beforeExchangeItems: z.array(z.lazy(() => WmsOrderClaimItemProtoSchema)).optional(),
+  afterExchangeItems: z.array(z.lazy(() => OrderExchangeItemProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.WmsOrderExchangeRequest>;
 export type WmsOrderExchangeRequestProto = z.infer<typeof WmsOrderExchangeRequestProtoSchema>;
+
+export const WmsOrderGetExchangeableItemsRequestProtoSchema = z.object({
+  identifier: z.lazy(() => WmsIdentifierProtoSchema).optional(),
+  orderId: z.string().optional(),
+  items: z.array(z.lazy(() => WmsOrderClaimItemProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.WmsOrderGetExchangeableItemsRequest>;
+export type WmsOrderGetExchangeableItemsRequestProto = z.infer<typeof WmsOrderGetExchangeableItemsRequestProtoSchema>;
+
+export const WmsOrderGetExchangeableItemsResultProtoSchema = z.object({
+  exchangeableItems: z.array(z.lazy(() => WmsExchangeableItemProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.WmsOrderGetExchangeableItemsResult>;
+export type WmsOrderGetExchangeableItemsResultProto = z.infer<typeof WmsOrderGetExchangeableItemsResultProtoSchema>;
+
+export const WmsExchangeableItemProtoSchema = z.object({
+  id: z.string().optional(),
+  productId: z.string().optional(),
+  variants: z.array(z.lazy(() => WmsExchangeableVariantProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.WmsExchangeableItem>;
+export type WmsExchangeableItemProto = z.infer<typeof WmsExchangeableItemProtoSchema>;
+
+export const WmsExchangeableVariantProtoSchema = z.object({
+  id: z.string().optional(),
+  additionalAmount: z.number().optional(),
+  options: z.array(z.lazy(() => WmsVariantOptionProtoSchema)).optional(),
+  stockQuantity: z.number().optional(),
+}) satisfies z.ZodType<pb.WmsExchangeableVariant>;
+export type WmsExchangeableVariantProto = z.infer<typeof WmsExchangeableVariantProtoSchema>;
+
+export const WmsVariantOptionProtoSchema = z.object({
+  name: z.string().optional(),
+  value: z.string().optional(),
+}) satisfies z.ZodType<pb.WmsVariantOption>;
+export type WmsVariantOptionProto = z.infer<typeof WmsVariantOptionProtoSchema>;
 
 export const WmsOrderChangeShippingAddressInputProtoSchema = z.object({
   identifier: z.lazy(() => WmsIdentifierProtoSchema).optional(),
@@ -1903,6 +1937,7 @@ export const WmsAppCapabilitiesProtoSchema = z.object({
   requestExchangeOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
   restoreExchangedOrderOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
   changeShippingAddressOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
+  getExchangeableItemsOptions: z.lazy(() => WmsOperationOptionsProtoSchema).optional(),
 }) satisfies z.ZodType<pb.WmsAppCapabilities>;
 export type WmsAppCapabilitiesProto = z.infer<typeof WmsAppCapabilitiesProtoSchema>;
 

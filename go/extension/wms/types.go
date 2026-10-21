@@ -34,6 +34,7 @@ const (
 	FunctionOrderRequestExchangeOrder  = "extension.wms.order.requestExchangeOrder"
 	FunctionOrderRestoreExchangedOrder = "extension.wms.order.restoreExchangedOrder"
 	FunctionOrderChangeShippingAddress = "extension.wms.order.changeShippingAddress"
+	FunctionOrderGetExchangeableItems  = "extension.wms.order.getExchangeableItems"
 
 	CommerceTypeAppCafe24          = "appCafe24"
 	CommerceTypeAppNaverSmartStore = "appNaverSmartStore"
@@ -63,6 +64,12 @@ type OrderExchangeRequest = sdkv1.WmsOrderExchangeRequest
 type OrderActionResponse = sdkv1.WmsOrderActionResult
 type OrderActionResultBody = sdkv1.WmsOrderResultBody
 type OrderChangeShippingAddressRequest = sdkv1.WmsOrderChangeShippingAddressInput
+type OrderExchangeItem = sdkv1.OrderExchangeItem
+type OrderGetExchangeableItemsRequest = sdkv1.WmsOrderGetExchangeableItemsRequest
+type OrderGetExchangeableItemsResponse = sdkv1.WmsOrderGetExchangeableItemsResult
+type ExchangeableItem = sdkv1.WmsExchangeableItem
+type ExchangeableVariant = sdkv1.WmsExchangeableVariant
+type VariantOption = sdkv1.WmsVariantOption
 type GetAppConfigsRequest = sdkv1.WmsGetAppConfigsInput
 type GetAppConfigsResponse = sdkv1.WmsGetAppConfigsOutput
 

@@ -351,6 +351,7 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 			wms.FunctionOrderRequestExchangeOrder,
 			wms.FunctionOrderRestoreExchangedOrder,
 			wms.FunctionOrderChangeShippingAddress,
+			wms.FunctionOrderGetExchangeableItems,
 		},
 		build: func() appsdk.Extension {
 			return wms.Extension().
@@ -373,7 +374,8 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 				OrderRestoreReturnedOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
 				OrderRequestExchangeOrder(smokeZero[wms.OrderExchangeRequest, wms.OrderActionResponse]()).
 				OrderRestoreExchangedOrder(smokeZero[wms.OrderActionRequest, wms.OrderActionResponse]()).
-				OrderChangeShippingAddress(smokeZero[wms.OrderChangeShippingAddressRequest, wms.OrderActionResponse]())
+				OrderChangeShippingAddress(smokeZero[wms.OrderChangeShippingAddressRequest, wms.OrderActionResponse]()).
+				OrderGetExchangeableItems(smokeZero[wms.OrderGetExchangeableItemsRequest, wms.OrderGetExchangeableItemsResponse]())
 		},
 	},
 }

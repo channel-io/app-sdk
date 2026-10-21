@@ -2152,8 +2152,60 @@ export interface WmsOrderExchangeRequest {
   identifier?: WmsIdentifier | undefined;
   orderIds?: string[] | undefined;
   reason?: string | undefined;
-  memo?: string | undefined;
-  exchangeItems?: WmsOrderClaimItem[] | undefined;
+  memo?:
+    | string
+    | undefined;
+  /** Items being sent back. Empty means every item of the orders in order_ids. */
+  beforeExchangeItems?:
+    | WmsOrderClaimItem[]
+    | undefined;
+  /**
+   * Items to send instead. variant_id is a WMS option id from getExchangeableItems,
+   * not a commerce variant id.
+   */
+  afterExchangeItems?: OrderExchangeItem[] | undefined;
+}
+
+export interface WmsOrderGetExchangeableItemsRequest {
+  identifier?: WmsIdentifier | undefined;
+  orderId?:
+    | string
+    | undefined;
+  /** Order items to look up (items[].id from order.getOrders). Empty means every item. */
+  items?: WmsOrderClaimItem[] | undefined;
+}
+
+export interface WmsOrderGetExchangeableItemsResult {
+  exchangeableItems?: WmsExchangeableItem[] | undefined;
+}
+
+/**
+ * Exchange candidates for one order item. Same shape as CommerceExchangeableItem, but the ids
+ * are WMS ids: id is an order.getOrders items[].id (pass it as before_exchange_items[].id) and
+ * variants[].id is a WMS option id (pass it as after_exchange_items[].variant_id).
+ */
+export interface WmsExchangeableItem {
+  id?: string | undefined;
+  productId?: string | undefined;
+  variants?: WmsExchangeableVariant[] | undefined;
+}
+
+export interface WmsExchangeableVariant {
+  id?:
+    | string
+    | undefined;
+  /** Extra charge versus the original item. 0 is the common case, hence presence. */
+  additionalAmount?: number | undefined;
+  options?:
+    | WmsVariantOption[]
+    | undefined;
+  /** Omitted when the WMS does not track stock for this option; 0 means out of stock. */
+  stockQuantity?: number | undefined;
+}
+
+export interface WmsVariantOption {
+  name?: string | undefined;
+  value?: string | undefined;
 }
 
 export interface WmsOrderChangeShippingAddressInput {
@@ -2199,6 +2251,7 @@ export interface WmsAppCapabilities {
   requestExchangeOrderOptions?: WmsOperationOptions | undefined;
   restoreExchangedOrderOptions?: WmsOperationOptions | undefined;
   changeShippingAddressOptions?: WmsOperationOptions | undefined;
+  getExchangeableItemsOptions?: WmsOperationOptions | undefined;
 }
 
 export interface WmsGetAppConfigsInput {
