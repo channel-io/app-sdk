@@ -704,6 +704,144 @@
               "maxLength": 30,
               "pattern": "^(0|[1-9][0-9]*)$"
             },
+            "lastResult": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                      "maxLength": 8192
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "provider_message",
+                        "agent_report",
+                        "adapter"
+                      ]
+                    },
+                    "recordedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                        "maxLength": 2048
+                      },
+                      "maxItems": 20
+                    }
+                  },
+                  "required": [
+                    "text",
+                    "source",
+                    "recordedAt",
+                    "limitations"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "artifacts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                    "maxLength": 64
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                    "maxLength": 512
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "pattern": "^https:\\/\\/([^/?#@]*@)?(\\[[^\\[\\]]+\\]|[^/?#:@\\[\\]]+)(:[0-9]*)?([/?#]|$)",
+                    "maxLength": 2048
+                  }
+                },
+                "required": [
+                  "kind",
+                  "title",
+                  "url"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 50
+            },
+            "observation": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "const": "current"
+                    },
+                    "observedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "observedAt"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "stale",
+                        "unknown"
+                      ]
+                    },
+                    "observedAt": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "observedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
+            },
             "status": {
               "type": "string",
               "enum": [
@@ -741,7 +879,7 @@
                     "actionUrl": {
                       "type": "string",
                       "format": "uri",
-                      "pattern": "^https:\\/\\/",
+                      "pattern": "^https:\\/\\/([^/?#@]*@)?(\\[[^\\[\\]]+\\]|[^/?#:@\\[\\]]+)(:[0-9]*)?([/?#]|$)",
                       "maxLength": 2048
                     }
                   },
@@ -776,7 +914,7 @@
                     "actionUrl": {
                       "type": "string",
                       "format": "uri",
-                      "pattern": "^https:\\/\\/",
+                      "pattern": "^https:\\/\\/([^/?#@]*@)?(\\[[^\\[\\]]+\\]|[^/?#:@\\[\\]]+)(:[0-9]*)?([/?#]|$)",
                       "maxLength": 2048
                     }
                   },
@@ -789,6 +927,68 @@
                   "additionalProperties": false
                 }
               ]
+            },
+            "error": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                      "maxLength": 100
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                      "maxLength": 2048
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "retryable"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "sessionKey",
+            "version",
+            "lastResult",
+            "artifacts",
+            "observation",
+            "updatedAt",
+            "status",
+            "pendingInputCount",
+            "question",
+            "error"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sessionKey": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+              "maxLength": 200
+            },
+            "version": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(0|[1-9][0-9]*)$"
             },
             "lastResult": {
               "anyOf": [
@@ -858,7 +1058,7 @@
                   "url": {
                     "type": "string",
                     "format": "uri",
-                    "pattern": "^https:\\/\\/",
+                    "pattern": "^https:\\/\\/([^/?#@]*@)?(\\[[^\\[\\]]+\\]|[^/?#:@\\[\\]]+)(:[0-9]*)?([/?#]|$)",
                     "maxLength": 2048
                   }
                 },
@@ -870,39 +1070,6 @@
                 "additionalProperties": false
               },
               "maxItems": 50
-            },
-            "error": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                      "minLength": 1,
-                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                      "maxLength": 100
-                    },
-                    "message": {
-                      "type": "string",
-                      "minLength": 1,
-                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                      "maxLength": 2048
-                    },
-                    "retryable": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "code",
-                    "message",
-                    "retryable"
-                  ],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "null"
-                }
-              ]
             },
             "observation": {
               "anyOf": [
@@ -960,35 +1127,6 @@
               "type": "string",
               "format": "date-time",
               "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
-            }
-          },
-          "required": [
-            "sessionKey",
-            "version",
-            "status",
-            "pendingInputCount",
-            "question",
-            "lastResult",
-            "artifacts",
-            "error",
-            "observation",
-            "updatedAt"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "sessionKey": {
-              "type": "string",
-              "minLength": 1,
-              "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-              "maxLength": 200
-            },
-            "version": {
-              "type": "string",
-              "maxLength": 30,
-              "pattern": "^(0|[1-9][0-9]*)$"
             },
             "status": {
               "type": "string",
@@ -1004,6 +1142,68 @@
             "question": {
               "type": "null"
             },
+            "error": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                      "maxLength": 100
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                      "maxLength": 2048
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "retryable"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "sessionKey",
+            "version",
+            "lastResult",
+            "artifacts",
+            "observation",
+            "updatedAt",
+            "status",
+            "pendingInputCount",
+            "question",
+            "error"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sessionKey": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+              "maxLength": 200
+            },
+            "version": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(0|[1-9][0-9]*)$"
+            },
             "lastResult": {
               "anyOf": [
                 {
@@ -1072,7 +1272,7 @@
                   "url": {
                     "type": "string",
                     "format": "uri",
-                    "pattern": "^https:\\/\\/",
+                    "pattern": "^https:\\/\\/([^/?#@]*@)?(\\[[^\\[\\]]+\\]|[^/?#:@\\[\\]]+)(:[0-9]*)?([/?#]|$)",
                     "maxLength": 2048
                   }
                 },
@@ -1084,39 +1284,6 @@
                 "additionalProperties": false
               },
               "maxItems": 50
-            },
-            "error": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                      "minLength": 1,
-                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                      "maxLength": 100
-                    },
-                    "message": {
-                      "type": "string",
-                      "minLength": 1,
-                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                      "maxLength": 2048
-                    },
-                    "retryable": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "code",
-                    "message",
-                    "retryable"
-                  ],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "null"
-                }
-              ]
             },
             "observation": {
               "anyOf": [
@@ -1174,35 +1341,6 @@
               "type": "string",
               "format": "date-time",
               "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
-            }
-          },
-          "required": [
-            "sessionKey",
-            "version",
-            "status",
-            "pendingInputCount",
-            "question",
-            "lastResult",
-            "artifacts",
-            "error",
-            "observation",
-            "updatedAt"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "sessionKey": {
-              "type": "string",
-              "minLength": 1,
-              "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-              "maxLength": 200
-            },
-            "version": {
-              "type": "string",
-              "maxLength": 30,
-              "pattern": "^(0|[1-9][0-9]*)$"
             },
             "status": {
               "type": "string",
@@ -1218,6 +1356,68 @@
             "question": {
               "type": "null"
             },
+            "error": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                      "maxLength": 100
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                      "maxLength": 2048
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "retryable"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "sessionKey",
+            "version",
+            "lastResult",
+            "artifacts",
+            "observation",
+            "updatedAt",
+            "status",
+            "pendingInputCount",
+            "question",
+            "error"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sessionKey": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+              "maxLength": 200
+            },
+            "version": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(0|[1-9][0-9]*)$"
+            },
             "lastResult": {
               "anyOf": [
                 {
@@ -1286,7 +1486,7 @@
                   "url": {
                     "type": "string",
                     "format": "uri",
-                    "pattern": "^https:\\/\\/",
+                    "pattern": "^https:\\/\\/([^/?#@]*@)?(\\[[^\\[\\]]+\\]|[^/?#:@\\[\\]]+)(:[0-9]*)?([/?#]|$)",
                     "maxLength": 2048
                   }
                 },
@@ -1298,39 +1498,6 @@
                 "additionalProperties": false
               },
               "maxItems": 50
-            },
-            "error": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                      "minLength": 1,
-                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                      "maxLength": 100
-                    },
-                    "message": {
-                      "type": "string",
-                      "minLength": 1,
-                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                      "maxLength": 2048
-                    },
-                    "retryable": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "code",
-                    "message",
-                    "retryable"
-                  ],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "null"
-                }
-              ]
             },
             "observation": {
               "anyOf": [
@@ -1388,35 +1555,6 @@
               "type": "string",
               "format": "date-time",
               "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
-            }
-          },
-          "required": [
-            "sessionKey",
-            "version",
-            "status",
-            "pendingInputCount",
-            "question",
-            "lastResult",
-            "artifacts",
-            "error",
-            "observation",
-            "updatedAt"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "sessionKey": {
-              "type": "string",
-              "minLength": 1,
-              "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-              "maxLength": 200
-            },
-            "version": {
-              "type": "string",
-              "maxLength": 30,
-              "pattern": "^(0|[1-9][0-9]*)$"
             },
             "status": {
               "type": "string",
@@ -1432,87 +1570,6 @@
             },
             "question": {
               "type": "null"
-            },
-            "lastResult": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "text": {
-                      "type": "string",
-                      "minLength": 1,
-                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                      "maxLength": 8192
-                    },
-                    "source": {
-                      "type": "string",
-                      "enum": [
-                        "provider_message",
-                        "agent_report",
-                        "adapter"
-                      ]
-                    },
-                    "recordedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
-                    },
-                    "limitations": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "minLength": 1,
-                        "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                        "maxLength": 2048
-                      },
-                      "maxItems": 20
-                    }
-                  },
-                  "required": [
-                    "text",
-                    "source",
-                    "recordedAt",
-                    "limitations"
-                  ],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "artifacts": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "kind": {
-                    "type": "string",
-                    "minLength": 1,
-                    "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                    "maxLength": 64
-                  },
-                  "title": {
-                    "type": "string",
-                    "minLength": 1,
-                    "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                    "maxLength": 512
-                  },
-                  "url": {
-                    "type": "string",
-                    "format": "uri",
-                    "pattern": "^https:\\/\\/",
-                    "maxLength": 2048
-                  }
-                },
-                "required": [
-                  "kind",
-                  "title",
-                  "url"
-                ],
-                "additionalProperties": false
-              },
-              "maxItems": 50
             },
             "error": {
               "type": "object",
@@ -1539,76 +1596,19 @@
                 "retryable"
               ],
               "additionalProperties": false
-            },
-            "observation": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "const": "current"
-                    },
-                    "observedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
-                    }
-                  },
-                  "required": [
-                    "status",
-                    "observedAt"
-                  ],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "enum": [
-                        "stale",
-                        "unknown"
-                      ]
-                    },
-                    "observedAt": {
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "format": "date-time",
-                          "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    }
-                  },
-                  "required": [
-                    "status",
-                    "observedAt"
-                  ],
-                  "additionalProperties": false
-                }
-              ]
-            },
-            "updatedAt": {
-              "type": "string",
-              "format": "date-time",
-              "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
             }
           },
           "required": [
             "sessionKey",
             "version",
+            "lastResult",
+            "artifacts",
+            "observation",
+            "updatedAt",
             "status",
             "pendingInputCount",
             "question",
-            "lastResult",
-            "artifacts",
-            "error",
-            "observation",
-            "updatedAt"
+            "error"
           ],
           "additionalProperties": false
         },
@@ -1625,21 +1625,6 @@
               "type": "string",
               "maxLength": 30,
               "pattern": "^(0|[1-9][0-9]*)$"
-            },
-            "status": {
-              "type": "string",
-              "enum": [
-                "running",
-                "stopping"
-              ]
-            },
-            "pendingInputCount": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 2147483647
-            },
-            "question": {
-              "type": "null"
             },
             "lastResult": {
               "anyOf": [
@@ -1709,7 +1694,7 @@
                   "url": {
                     "type": "string",
                     "format": "uri",
-                    "pattern": "^https:\\/\\/",
+                    "pattern": "^https:\\/\\/([^/?#@]*@)?(\\[[^\\[\\]]+\\]|[^/?#:@\\[\\]]+)(:[0-9]*)?([/?#]|$)",
                     "maxLength": 2048
                   }
                 },
@@ -1721,39 +1706,6 @@
                 "additionalProperties": false
               },
               "maxItems": 50
-            },
-            "error": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                      "minLength": 1,
-                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                      "maxLength": 100
-                    },
-                    "message": {
-                      "type": "string",
-                      "minLength": 1,
-                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
-                      "maxLength": 2048
-                    },
-                    "retryable": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "code",
-                    "message",
-                    "retryable"
-                  ],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "null"
-                }
-              ]
             },
             "observation": {
               "anyOf": [
@@ -1811,19 +1763,67 @@
               "type": "string",
               "format": "date-time",
               "pattern": "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "running",
+                "stopping"
+              ]
+            },
+            "pendingInputCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2147483647
+            },
+            "question": {
+              "type": "null"
+            },
+            "error": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                      "maxLength": 100
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "[^\\t\\n\\v\\f\\r    -     　﻿]",
+                      "maxLength": 2048
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "retryable"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           },
           "required": [
             "sessionKey",
             "version",
+            "lastResult",
+            "artifacts",
+            "observation",
+            "updatedAt",
             "status",
             "pendingInputCount",
             "question",
-            "lastResult",
-            "artifacts",
-            "error",
-            "observation",
-            "updatedAt"
+            "error"
           ],
           "additionalProperties": false
         }
@@ -1868,7 +1868,7 @@
               "sourceUrl": {
                 "type": "string",
                 "format": "uri",
-                "pattern": "^https:\\/\\/",
+                "pattern": "^https:\\/\\/([^/?#@]*@)?(\\[[^\\[\\]]+\\]|[^/?#:@\\[\\]]+)(:[0-9]*)?([/?#]|$)",
                 "maxLength": 2048
               }
             },

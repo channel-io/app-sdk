@@ -215,3 +215,29 @@ func TestBuilderTimestampContract(t *testing.T) {
 		}
 	}
 }
+
+func TestBuilderRequiresHTTPSHost(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	if err := app.Use(Extension().SendInput(func(_ context.Context, _ appsdk.Context, input *SendInputRequest) (*Receipt, error) {
+		return &Receipt{SessionKey: input.SessionKey, Accepted: true}, nil
+	})); err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		url   string
+		valid bool
+	}{
+		{"https://", false}, {"https://:443/", false}, {"https://user@/", false},
+		{"https://example.com", true}, {"https://example.com?x=1", true},
+		{"https://[::1]:443/path", true}, {"https://user@example.com/path", true},
+	} {
+		params, err := json.Marshal(map[string]any{"sessionKey": "s", "text": "fix", "context": []any{map[string]any{"title": "t", "text": "x", "sourceUrl": tc.url}}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: FunctionSendInput, Context: appsdk.Context{Invocation: &appsdk.InvocationContext{IdempotencyKey: "call"}}, Params: params})
+		if (result.Error == nil) != tc.valid {
+			t.Fatalf("url=%q valid=%v: %+v", tc.url, tc.valid, result.Error)
+		}
+	}
+}

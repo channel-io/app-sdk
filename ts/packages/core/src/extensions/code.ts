@@ -27,7 +27,15 @@ function nonBlank(maximum: number) {
 function httpsUrl() {
   // WHATWG URL accepts and removes some raw control characters. URI format
   // validators reject them; preserve the original only when it contains none.
-  return maxCodePoints(z.string().url().regex(new RegExp("^https://")), 2048).refine((value) => {
+  return maxCodePoints(
+    z
+      .string()
+      .url()
+      .regex(
+        new RegExp("^https://([^/?#@]*@)?(\\[[^\\[\\]]+\\]|[^/?#:@\\[\\]]+)(:[0-9]*)?([/?#]|$)")
+      ),
+    2048
+  ).refine((value) => {
     for (const char of value) {
       const code = char.charCodeAt(0);
       if (code < 0x20 || code === 0x7f) return false;
@@ -187,78 +195,49 @@ export type CodeSessionObservation = ProtoBacked<
   ProtoCodeSessionObservation
 >;
 
+const sessionSnapshotBase = z
+  .object({
+    sessionKey: nonBlank(200),
+    version: z.string().max(30).regex(new RegExp("^(0|[1-9][0-9]*)$")),
+    lastResult: z.union([CodeSessionResultSchema, z.null()]),
+    artifacts: z.array(CodeSessionArtifactSchema).max(50),
+    observation: CodeSessionObservationSchema,
+    updatedAt: timestamp,
+  })
+  .strict();
+
 export const CodeSessionSnapshotSchema = z
   .union([
-    z
-      .object({
-        sessionKey: nonBlank(200),
-        version: z.string().max(30).regex(new RegExp("^(0|[1-9][0-9]*)$")),
-        status: z.enum(["needs_input"]),
-        pendingInputCount: z.number().int().safe().min(0).max(2147483647),
-        question: CodeSessionQuestionSchema,
-        lastResult: z.union([CodeSessionResultSchema, z.null()]),
-        artifacts: z.array(CodeSessionArtifactSchema).max(50),
-        error: z.union([CodeSessionErrorSchema, z.null()]),
-        observation: CodeSessionObservationSchema,
-        updatedAt: timestamp,
-      })
-      .strict(),
-    z
-      .object({
-        sessionKey: nonBlank(200),
-        version: z.string().max(30).regex(new RegExp("^(0|[1-9][0-9]*)$")),
-        status: z.enum(["queued"]),
-        pendingInputCount: z.number().int().safe().min(1).max(2147483647),
-        question: z.null(),
-        lastResult: z.union([CodeSessionResultSchema, z.null()]),
-        artifacts: z.array(CodeSessionArtifactSchema).max(50),
-        error: z.union([CodeSessionErrorSchema, z.null()]),
-        observation: CodeSessionObservationSchema,
-        updatedAt: timestamp,
-      })
-      .strict(),
-    z
-      .object({
-        sessionKey: nonBlank(200),
-        version: z.string().max(30).regex(new RegExp("^(0|[1-9][0-9]*)$")),
-        status: z.enum(["idle", "stopped"]),
-        pendingInputCount: z.literal(0),
-        question: z.null(),
-        lastResult: z.union([CodeSessionResultSchema, z.null()]),
-        artifacts: z.array(CodeSessionArtifactSchema).max(50),
-        error: z.union([CodeSessionErrorSchema, z.null()]),
-        observation: CodeSessionObservationSchema,
-        updatedAt: timestamp,
-      })
-      .strict(),
-    z
-      .object({
-        sessionKey: nonBlank(200),
-        version: z.string().max(30).regex(new RegExp("^(0|[1-9][0-9]*)$")),
-        status: z.enum(["failed", "unavailable"]),
-        pendingInputCount: z.number().int().safe().min(0).max(2147483647),
-        question: z.null(),
-        lastResult: z.union([CodeSessionResultSchema, z.null()]),
-        artifacts: z.array(CodeSessionArtifactSchema).max(50),
-        error: CodeSessionErrorSchema,
-        observation: CodeSessionObservationSchema,
-        updatedAt: timestamp,
-      })
-      .strict(),
-    z
-      .object({
-        sessionKey: nonBlank(200),
-        version: z.string().max(30).regex(new RegExp("^(0|[1-9][0-9]*)$")),
-        status: z.enum(["running", "stopping"]),
-        pendingInputCount: z.number().int().safe().min(0).max(2147483647),
-        question: z.null(),
-        lastResult: z.union([CodeSessionResultSchema, z.null()]),
-        artifacts: z.array(CodeSessionArtifactSchema).max(50),
-        error: z.union([CodeSessionErrorSchema, z.null()]),
-        observation: CodeSessionObservationSchema,
-        updatedAt: timestamp,
-      })
-      .strict(),
+    sessionSnapshotBase.extend({
+      status: z.enum(["needs_input"]),
+      pendingInputCount: z.number().int().safe().min(0).max(2147483647),
+      question: CodeSessionQuestionSchema,
+      error: z.union([CodeSessionErrorSchema, z.null()]),
+    }),
+    sessionSnapshotBase.extend({
+      status: z.enum(["queued"]),
+      pendingInputCount: z.number().int().safe().min(1).max(2147483647),
+      question: z.null(),
+      error: z.union([CodeSessionErrorSchema, z.null()]),
+    }),
+    sessionSnapshotBase.extend({
+      status: z.enum(["idle", "stopped"]),
+      pendingInputCount: z.literal(0),
+      question: z.null(),
+      error: z.union([CodeSessionErrorSchema, z.null()]),
+    }),
+    sessionSnapshotBase.extend({
+      status: z.enum(["failed", "unavailable"]),
+      pendingInputCount: z.number().int().safe().min(0).max(2147483647),
+      question: z.null(),
+      error: CodeSessionErrorSchema,
+    }),
+    sessionSnapshotBase.extend({
+      status: z.enum(["running", "stopping"]),
+      pendingInputCount: z.number().int().safe().min(0).max(2147483647),
+      question: z.null(),
+      error: z.union([CodeSessionErrorSchema, z.null()]),
+    }),
   ])
   .refine((value) => withinBytes(value, 64 * 1024), "Snapshot exceeds 64 KiB of UTF-8 JSON");
 export type CodeSessionSnapshot = ProtoBacked<

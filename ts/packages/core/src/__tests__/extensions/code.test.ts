@@ -26,6 +26,35 @@ const snapshot = {
   updatedAt: now,
 };
 describe("code session contract", () => {
+  it("requires a nonempty HTTPS host across every URL field", () => {
+    const cases = [
+      ["https://", false],
+      ["https://:443/", false],
+      ["https://user@/", false],
+      ["https://example.com", true],
+      ["https://example.com?x=1", true],
+      ["https://[::1]:443/path", true],
+      ["https://user@example.com/path", true],
+    ] as const;
+    for (const [url, valid] of cases) {
+      expect(
+        CodeContextBlockSchema.safeParse({ title: "t", text: "x", sourceUrl: url }).success
+      ).toBe(valid);
+      expect(CodeSessionArtifactSchema.safeParse({ kind: "pr", title: "t", url }).success).toBe(
+        valid
+      );
+      for (const answerVia of ["sendInput", "provider_ui"]) {
+        expect(
+          CodeSessionQuestionSchema.safeParse({
+            text: "q",
+            answerVia,
+            source: "adapter",
+            actionUrl: url,
+          }).success
+        ).toBe(valid);
+      }
+    }
+  });
   it("rejects raw control characters that WHATWG URL parsing would remove", () => {
     for (const control of ["\n", "\r", "\t", "\u007f"]) {
       const url = `https://example.com/a${control}b`;
