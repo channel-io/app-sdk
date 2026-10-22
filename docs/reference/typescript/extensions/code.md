@@ -59,7 +59,7 @@ reuse by another owner. A new session or reinstallation uses a fresh key.
 Do not replace missing runtime support with a successful mock acknowledgement.
 
 Inputs allow future top-level wire fields and strip them before handlers. Outputs
-are strict. sendInput JSON is limited to 256 KiB; snapshots and events to 64 KiB.
+are strict. All function params are limited to 256 KiB of UTF-8 JSON; snapshots and events to 64 KiB.
 String limits count Unicode code points. The schemas spell out the same blank
 character set for TypeScript, Go and JSON Schema validators.
 Timestamps use years 0001–9999, uppercase T/Z, required seconds and an optional

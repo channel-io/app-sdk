@@ -70,18 +70,22 @@ export type CodeSendInputInput = ProtoBacked<
   ProtoCodeSendInputInput
 >;
 
-export const CodeGetSessionInputSchema = z.object({ sessionKey: nonBlank(200) }).strip();
+export const CodeGetSessionInputSchema = boundedInput(
+  z.object({ sessionKey: nonBlank(200) }).strip()
+);
 export type CodeGetSessionInput = ProtoBacked<
   z.infer<typeof CodeGetSessionInputSchema>,
   ProtoCodeGetSessionInput
 >;
 
-export const CodeStopSessionInputSchema = z
-  .object({
-    sessionKey: nonBlank(200),
-    reason: nonBlank(2048).optional(),
-  })
-  .strip();
+export const CodeStopSessionInputSchema = boundedInput(
+  z
+    .object({
+      sessionKey: nonBlank(200),
+      reason: nonBlank(2048).optional(),
+    })
+    .strip()
+);
 export type CodeStopSessionInput = ProtoBacked<
   z.infer<typeof CodeStopSessionInputSchema>,
   ProtoCodeStopSessionInput

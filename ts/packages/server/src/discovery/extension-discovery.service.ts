@@ -1,6 +1,6 @@
 import { Injectable, type OnModuleInit, Logger, type Type } from "@nestjs/common";
 import { DiscoveryService, Reflector } from "@nestjs/core";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { zodToJsonSchema } from "@channel.io/app-sdk-core";
 import type { z } from "zod";
 import {
   EXTENSION_METADATA,
@@ -156,15 +156,11 @@ export class ExtensionDiscoveryService implements OnModuleInit {
       const fullName = namePrefix ? `${namePrefix}.${funcMeta.name}` : funcMeta.name;
 
       // Convert schemas to JSON Schema
-      const inputJsonSchema = inputSchema
-        ? (zodToJsonSchema(inputSchema, { $refStrategy: "none" }) as Record<string, unknown>)
-        : undefined;
+      const inputJsonSchema = inputSchema ? zodToJsonSchema(inputSchema) : undefined;
       if (inputJsonSchema && fullName.startsWith("extension.code.session.")) {
         inputJsonSchema["additionalProperties"] = true;
       }
-      const outputJsonSchema = outputSchema
-        ? (zodToJsonSchema(outputSchema, { $refStrategy: "none" }) as Record<string, unknown>)
-        : undefined;
+      const outputJsonSchema = outputSchema ? zodToJsonSchema(outputSchema) : undefined;
 
       // Create bound handler with parameter injection
       const handler = this.createHandler(

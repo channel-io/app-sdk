@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   CodeSendInputInputSchema,
+  CodeGetSessionInputSchema,
+  CodeStopSessionInputSchema,
   CodeSessionSnapshotSchema,
   CodeSessionEventSchema,
   CodeSessionResultSchema,
@@ -48,17 +50,14 @@ describe("code session contract", () => {
     });
   });
   it("strips future input keys but enforces raw UTF-8 bytes before stripping", () => {
-    expect(CodeSendInputInputSchema.parse({ sessionKey: "s", text: "fix", future: true })).toEqual({
-      sessionKey: "s",
-      text: "fix",
-    });
-    expect(
-      CodeSendInputInputSchema.safeParse({
-        sessionKey: "s",
-        text: "fix",
-        future: "가".repeat(90000),
-      }).success
-    ).toBe(false);
+    for (const [schema, params] of [
+      [CodeSendInputInputSchema, { sessionKey: "s", text: "fix" }],
+      [CodeGetSessionInputSchema, { sessionKey: "s" }],
+      [CodeStopSessionInputSchema, { sessionKey: "s", reason: "stop" }],
+    ] as const) {
+      expect(schema.parse({ ...params, future: true })).toEqual(params);
+      expect(schema.safeParse({ ...params, future: "가".repeat(90000) }).success).toBe(false);
+    }
     expect(CodeSendInputInputSchema.safeParse({ sessionKey: " ", text: "fix" }).success).toBe(
       false
     );
@@ -86,6 +85,7 @@ describe("code session contract", () => {
       { pendingInputCount: 1 },
       { question: undefined },
       { version: "01" },
+      { version: "1\n" },
       { observation: { status: "current", observedAt: null } },
       { future: true },
     ]) {
@@ -125,6 +125,7 @@ describe("code session contract", () => {
     expect(CodeSessionEventSchema.safeParse(event).success).toBe(true);
     for (const patch of [
       { sequence: "0" },
+      { sequence: "1\n" },
       { sequence: "2" },
       { sessionKey: "other" },
       { recordedAt: "2026-10-22T01:00:00Z" },

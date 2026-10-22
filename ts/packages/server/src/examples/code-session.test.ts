@@ -27,6 +27,19 @@ function setup() {
   return { store, discovery };
 }
 describe("code session reference wiring", () => {
+  it("publishes the same Unicode length bounds used by the runtime schemas", () => {
+    const { discovery } = setup();
+    const send = discovery.getFunction("extension.code.session.sendInput")!;
+    expect(send.inputJsonSchema).toMatchObject({
+      additionalProperties: true,
+      properties: { sessionKey: { maxLength: 200 }, text: { maxLength: 32768 } },
+    });
+    const snapshot = discovery.getFunction("extension.code.session.getSession")!.outputJsonSchema!;
+    const branches = snapshot["anyOf"] as Record<string, unknown>[];
+    for (const branch of branches) {
+      expect(branch).toMatchObject({ properties: { sessionKey: { maxLength: 200 } } });
+    }
+  });
   it("discovers the three functions and waits for persistence before acknowledging", async () => {
     const { store, discovery } = setup();
     expect(discovery.getPublicFunctions().map((f) => f.fullName)).toEqual([
