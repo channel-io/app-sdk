@@ -22,8 +22,8 @@ not mean execution or stopping completed. Preserve context after a stop. Keep
 provider IDs and internal input IDs private. Resolve absent sessions as an error.
 
 The example requires a verified platform `context.invocation.idempotencyKey` for
-mutations and fails before storage when it is absent. The SDK does not create,
-sign or transport this new metadata. A compatible platform runtime must supply it.
+mutations and fails before storage when it is absent. The SDK type does not make a platform create,
+sign or populate this metadata. A compatible platform runtime must supply it.
 Scope deduplication by authenticated app, channel/owner, installation generation
 and invocation key; bind the payload and reject a different payload for that key.
 Do not infer identity or authority from unknown input fields. The store must
