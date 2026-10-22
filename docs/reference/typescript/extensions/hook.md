@@ -216,8 +216,9 @@ The strict input contains `type: "appPerson.invoked"`, `version: 1`, `eventId`,
 `invocationId`, `requestId`, `sourceEventId`, `channelId`, `chatType`, `chatId`,
 optional `threadId`, `sourceMessageId`, `sourceContentRevision`, `requestedAt`,
 `appId`, `appPersonId`, `installationId`, `invokingManagerId`, `credentialScope`,
-and `prompt`. `sourceContentRevision` is a canonical non-negative signed-int64
-decimal **string**, including values above JavaScript's safe integer range.
+and `prompt`. `threadId` is supported only for Group threads and is omitted for
+direct messages and UserChat private notes. `sourceContentRevision` is a canonical
+positive signed-int64 decimal **string**, including values above JavaScript's safe integer range.
 `requestedAt` is an ISO 8601 datetime. `prompt` may be empty.
 
 A single-app Group mention uses `chatType: "group"`; a UserChat private-note

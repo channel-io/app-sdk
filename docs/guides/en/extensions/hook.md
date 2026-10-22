@@ -45,9 +45,8 @@ Register `appPerson.invoked` using only `actionFunctionName` and optional
 A single-app Group mention or UserChat private-note mention uses channel
 credentials; an app direct message uses manager credentials. `invokingManagerId` identifies the initiating manager
 separately from `credentialScope`. Missing credentials never select the other
-scope. `sourceContentRevision` is a non-negative signed-int64 decimal string,
-not a JavaScript number, and `prompt` may be empty. UserChat requires a positive
-revision and no thread (`threadId` absent or null; the schema normalizes null to
+scope. `sourceContentRevision` is a positive signed-int64 decimal string,
+not a JavaScript number, and `prompt` may be empty. UserChat has no thread (`threadId` absent or null; the schema normalizes null to
 absent). UserChat replies must remain private notes, invisible to customers.
 Source edits represent a new invocation at the new content revision.
 

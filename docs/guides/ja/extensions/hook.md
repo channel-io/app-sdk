@@ -44,9 +44,9 @@ TypeScript は `AppPersonInvokedHookInputSchema`、`AppPersonInvokedHookResultSc
 Group または UserChat の内部メモで単一アプリをメンションすると Channel の
 共通認証情報を、アプリ DM では Manager の認証情報を使用します。`invokingManagerId` は呼び出した Manager であり、
 `credentialScope` とは別です。必要な認証情報がなくても別スコープへフォールバックしません。
-`sourceContentRevision` は非負 signed-int64 の十進文字列です。JavaScript の数値へ
-変換しないでください。`prompt` は空文字列でも有効です。UserChat の revision は
-正数で、thread はありません。`threadId` は省略または null を使用し、スキーマは
+`sourceContentRevision` は正の signed-int64 の十進文字列です。JavaScript の数値へ
+変換しないでください。`prompt` は空文字列でも有効です。UserChat には
+thread がありません。`threadId` は省略または null を使用し、スキーマは
 null を省略値へ正規化します。UserChat の返信は顧客に見えない内部メモとして
 送信してください。元のメモを編集すると、新しい revision の別の呼び出しになります。
 
