@@ -1,6 +1,9 @@
 package appsdk
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strings"
+)
 
 const (
 	MethodGetFunctions     = "extension.core.function.getFunctions"
@@ -63,20 +66,22 @@ type OAuthFlowContext struct {
 }
 
 type Context struct {
-	Caller          Caller                            `json:"caller"`
-	Channel         Channel                           `json:"channel"`
-	User            *User                             `json:"user,omitempty"`
-	UserChat        *UserChat                         `json:"userChat,omitempty"`
-	AuthToken       string                            `json:"authToken,omitempty"`
-	LegacyAuthToken string                            `json:"legacyAuthToken,omitempty"`
-	APICredentials  map[string]string                 `json:"apiCredentials,omitempty"`
-	Config          map[string]any                    `json:"config,omitempty"`
-	Webhooks        map[string]WebhookEndpointContext `json:"webhooks,omitempty"`
-	OAuthFlow       *OAuthFlowContext                 `json:"oauthFlow,omitempty"`
-	Language        string                            `json:"language,omitempty"`
-	Sandbox         bool                              `json:"sandbox,omitempty"`
-	SessionID       string                            `json:"sessionId,omitempty"`
-	SeedState       any                               `json:"seedState,omitempty"`
+	AppPersonInvocation        *AppPersonInvocationContext `json:"appPersonInvocation,omitempty"`
+	appPersonInvocationPresent bool
+	Caller                     Caller                            `json:"caller"`
+	Channel                    Channel                           `json:"channel"`
+	User                       *User                             `json:"user,omitempty"`
+	UserChat                   *UserChat                         `json:"userChat,omitempty"`
+	AuthToken                  string                            `json:"authToken,omitempty"`
+	LegacyAuthToken            string                            `json:"legacyAuthToken,omitempty"`
+	APICredentials             map[string]string                 `json:"apiCredentials,omitempty"`
+	Config                     map[string]any                    `json:"config,omitempty"`
+	Webhooks                   map[string]WebhookEndpointContext `json:"webhooks,omitempty"`
+	OAuthFlow                  *OAuthFlowContext                 `json:"oauthFlow,omitempty"`
+	Language                   string                            `json:"language,omitempty"`
+	Sandbox                    bool                              `json:"sandbox,omitempty"`
+	SessionID                  string                            `json:"sessionId,omitempty"`
+	SeedState                  any                               `json:"seedState,omitempty"`
 }
 
 func (c *Context) UnmarshalJSON(data []byte) error {
@@ -89,6 +94,16 @@ func (c *Context) UnmarshalJSON(data []byte) error {
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return err
+	}
+	var marker map[string]json.RawMessage
+	if err := json.Unmarshal(data, &marker); err != nil {
+		return err
+	}
+	c.appPersonInvocationPresent = false
+	for name := range marker {
+		if strings.EqualFold(name, "appPersonInvocation") {
+			c.appPersonInvocationPresent = true
+		}
 	}
 	if c.LegacyAuthToken == "" {
 		c.LegacyAuthToken = raw.LegacyAuthTokenAlias

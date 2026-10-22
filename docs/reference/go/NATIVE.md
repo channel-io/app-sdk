@@ -98,3 +98,40 @@ Use `native.WithHTTPClient` and a controlled test server to verify:
 - context cancellation and timeouts.
 
 The shared wire envelope is summarized in the [cross-language protocol](../protocol.md).
+
+## AppPerson invocation callbacks
+
+`appsdk.App.HandleRequest` binds the signed private
+`Context.AppPersonInvocation` metadata to the handler's `context.Context`.
+Pass this same `ctx` to Native methods and nested `CallAppFunction` calls. The
+transport uses the invocation credential automatically, even if a caller supplies
+an ordinary access-token argument. Bindings are immutable and local to each request;
+never replace the handler context with `context.Background()` for these calls.
+
+```go
+receipt, err := client.ReplyToAppPersonInvocation(ctx, "", native.ReplyToAppPersonInvocationParams{
+  InvocationID: fnCtx.AppPersonInvocation.InvocationID,
+  PlainText:    "The requested operation completed.",
+})
+```
+
+The request accepts only the invocation ID and nonempty literal text (at most
+10,000 Unicode code points). The server chooses the fixed original source and app
+author. UserChat replies remain private notes and suppress app dispatch. Group and
+UserChat use the shared channel connection; DM uses the initiating manager.
+Only single-app Hook invocations can reply. Repeat the same text to reconcile an
+uncertain response; changed text cannot create another reply. Response status is
+`published`, `rejected`, or `unknown`; the Hook ACK is a separate handling result.
+
+The server owns the credential's 180-second lifetime. During an invocation,
+`GetAppToken` and same-channel `GetChannelToken` return it without caching, with an
+empty refresh token and zero `ExpiresIn`. Token issue/refresh and foreign-channel
+requests fail locally. A present null, incomplete, or malformed metadata marker
+fails before the handler runs. Never persist, log, or return this private context.
+The metadata's `String` and `GoString` methods redact common `fmt` logging; raw JSON
+still contains the credential for transport and must not be logged.
+
+This binding scopes SDK callbacks during signed invocation dispatch. Separately
+held app secrets and ordinary credentials retain their independent existing
+authority; it is not a sandbox for arbitrary app code. Outside invocation dispatch,
+ordinary Native credentials and token caching keep their existing behavior.

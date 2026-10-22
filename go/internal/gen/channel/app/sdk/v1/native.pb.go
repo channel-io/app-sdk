@@ -1117,6 +1117,120 @@ func (x *OAuthFlowResult) GetFlow() *OAuthFlow {
 	return nil
 }
 
+// Publish at most one reply to the original AppPerson invocation source.
+type ReplyToAppPersonInvocationParams struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	InvocationId  string                 `protobuf:"bytes,1,opt,name=invocation_id,json=invocationId,proto3" json:"invocation_id,omitempty"`
+	PlainText     string                 `protobuf:"bytes,2,opt,name=plain_text,json=plainText,proto3" json:"plain_text,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReplyToAppPersonInvocationParams) Reset() {
+	*x = ReplyToAppPersonInvocationParams{}
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReplyToAppPersonInvocationParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReplyToAppPersonInvocationParams) ProtoMessage() {}
+
+func (x *ReplyToAppPersonInvocationParams) ProtoReflect() protoreflect.Message {
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReplyToAppPersonInvocationParams.ProtoReflect.Descriptor instead.
+func (*ReplyToAppPersonInvocationParams) Descriptor() ([]byte, []int) {
+	return file_channel_app_sdk_v1_native_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *ReplyToAppPersonInvocationParams) GetInvocationId() string {
+	if x != nil {
+		return x.InvocationId
+	}
+	return ""
+}
+
+func (x *ReplyToAppPersonInvocationParams) GetPlainText() string {
+	if x != nil {
+		return x.PlainText
+	}
+	return ""
+}
+
+type ReplyToAppPersonInvocationResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// published, rejected, or unknown; ACK is not a publication receipt.
+	Status        string  `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	DeskMessageId *string `protobuf:"bytes,2,opt,name=desk_message_id,json=deskMessageId,proto3,oneof" json:"desk_message_id,omitempty"`
+	ErrorCode     *string `protobuf:"bytes,3,opt,name=error_code,json=errorCode,proto3,oneof" json:"error_code,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReplyToAppPersonInvocationResult) Reset() {
+	*x = ReplyToAppPersonInvocationResult{}
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReplyToAppPersonInvocationResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReplyToAppPersonInvocationResult) ProtoMessage() {}
+
+func (x *ReplyToAppPersonInvocationResult) ProtoReflect() protoreflect.Message {
+	mi := &file_channel_app_sdk_v1_native_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReplyToAppPersonInvocationResult.ProtoReflect.Descriptor instead.
+func (*ReplyToAppPersonInvocationResult) Descriptor() ([]byte, []int) {
+	return file_channel_app_sdk_v1_native_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *ReplyToAppPersonInvocationResult) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *ReplyToAppPersonInvocationResult) GetDeskMessageId() string {
+	if x != nil && x.DeskMessageId != nil {
+		return *x.DeskMessageId
+	}
+	return ""
+}
+
+func (x *ReplyToAppPersonInvocationResult) GetErrorCode() string {
+	if x != nil && x.ErrorCode != nil {
+		return *x.ErrorCode
+	}
+	return ""
+}
+
 var File_channel_app_sdk_v1_native_proto protoreflect.FileDescriptor
 
 const file_channel_app_sdk_v1_native_proto_rawDesc = "" +
@@ -1213,7 +1327,18 @@ const file_channel_app_sdk_v1_native_proto_rawDesc = "" +
 	"\t_language\"R\n" +
 	"\x0fOAuthFlowResult\x126\n" +
 	"\x04flow\x18\x01 \x01(\v2\x1d.channel.app.sdk.v1.OAuthFlowH\x00R\x04flow\x88\x01\x01B\a\n" +
-	"\x05_flowBHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
+	"\x05_flow\"f\n" +
+	" ReplyToAppPersonInvocationParams\x12#\n" +
+	"\rinvocation_id\x18\x01 \x01(\tR\finvocationId\x12\x1d\n" +
+	"\n" +
+	"plain_text\x18\x02 \x01(\tR\tplainText\"\xae\x01\n" +
+	" ReplyToAppPersonInvocationResult\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\x12+\n" +
+	"\x0fdesk_message_id\x18\x02 \x01(\tH\x00R\rdeskMessageId\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"error_code\x18\x03 \x01(\tH\x01R\terrorCode\x88\x01\x01B\x12\n" +
+	"\x10_desk_message_idB\r\n" +
+	"\v_error_codeBHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
 
 var (
 	file_channel_app_sdk_v1_native_proto_rawDescOnce sync.Once
@@ -1227,38 +1352,40 @@ func file_channel_app_sdk_v1_native_proto_rawDescGZIP() []byte {
 	return file_channel_app_sdk_v1_native_proto_rawDescData
 }
 
-var file_channel_app_sdk_v1_native_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_channel_app_sdk_v1_native_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_channel_app_sdk_v1_native_proto_goTypes = []any{
-	(*NativeFunctionRequest)(nil),         // 0: channel.app.sdk.v1.NativeFunctionRequest
-	(*NativeFunctionResponse)(nil),        // 1: channel.app.sdk.v1.NativeFunctionResponse
-	(*IssueTokenParams)(nil),              // 2: channel.app.sdk.v1.IssueTokenParams
-	(*IssueTokenResult)(nil),              // 3: channel.app.sdk.v1.IssueTokenResult
-	(*ExtensionRegistrationParams)(nil),   // 4: channel.app.sdk.v1.ExtensionRegistrationParams
-	(*ExtensionRegistrationResult)(nil),   // 5: channel.app.sdk.v1.ExtensionRegistrationResult
-	(*AlfTaskRegistrationResult)(nil),     // 6: channel.app.sdk.v1.AlfTaskRegistrationResult
-	(*AlfTaskVersion)(nil),                // 7: channel.app.sdk.v1.AlfTaskVersion
-	(*GetAlfTaskVersionsResult)(nil),      // 8: channel.app.sdk.v1.GetAlfTaskVersionsResult
-	(*AppNotebookRegistrationResult)(nil), // 9: channel.app.sdk.v1.AppNotebookRegistrationResult
-	(*AppNotebookVersion)(nil),            // 10: channel.app.sdk.v1.AppNotebookVersion
-	(*GetAppNotebookVersionsResult)(nil),  // 11: channel.app.sdk.v1.GetAppNotebookVersionsResult
-	(*OAuthFlow)(nil),                     // 12: channel.app.sdk.v1.OAuthFlow
-	(*GetOAuthFlowParams)(nil),            // 13: channel.app.sdk.v1.GetOAuthFlowParams
-	(*ResumeOAuthFlowParams)(nil),         // 14: channel.app.sdk.v1.ResumeOAuthFlowParams
-	(*CancelOAuthFlowParams)(nil),         // 15: channel.app.sdk.v1.CancelOAuthFlowParams
-	(*OAuthFlowResult)(nil),               // 16: channel.app.sdk.v1.OAuthFlowResult
-	(*structpb.Value)(nil),                // 17: google.protobuf.Value
-	(*FunctionContext)(nil),               // 18: channel.app.sdk.v1.FunctionContext
-	(*FunctionError)(nil),                 // 19: channel.app.sdk.v1.FunctionError
-	(*OAuthFlowStep)(nil),                 // 20: channel.app.sdk.v1.OAuthFlowStep
+	(*NativeFunctionRequest)(nil),            // 0: channel.app.sdk.v1.NativeFunctionRequest
+	(*NativeFunctionResponse)(nil),           // 1: channel.app.sdk.v1.NativeFunctionResponse
+	(*IssueTokenParams)(nil),                 // 2: channel.app.sdk.v1.IssueTokenParams
+	(*IssueTokenResult)(nil),                 // 3: channel.app.sdk.v1.IssueTokenResult
+	(*ExtensionRegistrationParams)(nil),      // 4: channel.app.sdk.v1.ExtensionRegistrationParams
+	(*ExtensionRegistrationResult)(nil),      // 5: channel.app.sdk.v1.ExtensionRegistrationResult
+	(*AlfTaskRegistrationResult)(nil),        // 6: channel.app.sdk.v1.AlfTaskRegistrationResult
+	(*AlfTaskVersion)(nil),                   // 7: channel.app.sdk.v1.AlfTaskVersion
+	(*GetAlfTaskVersionsResult)(nil),         // 8: channel.app.sdk.v1.GetAlfTaskVersionsResult
+	(*AppNotebookRegistrationResult)(nil),    // 9: channel.app.sdk.v1.AppNotebookRegistrationResult
+	(*AppNotebookVersion)(nil),               // 10: channel.app.sdk.v1.AppNotebookVersion
+	(*GetAppNotebookVersionsResult)(nil),     // 11: channel.app.sdk.v1.GetAppNotebookVersionsResult
+	(*OAuthFlow)(nil),                        // 12: channel.app.sdk.v1.OAuthFlow
+	(*GetOAuthFlowParams)(nil),               // 13: channel.app.sdk.v1.GetOAuthFlowParams
+	(*ResumeOAuthFlowParams)(nil),            // 14: channel.app.sdk.v1.ResumeOAuthFlowParams
+	(*CancelOAuthFlowParams)(nil),            // 15: channel.app.sdk.v1.CancelOAuthFlowParams
+	(*OAuthFlowResult)(nil),                  // 16: channel.app.sdk.v1.OAuthFlowResult
+	(*ReplyToAppPersonInvocationParams)(nil), // 17: channel.app.sdk.v1.ReplyToAppPersonInvocationParams
+	(*ReplyToAppPersonInvocationResult)(nil), // 18: channel.app.sdk.v1.ReplyToAppPersonInvocationResult
+	(*structpb.Value)(nil),                   // 19: google.protobuf.Value
+	(*FunctionContext)(nil),                  // 20: channel.app.sdk.v1.FunctionContext
+	(*FunctionError)(nil),                    // 21: channel.app.sdk.v1.FunctionError
+	(*OAuthFlowStep)(nil),                    // 22: channel.app.sdk.v1.OAuthFlowStep
 }
 var file_channel_app_sdk_v1_native_proto_depIdxs = []int32{
-	17, // 0: channel.app.sdk.v1.NativeFunctionRequest.params:type_name -> google.protobuf.Value
-	18, // 1: channel.app.sdk.v1.NativeFunctionRequest.context:type_name -> channel.app.sdk.v1.FunctionContext
-	17, // 2: channel.app.sdk.v1.NativeFunctionResponse.result:type_name -> google.protobuf.Value
-	19, // 3: channel.app.sdk.v1.NativeFunctionResponse.error:type_name -> channel.app.sdk.v1.FunctionError
+	19, // 0: channel.app.sdk.v1.NativeFunctionRequest.params:type_name -> google.protobuf.Value
+	20, // 1: channel.app.sdk.v1.NativeFunctionRequest.context:type_name -> channel.app.sdk.v1.FunctionContext
+	19, // 2: channel.app.sdk.v1.NativeFunctionResponse.result:type_name -> google.protobuf.Value
+	21, // 3: channel.app.sdk.v1.NativeFunctionResponse.error:type_name -> channel.app.sdk.v1.FunctionError
 	7,  // 4: channel.app.sdk.v1.GetAlfTaskVersionsResult.tasks:type_name -> channel.app.sdk.v1.AlfTaskVersion
 	10, // 5: channel.app.sdk.v1.GetAppNotebookVersionsResult.notebooks:type_name -> channel.app.sdk.v1.AppNotebookVersion
-	20, // 6: channel.app.sdk.v1.OAuthFlow.steps:type_name -> channel.app.sdk.v1.OAuthFlowStep
+	22, // 6: channel.app.sdk.v1.OAuthFlow.steps:type_name -> channel.app.sdk.v1.OAuthFlowStep
 	12, // 7: channel.app.sdk.v1.OAuthFlowResult.flow:type_name -> channel.app.sdk.v1.OAuthFlow
 	8,  // [8:8] is the sub-list for method output_type
 	8,  // [8:8] is the sub-list for method input_type
@@ -1280,13 +1407,14 @@ func file_channel_app_sdk_v1_native_proto_init() {
 	file_channel_app_sdk_v1_native_proto_msgTypes[14].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_native_proto_msgTypes[15].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_native_proto_msgTypes[16].OneofWrappers = []any{}
+	file_channel_app_sdk_v1_native_proto_msgTypes[18].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_channel_app_sdk_v1_native_proto_rawDesc), len(file_channel_app_sdk_v1_native_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

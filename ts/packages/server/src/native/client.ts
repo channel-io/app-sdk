@@ -1,5 +1,8 @@
+import { callbackAccessToken } from "../utils/app-person-invocation.js";
 import type {
   Context,
+  NativeReplyToAppPersonInvocationParams,
+  NativeReplyToAppPersonInvocationResult,
   NativeCreateAppDataTableParams,
   NativeCreateAppDataTableResult,
   NativeCreateAppDataTableSchemaParams,
@@ -43,7 +46,10 @@ const DEFAULT_APPSTORE_URL = "https://app-store-api.channel.io";
  * HTTP transport client for Channel App platform native functions.
  *
  * Stateless — holds no app credentials. Callers are responsible for
- * supplying `appId`, `appSecret`, and `accessToken` at each call site,
+ * supplying `appId`, `appSecret`, and `accessToken` at each call site outside
+ * signed AppPerson dispatch. During dispatch, request-local callback authority
+ * replaces ordinary tokens and cannot mint or refresh broader credentials.
+ * Explicit credentials outside dispatch keep their independent authority,
  * which keeps token lifecycle management (caching, refresh) in the caller layer.
  * For built-in token caching and auto-refresh, use `TokenManager`.
  *
@@ -324,6 +330,14 @@ export class NativeFunctionClient {
     return new ProxyApi(this, accessToken);
   }
 
+  /** Reply once using the invocation's private delegated callback authority. */
+  replyToAppPersonInvocation(
+    params: NativeReplyToAppPersonInvocationParams,
+    accessToken = ""
+  ): Promise<NativeReplyToAppPersonInvocationResult> {
+    return this.callNativeFunctionWithToken("replyToAppPersonInvocation", params, accessToken);
+  }
+
   // ============================================
   // Generic Function Calls
   // ============================================
@@ -351,6 +365,7 @@ export class NativeFunctionClient {
     params?: TParams,
     options: NativeFunctionCallOptions = {}
   ): Promise<TResult> {
+    const token = callbackAccessToken(method);
     const url = `${this.appStoreUrl}/general/v1/native/functions`;
 
     const request: NativeFunctionRequest<TParams> = {
@@ -364,6 +379,7 @@ export class NativeFunctionClient {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        ...(token ? { "x-access-token": token } : {}),
       },
       body: JSON.stringify(request),
       ...(options.signal && { signal: options.signal }),
@@ -399,6 +415,7 @@ export class NativeFunctionClient {
     accessToken: string,
     options: NativeFunctionCallOptions = {}
   ): Promise<TResult> {
+    accessToken = callbackAccessToken(method, accessToken) ?? "";
     const url = `${this.appStoreUrl}/general/v1/native/functions`;
 
     const request: NativeFunctionRequest<TParams> = {
@@ -443,6 +460,7 @@ export class NativeFunctionClient {
     accessToken: string,
     systemVersion?: string
   ): Promise<TResult> {
+    accessToken = callbackAccessToken("callAppFunction", accessToken, context) ?? "";
     const url = `${this.appStoreUrl}/general/v1/apps/${encodeURIComponent(appId)}/functions`;
 
     const request: NativeFunctionRequest<TParams> = {

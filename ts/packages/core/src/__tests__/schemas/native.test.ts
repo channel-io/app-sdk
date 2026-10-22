@@ -1,5 +1,7 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
 import {
+  NativeReplyToAppPersonInvocationParamsSchema,
+  NativeReplyToAppPersonInvocationResultSchema,
   NativeCreateAppDataTableParamsSchema,
   NativeGetOAuthFlowParamsSchema,
   NativeResumeOAuthFlowParamsSchema,
@@ -36,8 +38,9 @@ describe("native function schemas", () => {
       "upsertAppDataTableRows",
       "getAppNotebookVersions",
       "listActiveOAuthManagerTargets",
+      "replyToAppPersonInvocation",
     ]);
-    expect(nativeFunctionSchemaDefinitions).toHaveLength(9);
+    expect(nativeFunctionSchemaDefinitions).toHaveLength(10);
   });
 
   it("validates createAppDataTable input", () => {
@@ -195,4 +198,25 @@ describe("manager OAuth flow contracts", () => {
     expectTypeOf<NativeFunctionResult<"resumeOAuthFlow">>().toEqualTypeOf<NativeOAuthFlowResult>();
     expectTypeOf<NativeFunctionResult<"cancelOAuthFlow">>().toEqualTypeOf<NativeOAuthFlowResult>();
   });
+});
+
+it("keeps source authority out of reply input and measures the server text bound in Unicode code points", () => {
+  const request = { invocationId: "run", plainText: "😀".repeat(10000) };
+  expect(NativeReplyToAppPersonInvocationParamsSchema.safeParse(request).success).toBe(true);
+  expect(
+    NativeReplyToAppPersonInvocationParamsSchema.safeParse({
+      ...request,
+      plainText: request.plainText + "a",
+    }).success
+  ).toBe(false);
+  expect(
+    NativeReplyToAppPersonInvocationParamsSchema.safeParse({ ...request, channelId: "foreign" })
+      .success
+  ).toBe(false);
+  expect(
+    NativeReplyToAppPersonInvocationResultSchema.parse({ status: "unknown", errorCode: "pending" })
+  ).toEqual({ status: "unknown", errorCode: "pending" });
+  expect(
+    NativeReplyToAppPersonInvocationResultSchema.safeParse({ status: "acknowledged" }).success
+  ).toBe(false);
 });

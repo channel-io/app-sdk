@@ -57,6 +57,12 @@ export interface OAuthFlowContext {
   targetManagerId?: string | undefined;
 }
 
+/** Private, purpose-bound callback credential. Never log or persist in app data. */
+export interface AppPersonInvocationContext {
+  invocationId?: string | undefined;
+  accessToken?: string | undefined;
+}
+
 export interface FunctionContext {
   caller?: Caller | undefined;
   channel?: Channel | undefined;
@@ -72,6 +78,7 @@ export interface FunctionContext {
   seedState?: any | undefined;
   webhooks?: { [key: string]: WebhookEndpointContext } | undefined;
   oauthFlow?: OAuthFlowContext | undefined;
+  appPersonInvocation?: AppPersonInvocationContext | undefined;
 }
 
 export interface FunctionContext_ApiCredentialsEntry {

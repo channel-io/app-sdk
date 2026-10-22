@@ -1,3 +1,4 @@
+import { callbackAccessToken, delegatedInvocation } from "../utils/app-person-invocation.js";
 import type {
   TokenManagerConfig,
   TokenResponse,
@@ -58,11 +59,20 @@ export class TokenManager {
   }
 
   async getChannelToken(request: ChannelTokenRequest): Promise<TokenResponse> {
+    const binding = delegatedInvocation();
+    if (binding) {
+      if (binding.channelId !== request.channelId)
+        throw new TokenManagerError("AppPerson invocation channel mismatch");
+      return { accessToken: binding.invocation.accessToken, refreshToken: "", expiresIn: 0 };
+    }
     const cacheKey = this.buildCacheKey("channel", request.channelId);
     return this.getOrRefreshToken(cacheKey, () => this.issueChannelToken(request));
   }
 
   async getAppToken(): Promise<TokenResponse> {
+    const binding = delegatedInvocation();
+    if (binding)
+      return { accessToken: binding.invocation.accessToken, refreshToken: "", expiresIn: 0 };
     const cacheKey = this.buildCacheKey("app");
     return this.getOrRefreshToken(cacheKey, () => this.issueAppToken());
   }
@@ -275,6 +285,7 @@ export class TokenManager {
     method: string,
     params: Record<string, unknown>
   ): Promise<TResult> {
+    callbackAccessToken(method);
     const url = `${this.appStoreUrl}/general/v1/native/functions`;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), DEFAULT_REQUEST_TIMEOUT_MS);

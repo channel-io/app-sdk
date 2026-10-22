@@ -3,6 +3,7 @@ package native
 import (
 	"context"
 	"fmt"
+	"github.com/channel-io/app-sdk/go/appsdk"
 	"strings"
 	"sync"
 	"time"
@@ -101,12 +102,21 @@ func (m *TokenManager) Client() *Client {
 }
 
 func (m *TokenManager) GetAppToken(ctx context.Context) (*TokenResponse, error) {
+	if token, _, delegated := appsdk.AppPersonInvocationToken(ctx); delegated {
+		return &TokenResponse{AccessToken: token}, nil
+	}
 	return m.getOrRefreshToken(ctx, m.buildCacheKey("app", ""), func(ctx context.Context) (*TokenResponse, error) {
 		return m.issueAppToken(ctx)
 	})
 }
 
 func (m *TokenManager) GetChannelToken(ctx context.Context, channelID string) (*TokenResponse, error) {
+	if token, channel, delegated := appsdk.AppPersonInvocationToken(ctx); delegated {
+		if channel != channelID {
+			return nil, &TokenManagerError{Message: "AppPerson invocation channel mismatch"}
+		}
+		return &TokenResponse{AccessToken: token}, nil
+	}
 	if strings.TrimSpace(channelID) == "" {
 		return nil, &TokenManagerError{Message: "channelId is required"}
 	}

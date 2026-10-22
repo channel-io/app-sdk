@@ -222,6 +222,13 @@ func (c *Client) UpsertAppDataTableRows(ctx context.Context, accessToken string,
 }
 
 func (c *Client) CallAppFunction(ctx context.Context, accessToken, appID, method string, params any, fnCtx appsdk.Context, systemVersion string) (json.RawMessage, error) {
+	if fnCtx.HasAppPersonInvocation() {
+		var err error
+		ctx, err = appsdk.BindAppPersonInvocation(ctx, fnCtx)
+		if err != nil {
+			return nil, err
+		}
+	}
 	req := functionRequest{Method: method, Params: params, Context: &fnCtx, SystemVersion: systemVersion}
 	return c.call(ctx, fmt.Sprintf("/general/v1/apps/%s/functions", appID), accessToken, req)
 }
@@ -251,6 +258,12 @@ func callNative[T any](ctx context.Context, c *Client, accessToken, method strin
 }
 
 func (c *Client) call(ctx context.Context, path, accessToken string, payload any) (json.RawMessage, error) {
+	if token, _, delegated := appsdk.AppPersonInvocationToken(ctx); delegated {
+		if request, ok := payload.(functionRequest); ok && path == "/general/v1/native/functions" && (request.Method == "issueToken" || request.Method == "refreshToken") {
+			return nil, fmt.Errorf("token issuance and refresh are unavailable during AppPerson invocation")
+		}
+		accessToken = token
+	}
 	body, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err

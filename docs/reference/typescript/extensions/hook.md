@@ -447,3 +447,46 @@ Deploy platform support before using scoped registrations.
 Authorization hooks accept optional `display: OAuthStepDisplay`. The result accepts optional `detail` (up to 200 characters) on either `continue` or `redirect`. `oauth.connected` and other lifecycle hooks cannot declare display metadata. App Store owns progress; detail is not completion evidence.
 
 See [OAuth step presentation](oauth.md#optional-oauth-step-presentation) for icon values, translations, text limits, progress states, and rollout requirements.
+
+## Replying to an AppPerson invocation
+
+A signed `appPerson.invoked` Function context includes private
+`appPersonInvocation: { invocationId, accessToken }`. Never log, store, or return
+this credential. Its server-owned lifetime is 180 seconds; retries do not renew it.
+Keep the Hook result ACK-only: `hookHandlingResult` does not prove that a reply was published.
+
+Inside a handler dispatched by `ChannelAppService` or the simple service, the shared
+`NativeFunctionClient` automatically uses this request's primary delegated credential
+for Native calls and nested app calls. Concurrent handlers keep separate bindings.
+`TokenManager.getAppToken()` and same-channel `getChannelToken()` return that
+credential without reading or writing the ordinary token cache. These results have
+an empty refresh token and `expiresIn: 0` because the server owns their lifetime;
+do not refresh or cache them. Issuance, refresh, and foreign-channel token requests
+fail locally. A present but incomplete invocation context fails before the handler
+runs, with no ordinary-token fallback.
+
+```ts
+// nativeClient may be a shared singleton injected by ChannelAppModule.
+const receipt = await nativeClient.replyToAppPersonInvocation({
+  invocationId: ctx.appPersonInvocation!.invocationId,
+  plainText: "The requested operation completed.",
+});
+```
+
+Send a nonempty literal reply of at most 10,000 Unicode code points. Only
+`invocationId` and `plainText` are accepted; the platform fixes the original source,
+author, thread, credential owner, and publication options. Group and UserChat use
+the channel's shared app connection; app DM uses the initiating manager's connection.
+UserChat replies are private notes with app dispatch suppressed. Single-app Hook
+invocations permit one immutable reply; repeat the same text after an uncertain
+response. Different text conflicts. `published` confirms a receipt, `rejected` is a
+confirmed rejection, and `unknown` needs reconciliation. Do not retry the Hook or
+fall back to another writer after an uncertain result. Multi-app mentions use the
+separate App Agent response and do not dispatch individual invocation Hooks.
+
+The server rechecks the live source, installation, Hook registration, and app
+permissions. The SDK wrapper enforces callback credential selection within the
+signed invocation. App code that deliberately uses separately held app secrets or
+ordinary credentials still has its independent existing authority; this wrapper
+does not sandbox arbitrary app code. Outside invocation handlers, ordinary token
+selection and caching continue to work as before.

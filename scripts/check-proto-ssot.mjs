@@ -263,6 +263,10 @@ function checkGoExtensionTypes() {
 function checkGoCoreDTOs() {
   const files = [
     {
+      relPath: "go/appsdk/app_person_invocation.go",
+      allowedStructs: new Set(["AppPersonInvocationContext"]),
+    },
+    {
       relPath: "go/appsdk/types.go",
       allowedStructs: new Set([
         "Options",
@@ -315,6 +319,7 @@ function checkTypeScriptCoreDTOs() {
         ["UserChat", "ProtoUserChat"],
         ["WebhookEndpointContext", "ProtoWebhookEndpointContext"],
         ["OAuthFlowContext", "ProtoOAuthFlowContext"],
+        ["AppPersonInvocationContext", "ProtoAppPersonInvocationContext"],
         ["Context", "ProtoFunctionContext"],
         ["FunctionCallRequest", "ProtoFunctionRequest"],
         ["FunctionCallErrorResponse", "ProtoFunctionError"],

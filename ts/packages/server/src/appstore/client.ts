@@ -1,3 +1,4 @@
+import { delegatedInvocation } from "../utils/app-person-invocation.js";
 import type {
   AppStoreClientConfig,
   JsonRpcRequest,
@@ -122,6 +123,8 @@ export class AppStoreClient {
    * Make a JSON-RPC call to the AppStore
    */
   private async callJsonRpc<TParams, TResult>(method: string, params: TParams): Promise<TResult> {
+    if (delegatedInvocation())
+      throw new Error("Legacy AppStore authentication is unavailable during AppPerson invocation");
     const url = `${this.config.appStoreUrl}/general/v1/native/functions`;
 
     const request: JsonRpcRequest<TParams> = {
