@@ -278,10 +278,8 @@ export class TokenManager {
     const url = `${this.appStoreUrl}/general/v1/native/functions`;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), DEFAULT_REQUEST_TIMEOUT_MS);
-    let response: Response;
-
     try {
-      response = await fetch(url, {
+      const response = await fetch(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -289,29 +287,28 @@ export class TokenManager {
         body: JSON.stringify({ method, params }),
         signal: controller.signal,
       });
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new TokenManagerError(
+          `Native function token request failed: ${String(response.status)} ${response.statusText}`,
+          response.status,
+          errorBody
+        );
+      }
+
+      const body = (await response.json()) as NativeFunctionResponse<TResult>;
+      if (body.error) {
+        throw new TokenManagerError(
+          body.error.message,
+          body.error.code,
+          JSON.stringify(body.error.data)
+        );
+      }
+
+      return body.result as TResult;
     } finally {
       clearTimeout(timeout);
     }
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      throw new TokenManagerError(
-        `Native function token request failed: ${String(response.status)} ${response.statusText}`,
-        response.status,
-        errorBody
-      );
-    }
-
-    const body = (await response.json()) as NativeFunctionResponse<TResult>;
-    if (body.error) {
-      throw new TokenManagerError(
-        body.error.message,
-        body.error.code,
-        JSON.stringify(body.error.data)
-      );
-    }
-
-    return body.result as TResult;
   }
 
   private normalizeTokenResponse(response: NativeTokenResponse | undefined): TokenResponse {
