@@ -26,6 +26,7 @@ Current SDK schema supports:
 - `oauth.afterAuthorization`
 - `userChat.opened`
 - `teamChat.messageCreated`
+- `appPerson.invoked`
 
 Widget hooks must include a `targetId` that matches the widget name. App,
 command, and config hooks must not include a `targetId`. Public webhook hooks
@@ -195,6 +196,51 @@ All result states are terminal: `succeeded`, `skipped_source_app`,
 Use `eventId` as the delivery idempotency boundary and `sourceAppId` as one
 layer of loop prevention. A compatible AppStore and TeamChat publisher must be
 deployed before this Hook is delivered.
+
+## Explicit App Invocation
+
+Register `appPerson.invoked` with `actionFunctionName` and optional
+`systemVersion`. Do not declare `targetId`, `authScope`, `webhook`, redirect
+origins, or display metadata. The handler is an ordinary app function; no new
+method is required on `HookExtensionInterface`.
+
+```ts
+return {
+  hooks: [{ type: "appPerson.invoked", actionFunctionName: "hooks.onInvocation" }],
+};
+```
+
+Use `AppPersonInvokedHookInputSchema` and `AppPersonInvokedHookResultSchema`.
+The strict input contains `type: "appPerson.invoked"`, `version: 1`, `eventId`,
+`invocationId`, `requestId`, `sourceEventId`, `channelId`, `chatType`, `chatId`,
+optional `threadId`, `sourceMessageId`, `sourceContentRevision`, `requestedAt`,
+`appId`, `appPersonId`, `installationId`, `invokingManagerId`, `credentialScope`,
+and `prompt`. `threadId` is supported only for Group threads and is omitted for
+direct messages. `sourceContentRevision` is a canonical positive signed-int64
+decimal **string**, including values above JavaScript's safe integer range.
+`requestedAt` is an ISO 8601 datetime. `prompt` may be empty.
+
+A single-app Group mention uses `chatType: "group"` and
+`credentialScope: "channel"`. An app direct message uses
+`chatType: "directChat"` and `credentialScope: "manager"`. The initiating
+`invokingManagerId` remains separate from the credential scope. The platform
+must not use the other scope's credentials when the required credentials are
+missing. Treat identity fields as platform input, not an authorization grant.
+
+A registered hook owns processing for this invocation. Return only
+`{ hookHandlingResult: "succeeded" | "skipped" | "failed", terminal: true }`.
+This acknowledgement does not send a chat reply; the app sends its own response
+through an authorized messaging API. An error or unknown outcome does not trigger
+a default execution or an automatic reply. Use stable `eventId` to deduplicate
+side effects; this contract does not promise automatic redelivery or eventual
+delivery. When no hook is registered, the platform uses its default app-context
+execution instead.
+
+Multiple distinct app mentions use one aggregate execution and one App Agent
+reply, with **no individual `appPerson.invoked` events**.
+`teamChat.messageCreated` remains a separate message-observation hook.
+A compatible platform deployment is required; installing the SDK does not
+activate invocation delivery.
 
 ## Public Webhook Ingress
 

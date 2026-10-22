@@ -188,6 +188,8 @@ export {
   UserChatOpenedHookResultSchema,
   TeamChatMessageCreatedHookInputSchema,
   TeamChatMessageCreatedHookResultSchema,
+  AppPersonInvokedHookInputSchema,
+  AppPersonInvokedHookResultSchema,
   OAuthFlowHookInputSchema,
   OAuthFlowHookResultSchema,
   type HookType,
@@ -199,6 +201,8 @@ export {
   type UserChatOpenedActorKind,
   type TeamChatMessageCreatedHookInput,
   type TeamChatMessageCreatedHookResult,
+  type AppPersonInvokedHookInput,
+  type AppPersonInvokedHookResult,
   type OAuthFlowHookInput,
   type OAuthFlowHookResult,
 } from "./hook.js";

@@ -21,7 +21,7 @@ Hook metadata が参照する handler は standalone app Function で、新し�
 `command.toggle`、`config.saved`、`config.deleted`、`widget.installed`、`widget.uninstalled`、
 `webhook.received`、`oauth.connected`、`oauth.disconnected`、`oauth.beforeAuthorization`、
 `oauth.afterAuthorization`、`userChat.opened`、
-`teamChat.messageCreated` です。
+`teamChat.messageCreated`、`appPerson.invoked` です。
 
 Widget hook には widget name と一致する `targetId` が必要です。App、command、Config hook には
 target を設定しません。Public webhook target は 1-64 文字の URL-safe identifier です。
@@ -33,6 +33,33 @@ commit されたすべての root/reply を、完全な Channel Message snapshot
 snapshot の `personType` と `personId` から作成者を、`rootMessageId` から thread の関連を、
 `plainText` と `blocks` から content を読み、独自の eligibility rule を適用します。正確な DTO は
 TypeScript reference を参照してください。
+
+## 明示的なアプリ呼び出し
+
+`appPerson.invoked` は `actionFunctionName` と任意の `systemVersion` で登録します。
+TypeScript は `AppPersonInvokedHookInputSchema`、`AppPersonInvokedHookResultSchema`
+と推論型を公開します。Go では `hook.TypeAppPersonInvoked`、
+`hook.AppPersonInvokedInput`、`hook.AppPersonInvokedResult` を使用します。
+
+Group で単一アプリをメンションすると Channel の認証情報を、アプリ DM では
+Manager の認証情報を使用します。`invokingManagerId` は呼び出した Manager であり、
+`credentialScope` とは別です。必要な認証情報がなくても別スコープへフォールバックしません。
+`sourceContentRevision` は正の signed-int64 の十進文字列です。JavaScript の数値へ
+変換しないでください。`prompt` は空文字列でも有効です。
+
+登録した関数が処理を担当します。結果は
+`{ hookHandlingResult: "succeeded" | "skipped" | "failed", terminal: true }`
+という最終確認応答です。ユーザーへの返信には権限のある messaging API を使用します。
+エラーや結果不明時に既定の実行や自動返信は行われません。
+安定した `eventId` で副作用を重複排除してください。自動再送や最終的な配送は
+保証されません。未登録の場合は既定のアプリコンテキストで実行します。
+
+異なる複数アプリへのメンションは一度だけ実行し、App Agent が一度返信します。
+個別の呼び出しイベントは送信しません。一般的なメッセージ監視の
+`teamChat.messageCreated` は別契約です。対応する platform を先にデプロイしてください。
+登録、両スコープ、大きな revision 文字列、重複処理をテストします。
+全入力は [Hook reference](../../../reference/typescript/extensions/hook.md#explicit-app-invocation)
+を参照してください。
 
 ## TypeScript
 

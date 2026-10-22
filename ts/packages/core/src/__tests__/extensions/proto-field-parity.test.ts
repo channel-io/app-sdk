@@ -104,6 +104,8 @@ import {
   GetWmsSupportedCommercesInputSchema,
   GetWmsSupportedCommercesOutputSchema,
   HookConfigSchema,
+  AppPersonInvokedHookInputSchema,
+  AppPersonInvokedHookResultSchema,
   OAuthFlowHookInputSchema,
   OAuthFlowHookResultSchema,
   OAuthStepDisplaySchema,
@@ -527,6 +529,19 @@ const contracts: Contract[] = [
     TeamChatMessageCreatedHookResultSchema,
     "extension",
     "HookTeamChatMessageCreatedResult"
+  ),
+
+  contract(
+    "AppPersonInvokedHookInput",
+    AppPersonInvokedHookInputSchema,
+    "extension",
+    "HookAppPersonInvokedInput"
+  ),
+  contract(
+    "AppPersonInvokedHookResult",
+    AppPersonInvokedHookResultSchema,
+    "extension",
+    "HookAppPersonInvokedResult"
   ),
 
   contract("PollingPoller", PollingPollerSchema, "extension", "PollingPoller"),
