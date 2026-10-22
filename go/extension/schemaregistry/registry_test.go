@@ -9,6 +9,7 @@ import (
 	"github.com/channel-io/app-sdk/go/extension/alftask"
 	"github.com/channel-io/app-sdk/go/extension/apikey"
 	"github.com/channel-io/app-sdk/go/extension/calendar"
+	"github.com/channel-io/app-sdk/go/extension/code"
 	"github.com/channel-io/app-sdk/go/extension/command"
 	"github.com/channel-io/app-sdk/go/extension/commerce"
 	"github.com/channel-io/app-sdk/go/extension/config"
@@ -31,6 +32,7 @@ import (
 
 func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	app := appsdk.New(appsdk.Options{AppID: "app"})
+	use(t, app, code.Extension().SendInput(zero[code.SendInputRequest, code.Receipt]()).GetSession(zero[code.GetSessionRequest, code.Snapshot]()).StopSession(zero[code.StopSessionRequest, code.Receipt]()))
 
 	use(t, app, alftask.Extension().
 		GetTasks(zero[alftask.GetTasksRequest, alftask.GetTasksResponse]()))
@@ -160,8 +162,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	got := app.Schemas()
 	want := schemaregistry.Schemas()
 
-	if len(got) != 86 {
-		t.Fatalf("expected 86 registered extension function schemas, got %d", len(got))
+	if len(got) != 89 {
+		t.Fatalf("expected 89 registered extension function schemas, got %d", len(got))
 	}
 	if !reflect.DeepEqual(got, want) {
 		for i := range got {

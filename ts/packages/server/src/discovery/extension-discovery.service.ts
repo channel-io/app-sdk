@@ -159,6 +159,9 @@ export class ExtensionDiscoveryService implements OnModuleInit {
       const inputJsonSchema = inputSchema
         ? (zodToJsonSchema(inputSchema, { $refStrategy: "none" }) as Record<string, unknown>)
         : undefined;
+      if (inputJsonSchema && fullName.startsWith("extension.code.session.")) {
+        inputJsonSchema["additionalProperties"] = true;
+      }
       const outputJsonSchema = outputSchema
         ? (zodToJsonSchema(outputSchema, { $refStrategy: "none" }) as Record<string, unknown>)
         : undefined;

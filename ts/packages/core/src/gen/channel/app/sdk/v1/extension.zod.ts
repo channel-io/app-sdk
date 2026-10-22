@@ -2399,3 +2399,109 @@ export const OAuthAuthorizationRequestMappingProtoSchema = z.object({
   codeChallengeMethod: z.string().optional(),
 }) satisfies z.ZodType<pb.OAuthAuthorizationRequestMapping>;
 export type OAuthAuthorizationRequestMappingProto = z.infer<typeof OAuthAuthorizationRequestMappingProtoSchema>;
+
+export const CodeContextBlockProtoSchema = z.object({
+  title: z.string().optional(),
+  text: z.string().optional(),
+  sourceUrl: z.string().optional(),
+}) satisfies z.ZodType<pb.CodeContextBlock>;
+export type CodeContextBlockProto = z.infer<typeof CodeContextBlockProtoSchema>;
+
+export const CodeSendInputInputProtoSchema = z.object({
+  sessionKey: z.string().optional(),
+  text: z.string().optional(),
+  context: z.array(z.lazy(() => CodeContextBlockProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.CodeSendInputInput>;
+export type CodeSendInputInputProto = z.infer<typeof CodeSendInputInputProtoSchema>;
+
+export const CodeGetSessionInputProtoSchema = z.object({
+  sessionKey: z.string().optional(),
+}) satisfies z.ZodType<pb.CodeGetSessionInput>;
+export type CodeGetSessionInputProto = z.infer<typeof CodeGetSessionInputProtoSchema>;
+
+export const CodeStopSessionInputProtoSchema = z.object({
+  sessionKey: z.string().optional(),
+  reason: z.string().optional(),
+}) satisfies z.ZodType<pb.CodeStopSessionInput>;
+export type CodeStopSessionInputProto = z.infer<typeof CodeStopSessionInputProtoSchema>;
+
+export const CodeSessionReceiptProtoSchema = z.object({
+  sessionKey: z.string().optional(),
+  accepted: z.boolean().optional(),
+}) satisfies z.ZodType<pb.CodeSessionReceipt>;
+export type CodeSessionReceiptProto = z.infer<typeof CodeSessionReceiptProtoSchema>;
+
+export const CodeSessionErrorProtoSchema = z.object({
+  code: z.string().optional(),
+  message: z.string().optional(),
+  retryable: z.boolean().optional(),
+}) satisfies z.ZodType<pb.CodeSessionError>;
+export type CodeSessionErrorProto = z.infer<typeof CodeSessionErrorProtoSchema>;
+
+export const CodeSessionQuestionProtoSchema = z.object({
+  text: z.string().optional(),
+  answerVia: z.string().optional(),
+  source: z.string().optional(),
+  actionUrl: z.string().optional(),
+}) satisfies z.ZodType<pb.CodeSessionQuestion>;
+export type CodeSessionQuestionProto = z.infer<typeof CodeSessionQuestionProtoSchema>;
+
+export const CodeSessionResultProtoSchema = z.object({
+  text: z.string().optional(),
+  source: z.string().optional(),
+  recordedAt: z.string().optional(),
+  limitations: z.array(z.string()).optional(),
+}) satisfies z.ZodType<pb.CodeSessionResult>;
+export type CodeSessionResultProto = z.infer<typeof CodeSessionResultProtoSchema>;
+
+export const CodeSessionArtifactProtoSchema = z.object({
+  kind: z.string().optional(),
+  title: z.string().optional(),
+  url: z.string().optional(),
+}) satisfies z.ZodType<pb.CodeSessionArtifact>;
+export type CodeSessionArtifactProto = z.infer<typeof CodeSessionArtifactProtoSchema>;
+
+export const CodeSessionObservationProtoSchema = z.object({
+  status: z.string().optional(),
+  observedAt: z.any().optional(),
+}) satisfies z.ZodType<pb.CodeSessionObservation>;
+export type CodeSessionObservationProto = z.infer<typeof CodeSessionObservationProtoSchema>;
+
+export const CodeSessionSnapshotProtoSchema = z.object({
+  sessionKey: z.string().optional(),
+  version: z.string().optional(),
+  status: z.string().optional(),
+  pendingInputCount: z.number().int().optional(),
+  question: z.lazy(() => CodeSessionQuestionProtoSchema).optional(),
+  lastResult: z.lazy(() => CodeSessionResultProtoSchema).optional(),
+  artifacts: z.array(z.lazy(() => CodeSessionArtifactProtoSchema)).optional(),
+  error: z.lazy(() => CodeSessionErrorProtoSchema).optional(),
+  observation: z.lazy(() => CodeSessionObservationProtoSchema).optional(),
+  updatedAt: z.string().optional(),
+}) satisfies z.ZodType<pb.CodeSessionSnapshot>;
+export type CodeSessionSnapshotProto = z.infer<typeof CodeSessionSnapshotProtoSchema>;
+
+export const CodeSessionMessageProtoSchema = z.object({
+  text: z.string().optional(),
+  source: z.string().optional(),
+}) satisfies z.ZodType<pb.CodeSessionMessage>;
+export type CodeSessionMessageProto = z.infer<typeof CodeSessionMessageProtoSchema>;
+
+export const CodeSessionEventProtoSchema = z.object({
+  sessionKey: z.string().optional(),
+  eventId: z.string().optional(),
+  sequence: z.string().optional(),
+  recordedAt: z.string().optional(),
+  occurredAt: z.string().optional(),
+  type: z.string().optional(),
+  payload: z.record(z.string(), z.any()).optional(),
+}) satisfies z.ZodType<pb.CodeSessionEvent>;
+export type CodeSessionEventProto = z.infer<typeof CodeSessionEventProtoSchema>;
+
+export const CodePublicationReceiptProtoSchema = z.object({
+  accepted: z.boolean().optional(),
+  sessionKey: z.string().optional(),
+  eventId: z.string().optional(),
+  sequence: z.string().optional(),
+}) satisfies z.ZodType<pb.CodePublicationReceipt>;
+export type CodePublicationReceiptProto = z.infer<typeof CodePublicationReceiptProtoSchema>;
