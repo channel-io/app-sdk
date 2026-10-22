@@ -53,10 +53,15 @@ There is no SDK native publication helper or agent wake-up runtime in this chang
 A platform rollout must authenticate app publication, resolve a prebound session
 owner, durably accept/deduplicate ordered events, and deliver them to an agent
 inbox with serial execution. A declared event schema grants no publishing right.
+The platform must allocate sessionKey uniquely across an app's owners and
+installation generations, bind it before the first app invocation, and reject
+reuse by another owner. A new session or reinstallation uses a fresh key.
 Do not replace missing runtime support with a successful mock acknowledgement.
 
 Inputs allow future top-level wire fields and strip them before handlers. Outputs
 are strict. sendInput JSON is limited to 256 KiB; snapshots and events to 64 KiB.
+String limits count Unicode code points. The schemas spell out the same blank
+character set for TypeScript, Go and JSON Schema validators.
 Use the exported runtime schemas at boundaries, including before sending an event.
 Large results need summaries and artifact links with explicit limitations.
 

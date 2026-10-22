@@ -133,7 +133,7 @@ func handleCode[In, Out any](method string, handler appsdk.TypedHandlerFunc[In, 
 		if err := validateJSON(inputSchema, params, 256*1024); err != nil {
 			return nil, appsdk.NewError(appsdk.CodeBadRequest, "invalidInput", "Invalid Code Extension input")
 		}
-		if method != FunctionGetSession && (fnCtx.Invocation == nil || len([]rune(fnCtx.Invocation.IdempotencyKey)) > 200 || strings.TrimSpace(fnCtx.Invocation.IdempotencyKey) == "") {
+		if method != FunctionGetSession && (fnCtx.Invocation == nil || len([]rune(fnCtx.Invocation.IdempotencyKey)) > 200 || strings.Trim(fnCtx.Invocation.IdempotencyKey, "\t\n\v\f\r \u0085\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000\ufeff") == "") {
 			return nil, appsdk.NewError(appsdk.CodeBadRequest, "invalidInput", "Trusted invocation identity is required")
 		}
 		input := new(In)

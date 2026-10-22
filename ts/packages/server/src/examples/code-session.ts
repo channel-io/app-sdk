@@ -1,6 +1,6 @@
-import { z } from "zod";
 import {
   CodeSendInputInputSchema,
+  CodeInvocationContextSchema,
   CodeGetSessionInputSchema,
   CodeStopSessionInputSchema,
   CodeSessionReceiptSchema,
@@ -30,11 +30,10 @@ export abstract class CodeSessionStore {
   ): Promise<void>;
 }
 
-const Invocation = z.object({ idempotencyKey: z.string().min(1).max(200).regex(/\S/) });
 function invocationKey(ctx: Context): string {
   // A verified platform envelope must supply this field. Never copy it from params,
   // synthesize it per HTTP retry, or trust an unsigned caller's context.
-  return Invocation.parse(ctx.invocation).idempotencyKey;
+  return CodeInvocationContextSchema.parse(ctx.invocation).idempotencyKey;
 }
 
 /** Reference wiring. Supply a durable CodeSessionStore through NestJS providers.

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { maxCodePoints } from "../utils/unicode-string.js";
 import type {
   CodeContextBlock as ProtoCodeContextBlock,
   CodeSendInputInput as ProtoCodeSendInputInput,
@@ -17,6 +18,14 @@ import type {
 } from "../gen/channel/app/sdk/v1/extension.js";
 type ProtoBacked<T, Proto> = T & Omit<Proto, keyof T>;
 
+// Explicit whitespace set keeps ECMAScript, Go RE2 and JSON Schema validators aligned.
+const nonBlankPattern =
+  "[^\\t\\n\\v\\f\\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]";
+function nonBlank(maximum: number) {
+  return maxCodePoints(z.string().min(1).regex(new RegExp(nonBlankPattern)), maximum);
+}
+export const CodeInvocationContextSchema = z.object({ idempotencyKey: nonBlank(200) });
+
 function withinBytes(value: unknown, maximum: number): boolean {
   try {
     const json = JSON.stringify(value);
@@ -34,9 +43,9 @@ function boundedInput<T extends z.ZodTypeAny>(schema: T) {
 }
 export const CodeContextBlockSchema = z
   .object({
-    title: z.string().min(1).max(256).regex(new RegExp("\\S")),
-    text: z.string().min(1).max(32768).regex(new RegExp("\\S")),
-    sourceUrl: z.string().url().max(2048).regex(new RegExp("^https://")).optional(),
+    title: nonBlank(256),
+    text: nonBlank(32768),
+    sourceUrl: maxCodePoints(z.string().url().regex(new RegExp("^https://")), 2048).optional(),
   })
   .strict();
 export type CodeContextBlock = ProtoBacked<
@@ -47,8 +56,8 @@ export type CodeContextBlock = ProtoBacked<
 export const CodeSendInputInputSchema = boundedInput(
   z
     .object({
-      sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")),
-      text: z.string().min(1).max(32768).regex(new RegExp("\\S")),
+      sessionKey: nonBlank(200),
+      text: nonBlank(32768),
       context: z.array(CodeContextBlockSchema).max(8).optional(),
     })
     .strip()
@@ -58,9 +67,7 @@ export type CodeSendInputInput = ProtoBacked<
   ProtoCodeSendInputInput
 >;
 
-export const CodeGetSessionInputSchema = z
-  .object({ sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")) })
-  .strip();
+export const CodeGetSessionInputSchema = z.object({ sessionKey: nonBlank(200) }).strip();
 export type CodeGetSessionInput = ProtoBacked<
   z.infer<typeof CodeGetSessionInputSchema>,
   ProtoCodeGetSessionInput
@@ -68,8 +75,8 @@ export type CodeGetSessionInput = ProtoBacked<
 
 export const CodeStopSessionInputSchema = z
   .object({
-    sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")),
-    reason: z.string().min(1).max(2048).regex(new RegExp("\\S")).optional(),
+    sessionKey: nonBlank(200),
+    reason: nonBlank(2048).optional(),
   })
   .strip();
 export type CodeStopSessionInput = ProtoBacked<
@@ -79,7 +86,7 @@ export type CodeStopSessionInput = ProtoBacked<
 
 export const CodeSessionReceiptSchema = z
   .object({
-    sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")),
+    sessionKey: nonBlank(200),
     accepted: z.literal(true),
   })
   .strict();
@@ -90,8 +97,8 @@ export type CodeSessionReceipt = ProtoBacked<
 
 export const CodeSessionErrorSchema = z
   .object({
-    code: z.string().min(1).max(100).regex(new RegExp("\\S")),
-    message: z.string().min(1).max(2048).regex(new RegExp("\\S")),
+    code: nonBlank(100),
+    message: nonBlank(2048),
     retryable: z.boolean(),
   })
   .strict();
@@ -103,18 +110,18 @@ export type CodeSessionError = ProtoBacked<
 export const CodeSessionQuestionSchema = z.union([
   z
     .object({
-      text: z.string().min(1).max(8192).regex(new RegExp("\\S")),
+      text: nonBlank(8192),
       answerVia: z.literal("sendInput"),
       source: z.enum(["provider_message", "agent_report", "adapter"]),
-      actionUrl: z.string().url().max(2048).regex(new RegExp("^https://")).optional(),
+      actionUrl: maxCodePoints(z.string().url().regex(new RegExp("^https://")), 2048).optional(),
     })
     .strict(),
   z
     .object({
-      text: z.string().min(1).max(8192).regex(new RegExp("\\S")),
+      text: nonBlank(8192),
       answerVia: z.literal("provider_ui"),
       source: z.enum(["provider_message", "agent_report", "adapter"]),
-      actionUrl: z.string().url().max(2048).regex(new RegExp("^https://")),
+      actionUrl: maxCodePoints(z.string().url().regex(new RegExp("^https://")), 2048),
     })
     .strict(),
 ]);
@@ -125,10 +132,10 @@ export type CodeSessionQuestion = ProtoBacked<
 
 export const CodeSessionResultSchema = z
   .object({
-    text: z.string().min(1).max(8192).regex(new RegExp("\\S")),
+    text: nonBlank(8192),
     source: z.enum(["provider_message", "agent_report", "adapter"]),
     recordedAt: z.string().datetime({ offset: true }),
-    limitations: z.array(z.string().min(1).max(2048).regex(new RegExp("\\S"))).max(20),
+    limitations: z.array(nonBlank(2048)).max(20),
   })
   .strict();
 export type CodeSessionResult = ProtoBacked<
@@ -138,9 +145,9 @@ export type CodeSessionResult = ProtoBacked<
 
 export const CodeSessionArtifactSchema = z
   .object({
-    kind: z.string().min(1).max(64).regex(new RegExp("\\S")),
-    title: z.string().min(1).max(512).regex(new RegExp("\\S")),
-    url: z.string().url().max(2048).regex(new RegExp("^https://")),
+    kind: nonBlank(64),
+    title: nonBlank(512),
+    url: maxCodePoints(z.string().url().regex(new RegExp("^https://")), 2048),
   })
   .strict();
 export type CodeSessionArtifact = ProtoBacked<
@@ -168,7 +175,7 @@ export const CodeSessionSnapshotSchema = z
   .union([
     z
       .object({
-        sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")),
+        sessionKey: nonBlank(200),
         version: z.string().max(30).regex(new RegExp("^(0|[1-9][0-9]*)$")),
         status: z.enum(["needs_input"]),
         pendingInputCount: z.number().int().safe().min(0).max(2147483647),
@@ -182,7 +189,7 @@ export const CodeSessionSnapshotSchema = z
       .strict(),
     z
       .object({
-        sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")),
+        sessionKey: nonBlank(200),
         version: z.string().max(30).regex(new RegExp("^(0|[1-9][0-9]*)$")),
         status: z.enum(["queued"]),
         pendingInputCount: z.number().int().safe().min(1).max(2147483647),
@@ -196,7 +203,7 @@ export const CodeSessionSnapshotSchema = z
       .strict(),
     z
       .object({
-        sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")),
+        sessionKey: nonBlank(200),
         version: z.string().max(30).regex(new RegExp("^(0|[1-9][0-9]*)$")),
         status: z.enum(["idle", "stopped"]),
         pendingInputCount: z.literal(0),
@@ -210,7 +217,7 @@ export const CodeSessionSnapshotSchema = z
       .strict(),
     z
       .object({
-        sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")),
+        sessionKey: nonBlank(200),
         version: z.string().max(30).regex(new RegExp("^(0|[1-9][0-9]*)$")),
         status: z.enum(["failed", "unavailable"]),
         pendingInputCount: z.number().int().safe().min(0).max(2147483647),
@@ -224,7 +231,7 @@ export const CodeSessionSnapshotSchema = z
       .strict(),
     z
       .object({
-        sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")),
+        sessionKey: nonBlank(200),
         version: z.string().max(30).regex(new RegExp("^(0|[1-9][0-9]*)$")),
         status: z.enum(["running", "stopping"]),
         pendingInputCount: z.number().int().safe().min(0).max(2147483647),
@@ -245,7 +252,7 @@ export type CodeSessionSnapshot = ProtoBacked<
 
 export const CodeSessionMessageSchema = z
   .object({
-    text: z.string().min(1).max(8192).regex(new RegExp("\\S")),
+    text: nonBlank(8192),
     source: z.enum(["provider_message", "agent_report", "adapter"]),
   })
   .strict();
@@ -258,8 +265,8 @@ export const CodeSessionEventSchema = z
   .union([
     z
       .object({
-        sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")),
-        eventId: z.string().min(1).max(200).regex(new RegExp("\\S")),
+        sessionKey: nonBlank(200),
+        eventId: nonBlank(200),
         sequence: z.string().max(30).regex(new RegExp("^[1-9][0-9]*$")),
         recordedAt: z.string().datetime({ offset: true }),
         occurredAt: z.string().datetime({ offset: true }).optional(),
@@ -269,8 +276,8 @@ export const CodeSessionEventSchema = z
       .strict(),
     z
       .object({
-        sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")),
-        eventId: z.string().min(1).max(200).regex(new RegExp("\\S")),
+        sessionKey: nonBlank(200),
+        eventId: nonBlank(200),
         sequence: z.string().max(30).regex(new RegExp("^[1-9][0-9]*$")),
         recordedAt: z.string().datetime({ offset: true }),
         occurredAt: z.string().datetime({ offset: true }).optional(),
@@ -303,8 +310,8 @@ export type CodeSessionEvent = ProtoBacked<
 export const CodePublicationReceiptSchema = z
   .object({
     accepted: z.literal(true),
-    sessionKey: z.string().min(1).max(200).regex(new RegExp("\\S")),
-    eventId: z.string().min(1).max(200).regex(new RegExp("\\S")),
+    sessionKey: nonBlank(200),
+    eventId: nonBlank(200),
     sequence: z.string().max(30).regex(new RegExp("^[1-9][0-9]*$")),
   })
   .strict();

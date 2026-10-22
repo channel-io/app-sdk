@@ -1,4 +1,5 @@
 import {
+  CodeInvocationContextSchema,
   CodeContextBlockSchema,
   CodeSendInputInputSchema,
   CodeGetSessionInputSchema,
@@ -280,7 +281,7 @@ import {
   CommerceGetProductsOutputSchema,
 } from "../../extensions/commerce.js";
 
-type GeneratedFile = "common" | "extension";
+type GeneratedFile = "common" | "extension" | "context";
 
 interface Contract {
   name: string;
@@ -291,6 +292,7 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
+  contract("CodeInvocationContext", CodeInvocationContextSchema, "context", "InvocationContext"),
   contract("CodeContextBlock", CodeContextBlockSchema, "extension", "CodeContextBlock"),
   contract("CodeSendInputInput", CodeSendInputInputSchema, "extension", "CodeSendInputInput"),
   contract("CodeGetSessionInput", CodeGetSessionInputSchema, "extension", "CodeGetSessionInput"),
@@ -1139,6 +1141,7 @@ const contracts: Contract[] = [
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const generatedSources: Record<GeneratedFile, string> = {
+  context: readFileSync(resolve(__dirname, "../../gen/channel/app/sdk/v1/context.ts"), "utf8"),
   common: readFileSync(resolve(__dirname, "../../gen/channel/app/sdk/v1/common.ts"), "utf8"),
   extension: readFileSync(resolve(__dirname, "../../gen/channel/app/sdk/v1/extension.ts"), "utf8"),
 };

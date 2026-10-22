@@ -85,3 +85,50 @@ func TestBuilderRejectsMismatchedSessionResult(t *testing.T) {
 		t.Fatal("mismatched session result accepted")
 	}
 }
+
+func TestBuilderUnicodeLengthAndBlankInput(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	if err := app.Use(Extension().SendInput(func(_ context.Context, _ appsdk.Context, input *SendInputRequest) (*Receipt, error) {
+		return &Receipt{SessionKey: input.SessionKey, Accepted: true}, nil
+	})); err != nil {
+		t.Fatal(err)
+	}
+	key := strings.Repeat("😀", 200)
+	for _, test := range []struct {
+		key, text, invocation string
+		valid                 bool
+	}{
+		{key, "fix", key, true},
+		{key + "😀", "fix", key, false},
+		{key, "fix", key + "😀", false},
+		{key, "fix", "\ufeff", false},
+		{key, "\u00a0", key, false},
+		{key, "\u0085", key, false},
+		{key, "\u2003", key, false},
+		{key, "\ufeff", key, false},
+	} {
+		params, err := json.Marshal(map[string]string{"sessionKey": test.key, "text": test.text})
+		if err != nil {
+			t.Fatal(err)
+		}
+		result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: FunctionSendInput, Context: appsdk.Context{Invocation: &appsdk.InvocationContext{IdempotencyKey: test.invocation}}, Params: params})
+		if (result.Error == nil) != test.valid {
+			t.Fatalf("valid=%v: %+v", test.valid, result.Error)
+		}
+	}
+}
+
+func TestBuilderUnicodeResultLength(t *testing.T) {
+	for _, count := range []int{8192, 8193} {
+		app := appsdk.New(appsdk.Options{AppID: "app"})
+		if err := app.Use(Extension().GetSession(func(context.Context, appsdk.Context, *GetSessionRequest) (*Snapshot, error) {
+			return &Snapshot{SessionKey: "s", Version: "1", Status: "idle", Observation: &Observation{Status: "unknown", ObservedAt: structpb.NewNullValue()}, UpdatedAt: "2026-10-22T00:00:00Z", LastResult: &Result{Text: strings.Repeat("😀", count), Source: "adapter", RecordedAt: "2026-10-22T00:00:00Z"}}, nil
+		})); err != nil {
+			t.Fatal(err)
+		}
+		result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: FunctionGetSession, Params: json.RawMessage(`{"sessionKey":"s"}`)})
+		if (result.Error == nil) != (count == 8192) {
+			t.Fatalf("count=%d: %+v", count, result.Error)
+		}
+	}
+}
