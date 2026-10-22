@@ -148,6 +148,20 @@ export const NativeOAuthFlowResultSchema = z
   .object({ flow: NativeOAuthFlowSchema.optional() })
   .strict();
 
+export const NativeReplyToAppPersonInvocationParamsSchema = z
+  .object({
+    invocationId: NativeNonEmptyStringSchema,
+    plainText: NativeNonEmptyStringSchema.refine((value) => Array.from(value).length <= 10000),
+  })
+  .strict();
+export const NativeReplyToAppPersonInvocationResultSchema = z
+  .object({
+    status: z.enum(["published", "rejected", "unknown"]),
+    deskMessageId: NativeNonEmptyStringSchema.optional(),
+    errorCode: NativeNonEmptyStringSchema.optional(),
+  })
+  .strict();
+
 interface NativeFunctionSchemaDefinition {
   name: string;
   description: string;
@@ -211,6 +225,13 @@ export const nativeFunctionSchemaDefinitions = [
     description: "Page active manager-scoped OAuth targets within the app token's own app scope.",
     input: NativeListActiveOAuthManagerTargetsParamsSchema,
     output: NativeListActiveOAuthManagerTargetsResultSchema,
+  },
+  {
+    name: "replyToAppPersonInvocation",
+    description:
+      "Reply once to the original AppPerson invocation using its delegated callback credential.",
+    input: NativeReplyToAppPersonInvocationParamsSchema,
+    output: NativeReplyToAppPersonInvocationResultSchema,
   },
 ] satisfies NativeFunctionSchemaDefinition[];
 

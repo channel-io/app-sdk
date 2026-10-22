@@ -51,6 +51,12 @@ message OAuthFlowContext {
   optional string target_manager_id = 6;
 }
 
+// Private, purpose-bound callback credential. Never log or persist in app data.
+message AppPersonInvocationContext {
+  string invocation_id = 1;
+  string access_token = 2;
+}
+
 message FunctionContext {
   Caller caller = 1;
   Channel channel = 2;
@@ -66,4 +72,5 @@ message FunctionContext {
   google.protobuf.Value seed_state = 12;
   map<string, WebhookEndpointContext> webhooks = 13;
   OAuthFlowContext oauth_flow = 14;
+  AppPersonInvocationContext app_person_invocation = 15;
 }

@@ -2536,8 +2536,8 @@ export interface HookTeamChatMessageCreatedResult {
 }
 
 /**
- * An explicit single-app Group mention or app direct message. This is distinct
- * from message observation and is not emitted for a multi-app invocation.
+ * An explicit single-app Group or UserChat private-note mention, or app direct
+ * message. Distinct from observation; not emitted for a multi-app invocation.
  */
 export interface HookAppPersonInvokedInput {
   type?: string | undefined;

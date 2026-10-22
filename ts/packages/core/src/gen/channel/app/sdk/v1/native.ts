@@ -128,3 +128,16 @@ export interface CancelOAuthFlowParams {
 export interface OAuthFlowResult {
   flow?: OAuthFlow | undefined;
 }
+
+/** Publish at most one reply to the original AppPerson invocation source. */
+export interface ReplyToAppPersonInvocationParams {
+  invocationId?: string | undefined;
+  plainText?: string | undefined;
+}
+
+export interface ReplyToAppPersonInvocationResult {
+  /** published, rejected, or unknown; ACK is not a publication receipt. */
+  status?: string | undefined;
+  deskMessageId?: string | undefined;
+  errorCode?: string | undefined;
+}

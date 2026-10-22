@@ -133,3 +133,16 @@ export const OAuthFlowResultProtoSchema = z.object({
   flow: z.lazy(() => OAuthFlowProtoSchema).optional(),
 }) satisfies z.ZodType<pb.OAuthFlowResult>;
 export type OAuthFlowResultProto = z.infer<typeof OAuthFlowResultProtoSchema>;
+
+export const ReplyToAppPersonInvocationParamsProtoSchema = z.object({
+  invocationId: z.string().optional(),
+  plainText: z.string().optional(),
+}) satisfies z.ZodType<pb.ReplyToAppPersonInvocationParams>;
+export type ReplyToAppPersonInvocationParamsProto = z.infer<typeof ReplyToAppPersonInvocationParamsProtoSchema>;
+
+export const ReplyToAppPersonInvocationResultProtoSchema = z.object({
+  status: z.string().optional(),
+  deskMessageId: z.string().optional(),
+  errorCode: z.string().optional(),
+}) satisfies z.ZodType<pb.ReplyToAppPersonInvocationResult>;
+export type ReplyToAppPersonInvocationResultProto = z.infer<typeof ReplyToAppPersonInvocationResultProtoSchema>;

@@ -97,8 +97,7 @@ type OAuthFlowHookInput = {
   expiresAt: string; // ISO 8601 datetime
 };
 type OAuthFlowHookResult =
-  | { type: "continue" }
-  | { type: "redirect"; url: string };
+  { type: "continue" } | { type: "redirect"; url: string };
 ```
 
 Input and result objects are strict. A continue result cannot include `url`, and
@@ -206,7 +205,9 @@ method is required on `HookExtensionInterface`.
 
 ```ts
 return {
-  hooks: [{ type: "appPerson.invoked", actionFunctionName: "hooks.onInvocation" }],
+  hooks: [
+    { type: "appPerson.invoked", actionFunctionName: "hooks.onInvocation" },
+  ],
 };
 ```
 
@@ -216,12 +217,16 @@ The strict input contains `type: "appPerson.invoked"`, `version: 1`, `eventId`,
 optional `threadId`, `sourceMessageId`, `sourceContentRevision`, `requestedAt`,
 `appId`, `appPersonId`, `installationId`, `invokingManagerId`, `credentialScope`,
 and `prompt`. `threadId` is supported only for Group threads and is omitted for
-direct messages. `sourceContentRevision` is a canonical positive signed-int64
-decimal **string**, including values above JavaScript's safe integer range.
+direct messages and UserChat private notes. `sourceContentRevision` is a canonical
+positive signed-int64 decimal **string**, including values above JavaScript's safe integer range.
 `requestedAt` is an ISO 8601 datetime. `prompt` may be empty.
 
-A single-app Group mention uses `chatType: "group"` and
-`credentialScope: "channel"`. An app direct message uses
+A single-app Group mention uses `chatType: "group"`; a UserChat private-note
+mention uses `chatType: "userChat"`. Both require `credentialScope: "channel"`.
+UserChat requires a positive revision and no thread (`threadId` absent or null;
+the schema normalizes null to absent). Responses must remain private notes,
+invisible to customers. An edit is a separate invocation for the new exact
+source content revision. An app direct message uses
 `chatType: "directChat"` and `credentialScope: "manager"`. The initiating
 `invokingManagerId` remains separate from the credential scope. The platform
 must not use the other scope's credentials when the required credentials are
@@ -363,7 +368,7 @@ Re-register the Hook Extension to change the setting. Omit `response` on
 re-registration to remove it and restore the default 202 response:
 
 ```ts
-webhook: { endpointToken }
+const hookConfig = { webhook: { endpointToken } };
 // Manager scope: webhook: { executionScope: "manager" }
 ```
 
@@ -412,9 +417,20 @@ uses `authScope: "caller"`; `caller` is not a valid hook scope.
 ```typescript
 return {
   hooks: [
-    { type: "oauth.connected", authScope: "channel", actionFunctionName: "hooks.channelConnected" },
-    { type: "oauth.connected", authScope: "manager", actionFunctionName: "hooks.managerConnected" },
-    { type: "oauth.disconnected", actionFunctionName: "hooks.sharedDisconnected" },
+    {
+      type: "oauth.connected",
+      authScope: "channel",
+      actionFunctionName: "hooks.channelConnected",
+    },
+    {
+      type: "oauth.connected",
+      authScope: "manager",
+      actionFunctionName: "hooks.managerConnected",
+    },
+    {
+      type: "oauth.disconnected",
+      actionFunctionName: "hooks.sharedDisconnected",
+    },
   ],
 };
 ```
@@ -427,9 +443,51 @@ without `authScope` retain their behavior. `targetId` remains forbidden on OAuth
 hooks, and `redirectOrigins` remains exclusive to the two authorization hooks.
 Deploy platform support before using scoped registrations.
 
-
 ## Optional OAuth step presentation
 
 Authorization hooks accept optional `display: OAuthStepDisplay`. The result accepts optional `detail` (up to 200 characters) on either `continue` or `redirect`. `oauth.connected` and other lifecycle hooks cannot declare display metadata. App Store owns progress; detail is not completion evidence.
 
 See [OAuth step presentation](oauth.md#optional-oauth-step-presentation) for icon values, translations, text limits, progress states, and rollout requirements.
+
+## Replying to an AppPerson invocation
+
+A signed `appPerson.invoked` Function context includes private
+`appPersonInvocation: { invocationId, accessToken }`. Never log, store, or return
+this credential. Its server-owned lifetime is 180 seconds; retries do not renew it.
+Keep the Hook result ACK-only: `hookHandlingResult` does not prove that a reply was published.
+
+Inside a handler dispatched by `ChannelAppService` or the simple service, the shared
+`NativeFunctionClient` automatically uses this request's primary delegated credential
+for Native calls and nested app calls. Concurrent handlers keep separate bindings.
+`TokenManager.getAppToken()` and same-channel `getChannelToken()` return that
+credential without reading or writing the ordinary token cache. These results have
+an empty refresh token and `expiresIn: 0` because the server owns their lifetime;
+do not refresh or cache them. Issuance, refresh, and foreign-channel token requests
+fail locally. A present but incomplete invocation context fails before the handler
+runs, with no ordinary-token fallback.
+
+```ts
+// nativeClient may be a shared singleton injected by ChannelAppModule.
+const receipt = await nativeClient.replyToAppPersonInvocation({
+  invocationId: ctx.appPersonInvocation!.invocationId,
+  plainText: "The requested operation completed.",
+});
+```
+
+Send a nonempty literal reply of at most 10,000 Unicode code points. Only
+`invocationId` and `plainText` are accepted; the platform fixes the original source,
+author, thread, credential owner, and publication options. Group and UserChat use
+the channel's shared app connection; app DM uses the initiating manager's connection.
+UserChat replies are private notes with app dispatch suppressed. Single-app Hook
+invocations permit one immutable reply; repeat the same text after an uncertain
+response. Different text conflicts. `published` confirms a receipt, `rejected` is a
+confirmed rejection, and `unknown` needs reconciliation. Do not retry the Hook or
+fall back to another writer after an uncertain result. Multi-app mentions use the
+separate App Agent response and do not dispatch individual invocation Hooks.
+
+The server rechecks the live source, installation, Hook registration, and app
+permissions. The SDK wrapper enforces callback credential selection within the
+signed invocation. App code that deliberately uses separately held app secrets or
+ordinary credentials still has its independent existing authority; this wrapper
+does not sandbox arbitrary app code. Outside invocation handlers, ordinary token
+selection and caching continue to work as before.

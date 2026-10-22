@@ -122,3 +122,16 @@ message CancelOAuthFlowParams {
 message OAuthFlowResult {
   optional OAuthFlow flow = 1;
 }
+
+// Publish at most one reply to the original AppPerson invocation source.
+message ReplyToAppPersonInvocationParams {
+  string invocation_id = 1;
+  string plain_text = 2;
+}
+
+message ReplyToAppPersonInvocationResult {
+  // published, rejected, or unknown; ACK is not a publication receipt.
+  string status = 1;
+  optional string desk_message_id = 2;
+  optional string error_code = 3;
+}

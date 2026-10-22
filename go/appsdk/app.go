@@ -205,7 +205,11 @@ func (a *App) HandleRequest(ctx context.Context, req FunctionRequest) FunctionRe
 		params = json.RawMessage(`{}`)
 	}
 
-	result, err := def.handler(ctx, req.Context, params)
+	boundCtx, err := BindAppPersonInvocation(ctx, req.Context)
+	if err != nil {
+		return ErrorResponse(NewError(CodeBadRequest, "invalidParams", "invalid AppPerson invocation context"))
+	}
+	result, err := def.handler(boundCtx, req.Context, params)
 	if err != nil {
 		if def.errorMapper != nil {
 			err = def.errorMapper(err)

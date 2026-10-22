@@ -1,3 +1,4 @@
+import { runWithAppPersonInvocation } from "../utils/app-person-invocation.js";
 import {
   Inject,
   Injectable,
@@ -356,7 +357,10 @@ export class ChannelAppService implements OnModuleInit, OnApplicationBootstrap {
 
     try {
       // Execute the handler
-      const result = normalizeExtensionResult(method, await func.handler(context, params ?? {}));
+      const result = normalizeExtensionResult(
+        method,
+        await runWithAppPersonInvocation(context, () => func.handler(context, params ?? {}))
+      );
 
       if (this.options.debug) {
         this.logger.debug(`Output: ${JSON.stringify(sanitizeForLogging(result))}`);

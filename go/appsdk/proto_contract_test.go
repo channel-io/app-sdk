@@ -19,6 +19,11 @@ func TestCoreDTOJSONFieldsMatchProto(t *testing.T) {
 		descriptor protoreflect.MessageDescriptor
 	}{
 		{
+			name:       "AppPersonInvocationContext",
+			runtime:    appsdk.AppPersonInvocationContext{},
+			descriptor: sdkv1.File_channel_app_sdk_v1_context_proto.Messages().ByName("AppPersonInvocationContext"),
+		},
+		{
 			name:       "Caller",
 			runtime:    appsdk.Caller{},
 			descriptor: sdkv1.File_channel_app_sdk_v1_context_proto.Messages().ByName("Caller"),

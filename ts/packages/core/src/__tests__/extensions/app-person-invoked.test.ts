@@ -83,6 +83,38 @@ describe("appPerson.invoked", () => {
     ).toBe(false);
   });
 
+  it("accepts a UserChat private-note invocation with channel credentials and no thread", () => {
+    const userChat: AppPersonInvokedHookInput = {
+      ...input,
+      chatType: "userChat",
+      chatId: "user-chat-1",
+      credentialScope: "channel",
+      sourceContentRevision: "1",
+    };
+    expect(AppPersonInvokedHookInputSchema.parse(userChat)).toEqual(userChat);
+    expect(AppPersonInvokedHookInputSchema.parse({ ...userChat, threadId: null })).toEqual({
+      ...userChat,
+      threadId: undefined,
+    });
+    expect(
+      AppPersonInvokedHookInputSchema.parse({
+        ...userChat,
+        sourceContentRevision: "9223372036854775807",
+      }).sourceContentRevision
+    ).toBe("9223372036854775807");
+    for (const patch of [
+      { credentialScope: "manager" },
+      { threadId: "thread-1" },
+      { sourceContentRevision: "0" },
+      { sourceContentRevision: "01" },
+      { sourceContentRevision: 9007199254740992 },
+    ]) {
+      expect(AppPersonInvokedHookInputSchema.safeParse({ ...userChat, ...patch }).success).toBe(
+        false
+      );
+    }
+  });
+
   it.each(["1", "9007199254740993", "9223372036854775807"])(
     "preserves signed int64 revision %s without number conversion",
     (sourceContentRevision) => {

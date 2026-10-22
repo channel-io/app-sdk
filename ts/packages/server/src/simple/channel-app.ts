@@ -1,3 +1,4 @@
+import { runWithAppPersonInvocation } from "../utils/app-person-invocation.js";
 import {
   type DynamicModule,
   Module,
@@ -268,7 +269,10 @@ class ChannelAppSimpleService implements OnModuleInit {
     }
 
     try {
-      const result = normalizeExtensionResult(method, await func.handler(context, params ?? {}));
+      const result = normalizeExtensionResult(
+        method,
+        await runWithAppPersonInvocation(context, () => func.handler(context, params ?? {}))
+      );
       return { result };
     } catch (error) {
       if (error instanceof FunctionCallError) {

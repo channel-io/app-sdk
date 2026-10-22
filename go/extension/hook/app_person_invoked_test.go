@@ -53,3 +53,16 @@ func TestAppPersonInvocationRevisionWire(t *testing.T) {
 		}
 	}
 }
+
+func TestAppPersonUserChatInvocationWire(t *testing.T) {
+	for _, thread := range []string{"", `,"threadId":null`} {
+		wire := `{"type":"appPerson.invoked","version":1,"chatType":"userChat","chatId":"user-chat-1","credentialScope":"channel","invokingManagerId":"manager-1","sourceContentRevision":"9007199254740993"` + thread + `}`
+		var input AppPersonInvokedInput
+		if err := protojson.Unmarshal([]byte(wire), &input); err != nil {
+			t.Fatal(err)
+		}
+		if input.ChatType != "userChat" || input.CredentialScope != "channel" || input.InvokingManagerId != "manager-1" || input.ThreadId != nil || input.SourceContentRevision != 9007199254740993 {
+			t.Fatalf("UserChat invocation changed its source or execution identity: %v", &input)
+		}
+	}
+}

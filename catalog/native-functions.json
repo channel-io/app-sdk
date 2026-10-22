@@ -90,6 +90,10 @@
       "surfaces": ["server"]
     },
     {
+      "name": "replyToAppPersonInvocation",
+      "surfaces": ["server"]
+    },
+    {
       "name": "resumeOAuthFlow",
       "surfaces": ["wam"]
     },

@@ -1,10 +1,20 @@
 import type {
+  ReplyToAppPersonInvocationParams,
+  ReplyToAppPersonInvocationResult,
   CancelOAuthFlowParams,
   GetOAuthFlowParams,
   OAuthFlow,
   OAuthFlowResult,
   ResumeOAuthFlowParams,
 } from "../gen/channel/app/sdk/v1/native.js";
+
+export interface NativeReplyToAppPersonInvocationParams extends ReplyToAppPersonInvocationParams {
+  invocationId: string;
+  plainText: string;
+}
+export interface NativeReplyToAppPersonInvocationResult extends ReplyToAppPersonInvocationResult {
+  status: "published" | "rejected" | "unknown";
+}
 
 export type NativeJsonObject = object;
 
@@ -618,6 +628,10 @@ export interface NativeFunctionTypeMap {
   getAppNotebookVersions: {
     params: NativeGetAppNotebookVersionsParams;
     result: NativeGetAppNotebookVersionsResult;
+  };
+  replyToAppPersonInvocation: {
+    params: NativeReplyToAppPersonInvocationParams;
+    result: NativeReplyToAppPersonInvocationResult;
   };
   listActiveOAuthManagerTargets: {
     params: NativeListActiveOAuthManagerTargetsParams;

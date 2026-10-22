@@ -42,11 +42,13 @@ Register `appPerson.invoked` using only `actionFunctionName` and optional
 `hook.TypeAppPersonInvoked`, `hook.AppPersonInvokedInput`, and
 `hook.AppPersonInvokedResult`.
 
-A single-app Group mention uses channel credentials; an app direct message uses
-manager credentials. `invokingManagerId` identifies the initiating manager
+A single-app Group mention or UserChat private-note mention uses channel
+credentials; an app direct message uses manager credentials. `invokingManagerId` identifies the initiating manager
 separately from `credentialScope`. Missing credentials never select the other
 scope. `sourceContentRevision` is a positive signed-int64 decimal string,
-not a JavaScript number, and `prompt` may be empty.
+not a JavaScript number, and `prompt` may be empty. UserChat has no thread (`threadId` absent or null; the schema normalizes null to
+absent). UserChat replies must remain private notes, invisible to customers.
+Source edits represent a new invocation at the new content revision.
 
 The registered function owns processing. Return a terminal acknowledgement
 `{ hookHandlingResult: "succeeded" | "skipped" | "failed", terminal: true }`;

@@ -187,9 +187,12 @@ export const AppPersonInvokedHookInputSchema = z
     requestId: AppPersonInvokedIdentifierSchema,
     sourceEventId: AppPersonInvokedIdentifierSchema,
     channelId: AppPersonInvokedIdentifierSchema,
-    chatType: z.enum(["group", "directChat"]),
+    chatType: z.enum(["group", "directChat", "userChat"]),
     chatId: AppPersonInvokedIdentifierSchema,
-    threadId: AppPersonInvokedIdentifierSchema.optional(),
+    threadId: z.preprocess(
+      (value) => (value === null ? undefined : value),
+      AppPersonInvokedIdentifierSchema.optional()
+    ),
     sourceMessageId: AppPersonInvokedIdentifierSchema,
     sourceContentRevision: NonNegativeInt64StringSchema.refine((value) => value !== "0", {
       message: "sourceContentRevision must be positive",
@@ -204,19 +207,19 @@ export const AppPersonInvokedHookInputSchema = z
   })
   .strict()
   .superRefine((input, ctx) => {
-    if (input.chatType === "directChat" && input.threadId !== undefined) {
+    if (input.chatType !== "group" && input.threadId !== undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["threadId"],
-        message: "directChat does not support threads",
+        message: "Only Group invocations support threads",
       });
     }
-    const expectedScope = input.chatType === "group" ? "channel" : "manager";
+    const expectedScope = input.chatType === "directChat" ? "manager" : "channel";
     if (input.credentialScope !== expectedScope) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["credentialScope"],
-        message: "Group uses channel credentials; directChat uses manager credentials",
+        message: "Group and userChat use channel credentials; directChat uses manager credentials",
       });
     }
   });

@@ -4,6 +4,7 @@ const OAUTH_FLOW_NONCE_NAME = /oauth[-_ +]?flow[-_ +]?nonce/i;
 // Match the opening boundary too: truncated or escaped PEM must never be logged.
 const PRIVATE_KEY_BOUNDARY = /-----BEGIN[ +](?:[A-Z0-9]+[ +])*PRIVATE[ +]KEY-----/i;
 const SENSITIVE_LOG_KEYS = new Set([
+  "apppersoninvocation",
   "secret",
   "appsecret",
   "refreshtoken",
@@ -28,7 +29,11 @@ function normalizeSensitiveLogKey(key: string): string {
 
 function shouldRedactSensitiveString(value: string): boolean {
   for (let depth = 0; depth < 4; depth++) {
-    if (OAUTH_FLOW_NONCE_NAME.test(value) || PRIVATE_KEY_BOUNDARY.test(value)) {
+    if (
+      value.includes("aph1.") ||
+      OAUTH_FLOW_NONCE_NAME.test(value) ||
+      PRIVATE_KEY_BOUNDARY.test(value)
+    ) {
       return true;
     }
     // Decode bytes only for detection; malformed escapes must not stop masking.
@@ -42,6 +47,7 @@ function shouldRedactSensitiveString(value: string): boolean {
   }
   // Bound work for deeply nested redirects and hide values we cannot fully inspect.
   return (
+    value.includes("aph1.") ||
     OAUTH_FLOW_NONCE_NAME.test(value) ||
     PRIVATE_KEY_BOUNDARY.test(value) ||
     /%[0-9a-f]{2}/i.test(value)

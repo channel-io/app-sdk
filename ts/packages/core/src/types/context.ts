@@ -1,4 +1,5 @@
 import type {
+  AppPersonInvocationContext as ProtoAppPersonInvocationContext,
   Caller as ProtoCaller,
   Channel as ProtoChannel,
   FunctionContext as ProtoFunctionContext,
@@ -57,13 +58,19 @@ export interface OAuthFlowContext extends ProtoOAuthFlowContext {
   authScope: "channel" | "manager";
 }
 
+/** Private callback credential; scoped to one server-owned invocation. Never log it. */
+export interface AppPersonInvocationContext extends ProtoAppPersonInvocationContext {
+  invocationId: string;
+  accessToken: string;
+}
+
 /**
  * Context passed to function handlers.
  * Mirrors Go's ChannelContext struct (internal/domain/app/subdomain/core/svc/function.go).
  */
 export interface Context extends Omit<
   ProtoFunctionContext,
-  "caller" | "channel" | "user" | "userChat" | "oauthFlow"
+  "caller" | "channel" | "user" | "userChat" | "oauthFlow" | "appPersonInvocation"
 > {
   /** Caller information */
   caller: Caller;
@@ -96,6 +103,8 @@ export interface Context extends Omit<
   webhooks?: Record<string, WebhookEndpointContext>;
   /** Target and initiating actor for system-invoked OAuth flow hooks. */
   oauthFlow?: OAuthFlowContext;
+  /** Private primary callback authority; never use an ordinary token as fallback. */
+  appPersonInvocation?: AppPersonInvocationContext;
   /** Sandbox mode flag (for LLM mock testing) */
   sandbox?: boolean;
   /** Sandbox session ID (stateful mode) */
