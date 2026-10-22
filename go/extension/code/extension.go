@@ -128,6 +128,10 @@ func handleCode[In, Out any](method string, handler appsdk.TypedHandlerFunc[In, 
 	if err != nil {
 		return nil, err
 	}
+	properties, ok := definition.InputSchema["properties"].(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("code input schema properties are missing: %s", method)
+	}
 	return appsdk.RawHandler(func(ctx context.Context, fnCtx appsdk.Context, params json.RawMessage) (json.RawMessage, error) {
 		// Validate raw params before Proto removes unknown fields or normalizes values.
 		if err := validateJSON(inputSchema, params, 256*1024); err != nil {
@@ -138,7 +142,22 @@ func handleCode[In, Out any](method string, handler appsdk.TypedHandlerFunc[In, 
 		}
 		input := new(In)
 		message := any(input).(proto.Message)
-		if err := (protojson.UnmarshalOptions{DiscardUnknown: true}).Unmarshal(params, message); err != nil {
+		// Strip unknown JSON names before Proto treats snake_case aliases as
+		// canonical fields. Raw validation above still checks nested keys/bytes.
+		var fields map[string]json.RawMessage
+		if err := json.Unmarshal(params, &fields); err != nil {
+			return nil, err
+		}
+		for name := range fields {
+			if _, known := properties[name]; !known {
+				delete(fields, name)
+			}
+		}
+		canonical, err := json.Marshal(fields)
+		if err != nil {
+			return nil, err
+		}
+		if err := (protojson.UnmarshalOptions{DiscardUnknown: true}).Unmarshal(canonical, message); err != nil {
 			return nil, appsdk.NewError(appsdk.CodeBadRequest, "invalidInput", "Invalid Code Extension input")
 		}
 		output, err := handler(ctx, fnCtx, input)

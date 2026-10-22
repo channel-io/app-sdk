@@ -24,6 +24,17 @@ const nonBlankPattern =
 function nonBlank(maximum: number) {
   return maxCodePoints(z.string().min(1).regex(new RegExp(nonBlankPattern)), maximum);
 }
+function httpsUrl() {
+  // WHATWG URL accepts and removes some raw control characters. URI format
+  // validators reject them; preserve the original only when it contains none.
+  return maxCodePoints(z.string().url().regex(new RegExp("^https://")), 2048).refine((value) => {
+    for (const char of value) {
+      const code = char.charCodeAt(0);
+      if (code < 0x20 || code === 0x7f) return false;
+    }
+    return true;
+  }, "URL must not contain control characters");
+}
 export const CodeInvocationContextSchema = z.object({ idempotencyKey: nonBlank(200) });
 const timestampPattern =
   "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$";
@@ -48,7 +59,7 @@ export const CodeContextBlockSchema = z
   .object({
     title: nonBlank(256),
     text: nonBlank(32768),
-    sourceUrl: maxCodePoints(z.string().url().regex(new RegExp("^https://")), 2048).optional(),
+    sourceUrl: httpsUrl().optional(),
   })
   .strict();
 export type CodeContextBlock = ProtoBacked<
@@ -120,7 +131,7 @@ export const CodeSessionQuestionSchema = z.union([
       text: nonBlank(8192),
       answerVia: z.literal("sendInput"),
       source: z.enum(["provider_message", "agent_report", "adapter"]),
-      actionUrl: maxCodePoints(z.string().url().regex(new RegExp("^https://")), 2048).optional(),
+      actionUrl: httpsUrl().optional(),
     })
     .strict(),
   z
@@ -128,7 +139,7 @@ export const CodeSessionQuestionSchema = z.union([
       text: nonBlank(8192),
       answerVia: z.literal("provider_ui"),
       source: z.enum(["provider_message", "agent_report", "adapter"]),
-      actionUrl: maxCodePoints(z.string().url().regex(new RegExp("^https://")), 2048),
+      actionUrl: httpsUrl(),
     })
     .strict(),
 ]);
@@ -154,7 +165,7 @@ export const CodeSessionArtifactSchema = z
   .object({
     kind: nonBlank(64),
     title: nonBlank(512),
-    url: maxCodePoints(z.string().url().regex(new RegExp("^https://")), 2048),
+    url: httpsUrl(),
   })
   .strict();
 export type CodeSessionArtifact = ProtoBacked<

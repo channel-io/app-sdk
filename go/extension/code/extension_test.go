@@ -86,6 +86,60 @@ func TestBuilderRejectsMismatchedSessionResult(t *testing.T) {
 	}
 }
 
+func TestBuilderStripsUnknownProtoAliases(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	var calls int
+	receipt := func(key string) (*Receipt, error) {
+		calls++
+		if key != "s" {
+			t.Fatalf("unknown field changed session identity: %q", key)
+		}
+		return &Receipt{SessionKey: key, Accepted: true}, nil
+	}
+	err := app.Use(Extension().SendInput(func(_ context.Context, _ appsdk.Context, input *SendInputRequest) (*Receipt, error) {
+		return receipt(input.SessionKey)
+	}).GetSession(func(_ context.Context, _ appsdk.Context, input *GetSessionRequest) (*Snapshot, error) {
+		calls++
+		if input.SessionKey != "s" {
+			t.Fatalf("unknown field changed session identity: %q", input.SessionKey)
+		}
+		return &Snapshot{SessionKey: input.SessionKey, Version: "0", Status: "idle", Observation: &Observation{Status: "unknown", ObservedAt: structpb.NewNullValue()}, UpdatedAt: "2026-10-22T00:00:00Z"}, nil
+	}).StopSession(func(_ context.Context, _ appsdk.Context, input *StopSessionRequest) (*Receipt, error) {
+		return receipt(input.SessionKey)
+	}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, method := range []string{FunctionSendInput, FunctionGetSession, FunctionStopSession} {
+		result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: method, Context: appsdk.Context{Invocation: &appsdk.InvocationContext{IdempotencyKey: "call"}}, Params: json.RawMessage(`{"sessionKey":"s","session_key":{"ignored":true},"text":"fix"}`)})
+		if result.Error != nil {
+			t.Fatalf("%s rejected future JSON field: %+v", method, result.Error)
+		}
+	}
+	if calls != 3 {
+		t.Fatalf("expected all handlers, got %d", calls)
+	}
+}
+
+func TestBuilderRejectsRawURLControls(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	if err := app.Use(Extension().SendInput(func(_ context.Context, _ appsdk.Context, input *SendInputRequest) (*Receipt, error) {
+		return &Receipt{SessionKey: input.SessionKey, Accepted: true}, nil
+	})); err != nil {
+		t.Fatal(err)
+	}
+	for _, control := range []string{"\n", "\r", "\t", "\x7f"} {
+		params, err := json.Marshal(map[string]any{"sessionKey": "s", "text": "fix", "context": []any{map[string]any{"title": "t", "text": "x", "sourceUrl": "https://example.com/a" + control + "b"}}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: FunctionSendInput, Context: appsdk.Context{Invocation: &appsdk.InvocationContext{IdempotencyKey: "call"}}, Params: params})
+		if result.Error == nil {
+			t.Fatalf("raw URL control %q accepted", control)
+		}
+	}
+}
+
 func TestBuilderUnicodeLengthAndBlankInput(t *testing.T) {
 	app := appsdk.New(appsdk.Options{AppID: "app"})
 	if err := app.Use(Extension().SendInput(func(_ context.Context, _ appsdk.Context, input *SendInputRequest) (*Receipt, error) {

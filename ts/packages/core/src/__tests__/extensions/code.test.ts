@@ -7,6 +7,9 @@ import {
   CodeSessionEventSchema,
   CodeSessionResultSchema,
   CodeInvocationContextSchema,
+  CodeContextBlockSchema,
+  CodeSessionArtifactSchema,
+  CodeSessionQuestionSchema,
 } from "../../extensions/code.js";
 import { zodToJsonSchema } from "../../utils/zod-to-json-schema.js";
 const now = "2026-10-22T00:00:00Z";
@@ -23,6 +26,34 @@ const snapshot = {
   updatedAt: now,
 };
 describe("code session contract", () => {
+  it("rejects raw control characters that WHATWG URL parsing would remove", () => {
+    for (const control of ["\n", "\r", "\t", "\u007f"]) {
+      const url = `https://example.com/a${control}b`;
+      expect(
+        CodeContextBlockSchema.safeParse({ title: "t", text: "x", sourceUrl: url }).success
+      ).toBe(false);
+      expect(CodeSessionArtifactSchema.safeParse({ kind: "pr", title: "t", url }).success).toBe(
+        false
+      );
+      for (const answerVia of ["sendInput", "provider_ui"]) {
+        expect(
+          CodeSessionQuestionSchema.safeParse({
+            text: "q",
+            answerVia,
+            source: "adapter",
+            actionUrl: url,
+          }).success
+        ).toBe(false);
+      }
+    }
+    expect(
+      CodeContextBlockSchema.safeParse({
+        title: "t",
+        text: "x",
+        sourceUrl: "https://example.com/a%0Ab",
+      }).success
+    ).toBe(true);
+  });
   it("counts Unicode code points and rejects the same blank characters as wire schemas", () => {
     const sessionKey = "😀".repeat(200);
     expect(CodeSendInputInputSchema.parse({ sessionKey, text: "fix" }).sessionKey).toBe(sessionKey);
