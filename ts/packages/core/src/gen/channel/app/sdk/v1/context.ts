@@ -57,6 +57,11 @@ export interface OAuthFlowContext {
   targetManagerId?: string | undefined;
 }
 
+/** Trusted invocation identity supplied by a compatible, verified platform runtime. */
+export interface InvocationContext {
+  idempotencyKey?: string | undefined;
+}
+
 export interface FunctionContext {
   caller?: Caller | undefined;
   channel?: Channel | undefined;
@@ -72,6 +77,7 @@ export interface FunctionContext {
   seedState?: any | undefined;
   webhooks?: { [key: string]: WebhookEndpointContext } | undefined;
   oauthFlow?: OAuthFlowContext | undefined;
+  invocation?: InvocationContext | undefined;
 }
 
 export interface FunctionContext_ApiCredentialsEntry {

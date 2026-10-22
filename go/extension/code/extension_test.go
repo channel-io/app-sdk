@@ -1,8 +1,11 @@
 package code
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/channel-io/app-sdk/go/appsdk"
 	"google.golang.org/protobuf/types/known/structpb"
+	"strings"
 	"testing"
 )
 
@@ -30,5 +33,55 @@ func TestSnapshotRetainsRequiredZeroAndNullValues(t *testing.T) {
 	observation := value["observation"].(map[string]any)
 	if item, ok := observation["observedAt"]; !ok || item != nil {
 		t.Fatalf("missing observation null: %s", data)
+	}
+}
+
+func TestBuilderValidatesRawInputAndPreservesInvocation(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	var calls int
+	var keys []string
+	err := app.Use(Extension().SendInput(func(_ context.Context, ctx appsdk.Context, input *SendInputRequest) (*Receipt, error) {
+		calls++
+		keys = append(keys, ctx.Invocation.IdempotencyKey)
+		return &Receipt{SessionKey: input.SessionKey, Accepted: true}, nil
+	}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := appsdk.FunctionRequest{Method: FunctionSendInput, Context: appsdk.Context{Invocation: &appsdk.InvocationContext{IdempotencyKey: "stable-call"}}, Params: json.RawMessage(`{"sessionKey":"s","text":"fix","future":true}`)}
+	for i := 0; i < 2; i++ {
+		if result := app.HandleRequest(context.Background(), request); result.Error != nil {
+			t.Fatalf("valid request: %+v", result.Error)
+		}
+	}
+	if len(keys) != 2 || keys[0] != "stable-call" || keys[1] != "stable-call" {
+		t.Fatalf("identity lost: %v", keys)
+	}
+	for _, params := range []string{`{"sessionKey":"s","text":"fix","context":[{"title":"t","text":"x","extra":1}]}`, `{"sessionKey":"s","text":"fix","future":"` + strings.Repeat("a", 256*1024) + `"}`} {
+		request.Params = json.RawMessage(params)
+		if result := app.HandleRequest(context.Background(), request); result.Error == nil {
+			t.Fatal("invalid raw input reached handler")
+		}
+	}
+	request.Params = json.RawMessage(`{"sessionKey":"s","text":"fix"}`)
+	request.Context.Invocation = nil
+	if result := app.HandleRequest(context.Background(), request); result.Error == nil {
+		t.Fatal("missing invocation reached handler")
+	}
+	if calls != 2 {
+		t.Fatalf("invalid call reached handler: %d", calls)
+	}
+}
+
+func TestBuilderRejectsMismatchedSessionResult(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	if err := app.Use(Extension().SendInput(func(context.Context, appsdk.Context, *SendInputRequest) (*Receipt, error) {
+		return &Receipt{SessionKey: "other", Accepted: true}, nil
+	})); err != nil {
+		t.Fatal(err)
+	}
+	result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: FunctionSendInput, Context: appsdk.Context{Invocation: &appsdk.InvocationContext{IdempotencyKey: "key"}}, Params: json.RawMessage(`{"sessionKey":"s","text":"fix"}`)})
+	if result.Error == nil {
+		t.Fatal("mismatched session result accepted")
 	}
 }

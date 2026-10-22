@@ -36,6 +36,13 @@ describe("code session contract", () => {
   });
   it("requires state-specific evidence and explicit nullable output fields", () => {
     expect(CodeSessionSnapshotSchema.parse(snapshot)).toEqual(snapshot);
+    expect(
+      CodeSessionSnapshotSchema.safeParse({
+        ...snapshot,
+        status: "running",
+        pendingInputCount: 2147483648,
+      }).success
+    ).toBe(false);
     for (const patch of [
       { status: "needs_input" },
       { status: "queued" },

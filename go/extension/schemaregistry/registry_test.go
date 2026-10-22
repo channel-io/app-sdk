@@ -32,7 +32,6 @@ import (
 
 func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	app := appsdk.New(appsdk.Options{AppID: "app"})
-	use(t, app, code.Extension().SendInput(zero[code.SendInputRequest, code.Receipt]()).GetSession(zero[code.GetSessionRequest, code.Snapshot]()).StopSession(zero[code.StopSessionRequest, code.Receipt]()))
 
 	use(t, app, alftask.Extension().
 		GetTasks(zero[alftask.GetTasksRequest, alftask.GetTasksResponse]()))
@@ -48,6 +47,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 		GetAvailability(zero[calendar.GetAvailabilityRequest, calendar.GetAvailabilityResponse]()).
 		ListCalendars(zero[calendar.ListCalendarsRequest, calendar.ListCalendarsResponse]()).
 		ListEventTypes(zero[calendar.ListEventTypesRequest, calendar.ListEventTypesResponse]()))
+
+	use(t, app, code.Extension().GetSession(zero[code.GetSessionRequest, code.Snapshot]()).SendInput(zero[code.SendInputRequest, code.Receipt]()).StopSession(zero[code.StopSessionRequest, code.Receipt]()))
 
 	use(t, app, command.Extension().
 		Execute(command.FunctionExecute, zero[command.ExecuteRequest, command.ActionResult]()).

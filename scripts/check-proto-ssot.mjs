@@ -273,6 +273,7 @@ function checkGoCoreDTOs() {
         "UserChat",
         "WebhookEndpointContext",
         "OAuthFlowContext",
+        "InvocationContext",
         "Context",
         "FunctionRequest",
         "FunctionResponse",

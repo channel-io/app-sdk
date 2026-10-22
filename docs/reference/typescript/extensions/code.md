@@ -66,9 +66,11 @@ Large results need summaries and artifact links with explicit limitations.
 builder methods: `code.Extension().SendInput(...).GetSession(...)` and optional
 `.StopSession(...)`. The builder preserves required zero counts, empty arrays
 and nulls when marshaling snapshots. For unknown observation time, use
-`structpb.NewNullValue()` in `Observation.ObservedAt`. Go handlers must validate
-the canonical schemas and cross-field/byte constraints; the builder only
-advertises schemas and handles Proto serialization. Event payload is a Proto
+`structpb.NewNullValue()` in `Observation.ObservedAt`. The Go builder validates raw input against the canonical schema before Proto
+decoding, checks output and byte limits, and verifies response session identity.
+Both mutations require `fnCtx.Invocation.IdempotencyKey`; the standard request
+decoder preserves this field. A compatible platform must still supply and sign
+it. The builder does not implement persistent deduplication. Event payload is a Proto
 Struct on the wire; validate the matching snapshot/message shape before publishing.
 
 ## Verification

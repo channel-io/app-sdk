@@ -52,6 +52,11 @@ export const OAuthFlowContextProtoSchema = z.object({
 }) satisfies z.ZodType<pb.OAuthFlowContext>;
 export type OAuthFlowContextProto = z.infer<typeof OAuthFlowContextProtoSchema>;
 
+export const InvocationContextProtoSchema = z.object({
+  idempotencyKey: z.string().optional(),
+}) satisfies z.ZodType<pb.InvocationContext>;
+export type InvocationContextProto = z.infer<typeof InvocationContextProtoSchema>;
+
 export const FunctionContextProtoSchema = z.object({
   caller: z.lazy(() => CallerProtoSchema).optional(),
   channel: z.lazy(() => ChannelProtoSchema).optional(),
@@ -67,5 +72,6 @@ export const FunctionContextProtoSchema = z.object({
   seedState: z.any().optional(),
   webhooks: z.record(z.string(), z.lazy(() => WebhookEndpointContextProtoSchema)).optional(),
   oauthFlow: z.lazy(() => OAuthFlowContextProtoSchema).optional(),
+  invocation: z.lazy(() => InvocationContextProtoSchema).optional(),
 }) satisfies z.ZodType<pb.FunctionContext>;
 export type FunctionContextProto = z.infer<typeof FunctionContextProtoSchema>;
