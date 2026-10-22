@@ -63,14 +63,27 @@ describe("appPerson.invoked", () => {
     expect(
       AppPersonInvokedHookInputSchema.parse({
         ...input,
-        chatType: "directChat",
-        credentialScope: "manager",
         threadId: "thread-1",
       }).threadId
     ).toBe("thread-1");
+    expect(
+      AppPersonInvokedHookInputSchema.parse({
+        ...input,
+        chatType: "directChat",
+        credentialScope: "manager",
+      }).threadId
+    ).toBeUndefined();
+    expect(
+      AppPersonInvokedHookInputSchema.safeParse({
+        ...input,
+        chatType: "directChat",
+        credentialScope: "manager",
+        threadId: "thread-1",
+      }).success
+    ).toBe(false);
   });
 
-  it.each(["0", "9007199254740993", "9223372036854775807"])(
+  it.each(["1", "9007199254740993", "9223372036854775807"])(
     "preserves signed int64 revision %s without number conversion",
     (sourceContentRevision) => {
       const parsed = AppPersonInvokedHookInputSchema.parse({ ...input, sourceContentRevision });
@@ -78,7 +91,7 @@ describe("appPerson.invoked", () => {
     }
   );
 
-  it.each([0, 9007199254740992, "-1", "01", "1.0", "9223372036854775808"])(
+  it.each([0, "0", 9007199254740992, "-1", "01", "1.0", "9223372036854775808"])(
     "rejects noncanonical or unsafe revisions: %s",
     (sourceContentRevision) => {
       expect(

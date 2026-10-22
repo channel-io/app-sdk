@@ -43,7 +43,7 @@ type에는 webhook object를 넣을 수 없습니다.
 그룹에서 앱 하나를 멘션하면 채널 자격 증명을, 앱 DM에서는 매니저 자격 증명을
 사용합니다. `invokingManagerId`는 호출한 매니저이며 `credentialScope`와 별개입니다.
 필요한 자격 증명이 없더라도 다른 범위의 자격 증명을 대신 사용하지 않습니다.
-`sourceContentRevision`은 음수가 아닌 signed-int64 십진 문자열이며 JavaScript
+`sourceContentRevision`은 양의 signed-int64 십진 문자열이며 JavaScript
 숫자로 변환하면 안 됩니다. `prompt`는 빈 문자열일 수 있습니다.
 
 등록된 함수가 호출을 처리합니다. 결과는

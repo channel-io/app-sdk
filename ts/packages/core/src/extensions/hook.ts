@@ -191,7 +191,9 @@ export const AppPersonInvokedHookInputSchema = z
     chatId: AppPersonInvokedIdentifierSchema,
     threadId: AppPersonInvokedIdentifierSchema.optional(),
     sourceMessageId: AppPersonInvokedIdentifierSchema,
-    sourceContentRevision: NonNegativeInt64StringSchema,
+    sourceContentRevision: NonNegativeInt64StringSchema.refine((value) => value !== "0", {
+      message: "sourceContentRevision must be positive",
+    }),
     requestedAt: z.string().datetime({ offset: true }),
     appId: AppPersonInvokedIdentifierSchema,
     appPersonId: AppPersonInvokedIdentifierSchema,
@@ -202,6 +204,13 @@ export const AppPersonInvokedHookInputSchema = z
   })
   .strict()
   .superRefine((input, ctx) => {
+    if (input.chatType === "directChat" && input.threadId !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["threadId"],
+        message: "directChat does not support threads",
+      });
+    }
     const expectedScope = input.chatType === "group" ? "channel" : "manager";
     if (input.credentialScope !== expectedScope) {
       ctx.addIssue({

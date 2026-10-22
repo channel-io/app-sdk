@@ -44,7 +44,7 @@ TypeScript は `AppPersonInvokedHookInputSchema`、`AppPersonInvokedHookResultSc
 Group で単一アプリをメンションすると Channel の認証情報を、アプリ DM では
 Manager の認証情報を使用します。`invokingManagerId` は呼び出した Manager であり、
 `credentialScope` とは別です。必要な認証情報がなくても別スコープへフォールバックしません。
-`sourceContentRevision` は非負 signed-int64 の十進文字列です。JavaScript の数値へ
+`sourceContentRevision` は正の signed-int64 の十進文字列です。JavaScript の数値へ
 変換しないでください。`prompt` は空文字列でも有効です。
 
 登録した関数が処理を担当します。結果は

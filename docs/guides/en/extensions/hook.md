@@ -45,7 +45,7 @@ Register `appPerson.invoked` using only `actionFunctionName` and optional
 A single-app Group mention uses channel credentials; an app direct message uses
 manager credentials. `invokingManagerId` identifies the initiating manager
 separately from `credentialScope`. Missing credentials never select the other
-scope. `sourceContentRevision` is a non-negative signed-int64 decimal string,
+scope. `sourceContentRevision` is a positive signed-int64 decimal string,
 not a JavaScript number, and `prompt` may be empty.
 
 The registered function owns processing. Return a terminal acknowledgement
