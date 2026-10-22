@@ -62,6 +62,8 @@ Inputs allow future top-level wire fields and strip them before handlers. Output
 are strict. sendInput JSON is limited to 256 KiB; snapshots and events to 64 KiB.
 String limits count Unicode code points. The schemas spell out the same blank
 character set for TypeScript, Go and JSON Schema validators.
+Timestamps use years 0001–9999, uppercase T/Z, required seconds and an optional
+fraction. Numeric offsets require a colon. Leap seconds are excluded.
 Use the exported runtime schemas at boundaries, including before sending an event.
 Large results need summaries and artifact links with explicit limitations.
 

@@ -132,3 +132,32 @@ func TestBuilderUnicodeResultLength(t *testing.T) {
 		}
 	}
 }
+
+func TestBuilderTimestampContract(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	var observed string
+	if err := app.Use(Extension().GetSession(func(context.Context, appsdk.Context, *GetSessionRequest) (*Snapshot, error) {
+		return &Snapshot{SessionKey: "s", Version: "1", Status: "idle", Observation: &Observation{Status: "unknown", ObservedAt: structpb.NewNullValue()}, UpdatedAt: observed}, nil
+	})); err != nil {
+		t.Fatal(err)
+	}
+	for _, test := range []struct {
+		value string
+		valid bool
+	}{
+		{"2026-10-22T00:00:00Z", true},
+		{"2026-10-22T09:00:00.123456789+09:00", true},
+		{"2026-10-22T00:00Z", false},
+		{"2026-10-22T00:00:00+0900", false},
+		{"2026-10-22T00:00:00+99:99", false},
+		{"2026-10-22t00:00:00z", false},
+		{"2026-10-22T00:00:60Z", false},
+		{"0000-01-01T00:00:00Z", false},
+	} {
+		observed = test.value
+		result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: FunctionGetSession, Params: json.RawMessage(`{"sessionKey":"s"}`)})
+		if (result.Error == nil) != test.valid {
+			t.Fatalf("%s valid=%v: %+v", observed, test.valid, result.Error)
+		}
+	}
+}

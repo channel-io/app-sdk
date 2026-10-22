@@ -25,6 +25,9 @@ function nonBlank(maximum: number) {
   return maxCodePoints(z.string().min(1).regex(new RegExp(nonBlankPattern)), maximum);
 }
 export const CodeInvocationContextSchema = z.object({ idempotencyKey: nonBlank(200) });
+const timestampPattern =
+  "^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]|[0-9][1-9][0-9]{2}|[1-9][0-9]{3})-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$";
+const timestamp = z.string().datetime({ offset: true }).regex(new RegExp(timestampPattern));
 
 function withinBytes(value: unknown, maximum: number): boolean {
   try {
@@ -134,7 +137,7 @@ export const CodeSessionResultSchema = z
   .object({
     text: nonBlank(8192),
     source: z.enum(["provider_message", "agent_report", "adapter"]),
-    recordedAt: z.string().datetime({ offset: true }),
+    recordedAt: timestamp,
     limitations: z.array(nonBlank(2048)).max(20),
   })
   .strict();
@@ -156,13 +159,11 @@ export type CodeSessionArtifact = ProtoBacked<
 >;
 
 export const CodeSessionObservationSchema = z.union([
-  z
-    .object({ status: z.literal("current"), observedAt: z.string().datetime({ offset: true }) })
-    .strict(),
+  z.object({ status: z.literal("current"), observedAt: timestamp }).strict(),
   z
     .object({
       status: z.enum(["stale", "unknown"]),
-      observedAt: z.union([z.string().datetime({ offset: true }), z.null()]),
+      observedAt: z.union([timestamp, z.null()]),
     })
     .strict(),
 ]);
@@ -184,7 +185,7 @@ export const CodeSessionSnapshotSchema = z
         artifacts: z.array(CodeSessionArtifactSchema).max(50),
         error: z.union([CodeSessionErrorSchema, z.null()]),
         observation: CodeSessionObservationSchema,
-        updatedAt: z.string().datetime({ offset: true }),
+        updatedAt: timestamp,
       })
       .strict(),
     z
@@ -198,7 +199,7 @@ export const CodeSessionSnapshotSchema = z
         artifacts: z.array(CodeSessionArtifactSchema).max(50),
         error: z.union([CodeSessionErrorSchema, z.null()]),
         observation: CodeSessionObservationSchema,
-        updatedAt: z.string().datetime({ offset: true }),
+        updatedAt: timestamp,
       })
       .strict(),
     z
@@ -212,7 +213,7 @@ export const CodeSessionSnapshotSchema = z
         artifacts: z.array(CodeSessionArtifactSchema).max(50),
         error: z.union([CodeSessionErrorSchema, z.null()]),
         observation: CodeSessionObservationSchema,
-        updatedAt: z.string().datetime({ offset: true }),
+        updatedAt: timestamp,
       })
       .strict(),
     z
@@ -226,7 +227,7 @@ export const CodeSessionSnapshotSchema = z
         artifacts: z.array(CodeSessionArtifactSchema).max(50),
         error: CodeSessionErrorSchema,
         observation: CodeSessionObservationSchema,
-        updatedAt: z.string().datetime({ offset: true }),
+        updatedAt: timestamp,
       })
       .strict(),
     z
@@ -240,7 +241,7 @@ export const CodeSessionSnapshotSchema = z
         artifacts: z.array(CodeSessionArtifactSchema).max(50),
         error: z.union([CodeSessionErrorSchema, z.null()]),
         observation: CodeSessionObservationSchema,
-        updatedAt: z.string().datetime({ offset: true }),
+        updatedAt: timestamp,
       })
       .strict(),
   ])
@@ -268,8 +269,8 @@ export const CodeSessionEventSchema = z
         sessionKey: nonBlank(200),
         eventId: nonBlank(200),
         sequence: z.string().max(30).regex(new RegExp("^[1-9][0-9]*$")),
-        recordedAt: z.string().datetime({ offset: true }),
-        occurredAt: z.string().datetime({ offset: true }).optional(),
+        recordedAt: timestamp,
+        occurredAt: timestamp.optional(),
         type: z.literal("session.updated"),
         payload: CodeSessionSnapshotSchema,
       })
@@ -279,8 +280,8 @@ export const CodeSessionEventSchema = z
         sessionKey: nonBlank(200),
         eventId: nonBlank(200),
         sequence: z.string().max(30).regex(new RegExp("^[1-9][0-9]*$")),
-        recordedAt: z.string().datetime({ offset: true }),
-        occurredAt: z.string().datetime({ offset: true }).optional(),
+        recordedAt: timestamp,
+        occurredAt: timestamp.optional(),
         type: z.literal("session.message"),
         payload: CodeSessionMessageSchema,
       })

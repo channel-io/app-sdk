@@ -73,6 +73,12 @@ describe("code session contract", () => {
       }).success
     ).toBe(false);
     for (const patch of [
+      { updatedAt: "2026-10-22T00:00Z" },
+      { updatedAt: "2026-10-22T00:00:00+0900" },
+      { updatedAt: "2026-10-22T00:00:00+99:99" },
+      { updatedAt: "2026-10-22t00:00:00z" },
+      { updatedAt: "2026-10-22T00:00:60Z" },
+      { updatedAt: "0000-01-01T00:00:00Z" },
       { status: "needs_input" },
       { status: "queued" },
       { status: "failed" },
@@ -85,6 +91,8 @@ describe("code session contract", () => {
     ]) {
       expect(CodeSessionSnapshotSchema.safeParse({ ...snapshot, ...patch }).success).toBe(false);
     }
+    for (const updatedAt of ["2026-10-22T00:00:00Z", "2026-10-22T09:00:00.123456789+09:00"])
+      expect(CodeSessionSnapshotSchema.safeParse({ ...snapshot, updatedAt }).success).toBe(true);
     expect(
       CodeSessionSnapshotSchema.safeParse({
         ...snapshot,
