@@ -10,6 +10,7 @@ require (
 	github.com/apache/arrow-go/v18 v18.4.1
 	github.com/gin-gonic/gin v1.10.1
 	github.com/jackc/pgx/v5 v5.9.2
+	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	golang.org/x/oauth2 v0.36.0
 	google.golang.org/api v0.274.0
 	google.golang.org/grpc v1.79.3

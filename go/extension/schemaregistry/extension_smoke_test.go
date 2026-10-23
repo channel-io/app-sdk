@@ -9,6 +9,7 @@ import (
 	"github.com/channel-io/app-sdk/go/extension/alftask"
 	"github.com/channel-io/app-sdk/go/extension/apikey"
 	"github.com/channel-io/app-sdk/go/extension/calendar"
+	"github.com/channel-io/app-sdk/go/extension/code"
 	"github.com/channel-io/app-sdk/go/extension/command"
 	"github.com/channel-io/app-sdk/go/extension/commerce"
 	"github.com/channel-io/app-sdk/go/extension/config"
@@ -38,6 +39,9 @@ type extensionSmokeSpec struct {
 }
 
 var extensionSmokeSpecs = []extensionSmokeSpec{
+	{name: code.ExtensionName, systemVersion: code.SystemVersion, functions: []string{code.FunctionSendInput, code.FunctionGetSession, code.FunctionStopSession}, build: func() appsdk.Extension {
+		return code.Extension().SendInput(smokeZero[code.SendInputRequest, code.Receipt]()).GetSession(smokeZero[code.GetSessionRequest, code.Snapshot]()).StopSession(smokeZero[code.StopSessionRequest, code.Receipt]())
+	}},
 	{name: issue.ExtensionName, systemVersion: issue.SystemVersion, functions: []string{issue.FunctionSearchIssues, issue.FunctionGetIssue, issue.FunctionGetIssues, issue.FunctionGetIssueTransitions, issue.FunctionExecuteIssueTransition}, build: func() appsdk.Extension {
 		return issue.Extension().SearchIssues(smokeZero[issue.SearchIssuesRequest, issue.SearchIssuesResponse]()).
 			GetIssue(smokeZero[issue.GetIssueRequest, issue.GetIssueResponse]()).

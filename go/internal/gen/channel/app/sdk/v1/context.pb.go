@@ -445,6 +445,51 @@ func (x *OAuthFlowContext) GetTargetManagerId() string {
 	return ""
 }
 
+// Trusted invocation identity supplied by a compatible, verified platform runtime.
+type InvocationContext struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	IdempotencyKey string                 `protobuf:"bytes,1,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *InvocationContext) Reset() {
+	*x = InvocationContext{}
+	mi := &file_channel_app_sdk_v1_context_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InvocationContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InvocationContext) ProtoMessage() {}
+
+func (x *InvocationContext) ProtoReflect() protoreflect.Message {
+	mi := &file_channel_app_sdk_v1_context_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InvocationContext.ProtoReflect.Descriptor instead.
+func (*InvocationContext) Descriptor() ([]byte, []int) {
+	return file_channel_app_sdk_v1_context_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *InvocationContext) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
+}
+
 type FunctionContext struct {
 	state           protoimpl.MessageState             `protogen:"open.v1"`
 	Caller          *Caller                            `protobuf:"bytes,1,opt,name=caller,proto3" json:"caller,omitempty"`
@@ -461,13 +506,14 @@ type FunctionContext struct {
 	SeedState       *structpb.Value                    `protobuf:"bytes,12,opt,name=seed_state,json=seedState,proto3" json:"seed_state,omitempty"`
 	Webhooks        map[string]*WebhookEndpointContext `protobuf:"bytes,13,rep,name=webhooks,proto3" json:"webhooks,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	OauthFlow       *OAuthFlowContext                  `protobuf:"bytes,14,opt,name=oauth_flow,json=oauthFlow,proto3" json:"oauth_flow,omitempty"`
+	Invocation      *InvocationContext                 `protobuf:"bytes,15,opt,name=invocation,proto3" json:"invocation,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
 
 func (x *FunctionContext) Reset() {
 	*x = FunctionContext{}
-	mi := &file_channel_app_sdk_v1_context_proto_msgTypes[7]
+	mi := &file_channel_app_sdk_v1_context_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -479,7 +525,7 @@ func (x *FunctionContext) String() string {
 func (*FunctionContext) ProtoMessage() {}
 
 func (x *FunctionContext) ProtoReflect() protoreflect.Message {
-	mi := &file_channel_app_sdk_v1_context_proto_msgTypes[7]
+	mi := &file_channel_app_sdk_v1_context_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -492,7 +538,7 @@ func (x *FunctionContext) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FunctionContext.ProtoReflect.Descriptor instead.
 func (*FunctionContext) Descriptor() ([]byte, []int) {
-	return file_channel_app_sdk_v1_context_proto_rawDescGZIP(), []int{7}
+	return file_channel_app_sdk_v1_context_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *FunctionContext) GetCaller() *Caller {
@@ -593,6 +639,13 @@ func (x *FunctionContext) GetOauthFlow() *OAuthFlowContext {
 	return nil
 }
 
+func (x *FunctionContext) GetInvocation() *InvocationContext {
+	if x != nil {
+		return x.Invocation
+	}
+	return nil
+}
+
 var File_channel_app_sdk_v1_context_proto protoreflect.FileDescriptor
 
 const file_channel_app_sdk_v1_context_proto_rawDesc = "" +
@@ -631,7 +684,9 @@ const file_channel_app_sdk_v1_context_proto_rawDesc = "" +
 	"\x03key\x18\x05 \x01(\tH\x00R\x03key\x88\x01\x01\x12/\n" +
 	"\x11target_manager_id\x18\x06 \x01(\tH\x01R\x0ftargetManagerId\x88\x01\x01B\x06\n" +
 	"\x04_keyB\x14\n" +
-	"\x12_target_manager_id\"\x8f\a\n" +
+	"\x12_target_manager_id\"<\n" +
+	"\x11InvocationContext\x12'\n" +
+	"\x0fidempotency_key\x18\x01 \x01(\tR\x0eidempotencyKey\"\xd6\a\n" +
 	"\x0fFunctionContext\x122\n" +
 	"\x06caller\x18\x01 \x01(\v2\x1a.channel.app.sdk.v1.CallerR\x06caller\x125\n" +
 	"\achannel\x18\x02 \x01(\v2\x1b.channel.app.sdk.v1.ChannelR\achannel\x12,\n" +
@@ -651,7 +706,10 @@ const file_channel_app_sdk_v1_context_proto_rawDesc = "" +
 	"seed_state\x18\f \x01(\v2\x16.google.protobuf.ValueR\tseedState\x12M\n" +
 	"\bwebhooks\x18\r \x03(\v21.channel.app.sdk.v1.FunctionContext.WebhooksEntryR\bwebhooks\x12C\n" +
 	"\n" +
-	"oauth_flow\x18\x0e \x01(\v2$.channel.app.sdk.v1.OAuthFlowContextR\toauthFlow\x1aA\n" +
+	"oauth_flow\x18\x0e \x01(\v2$.channel.app.sdk.v1.OAuthFlowContextR\toauthFlow\x12E\n" +
+	"\n" +
+	"invocation\x18\x0f \x01(\v2%.channel.app.sdk.v1.InvocationContextR\n" +
+	"invocation\x1aA\n" +
 	"\x13ApiCredentialsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1ag\n" +
@@ -671,7 +729,7 @@ func file_channel_app_sdk_v1_context_proto_rawDescGZIP() []byte {
 	return file_channel_app_sdk_v1_context_proto_rawDescData
 }
 
-var file_channel_app_sdk_v1_context_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_channel_app_sdk_v1_context_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_channel_app_sdk_v1_context_proto_goTypes = []any{
 	(*Caller)(nil),                 // 0: channel.app.sdk.v1.Caller
 	(*Channel)(nil),                // 1: channel.app.sdk.v1.Channel
@@ -680,30 +738,32 @@ var file_channel_app_sdk_v1_context_proto_goTypes = []any{
 	(*UserChat)(nil),               // 4: channel.app.sdk.v1.UserChat
 	(*WebhookEndpointContext)(nil), // 5: channel.app.sdk.v1.WebhookEndpointContext
 	(*OAuthFlowContext)(nil),       // 6: channel.app.sdk.v1.OAuthFlowContext
-	(*FunctionContext)(nil),        // 7: channel.app.sdk.v1.FunctionContext
-	nil,                            // 8: channel.app.sdk.v1.FunctionContext.ApiCredentialsEntry
-	nil,                            // 9: channel.app.sdk.v1.FunctionContext.WebhooksEntry
-	(*structpb.Struct)(nil),        // 10: google.protobuf.Struct
-	(*structpb.Value)(nil),         // 11: google.protobuf.Value
+	(*InvocationContext)(nil),      // 7: channel.app.sdk.v1.InvocationContext
+	(*FunctionContext)(nil),        // 8: channel.app.sdk.v1.FunctionContext
+	nil,                            // 9: channel.app.sdk.v1.FunctionContext.ApiCredentialsEntry
+	nil,                            // 10: channel.app.sdk.v1.FunctionContext.WebhooksEntry
+	(*structpb.Struct)(nil),        // 11: google.protobuf.Struct
+	(*structpb.Value)(nil),         // 12: google.protobuf.Value
 }
 var file_channel_app_sdk_v1_context_proto_depIdxs = []int32{
-	10, // 0: channel.app.sdk.v1.User.profile:type_name -> google.protobuf.Struct
-	10, // 1: channel.app.sdk.v1.UserChat.profile:type_name -> google.protobuf.Struct
+	11, // 0: channel.app.sdk.v1.User.profile:type_name -> google.protobuf.Struct
+	11, // 1: channel.app.sdk.v1.UserChat.profile:type_name -> google.protobuf.Struct
 	0,  // 2: channel.app.sdk.v1.FunctionContext.caller:type_name -> channel.app.sdk.v1.Caller
 	1,  // 3: channel.app.sdk.v1.FunctionContext.channel:type_name -> channel.app.sdk.v1.Channel
 	3,  // 4: channel.app.sdk.v1.FunctionContext.user:type_name -> channel.app.sdk.v1.User
 	4,  // 5: channel.app.sdk.v1.FunctionContext.user_chat:type_name -> channel.app.sdk.v1.UserChat
-	8,  // 6: channel.app.sdk.v1.FunctionContext.api_credentials:type_name -> channel.app.sdk.v1.FunctionContext.ApiCredentialsEntry
-	10, // 7: channel.app.sdk.v1.FunctionContext.config:type_name -> google.protobuf.Struct
-	11, // 8: channel.app.sdk.v1.FunctionContext.seed_state:type_name -> google.protobuf.Value
-	9,  // 9: channel.app.sdk.v1.FunctionContext.webhooks:type_name -> channel.app.sdk.v1.FunctionContext.WebhooksEntry
+	9,  // 6: channel.app.sdk.v1.FunctionContext.api_credentials:type_name -> channel.app.sdk.v1.FunctionContext.ApiCredentialsEntry
+	11, // 7: channel.app.sdk.v1.FunctionContext.config:type_name -> google.protobuf.Struct
+	12, // 8: channel.app.sdk.v1.FunctionContext.seed_state:type_name -> google.protobuf.Value
+	10, // 9: channel.app.sdk.v1.FunctionContext.webhooks:type_name -> channel.app.sdk.v1.FunctionContext.WebhooksEntry
 	6,  // 10: channel.app.sdk.v1.FunctionContext.oauth_flow:type_name -> channel.app.sdk.v1.OAuthFlowContext
-	5,  // 11: channel.app.sdk.v1.FunctionContext.WebhooksEntry.value:type_name -> channel.app.sdk.v1.WebhookEndpointContext
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	7,  // 11: channel.app.sdk.v1.FunctionContext.invocation:type_name -> channel.app.sdk.v1.InvocationContext
+	5,  // 12: channel.app.sdk.v1.FunctionContext.WebhooksEntry.value:type_name -> channel.app.sdk.v1.WebhookEndpointContext
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_channel_app_sdk_v1_context_proto_init() }
@@ -718,7 +778,7 @@ func file_channel_app_sdk_v1_context_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_channel_app_sdk_v1_context_proto_rawDesc), len(file_channel_app_sdk_v1_context_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

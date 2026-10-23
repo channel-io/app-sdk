@@ -1,4 +1,21 @@
 import {
+  CodeInvocationContextSchema,
+  CodeContextBlockSchema,
+  CodeSendInputInputSchema,
+  CodeGetSessionInputSchema,
+  CodeStopSessionInputSchema,
+  CodeSessionReceiptSchema,
+  CodeSessionErrorSchema,
+  CodeSessionQuestionSchema,
+  CodeSessionResultSchema,
+  CodeSessionArtifactSchema,
+  CodeSessionObservationSchema,
+  CodeSessionSnapshotSchema,
+  CodeSessionMessageSchema,
+  CodeSessionEventSchema,
+  CodePublicationReceiptSchema,
+} from "../../extensions/code.js";
+import {
   ExternalIssueSchema,
   IssueProviderStateSchema,
   IssueErrorSchema,
@@ -264,7 +281,7 @@ import {
   CommerceGetProductsOutputSchema,
 } from "../../extensions/commerce.js";
 
-type GeneratedFile = "common" | "extension";
+type GeneratedFile = "common" | "extension" | "context";
 
 interface Contract {
   name: string;
@@ -275,6 +292,31 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
+  contract("CodeInvocationContext", CodeInvocationContextSchema, "context", "InvocationContext"),
+  contract("CodeContextBlock", CodeContextBlockSchema, "extension", "CodeContextBlock"),
+  contract("CodeSendInputInput", CodeSendInputInputSchema, "extension", "CodeSendInputInput"),
+  contract("CodeGetSessionInput", CodeGetSessionInputSchema, "extension", "CodeGetSessionInput"),
+  contract("CodeStopSessionInput", CodeStopSessionInputSchema, "extension", "CodeStopSessionInput"),
+  contract("CodeSessionReceipt", CodeSessionReceiptSchema, "extension", "CodeSessionReceipt"),
+  contract("CodeSessionError", CodeSessionErrorSchema, "extension", "CodeSessionError"),
+  contract("CodeSessionQuestion", CodeSessionQuestionSchema, "extension", "CodeSessionQuestion"),
+  contract("CodeSessionResult", CodeSessionResultSchema, "extension", "CodeSessionResult"),
+  contract("CodeSessionArtifact", CodeSessionArtifactSchema, "extension", "CodeSessionArtifact"),
+  contract(
+    "CodeSessionObservation",
+    CodeSessionObservationSchema,
+    "extension",
+    "CodeSessionObservation"
+  ),
+  contract("CodeSessionSnapshot", CodeSessionSnapshotSchema, "extension", "CodeSessionSnapshot"),
+  contract("CodeSessionMessage", CodeSessionMessageSchema, "extension", "CodeSessionMessage"),
+  contract("CodeSessionEvent", CodeSessionEventSchema, "extension", "CodeSessionEvent"),
+  contract(
+    "CodePublicationReceipt",
+    CodePublicationReceiptSchema,
+    "extension",
+    "CodePublicationReceipt"
+  ),
   contract("ExternalIssue", ExternalIssueSchema, "extension", "ExternalIssue"),
   contract("IssueProviderState", IssueProviderStateSchema, "extension", "IssueProviderState"),
   contract("IssueError", IssueErrorSchema, "extension", "IssueError"),
@@ -1099,6 +1141,7 @@ const contracts: Contract[] = [
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const generatedSources: Record<GeneratedFile, string> = {
+  context: readFileSync(resolve(__dirname, "../../gen/channel/app/sdk/v1/context.ts"), "utf8"),
   common: readFileSync(resolve(__dirname, "../../gen/channel/app/sdk/v1/common.ts"), "utf8"),
   extension: readFileSync(resolve(__dirname, "../../gen/channel/app/sdk/v1/extension.ts"), "utf8"),
 };

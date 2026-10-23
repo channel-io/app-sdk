@@ -62,7 +62,13 @@ type OAuthFlowContext struct {
 	TargetManagerID *string `json:"targetManagerId,omitempty"`
 }
 
+// InvocationContext is trusted only after platform request authentication.
+type InvocationContext struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+}
+
 type Context struct {
+	Invocation      *InvocationContext                `json:"invocation,omitempty"`
 	Caller          Caller                            `json:"caller"`
 	Channel         Channel                           `json:"channel"`
 	User            *User                             `json:"user,omitempty"`

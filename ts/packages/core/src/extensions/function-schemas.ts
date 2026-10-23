@@ -1,4 +1,11 @@
 import {
+  CodeSendInputInputSchema,
+  CodeGetSessionInputSchema,
+  CodeStopSessionInputSchema,
+  CodeSessionReceiptSchema,
+  CodeSessionSnapshotSchema,
+} from "./code.js";
+import {
   IssueSearchIssuesInputSchema,
   IssueSearchIssuesOutputSchema,
   IssueGetIssueInputSchema,
@@ -353,6 +360,21 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     name: "extension.calendar.calendar.listEventTypes",
     input: CalendarListEventTypesInputSchema,
     output: CalendarListEventTypesOutputSchema,
+  },
+  {
+    name: "extension.code.session.getSession",
+    input: CodeGetSessionInputSchema,
+    output: CodeSessionSnapshotSchema,
+  },
+  {
+    name: "extension.code.session.sendInput",
+    input: CodeSendInputInputSchema,
+    output: CodeSessionReceiptSchema,
+  },
+  {
+    name: "extension.code.session.stopSession",
+    input: CodeStopSessionInputSchema,
+    output: CodeSessionReceiptSchema,
   },
   {
     name: "extension.command.command.execute",
@@ -761,6 +783,8 @@ export function getExtensionFunctionSchemas(): FunctionSchema[] {
         if (ids) ids["uniqueItems"] = true;
       }
     }
+    if (definition.name.startsWith("extension.code.session."))
+      schema.inputSchema["additionalProperties"] = true;
     return schema;
   });
 }

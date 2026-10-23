@@ -33,6 +33,10 @@ Use `@Extension`, `@Func`, and schema decorators from `@channel.io/app-sdk-serve
 | ALF task         | decorators                                     | `registerExtension("alfTask", "v1")`; registration triggers sync      | `getAlfTaskVersions`                                                                                    | [alf-task.md](./alf-task.md)                                                                  |
 | Notebook         | decorators                                     | `registerExtension("notebook", "v1")`; registration triggers sync     | `getAppNotebookVersions`                                                                                | [notebook.md](./notebook.md)                                                                  |
 
+## Code sessions
+
+See [Code session extension](code.md) for the shared coding-provider contract and coordinated runtime requirements.
+
 ## Notes
 
 - Command, widget, custom tab, hook, and polling are metadata-driven. AppStore reads their metadata functions during registration.

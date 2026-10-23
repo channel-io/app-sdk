@@ -2290,3 +2290,96 @@ message OAuthAuthorizationRequestMapping {
   // Omit to disable PKCE. Only S256 is supported.
   optional string code_challenge_method = 3;
 }
+
+// Provider-independent asynchronous coding sessions. JSON constraints are in SDK schemas.
+message CodeContextBlock {
+  string title = 1;
+  string text = 2;
+  optional string source_url = 3;
+}
+
+message CodeSendInputInput {
+  string session_key = 1;
+  string text = 2;
+  repeated CodeContextBlock context = 3;
+}
+
+message CodeGetSessionInput {
+  string session_key = 1;
+}
+
+message CodeStopSessionInput {
+  string session_key = 1;
+  optional string reason = 2;
+}
+
+message CodeSessionReceipt {
+  string session_key = 1;
+  bool accepted = 2;
+}
+
+message CodeSessionError {
+  string code = 1;
+  string message = 2;
+  bool retryable = 3;
+}
+
+message CodeSessionQuestion {
+  string text = 1;
+  string answer_via = 2;
+  string source = 3;
+  optional string action_url = 4;
+}
+
+message CodeSessionResult {
+  string text = 1;
+  string source = 2;
+  string recorded_at = 3;
+  repeated string limitations = 4;
+}
+
+message CodeSessionArtifact {
+  string kind = 1;
+  string title = 2;
+  string url = 3;
+}
+
+message CodeSessionObservation {
+  string status = 1;
+  google.protobuf.Value observed_at = 2;
+}
+
+message CodeSessionSnapshot {
+  string session_key = 1;
+  string version = 2;
+  string status = 3;
+  int32 pending_input_count = 4;
+  CodeSessionQuestion question = 5;
+  CodeSessionResult last_result = 6;
+  repeated CodeSessionArtifact artifacts = 7;
+  CodeSessionError error = 8;
+  CodeSessionObservation observation = 9;
+  string updated_at = 10;
+}
+
+message CodeSessionMessage {
+  string text = 1;
+  string source = 2;
+}
+
+message CodeSessionEvent {
+  string session_key = 1;
+  string event_id = 2;
+  string sequence = 3;
+  string recorded_at = 4;
+  optional string occurred_at = 5;
+  string type = 6;
+  google.protobuf.Struct payload = 7;
+}
+
+message CodePublicationReceipt {
+  bool accepted = 1;
+  string session_key = 2;
+  string event_id = 3;
+  string sequence = 4;
+}

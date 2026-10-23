@@ -41,3 +41,5 @@ export * from "./wms.js";
 export * from "./messaging.js";
 export * from "./mail-relay.js";
 export * from "./issue.js";
+
+export * from "./code.js";

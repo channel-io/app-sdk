@@ -51,6 +51,11 @@ message OAuthFlowContext {
   optional string target_manager_id = 6;
 }
 
+// Trusted invocation identity supplied by a compatible, verified platform runtime.
+message InvocationContext {
+  string idempotency_key = 1;
+}
+
 message FunctionContext {
   Caller caller = 1;
   Channel channel = 2;
@@ -66,4 +71,5 @@ message FunctionContext {
   google.protobuf.Value seed_state = 12;
   map<string, WebhookEndpointContext> webhooks = 13;
   OAuthFlowContext oauth_flow = 14;
+  InvocationContext invocation = 15;
 }

@@ -2704,3 +2704,96 @@ export interface OAuthAuthorizationRequestMapping {
   /** Omit to disable PKCE. Only S256 is supported. */
   codeChallengeMethod?: string | undefined;
 }
+
+/** Provider-independent asynchronous coding sessions. JSON constraints are in SDK schemas. */
+export interface CodeContextBlock {
+  title?: string | undefined;
+  text?: string | undefined;
+  sourceUrl?: string | undefined;
+}
+
+export interface CodeSendInputInput {
+  sessionKey?: string | undefined;
+  text?: string | undefined;
+  context?: CodeContextBlock[] | undefined;
+}
+
+export interface CodeGetSessionInput {
+  sessionKey?: string | undefined;
+}
+
+export interface CodeStopSessionInput {
+  sessionKey?: string | undefined;
+  reason?: string | undefined;
+}
+
+export interface CodeSessionReceipt {
+  sessionKey?: string | undefined;
+  accepted?: boolean | undefined;
+}
+
+export interface CodeSessionError {
+  code?: string | undefined;
+  message?: string | undefined;
+  retryable?: boolean | undefined;
+}
+
+export interface CodeSessionQuestion {
+  text?: string | undefined;
+  answerVia?: string | undefined;
+  source?: string | undefined;
+  actionUrl?: string | undefined;
+}
+
+export interface CodeSessionResult {
+  text?: string | undefined;
+  source?: string | undefined;
+  recordedAt?: string | undefined;
+  limitations?: string[] | undefined;
+}
+
+export interface CodeSessionArtifact {
+  kind?: string | undefined;
+  title?: string | undefined;
+  url?: string | undefined;
+}
+
+export interface CodeSessionObservation {
+  status?: string | undefined;
+  observedAt?: any | undefined;
+}
+
+export interface CodeSessionSnapshot {
+  sessionKey?: string | undefined;
+  version?: string | undefined;
+  status?: string | undefined;
+  pendingInputCount?: number | undefined;
+  question?: CodeSessionQuestion | undefined;
+  lastResult?: CodeSessionResult | undefined;
+  artifacts?: CodeSessionArtifact[] | undefined;
+  error?: CodeSessionError | undefined;
+  observation?: CodeSessionObservation | undefined;
+  updatedAt?: string | undefined;
+}
+
+export interface CodeSessionMessage {
+  text?: string | undefined;
+  source?: string | undefined;
+}
+
+export interface CodeSessionEvent {
+  sessionKey?: string | undefined;
+  eventId?: string | undefined;
+  sequence?: string | undefined;
+  recordedAt?: string | undefined;
+  occurredAt?: string | undefined;
+  type?: string | undefined;
+  payload?: { [key: string]: any } | undefined;
+}
+
+export interface CodePublicationReceipt {
+  accepted?: boolean | undefined;
+  sessionKey?: string | undefined;
+  eventId?: string | undefined;
+  sequence?: string | undefined;
+}

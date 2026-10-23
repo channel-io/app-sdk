@@ -13,7 +13,6 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import type { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
 import type {
   Context,
   FunctionCallRequest,
@@ -25,6 +24,7 @@ import {
   FunctionCallError,
   FunctionNotFoundError,
   ValidationError,
+  zodToJsonSchema,
 } from "@channel.io/app-sdk-core";
 import { AppStoreClient } from "../appstore/client.js";
 import { normalizeExtensionResult } from "../utils/extension-result-normalizer.js";
@@ -126,10 +126,11 @@ export class ChannelApp {
     options: { description?: string } | undefined,
     test: boolean
   ): this {
-    const inputJsonSchema = zodToJsonSchema(inputSchema, { $refStrategy: "none" }) as Record<
-      string,
-      unknown
-    >;
+    const inputJsonSchema = zodToJsonSchema(inputSchema);
+    const fullName = name.startsWith("extension.") ? name : `extension.${name}`;
+    if (fullName.startsWith("extension.code.session.")) {
+      inputJsonSchema["additionalProperties"] = true;
+    }
 
     const def: SimpleFunctionDefinition = {
       name,

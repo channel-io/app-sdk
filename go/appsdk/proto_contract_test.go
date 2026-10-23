@@ -18,6 +18,7 @@ func TestCoreDTOJSONFieldsMatchProto(t *testing.T) {
 		runtime    any
 		descriptor protoreflect.MessageDescriptor
 	}{
+		{name: "InvocationContext", runtime: appsdk.InvocationContext{}, descriptor: sdkv1.File_channel_app_sdk_v1_context_proto.Messages().ByName("InvocationContext")},
 		{
 			name:       "Caller",
 			runtime:    appsdk.Caller{},
@@ -170,4 +171,14 @@ func lowerCamel(name string) string {
 		return ""
 	}
 	return strings.ToLower(name[:1]) + name[1:]
+}
+
+func TestContextPreservesInvocationIdentity(t *testing.T) {
+	var got appsdk.Context
+	if err := json.Unmarshal([]byte(`{"caller":{"type":"system"},"channel":{"id":"c"},"invocation":{"idempotencyKey":"stable-call"}}`), &got); err != nil {
+		t.Fatal(err)
+	}
+	if got.Invocation == nil || got.Invocation.IdempotencyKey != "stable-call" {
+		t.Fatalf("invocation identity lost: %+v", got.Invocation)
+	}
 }
