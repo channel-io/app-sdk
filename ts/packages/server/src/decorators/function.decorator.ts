@@ -9,6 +9,8 @@ export interface FunctionOptions {
   name?: string;
   /** Function description for documentation */
   description?: string;
+  /** Whether this function is deprecated; it remains discoverable and callable */
+  deprecated?: boolean;
   /** Whether this function is omitted from Function discovery */
   hidden?: boolean;
 }
@@ -17,6 +19,7 @@ export interface FunctionMetadataValue {
   name: string;
   methodName: string | symbol;
   description?: string;
+  deprecated?: boolean;
   test?: boolean;
   hidden?: boolean;
 }
@@ -91,6 +94,10 @@ function createFunctionDecorator(
 
     if (options.hidden) {
       metadata.hidden = true;
+    }
+
+    if (options.deprecated !== undefined) {
+      metadata.deprecated = options.deprecated;
     }
 
     if (options.description) {

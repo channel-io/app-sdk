@@ -189,6 +189,9 @@ export class ExtensionDiscoveryService implements OnModuleInit {
       if (funcMeta.hidden) {
         funcMetadata.hidden = true;
       }
+      if (funcMeta.deprecated !== undefined) {
+        funcMetadata.deprecated = funcMeta.deprecated;
+      }
       if (inputSchema) {
         funcMetadata.inputSchema = inputSchema;
       }

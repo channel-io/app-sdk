@@ -148,4 +148,5 @@ type FunctionSchema struct {
 	Description  string         `json:"description,omitempty"`
 	InputSchema  map[string]any `json:"inputSchema"`
 	OutputSchema map[string]any `json:"outputSchema,omitempty"`
+	Deprecated   *bool          `json:"deprecated,omitempty"`
 }

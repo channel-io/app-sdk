@@ -26,7 +26,11 @@ export interface FunctionSchema {
   name?: string | undefined;
   description?: string | undefined;
   inputSchema?: { [key: string]: any } | undefined;
-  outputSchema?: { [key: string]: any } | undefined;
+  outputSchema?:
+    | { [key: string]: any }
+    | undefined;
+  /** Deprecated functions remain discoverable and callable. */
+  deprecated?: boolean | undefined;
 }
 
 export interface GetFunctionsResult {

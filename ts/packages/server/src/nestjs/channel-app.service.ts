@@ -409,6 +409,10 @@ export class ChannelAppService implements OnModuleInit, OnApplicationBootstrap {
         schema.description = func.description;
       }
 
+      if (func.deprecated !== undefined) {
+        schema.deprecated = func.deprecated;
+      }
+
       if (func.outputJsonSchema) {
         schema.outputSchema = func.outputJsonSchema;
       }

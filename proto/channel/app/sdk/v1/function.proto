@@ -25,6 +25,8 @@ message FunctionSchema {
   string description = 2;
   google.protobuf.Struct input_schema = 3;
   google.protobuf.Struct output_schema = 4;
+  // Deprecated functions remain discoverable and callable.
+  optional bool deprecated = 5;
 }
 
 message GetFunctionsResult {

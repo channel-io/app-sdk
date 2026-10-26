@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { HttpAdapterHost } from "@nestjs/core";
-import { FunctionCallNotFoundError } from "@channel.io/app-sdk-core";
+import { DiscoveryModule, DiscoveryService, Reflector, type HttpAdapterHost } from "@nestjs/core";
+import { Test } from "@nestjs/testing";
+import { FunctionCallNotFoundError, ProtoFunctionSchemas } from "@channel.io/app-sdk-core";
 import { ChannelAppService } from "./channel-app.service.js";
 import type { ChannelAppModuleOptions } from "./types.js";
-import type { ExtensionDiscoveryService } from "../discovery/extension-discovery.service.js";
+import { ExtensionDiscoveryService } from "../discovery/extension-discovery.service.js";
+import { Extension, Func, TestFunc } from "../decorators/index.js";
 import type { ExtensionMetadata } from "../discovery/metadata.interface.js";
 
 // Mock NativeFunctionClient
@@ -538,6 +540,87 @@ describe("ChannelAppService", () => {
   });
 
   describe("function discovery", () => {
+    it.each([false, true])(
+      "should preserve deprecation through discovery and calls (extension: %s)",
+      async (isExtension) => {
+        class Functions {
+          @Func({ name: "legacy", deprecated: true })
+          legacy() {
+            return { ok: true };
+          }
+
+          @Func({ name: "current", deprecated: false })
+          current() {}
+
+          @Func("unchanged")
+          unchanged() {}
+
+          @Func({ name: "hidden", deprecated: true, hidden: true })
+          hidden() {}
+
+          @TestFunc({ deprecated: true })
+          seed() {}
+        }
+
+        if (isExtension) Extension("calendar")(Functions);
+        const module = await Test.createTestingModule({
+          imports: [DiscoveryModule],
+          providers: [
+            {
+              provide: ExtensionDiscoveryService,
+              useFactory: (discovery: DiscoveryService, reflector: Reflector) =>
+                new ExtensionDiscoveryService(discovery, reflector),
+              inject: [DiscoveryService, Reflector],
+            },
+            Functions,
+          ],
+        }).compile();
+
+        try {
+          await module.init();
+          const discovery = module.get(ExtensionDiscoveryService);
+          const service = createService({ appId: "test-app", appSecret: "test-secret" }, discovery);
+          const prefix = isExtension ? "extension.calendar." : "";
+          const request = { context: {} as never, params: {} };
+          const response = await service.handleFunctionCall({
+            ...request,
+            method: "extension.core.function.getFunctions",
+          });
+
+          expect(response).toEqual({
+            result: {
+              functions: [
+                { name: `${prefix}legacy`, inputSchema: { type: "object" }, deprecated: true },
+                { name: `${prefix}current`, inputSchema: { type: "object" }, deprecated: false },
+                { name: `${prefix}unchanged`, inputSchema: { type: "object" } },
+              ],
+              success: true,
+              errorMessage: "",
+            },
+          });
+          const testResponse = await service.handleFunctionCall({
+            ...request,
+            method: "extension.core.function.getTestFunctions",
+          });
+          expect(testResponse.result).toEqual({
+            functions: [
+              { name: `${prefix}test.seed`, inputSchema: { type: "object" }, deprecated: true },
+            ],
+            success: true,
+            errorMessage: "",
+          });
+          expect(ProtoFunctionSchemas.GetFunctionsResultProtoSchema.parse(response.result)).toEqual(
+            response.result
+          );
+          await expect(
+            service.handleFunctionCall({ ...request, method: `${prefix}legacy` })
+          ).resolves.toEqual({ result: { ok: true } });
+        } finally {
+          await module.close();
+        }
+      }
+    );
+
     it("should invoke a hidden function by its full name", async () => {
       const options: ChannelAppModuleOptions = {
         appId: "test-app",
