@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.37.0
+
+### Minor Changes
+
+- f12175f: Support `@Func({ deprecated: true })` and `@TestFunc({ deprecated: true })` to mark deprecated functions in discovery responses while keeping them callable. Preserve explicit `false` values and omit the field when unspecified.
+
 ## 0.36.0
 
 ### Minor Changes
