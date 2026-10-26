@@ -23,25 +23,25 @@ SDK가 Function 요청의 서명 확인, Extension 등록, WAM과 서버의 연�
 - Git
 - 로컬 서버를 외부에 공개할 HTTPS tunnel 도구(예: [ngrok](https://ngrok.com/))
 
-Channel 설정에서 앱스토어를 엽니다. 왼쪽 아래 **고급 기능**을 펼친 다음 **앱 만들기**를 선택하면 Channel Developer Portal로 이동합니다.
+Channel 설정에서 앱스토어를 열고 **앱 만들기**를 선택합니다. Channel Developer Portal은 채널 설정과 분리된 독립 페이지로 열립니다.
 
-![Channel 설정에서 App Store 열기](../../assets/first-app/app-store-entry.png)
+![독립 페이지로 열린 Channel Developer Portal의 내 앱 목록](../../assets/first-app/app-store-entry.png)
 
-개발용 이름을 입력하고 약관에 동의한 뒤 앱을 만드세요.
+포털 오른쪽 위의 **앱 만들기**를 누르고, 개발용 이름을 입력한 뒤 약관에 동의해 앱을 만드세요.
 
 ![개발용 앱 생성](../../assets/first-app/create-app.png)
 
-**완료 확인:** 만든 앱의 **기본 정보** 화면이 열리면 다음 단계로 이동합니다.
+**완료 확인:** 만든 앱의 **앱 정보** 탭이 열리면 다음 단계로 이동합니다.
 
-**먼저 확인할 것:** 고급 기능이나 앱 만들기가 보이지 않으면 해당 Channel에서 앱을 만들 권한이 있는지 확인하세요.
+**먼저 확인할 것:** 앱 만들기가 보이지 않으면 해당 Channel에서 앱을 만들 권한이 있는지 확인하세요.
 
 ## 2. 앱 정보와 권한 설정
 
-**기본 정보**에서 Application ID를 확인합니다.
+앱 상세 화면에서 앱 이름 아래에 표시된 Application ID를 확인합니다.
 
 ![Application ID 확인](../../assets/first-app/app-id.png)
 
-**인증 및 권한**에서 Secret을 발급하고, **기본 정보 → 서버 설정**에서 Signing Key를 발급합니다.
+**인증 및 권한**에서 Secret을 발급하고, **서버·연동 → 서버 설정**에서 Signing Key를 발급합니다.
 
 ![Secret 발급](../../assets/first-app/app-secret.png)
 
@@ -108,7 +108,7 @@ ngrok http 3000
 
 ngrok 화면의 `Forwarding` 항목에 표시된 HTTPS 주소를 복사합니다. 이 문서에서는 그 주소를 `https://YOUR_HOST`라고 부릅니다.
 
-개발자 포털의 **기본 정보 → 서버 설정**에 다음 두 주소를 입력합니다.
+개발자 포털의 **서버·연동 → 서버 설정**에 다음 두 주소를 입력합니다.
 
 | 설정              | 값                               |
 | ----------------- | -------------------------------- |
