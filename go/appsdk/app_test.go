@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/channel-io/app-sdk/go/appsdk"
+	"github.com/channel-io/app-sdk/go/extension"
 	sdkv1 "github.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1"
 	"github.com/channel-io/app-sdk/go/schema"
 )
@@ -150,6 +151,81 @@ func TestHiddenFunctionIsCallableButNotDiscovered(t *testing.T) {
 	callRes := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: "legacy.echo"})
 	if callRes.Error != nil {
 		t.Fatalf("unexpected call error: %+v", callRes.Error)
+	}
+}
+
+func TestDeprecatedFunctionDiscoveryAndCalls(t *testing.T) {
+	for _, mode := range []string{"typed", "test", "extension"} {
+		for _, tc := range []struct {
+			name    string
+			opts    []appsdk.FunctionOption
+			present bool
+			value   bool
+			hidden  bool
+		}{
+			{name: "absent"},
+			{name: "true", opts: []appsdk.FunctionOption{appsdk.Deprecated(true)}, present: true, value: true},
+			{name: "false", opts: []appsdk.FunctionOption{appsdk.Deprecated(false)}, present: true},
+			{name: "override", opts: []appsdk.FunctionOption{appsdk.Deprecated(true), appsdk.Deprecated(false)}, present: true},
+			{name: "hidden", opts: []appsdk.FunctionOption{appsdk.Deprecated(true), appsdk.Hidden()}, hidden: true},
+		} {
+			t.Run(mode+"/"+tc.name, func(t *testing.T) {
+				app := appsdk.New(appsdk.Options{AppID: "app"})
+				handler := func(_ context.Context, _ appsdk.Context, in *echoInput) (*echoOutput, error) {
+					return &echoOutput{Message: in.Message}, nil
+				}
+				name := "orders.get"
+				switch mode {
+				case "typed":
+					appsdk.MustRegister(app, name, handler, tc.opts...)
+				case "test":
+					appsdk.MustRegisterTest(app, name, handler, tc.opts...)
+				case "extension":
+					opts := append([]appsdk.FunctionOption{appsdk.Handle(handler)}, tc.opts...)
+					if err := app.Use(extension.New("sample").ExtensionFunc(name, opts...)); err != nil {
+						t.Fatal(err)
+					}
+					name = "extension.sample." + name
+				}
+				for _, method := range []string{appsdk.MethodGetFunctions, appsdk.MethodGetTestFunctions} {
+					res := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: method})
+					if res.Error != nil {
+						t.Fatalf("discovery failed: %+v", res.Error)
+					}
+					var discovery struct {
+						Functions []map[string]any `json:"functions"`
+					}
+					if err := json.Unmarshal(res.Result, &discovery); err != nil {
+						t.Fatal(err)
+					}
+					visible := !tc.hidden && (mode == "test") == (method == appsdk.MethodGetTestFunctions)
+					if !visible {
+						if len(discovery.Functions) != 0 {
+							t.Fatalf("unexpected discovery: %+v", discovery.Functions)
+						}
+						continue
+					}
+					if len(discovery.Functions) != 1 || discovery.Functions[0]["name"] != name {
+						t.Fatalf("unexpected discovery: %+v", discovery.Functions)
+					}
+					value, present := discovery.Functions[0]["deprecated"]
+					if present != tc.present || (present && value != tc.value) {
+						t.Fatalf("deprecated = %v (present %v), want %v (present %v)", value, present, tc.value, tc.present)
+					}
+				}
+				res := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: name, Params: json.RawMessage(`{"message":"still callable"}`)})
+				if res.Error != nil {
+					t.Fatalf("call failed: %+v", res.Error)
+				}
+				var out echoOutput
+				if err := json.Unmarshal(res.Result, &out); err != nil {
+					t.Fatal(err)
+				}
+				if out.Message != "still callable" {
+					t.Fatalf("unexpected handler result: %+v", out)
+				}
+			})
+		}
 	}
 }
 

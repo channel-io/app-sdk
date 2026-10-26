@@ -40,6 +40,23 @@ appsdk.MustRegister(
 
 Use `appsdk.Register` when startup should return an error and `appsdk.MustRegister` when invalid registration should panic. `appsdk.RegisterInput` is available when the output is intentionally dynamic.
 
+## Deprecated Functions
+
+Pass `appsdk.Deprecated(true)` alongside other registration options:
+
+```go
+appsdk.MustRegister(app, "orders.get", getOrder,
+  appsdk.Description("Use orders.getV2 instead"),
+  appsdk.Deprecated(true),
+)
+```
+
+The Function remains discoverable and callable. Its `getFunctions` schema includes
+`deprecated: true`; `appsdk.Deprecated(false)` preserves an explicit `false`, and
+the field is omitted when the option is absent. The same option works with test
+Functions and Extension builders. `appsdk.Hidden()` still omits a Function from
+discovery independently of deprecation.
+
 ## Context
 
 `appsdk.Context` can contain:
