@@ -174,6 +174,11 @@ appsdk.MustRegister(
 `Validate() error` when the input implements it. Use `appsdk.InputSchema`, `appsdk.OutputSchema`,
 or proto helpers for an explicit contract.
 
+Pass `appsdk.Deprecated(true)` to mark an older Function in its discovery schema
+while keeping it callable. This option also works with test Functions and Extension
+builders. An explicit `false` is preserved; omitting the option omits the field.
+Use `appsdk.Hidden()` to exclude a Function from discovery instead.
+
 ## Call Native and app Functions
 
 A Native Function reverses the direction: the app asks Channel to perform an operation. Obtain an

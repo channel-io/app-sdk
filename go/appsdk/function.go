@@ -119,6 +119,16 @@ func Description(description string) FunctionOption {
 	}
 }
 
+// Deprecated marks a function's discovery schema without changing its callability.
+// An explicit false is preserved; omitting this option leaves the field absent.
+func Deprecated(deprecated bool) FunctionOption {
+	return func(def *functionDefinition) error {
+		value := deprecated
+		def.schema.Deprecated = &value
+		return nil
+	}
+}
+
 func TestOnly() FunctionOption {
 	return func(def *functionDefinition) error {
 		def.test = true
