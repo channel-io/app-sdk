@@ -23,25 +23,25 @@ Function リクエストの署名検証、Extension の登録、WAM とサーバ
 - Git
 - ローカルサーバーを公開できる HTTPS tunnel ツール（例: [ngrok](https://ngrok.com/)）
 
-Channel settings から App Store を開きます。**Advanced features** を展開して **Create app** を選ぶと、Channel Developer Portal が開きます。
+Channel settings から App Store を開き、**Create app** を選びます。Channel Developer Portal は、Channel settings とは別の独立したページで開きます。
 
-![Channel settings から App Store を開く](../../assets/first-app/app-store-entry.png)
+![独立した Channel Developer Portal のアプリ一覧](../../assets/first-app/app-store-entry.png)
 
-開発用の名前を入力し、規約に同意してアプリを作成してください。
+ポータル右上の **Create app** を選び、開発用の名前を入力し、規約に同意してアプリを作成してください。
 
 ![開発用 app を作成](../../assets/first-app/create-app.png)
 
-**完了の目安:** 作成したアプリの **Basic Information** 画面が開いたら次へ進みます。
+**完了の目安:** 作成したアプリの **アプリ情報** タブが開いたら次へ進みます。
 
-**失敗時の最初の確認:** Advanced features または Create app が表示されない場合は、その Channel でアプリを作成する権限があるか確認してください。
+**失敗時の最初の確認:** Create app が表示されない場合は、その Channel でアプリを作成する権限があるか確認してください。
 
 ## 2. アプリ情報と権限を設定する
 
-**Basic Information** で Application ID を確認します。
+アプリ詳細画面で、アプリ名の下に表示される Application ID を確認します。
 
 ![Application ID を確認](../../assets/first-app/app-id.png)
 
-**Authentication & Permissions** で Secret を発行し、**Basic Information → Server Settings** で Signing Key を発行します。
+**Authentication & Permissions** で Secret を発行し、**サーバー・連携 → Server Settings** で Signing Key を発行します。
 
 ![Secret を発行](../../assets/first-app/app-secret.png)
 
@@ -108,7 +108,7 @@ ngrok http 3000
 
 ngrok の `Forwarding` に表示された HTTPS アドレスをコピーします。以下では、このアドレスを `https://YOUR_HOST` と表します。
 
-Developer portal の **Basic Information → Server Settings** に次の 2 つのアドレスを入力します。
+Developer portal の **サーバー・連携 → Server Settings** に次の 2 つのアドレスを入力します。
 
 | Setting           | Value                            |
 | ----------------- | -------------------------------- |

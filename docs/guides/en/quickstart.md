@@ -23,25 +23,25 @@ You need:
 - Git;
 - an HTTPS tunnel tool that can expose your local server, such as [ngrok](https://ngrok.com/).
 
-Open App Store from Channel settings. Expand **Advanced features**, then select **Create app** to open the Channel Developer Portal.
+Open App Store from Channel settings and select **Create app**. The Channel Developer Portal opens as a standalone page, separate from Channel settings.
 
-![Open App Store from Channel settings](../../assets/first-app/app-store-entry.png)
+![My apps in the standalone Channel Developer Portal](../../assets/first-app/app-store-entry.png)
 
-Enter a development name, accept the terms, and create the app.
+Select **Create app** at the top right of the portal, enter a development name, accept the terms, and create the app.
 
 ![Create a development app](../../assets/first-app/create-app.png)
 
-**Success:** Continue when the new app's **Basic Information** page opens.
+**Success:** Continue when the new app's **App information** tab opens.
 
-**First check if it fails:** If Advanced features or Create app is absent, confirm that you have permission to create an app in that Channel.
+**First check if it fails:** If Create app is absent, confirm that you have permission to create an app in that Channel.
 
 ## 2. Configure the app and permissions
 
-Find the Application ID under **Basic Information**.
+Find the Application ID below the app name on the app detail page.
 
 ![Find the Application ID](../../assets/first-app/app-id.png)
 
-Issue a Secret under **Authentication & Permissions** and a Signing Key under **Basic Information → Server Settings**.
+Issue a Secret under **Authentication & Permissions** and a Signing Key under **Server & integrations → Server Settings**.
 
 ![Issue the Secret](../../assets/first-app/app-secret.png)
 
@@ -108,7 +108,7 @@ ngrok http 3000
 
 Copy the HTTPS address shown next to `Forwarding`. We call that address `https://YOUR_HOST` below.
 
-Enter these two addresses under **Basic Information → Server Settings** in the developer portal:
+Enter these two addresses under **Server & integrations → Server Settings** in the developer portal:
 
 | Setting           | Value                            |
 | ----------------- | -------------------------------- |
