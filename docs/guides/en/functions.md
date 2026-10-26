@@ -132,6 +132,22 @@ On a provider with `@Extension({ name: "command" })`, `@Func("metadata.getComman
 `extension.command.metadata.getCommands`. Do not create a fake Extension for a standalone
 Function. Add every decorated class to the NestJS module's `providers` so discovery can find it.
 
+### Deprecated Functions
+
+Set `deprecated: true` in `@Func` options when an older Function should be replaced:
+
+```ts
+@Func({ name: "orders.get", deprecated: true, description: "Use orders.getV2 instead" })
+async getOrder(@Ctx() ctx: Context, @Input() input: { orderId: string }) {
+  return this.service.getOrder(ctx.channel.id, input.orderId);
+}
+```
+
+The Function remains discoverable and callable. Its `getFunctions` schema includes
+`deprecated: true`; an explicit `false` is preserved, and the field is omitted when unspecified.
+`@TestFunc` accepts the same option and exposes it through `getTestFunctions`. Use `hidden: true`
+to omit a Function from discovery instead.
+
 ## Go
 
 Go uses builders and generic handlers.

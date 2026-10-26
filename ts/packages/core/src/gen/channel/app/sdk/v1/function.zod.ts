@@ -24,6 +24,7 @@ export const FunctionSchemaProtoSchema = z.object({
   description: z.string().optional(),
   inputSchema: z.record(z.string(), z.any()).optional(),
   outputSchema: z.record(z.string(), z.any()).optional(),
+  deprecated: z.boolean().optional(),
 }) satisfies z.ZodType<pb.FunctionSchema>;
 export type FunctionSchemaProto = z.infer<typeof FunctionSchemaProtoSchema>;
 

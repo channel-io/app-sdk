@@ -143,11 +143,13 @@ func (x *FunctionResponse) GetError() *FunctionError {
 }
 
 type FunctionSchema struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	InputSchema   *structpb.Struct       `protobuf:"bytes,3,opt,name=input_schema,json=inputSchema,proto3" json:"input_schema,omitempty"`
-	OutputSchema  *structpb.Struct       `protobuf:"bytes,4,opt,name=output_schema,json=outputSchema,proto3" json:"output_schema,omitempty"`
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	Name         string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description  string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	InputSchema  *structpb.Struct       `protobuf:"bytes,3,opt,name=input_schema,json=inputSchema,proto3" json:"input_schema,omitempty"`
+	OutputSchema *structpb.Struct       `protobuf:"bytes,4,opt,name=output_schema,json=outputSchema,proto3" json:"output_schema,omitempty"`
+	// Deprecated functions remain discoverable and callable.
+	Deprecated    *bool `protobuf:"varint,5,opt,name=deprecated,proto3,oneof" json:"deprecated,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -208,6 +210,13 @@ func (x *FunctionSchema) GetOutputSchema() *structpb.Struct {
 		return x.OutputSchema
 	}
 	return nil
+}
+
+func (x *FunctionSchema) GetDeprecated() bool {
+	if x != nil && x.Deprecated != nil {
+		return *x.Deprecated
+	}
+	return false
 }
 
 type GetFunctionsResult struct {
@@ -282,12 +291,16 @@ const file_channel_app_sdk_v1_function_proto_rawDesc = "" +
 	"\x0esystem_version\x18\x04 \x01(\tR\rsystemVersion\"{\n" +
 	"\x10FunctionResponse\x12.\n" +
 	"\x06result\x18\x01 \x01(\v2\x16.google.protobuf.ValueR\x06result\x127\n" +
-	"\x05error\x18\x02 \x01(\v2!.channel.app.sdk.v1.FunctionErrorR\x05error\"\xc0\x01\n" +
+	"\x05error\x18\x02 \x01(\v2!.channel.app.sdk.v1.FunctionErrorR\x05error\"\xf4\x01\n" +
 	"\x0eFunctionSchema\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
-	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\"\x95\x01\n" +
+	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12#\n" +
+	"\n" +
+	"deprecated\x18\x05 \x01(\bH\x00R\n" +
+	"deprecated\x88\x01\x01B\r\n" +
+	"\v_deprecated\"\x95\x01\n" +
 	"\x12GetFunctionsResult\x12@\n" +
 	"\tfunctions\x18\x01 \x03(\v2\".channel.app.sdk.v1.FunctionSchemaR\tfunctions\x12\x18\n" +
 	"\asuccess\x18\x02 \x01(\bR\asuccess\x12#\n" +
@@ -338,6 +351,7 @@ func file_channel_app_sdk_v1_function_proto_init() {
 	}
 	file_channel_app_sdk_v1_context_proto_init()
 	file_channel_app_sdk_v1_error_proto_init()
+	file_channel_app_sdk_v1_function_proto_msgTypes[2].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
