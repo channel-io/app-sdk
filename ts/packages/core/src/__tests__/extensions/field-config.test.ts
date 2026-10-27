@@ -5,7 +5,7 @@ import { FieldConfigSchema } from "../../extensions/order.js";
 describe("capability field descriptions", () => {
   const field = {
     type: "enum",
-    allowedValues: [{ value: "name", label: "Product name" }],
+    allowedValues: [{ value: "productId", label: "Product ID" }],
     description: "Choose the field to search",
   };
 
