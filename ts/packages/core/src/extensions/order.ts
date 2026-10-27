@@ -269,6 +269,7 @@ export const FieldConfigSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("enum"),
     allowedValues: z.array(AllowedValueSchema).min(1),
+    description: z.string().optional(),
   }),
   z.object({
     type: z.literal("freeform"),

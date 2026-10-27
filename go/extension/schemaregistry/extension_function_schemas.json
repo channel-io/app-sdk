@@ -1119,6 +1119,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -1194,6 +1197,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -1269,6 +1275,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -1344,6 +1353,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -1419,6 +1431,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -1494,6 +1509,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -1569,6 +1587,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -23798,6 +23819,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -23873,6 +23897,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -23948,6 +23975,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -24023,6 +24053,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -24098,6 +24131,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -25768,6 +25804,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -25843,6 +25882,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -25918,6 +25960,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -25993,6 +26038,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -26068,6 +26116,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -26143,6 +26194,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -26218,6 +26272,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -26293,6 +26350,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -26368,6 +26428,9 @@
                               "additionalProperties": false
                             },
                             "minItems": 1
+                          },
+                          "description": {
+                            "type": "string"
                           }
                         },
                         "required": [
