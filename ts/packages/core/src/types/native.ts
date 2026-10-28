@@ -9,7 +9,10 @@ import type {
 export type NativeJsonObject = object;
 
 export type NativeSortOrder =
-  "SORT_ORDER_UNSPECIFIED" | "SORT_ORDER_ASC" | "SORT_ORDER_DESC" | "SORT_ORDER_BOTH";
+  | "SORT_ORDER_UNSPECIFIED"
+  | "SORT_ORDER_ASC"
+  | "SORT_ORDER_DESC"
+  | "SORT_ORDER_BOTH";
 
 export interface NativePagination {
   sortOrder?: NativeSortOrder;
@@ -21,6 +24,19 @@ export interface NativeDuration {
   seconds?: number | string;
   nanos?: number;
 }
+
+export type NativeMessageState =
+  | "MESSAGE_STATE_UNSPECIFIED"
+  | "MESSAGE_STATE_SENDING"
+  | "MESSAGE_STATE_SENT"
+  | "MESSAGE_STATE_FAILED"
+  | "MESSAGE_STATE_REMOVED";
+
+export type NativeMediumSyncState =
+  | "MEDIUM_SYNC_STATE_UNSPECIFIED"
+  | "MEDIUM_SYNC_STATE_SYNCING"
+  | "MEDIUM_SYNC_STATE_SYNCED"
+  | "MEDIUM_SYNC_STATE_FAILED";
 
 export type NativeMessageOption =
   | "MESSAGE_OPTION_UNSPECIFIED"
@@ -241,6 +257,27 @@ export interface NativeWriteDirectChatMessageAsManagerParams {
 }
 
 export type NativeWriteDirectChatMessageAsManagerResult = NativeWriteUserChatMessageResult;
+
+export interface NativePatchMessageBody {
+  options?: readonly NativeMessageOption[];
+  state?: NativeMessageState;
+  mediumSyncState?: NativeMediumSyncState;
+  errorCode?: number;
+}
+
+export interface NativePatchMessageParams {
+  channelId: string;
+  chatId: string;
+  chatType: string;
+  messageId: string;
+  body: NativePatchMessageBody;
+  /** Protobuf JSON field mask, for example "mediumSyncState,errorCode". */
+  updateMask: string;
+}
+
+export interface NativePatchMessageResult {
+  message: NativeMessage;
+}
 
 export interface NativeGetManagerParams {
   channelId: string;
@@ -503,6 +540,10 @@ export interface NativeOAuthFlowResult extends OAuthFlowResult {
   flow?: NativeOAuthFlow;
 }
 export interface NativeFunctionTypeMap {
+  patchMessage: {
+    params: NativePatchMessageParams;
+    result: NativePatchMessageResult;
+  };
   getOAuthFlow: {
     params: NativeGetOAuthFlowParams;
     result: NativeOAuthFlowResult;

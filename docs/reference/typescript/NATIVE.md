@@ -99,3 +99,26 @@ The public SDK exports are the source of truth for supported TypeScript calls. C
 types. Keep request and response models limited to that public surface, use camelCase JSON fields,
 and treat intentionally open result models as opaque. The shared envelope is summarized in the
 [cross-language protocol](../protocol.md).
+
+## Message delivery updates
+
+After the app's channel role explicitly grants `patchMessage`, obtain a channel token carrying
+that permission and use `nativeClient.createProxyApi(token.accessToken).patchMessage(...)`.
+Refreshing a token without adding the permission does not grant access.
+
+```typescript
+await api.patchMessage({
+  channelId: "channel-1",
+  chatType: "userChat",
+  chatId: "chat-1",
+  messageId: "message-1",
+  body: { mediumSyncState: "MEDIUM_SYNC_STATE_FAILED", errorCode: 90001 },
+  updateMask: "mediumSyncState,errorCode",
+});
+```
+
+`updateMask` uses the Protobuf JSON comma-separated string format. Only masked fields are
+updated. To record delivery success, set `mediumSyncState` to `MEDIUM_SYNC_STATE_SYNCED`
+and clear the previous error with `errorCode: 0`, including both fields in the mask.
+`state` and `options` remain supported. This operation does not itself implement the app's
+`getMediumMessageErrorReason` callback or retry behavior.

@@ -27,7 +27,7 @@ The current Go client exposes typed methods for:
 - `GetAppNotebookVersions` for notebook sync verification; register notebooks through `RegisterExtension`;
 - app data-table creation, schema, lookup, and row ingestion;
 - raw and generic public Native Function calls through `CallNativeFunction` and `CallNative[T]`;
-- typed Channel operations through `CreateProxyAPI`, starting with `WriteGroupMessage`;
+- typed Channel operations through `CreateProxyAPI`, including `WriteGroupMessage` and `PatchMessage`;
 - `CallAppFunction` for calling a registered app Function through AppStore.
 
 Check the exported `native.Client` methods for the exact current surface. Do not copy an undocumented method name into application code.
@@ -98,3 +98,12 @@ Use `native.WithHTTPClient` and a controlled test server to verify:
 - context cancellation and timeouts.
 
 The shared wire envelope is summarized in the [cross-language protocol](../protocol.md).
+
+## Message delivery updates
+
+`ProxyAPI.PatchMessage` requires an explicitly granted `patchMessage` permission on the app's
+channel role and a channel token carrying that grant. Use `PatchMessageParams` with the existing
+chat and message IDs, a `PatchMessageBody`, and a comma-separated Protobuf JSON `UpdateMask`.
+For example, use `MediumSyncState: "MEDIUM_SYNC_STATE_FAILED"`, `ErrorCode: 90001`, and
+`UpdateMask: "mediumSyncState,errorCode"`. To record success, use `"MEDIUM_SYNC_STATE_SYNCED"`
+and `ErrorCode: 0` with the same mask. Zero values clear masked fields; unmasked fields stay unchanged.
