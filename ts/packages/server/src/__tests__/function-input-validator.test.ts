@@ -99,7 +99,7 @@ it.each([
     parseFunctionInputParams(name, schema as z.ZodSchema, { subscriptionId: "private token" })
   ).toThrowError(
     expect.objectContaining({
-      code: FunctionCallErrorCode.BadRequest,
+      rpcCode: FunctionCallErrorCode.BadRequest,
       type: "invalidInput",
       data: { type: "invalidInput", message: "Invalid Issue Extension input" },
     })
