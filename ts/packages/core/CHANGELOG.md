@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.39.0
+
+### Minor Changes
+
+- 13f39fa: Add optional whole-product stockQuantity to CommerceProduct without changing variant inventory.
+
 ## 0.38.0
 
 ### Minor Changes
