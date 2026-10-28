@@ -9,7 +9,7 @@ to ordinary app Functions; it does not turn those handlers into new Extension Fu
 `app.uninstalled`, `command.toggle`, `config.saved`, `config.deleted`, `widget.installed`,
 `widget.uninstalled`, `webhook.received`, `oauth.connected`, `oauth.disconnected`,
 `oauth.beforeAuthorization`, `oauth.afterAuthorization`,
-`userChat.opened`, and `teamChat.messageCreated`.
+`userChat.opened`, `teamChat.messageCreated`, and `appPerson.invoked`.
 
 Optional `oauth.beforeAuthorization` and `oauth.afterAuthorization` hooks use the
 same registration. Both require `redirectOrigins` containing exact canonical
@@ -33,6 +33,35 @@ public, non-archived TeamChat group with the full serialized Channel Message sna
 their own eligibility rules and read the author from `personType` and `personId`, the thread
 relationship from `rootMessageId`, and content from `plainText` and `blocks`; see the TypeScript
 reference for the exact DTO.
+
+## Explicit app invocation
+
+Register `appPerson.invoked` using only `actionFunctionName` and optional
+`systemVersion`. TypeScript exports `AppPersonInvokedHookInputSchema`,
+`AppPersonInvokedHookResultSchema`, and their inferred types. Go exports
+`hook.TypeAppPersonInvoked`, `hook.AppPersonInvokedInput`, and
+`hook.AppPersonInvokedResult`.
+
+A single-app Group mention uses channel credentials; an app direct message uses
+manager credentials. `invokingManagerId` identifies the initiating manager
+separately from `credentialScope`. Missing credentials never select the other
+scope. `sourceContentRevision` is a positive signed-int64 decimal string,
+not a JavaScript number, and `prompt` may be empty.
+
+The registered function owns processing. Return a terminal acknowledgement
+`{ hookHandlingResult: "succeeded" | "skipped" | "failed", terminal: true }`;
+send any user-facing response through an authorized messaging API. Hook failures
+or unknown outcomes do not trigger default execution or automatic replies.
+Deduplicate effects by stable `eventId`; automatic redelivery and eventual
+delivery are not guaranteed. Without a registration, default app-context
+execution is used.
+
+Multiple distinct app mentions run once and receive one App Agent reply; no
+individual invocation events are sent. General `teamChat.messageCreated`
+observation remains separate. Deploy compatible platform support before using
+this hook. Test registration, both credential scopes, large revision strings,
+and duplicate handling. See the [Hook reference](../../../reference/typescript/extensions/hook.md#explicit-app-invocation)
+for the complete envelope.
 
 ## TypeScript
 

@@ -2156,6 +2156,36 @@ message HookTeamChatMessageCreatedResult {
   bool terminal = 2;
 }
 
+// An explicit single-app Group mention or app direct message. This is distinct
+// from message observation and is not emitted for a multi-app invocation.
+message HookAppPersonInvokedInput {
+  string type = 1;
+  int32 version = 2;
+  string event_id = 3;
+  string invocation_id = 4;
+  string request_id = 5;
+  string source_event_id = 6;
+  string channel_id = 7;
+  string chat_type = 8;
+  string chat_id = 9;
+  optional string thread_id = 10;
+  string source_message_id = 11;
+  int64 source_content_revision = 12;
+  string requested_at = 13;
+  string app_id = 14;
+  string app_person_id = 15;
+  string installation_id = 16;
+  string invoking_manager_id = 17;
+  string credential_scope = 18;
+  string prompt = 19;
+}
+
+// Terminal acknowledgement of hook handling, not a user-facing response.
+message HookAppPersonInvokedResult {
+  string hook_handling_result = 1;
+  bool terminal = 2;
+}
+
 message DataSourceManagerPermission {
   string action = 1;
   string scope = 2;

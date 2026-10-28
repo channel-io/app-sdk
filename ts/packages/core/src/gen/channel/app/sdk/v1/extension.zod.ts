@@ -2228,6 +2228,35 @@ export const HookTeamChatMessageCreatedResultProtoSchema = z.object({
 }) satisfies z.ZodType<pb.HookTeamChatMessageCreatedResult>;
 export type HookTeamChatMessageCreatedResultProto = z.infer<typeof HookTeamChatMessageCreatedResultProtoSchema>;
 
+export const HookAppPersonInvokedInputProtoSchema = z.object({
+  type: z.string().optional(),
+  version: z.number().int().optional(),
+  eventId: z.string().optional(),
+  invocationId: z.string().optional(),
+  requestId: z.string().optional(),
+  sourceEventId: z.string().optional(),
+  channelId: z.string().optional(),
+  chatType: z.string().optional(),
+  chatId: z.string().optional(),
+  threadId: z.string().optional(),
+  sourceMessageId: z.string().optional(),
+  sourceContentRevision: z.string().optional(),
+  requestedAt: z.string().optional(),
+  appId: z.string().optional(),
+  appPersonId: z.string().optional(),
+  installationId: z.string().optional(),
+  invokingManagerId: z.string().optional(),
+  credentialScope: z.string().optional(),
+  prompt: z.string().optional(),
+}) satisfies z.ZodType<pb.HookAppPersonInvokedInput>;
+export type HookAppPersonInvokedInputProto = z.infer<typeof HookAppPersonInvokedInputProtoSchema>;
+
+export const HookAppPersonInvokedResultProtoSchema = z.object({
+  hookHandlingResult: z.string().optional(),
+  terminal: z.boolean().optional(),
+}) satisfies z.ZodType<pb.HookAppPersonInvokedResult>;
+export type HookAppPersonInvokedResultProto = z.infer<typeof HookAppPersonInvokedResultProtoSchema>;
+
 export const DataSourceManagerPermissionProtoSchema = z.object({
   action: z.string().optional(),
   scope: z.string().optional(),

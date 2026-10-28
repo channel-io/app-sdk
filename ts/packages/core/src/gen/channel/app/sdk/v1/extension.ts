@@ -2543,6 +2543,38 @@ export interface HookTeamChatMessageCreatedResult {
   terminal?: boolean | undefined;
 }
 
+/**
+ * An explicit single-app Group mention or app direct message. This is distinct
+ * from message observation and is not emitted for a multi-app invocation.
+ */
+export interface HookAppPersonInvokedInput {
+  type?: string | undefined;
+  version?: number | undefined;
+  eventId?: string | undefined;
+  invocationId?: string | undefined;
+  requestId?: string | undefined;
+  sourceEventId?: string | undefined;
+  channelId?: string | undefined;
+  chatType?: string | undefined;
+  chatId?: string | undefined;
+  threadId?: string | undefined;
+  sourceMessageId?: string | undefined;
+  sourceContentRevision?: string | undefined;
+  requestedAt?: string | undefined;
+  appId?: string | undefined;
+  appPersonId?: string | undefined;
+  installationId?: string | undefined;
+  invokingManagerId?: string | undefined;
+  credentialScope?: string | undefined;
+  prompt?: string | undefined;
+}
+
+/** Terminal acknowledgement of hook handling, not a user-facing response. */
+export interface HookAppPersonInvokedResult {
+  hookHandlingResult?: string | undefined;
+  terminal?: boolean | undefined;
+}
+
 export interface DataSourceManagerPermission {
   action?: string | undefined;
   scope?: string | undefined;

@@ -12,6 +12,9 @@ func validateHookMetadata(hooks []*Config) error {
 		return err
 	}
 	for _, config := range hooks {
+		if config.GetType() == TypeAppPersonInvoked && (config.GetTargetId() != "" || config.GetWebhook() != nil) {
+			return fmt.Errorf("appPerson.invoked does not support targetId or webhook metadata")
+		}
 		response := config.GetWebhook().GetResponse()
 		if response == nil {
 			continue
