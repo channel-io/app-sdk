@@ -54,6 +54,8 @@ the mall's item-level stock code — where the mall's SKU is itself what the mer
 emit it as is; where the mall keeps a separate seller-entered variant code next to its SKU (Cafe24
 "custom variant code"), there is no slot for that value yet, so do not put it into `variants[].sku`.
 
+`stockQuantity` is optional sellable inventory for the whole product. Emit an observed quantity only; omit unknown or unmanaged stock and provider sentinel values. Zero means sold out. It does not replace `variants[].stockQuantity` or authorize inventing a variant. Consumers may use positive product stock when variants are absent; when variants are supplied, their stock must also permit a sale. A product-level zero always prevents a sale.
+
 ## TypeScript
 
 Use `@Extension({ name: "commerce", systemVersion: "v1" })` and the canonical schemas exported by

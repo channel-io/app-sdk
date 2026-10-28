@@ -51,6 +51,8 @@ err := app.Use(commerce.Extension().
 モールの sku 自体が販売者の入力値なら（Shopify）そのまま載せ、モールが sku とは別に販売者の品目コード欄を
 持つ場合（Cafe24「自社品目コード」）はその値の欄がまだないため、`variants[].sku` に入れないでください。
 
+`stockQuantity` は商品全体の販売可能な在庫数です。確認できた実数のみを設定し、不明・在庫管理なし・プロバイダーの代替値は省略します。`0` は在庫切れです。`variants[].stockQuantity` の代替ではなく、架空の variant を作成してはいけません。variant がなければ正の商品在庫を利用でき、variant がある場合はその在庫も販売可能である必要があります。商品在庫が `0` の場合は販売不可です。
+
 ## TypeScript
 
 `@Extension({ name: "commerce", systemVersion: "v1" })` と

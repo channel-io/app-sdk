@@ -428,6 +428,9 @@ export const CommerceProductSchema = z.object({
   // getOrders 의 items[]·bundleItems[] 에 대응 필드가 없고, 몰이 sku 와 별도로 입력받는 품목 단위 판매자
   // 코드(카페24 "자체 품목코드")의 자리도 없다 — 그 값을 sku 에 넣지 않는다.
   sellerProductCode: z.string().optional(),
+  // Whole-product sellable stock; omit unknown/unmanaged inventory. Variant stock,
+  // when provided, must also permit a sale. Zero is distinct from absence.
+  stockQuantity: z.number().finite().nonnegative().optional(),
 });
 export type CommerceProduct = ProtoBacked<
   z.infer<typeof CommerceProductSchema>,
