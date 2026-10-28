@@ -3333,6 +3333,10 @@
               },
               "sellerProductCode": {
                 "type": "string"
+              },
+              "stockQuantity": {
+                "type": "number",
+                "minimum": 0
               }
             },
             "required": [
