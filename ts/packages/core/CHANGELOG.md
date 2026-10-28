@@ -1,5 +1,21 @@
 # @channel.io/app-sdk-core
 
+## 0.39.0
+
+### Minor Changes
+
+- 13f39fa: Add optional whole-product stockQuantity to CommerceProduct without changing variant inventory.
+
+## 0.38.0
+
+### Minor Changes
+
+- e37d4e8: Restore typed `patchMessage` support for channel-scoped tokens, including `mediumSyncState` and `errorCode`. The app must request the `patchMessage` permission and obtain a token with that grant before calling it. Field masks use the Protobuf JSON comma-separated string format.
+
+### Patch Changes
+
+- 07dd59f: Preserve optional descriptions for enum capability fields in order, commerce, and WMS schemas.
+
 ## 0.37.0
 
 ### Minor Changes

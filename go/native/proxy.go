@@ -49,3 +49,34 @@ type WriteGroupMessageResult struct {
 func (p *ProxyAPI) WriteGroupMessage(ctx context.Context, params WriteGroupMessageParams) (*WriteGroupMessageResult, error) {
 	return CallNative[WriteGroupMessageResult](ctx, p.client, p.accessToken, FunctionWriteGroupMessage, params)
 }
+
+const FunctionPatchMessage = "patchMessage"
+
+// PatchMessageBody contains fields supported by the message PATCH contract.
+// Include a field in UpdateMask to apply it; a zero value clears that field.
+type PatchMessageBody struct {
+	Options         []string `json:"options,omitempty"`
+	State           string   `json:"state,omitempty"`
+	MediumSyncState string   `json:"mediumSyncState,omitempty"`
+	ErrorCode       int32    `json:"errorCode,omitempty"`
+}
+
+type PatchMessageParams struct {
+	ChannelID string           `json:"channelId"`
+	ChatID    string           `json:"chatId"`
+	ChatType  string           `json:"chatType"`
+	MessageID string           `json:"messageId"`
+	Body      PatchMessageBody `json:"body"`
+	// Protobuf JSON field mask, for example "mediumSyncState,errorCode".
+	UpdateMask string `json:"updateMask"`
+}
+
+type PatchMessageResult struct {
+	Message ProxyMessage `json:"message"`
+}
+
+// PatchMessage updates an existing message with the specified delivery fields.
+// The channel token must have the explicitly granted patchMessage permission.
+func (p *ProxyAPI) PatchMessage(ctx context.Context, params PatchMessageParams) (*PatchMessageResult, error) {
+	return CallNative[PatchMessageResult](ctx, p.client, p.accessToken, FunctionPatchMessage, params)
+}

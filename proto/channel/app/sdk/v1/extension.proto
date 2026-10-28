@@ -1592,6 +1592,10 @@ message CommerceProduct {
   // 지금 계약에는 getOrders 의 items[]·bundleItems[] 에 대응 필드가 없고, 몰이 sku 와 별도로 입력받는
   // 품목 단위 판매자 코드(카페24 "자체 품목코드")의 자리도 없다 — 그 값을 sku 에 넣지 않는다.
   string seller_product_code = 20;
+  // Observed sellable stock for the whole product. Omit when unknown or unmanaged;
+  // never copy an option-management sentinel or invent a variant. Zero means sold out.
+  // When variants are provided, their stock must also permit a sale.
+  optional double stock_quantity = 21;
 }
 
 message CommerceProductVariant {

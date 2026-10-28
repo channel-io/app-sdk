@@ -13877,8 +13877,12 @@ type CommerceProduct struct {
 	// 지금 계약에는 getOrders 의 items[]·bundleItems[] 에 대응 필드가 없고, 몰이 sku 와 별도로 입력받는
 	// 품목 단위 판매자 코드(카페24 "자체 품목코드")의 자리도 없다 — 그 값을 sku 에 넣지 않는다.
 	SellerProductCode string `protobuf:"bytes,20,opt,name=seller_product_code,json=sellerProductCode,proto3" json:"seller_product_code,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Observed sellable stock for the whole product. Omit when unknown or unmanaged;
+	// never copy an option-management sentinel or invent a variant. Zero means sold out.
+	// When variants are provided, their stock must also permit a sale.
+	StockQuantity *float64 `protobuf:"fixed64,21,opt,name=stock_quantity,json=stockQuantity,proto3,oneof" json:"stock_quantity,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CommerceProduct) Reset() {
@@ -14049,6 +14053,13 @@ func (x *CommerceProduct) GetSellerProductCode() string {
 		return x.SellerProductCode
 	}
 	return ""
+}
+
+func (x *CommerceProduct) GetStockQuantity() float64 {
+	if x != nil && x.StockQuantity != nil {
+		return *x.StockQuantity
+	}
+	return 0
 }
 
 type CommerceProductVariant struct {
@@ -22261,7 +22272,7 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x05limit\x18\x03 \x01(\x05R\x05limit\"p\n" +
 	"\x19CommerceGetProductsOutput\x12?\n" +
 	"\bproducts\x18\x01 \x03(\v2#.channel.app.sdk.v1.CommerceProductR\bproducts\x12\x12\n" +
-	"\x04next\x18\x02 \x01(\tR\x04next\"\xa5\x05\n" +
+	"\x04next\x18\x02 \x01(\tR\x04next\"\xe4\x05\n" +
 	"\x0fCommerceProduct\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n" +
@@ -22288,9 +22299,11 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"updated_at\x18\x11 \x01(\x01R\tupdatedAt\x12F\n" +
 	"\bvariants\x18\x12 \x03(\v2*.channel.app.sdk.v1.CommerceProductVariantR\bvariants\x12!\n" +
 	"\fproduct_code\x18\x13 \x01(\tR\vproductCode\x12.\n" +
-	"\x13seller_product_code\x18\x14 \x01(\tR\x11sellerProductCodeB\b\n" +
+	"\x13seller_product_code\x18\x14 \x01(\tR\x11sellerProductCode\x12*\n" +
+	"\x0estock_quantity\x18\x15 \x01(\x01H\x02R\rstockQuantity\x88\x01\x01B\b\n" +
 	"\x06_priceB\x11\n" +
-	"\x0f_original_price\"\xe3\x01\n" +
+	"\x0f_original_priceB\x11\n" +
+	"\x0f_stock_quantity\"\xe3\x01\n" +
 	"\x16CommerceProductVariant\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\x05price\x18\x02 \x01(\x01H\x00R\x05price\x88\x01\x01\x12*\n" +
