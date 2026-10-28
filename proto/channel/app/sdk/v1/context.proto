@@ -66,4 +66,13 @@ message FunctionContext {
   google.protobuf.Value seed_state = 12;
   map<string, WebhookEndpointContext> webhooks = 13;
   OAuthFlowContext oauth_flow = 14;
+  IssueSubscriptionContext issue_subscription = 15;
+}
+
+// App-facing trusted subscription binding. Internal Issue link IDs are never forwarded.
+message IssueSubscriptionContext {
+  string subscription_id = 1;
+  // Both omitted only when stop precedes start.
+  optional string connection_id = 2;
+  optional uint32 connection_generation = 3;
 }

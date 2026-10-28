@@ -54,6 +54,11 @@ func TestCoreDTOJSONFieldsMatchProto(t *testing.T) {
 			descriptor: sdkv1.File_channel_app_sdk_v1_context_proto.Messages().ByName("FunctionContext"),
 		},
 		{
+			name:       "IssueSubscriptionContext",
+			runtime:    appsdk.IssueSubscriptionContext{},
+			descriptor: sdkv1.File_channel_app_sdk_v1_context_proto.Messages().ByName("IssueSubscriptionContext"),
+		},
+		{
 			name:       "OAuthFlowContext",
 			runtime:    appsdk.OAuthFlowContext{},
 			descriptor: sdkv1.File_channel_app_sdk_v1_context_proto.Messages().ByName("OAuthFlowContext"),
@@ -170,4 +175,15 @@ func lowerCamel(name string) string {
 		return ""
 	}
 	return strings.ToLower(name[:1]) + name[1:]
+}
+
+func TestContextPreservesIssueSubscriptionBinding(t *testing.T) {
+	var got appsdk.Context
+	err := json.Unmarshal([]byte(`{"caller":{"type":"system"},"channel":{"id":"c"},"issueSubscription":{"subscriptionId":"s","connectionId":"conn","connectionGeneration":2}}`), &got)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.IssueSubscription == nil || got.IssueSubscription.SubscriptionID != "s" || got.IssueSubscription.ConnectionID != "conn" || got.IssueSubscription.ConnectionGeneration != 2 {
+		t.Fatalf("missing subscription binding: %+v", got.IssueSubscription)
+	}
 }

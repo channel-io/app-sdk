@@ -2290,3 +2290,20 @@ message OAuthAuthorizationRequestMapping {
   // Omit to disable PKCE. Only S256 is supported.
   optional string code_challenge_method = 3;
 }
+
+// Optional Issue subscription group; start and stop must be registered together.
+message IssueSubscriptionStartInput {
+  string subscription_id = 1;
+  string issue_id = 2;
+}
+message IssueSubscriptionStartOutput {
+  string status = 1;
+  ExternalIssue issue = 2;
+  string provider_tenant_id = 3;
+}
+message IssueSubscriptionStopInput {
+  string subscription_id = 1;
+}
+message IssueSubscriptionStopOutput {
+  bool stopped = 1;
+}

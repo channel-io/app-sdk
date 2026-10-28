@@ -1,4 +1,5 @@
 import type {
+  IssueSubscriptionContext as ProtoIssueSubscriptionContext,
   Caller as ProtoCaller,
   Channel as ProtoChannel,
   FunctionContext as ProtoFunctionContext,
@@ -57,13 +58,20 @@ export interface OAuthFlowContext extends ProtoOAuthFlowContext {
   authScope: "channel" | "manager";
 }
 
+/** App Store supplies this binding. Connection fields may be absent for stop before start. */
+export interface IssueSubscriptionContext extends ProtoIssueSubscriptionContext {
+  subscriptionId: string;
+  connectionId?: string;
+  connectionGeneration?: number;
+}
+
 /**
  * Context passed to function handlers.
  * Mirrors Go's ChannelContext struct (internal/domain/app/subdomain/core/svc/function.go).
  */
 export interface Context extends Omit<
   ProtoFunctionContext,
-  "caller" | "channel" | "user" | "userChat" | "oauthFlow"
+  "caller" | "channel" | "user" | "userChat" | "oauthFlow" | "issueSubscription"
 > {
   /** Caller information */
   caller: Caller;
@@ -96,6 +104,8 @@ export interface Context extends Omit<
   webhooks?: Record<string, WebhookEndpointContext>;
   /** Target and initiating actor for system-invoked OAuth flow hooks. */
   oauthFlow?: OAuthFlowContext;
+  /** Trusted binding; never derive this from function params. */
+  issueSubscription?: IssueSubscriptionContext;
   /** Sandbox mode flag (for LLM mock testing) */
   sandbox?: boolean;
   /** Sandbox session ID (stateful mode) */

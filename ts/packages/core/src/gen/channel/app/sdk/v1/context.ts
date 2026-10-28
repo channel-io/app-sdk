@@ -72,6 +72,7 @@ export interface FunctionContext {
   seedState?: any | undefined;
   webhooks?: { [key: string]: WebhookEndpointContext } | undefined;
   oauthFlow?: OAuthFlowContext | undefined;
+  issueSubscription?: IssueSubscriptionContext | undefined;
 }
 
 export interface FunctionContext_ApiCredentialsEntry {
@@ -82,4 +83,14 @@ export interface FunctionContext_ApiCredentialsEntry {
 export interface FunctionContext_WebhooksEntry {
   key: string;
   value?: WebhookEndpointContext | undefined;
+}
+
+/** App-facing trusted subscription binding. Internal Issue link IDs are never forwarded. */
+export interface IssueSubscriptionContext {
+  subscriptionId?:
+    | string
+    | undefined;
+  /** Both omitted only when stop precedes start. */
+  connectionId?: string | undefined;
+  connectionGeneration?: number | undefined;
 }

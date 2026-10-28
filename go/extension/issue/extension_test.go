@@ -19,6 +19,8 @@ func TestPublicAliasesCoverIssueMessages(t *testing.T) {
 		&issue.GetIssuesRequest{}, &issue.GetIssuesResponse{},
 		&issue.GetIssueTransitionsRequest{}, &issue.GetIssueTransitionsResponse{},
 		&issue.ExecuteIssueTransitionRequest{}, &issue.ExecuteIssueTransitionResponse{},
+		&issue.StartSubscriptionRequest{}, &issue.StartSubscriptionResponse{},
+		&issue.StopSubscriptionRequest{}, &issue.StopSubscriptionResponse{},
 		&issue.ExternalIssue{}, &issue.ProviderState{}, &issue.Transition{}, &issue.Error{},
 		&issue.GetIssuesResult{}, &issue.TransitionInput{}, &issue.TransitionField{}, &issue.Container{}, &issue.Actor{},
 	}
@@ -48,7 +50,7 @@ func TestPublicAliasesCoverIssueMessages(t *testing.T) {
 			}
 		}
 	}
-	for _, alias := range aliases[:10] {
+	for _, alias := range aliases[:14] {
 		visit(alias.ProtoReflect().Descriptor())
 	}
 }
@@ -108,5 +110,44 @@ func TestRequiredZeroValuesOnWire(t *testing.T) {
 				t.Fatalf("absent optional state emitted: %s", result.Result)
 			}
 		}
+	}
+}
+
+func TestSubscriptionWireContract(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "test"})
+	err := app.Use(issue.Extension().StartSubscription(func(_ context.Context, ctx appsdk.Context, input *issue.StartSubscriptionRequest) (*issue.StartSubscriptionResponse, error) {
+		if input.SubscriptionId != "sub-1" || input.IssueId != "issue-1" || ctx.IssueSubscription == nil || ctx.IssueSubscription.ConnectionGeneration != 2 {
+			t.Fatalf("lost subscription input or context: %+v %+v", input, ctx)
+		}
+		return &issue.StartSubscriptionResponse{Status: "active", ProviderTenantId: "workspace-1", Issue: &issue.ExternalIssue{IssueId: "issue-1", Identifier: "ENG-1", Title: "Example", Url: "https://linear.app/example", State: "started", ProviderState: &issue.ProviderState{Name: "Started"}, CreatedAt: "2026-10-28T00:00:00Z"}}, nil
+	}).StopSubscription(func(_ context.Context, ctx appsdk.Context, input *issue.StopSubscriptionRequest) (*issue.StopSubscriptionResponse, error) {
+		if input.SubscriptionId != "sub-1" || ctx.GetAuthToken() != "" {
+			t.Fatal("stop should not need provider OAuth")
+		}
+		return &issue.StopSubscriptionResponse{Stopped: true}, nil
+	}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	start := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: issue.FunctionStartSubscription, Params: json.RawMessage(`{"subscriptionId":"sub-1","issueId":"issue-1"}`), Context: appsdk.Context{IssueSubscription: &appsdk.IssueSubscriptionContext{SubscriptionID: "sub-1", ConnectionID: "conn-1", ConnectionGeneration: 2}}})
+	if start.Error != nil {
+		t.Fatal(start.Error)
+	}
+	var result struct {
+		Status           string `json:"status"`
+		ProviderTenantID string `json:"providerTenantId"`
+		Issue            struct {
+			ID string `json:"issueId"`
+		} `json:"issue"`
+	}
+	if err := json.Unmarshal(start.Result, &result); err != nil {
+		t.Fatal(err)
+	}
+	if result.Status != "active" || result.ProviderTenantID != "workspace-1" || result.Issue.ID != "issue-1" {
+		t.Fatalf("invalid baseline envelope: %s", start.Result)
+	}
+	stop := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: issue.FunctionStopSubscription, Params: json.RawMessage(`{"subscriptionId":"sub-1"}`)})
+	if stop.Error != nil || string(stop.Result) != `{"stopped":true}` {
+		t.Fatalf("invalid stop: %+v", stop)
 	}
 }

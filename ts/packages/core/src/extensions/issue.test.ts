@@ -40,7 +40,7 @@ describe("Issue v1", () => {
   });
   it("registers the five functions and the final V266 result envelope", () => {
     const actual = getExtensionFunctionSchemas().filter((s) =>
-      s.name.startsWith("extension.issue.")
+      s.name.startsWith("extension.issue.core.")
     );
     expect(actual.map((s) => s.name).sort()).toEqual(
       fixture[0]!.functions.map((f) => f.functionSchema.name).sort()
@@ -122,5 +122,65 @@ describe("Issue v1", () => {
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
       })
     ).toBeDefined();
+  });
+});
+
+describe("Issue subscriptions", () => {
+  it("registers the optional start/stop pair without changing core functions", () => {
+    expect(
+      getExtensionFunctionSchemas()
+        .filter((s) => s.name.startsWith("extension.issue.subscription."))
+        .map((s) => s.name)
+        .sort()
+    ).toEqual(["extension.issue.subscription.start", "extension.issue.subscription.stop"]);
+  });
+  it("strips caller supplied routing and keeps one stable issue selector", () => {
+    expect(
+      schemas.IssueSubscriptionStartInputSchema.parse({
+        subscriptionId: "sub-1",
+        issueId: "id",
+        channelId: "spoof",
+        language: "ko",
+      })
+    ).toEqual({ subscriptionId: "sub-1", issueId: "id" });
+    for (const subscriptionId of ["", " ", "x/y", "x".repeat(129), "x\n"])
+      expect(
+        schemas.IssueSubscriptionStartInputSchema.safeParse({ subscriptionId, issueId: "id" })
+          .success
+      ).toBe(false);
+    expect(
+      schemas.IssueSubscriptionStartInputSchema.safeParse({ subscriptionId: "sub-1", issueId: " " })
+        .success
+    ).toBe(false);
+  });
+  it("requires a complete single-issue baseline and verified tenant", () => {
+    expect(
+      schemas.IssueSubscriptionStartOutputSchema.parse({
+        status: "active",
+        issue,
+        providerTenantId: "workspace",
+      })
+    ).toEqual({ status: "active", issue, providerTenantId: "workspace" });
+    for (const result of [
+      { status: "active", issues: [issue], providerTenantId: "workspace" },
+      { status: "active", issue },
+      { status: "pending", issue, providerTenantId: "workspace" },
+      { status: "active", issue, providerTenantId: " " },
+    ])
+      expect(schemas.IssueSubscriptionStartOutputSchema.safeParse(result).success).toBe(false);
+  });
+  it("stop needs only the subscription ID and succeeds only after stopping", () => {
+    expect(
+      schemas.IssueSubscriptionStopInputSchema.parse({
+        subscriptionId: "sub-1",
+        issueId: "ignored",
+      })
+    ).toEqual({ subscriptionId: "sub-1" });
+    expect(schemas.IssueSubscriptionStopOutputSchema.parse({ stopped: true })).toEqual({
+      stopped: true,
+    });
+    expect(schemas.IssueSubscriptionStopOutputSchema.safeParse({ stopped: false }).success).toBe(
+      false
+    );
   });
 });

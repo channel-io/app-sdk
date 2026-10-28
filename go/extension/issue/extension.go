@@ -128,3 +128,25 @@ func handleIssue[In, Out any](handler appsdk.TypedHandlerFunc[In, Out]) appsdk.F
 		return &issueResult{response: any(response).(proto.Message)}, nil
 	})
 }
+
+// StartSubscription enables delivery for one issue and returns the persisted baseline.
+const FunctionStartSubscription = "extension.issue.subscription.start"
+
+type StartSubscriptionRequest = sdkv1.IssueSubscriptionStartInput
+type StartSubscriptionResponse = sdkv1.IssueSubscriptionStartOutput
+
+func (b *ExtensionBuilder) StartSubscription(handler appsdk.TypedHandlerFunc[StartSubscriptionRequest, StartSubscriptionResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionStartSubscription, schemaregistry.Append(FunctionStartSubscription, handleIssue(handler))...)
+	return b
+}
+
+// StopSubscription ends only the logical subscription, not the provider webhook.
+const FunctionStopSubscription = "extension.issue.subscription.stop"
+
+type StopSubscriptionRequest = sdkv1.IssueSubscriptionStopInput
+type StopSubscriptionResponse = sdkv1.IssueSubscriptionStopOutput
+
+func (b *ExtensionBuilder) StopSubscription(handler appsdk.TypedHandlerFunc[StopSubscriptionRequest, StopSubscriptionResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionStopSubscription, schemaregistry.Append(FunctionStopSubscription, handleIssue(handler))...)
+	return b
+}

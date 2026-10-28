@@ -1,5 +1,9 @@
 import type { Context } from "../../types/context.js";
 import type {
+  IssueSubscriptionStartInput,
+  IssueSubscriptionStartOutput,
+  IssueSubscriptionStopInput,
+  IssueSubscriptionStopOutput,
   IssueSearchIssuesInput,
   IssueSearchIssuesOutput,
   IssueGetIssueInput,
@@ -24,4 +28,10 @@ export interface IssueExtensionInterface {
     ctx: Context,
     input: IssueExecuteIssueTransitionInput
   ): Promise<IssueExecuteIssueTransitionOutput>;
+}
+
+/** Optional group, implemented in addition to IssueExtensionInterface. */
+export interface IssueSubscriptionExtensionInterface {
+  start(ctx: Context, input: IssueSubscriptionStartInput): Promise<IssueSubscriptionStartOutput>;
+  stop(ctx: Context, input: IssueSubscriptionStopInput): Promise<IssueSubscriptionStopOutput>;
 }

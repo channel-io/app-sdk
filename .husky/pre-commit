@@ -27,7 +27,8 @@ if [ -n "$staged_go_files" ]; then
   cd "$ROOT_DIR"
 fi
 
-staged_root_format_files="$(git diff --cached --name-only --diff-filter=ACMR | grep -E '(^README\.md$|^AGENT\.md$|^docs/.*\.(md|json|ya?ml)$|^examples/.*\.(md|json|ya?ml)$|^.*\.(json|ya?ml)$)' | grep -v '^ts/' || true)"
+# The canonical schema fixture is byte-checked against its generator, not Prettier.
+staged_root_format_files="$(git diff --cached --name-only --diff-filter=ACMR | grep -E '(^README\.md$|^AGENT\.md$|^docs/.*\.(md|json|ya?ml)$|^examples/.*\.(md|json|ya?ml)$|^.*\.(json|ya?ml)$)' | grep -v '^ts/' | grep -v '^go/extension/schemaregistry/extension_function_schemas.json$' || true)"
 if [ -n "$staged_root_format_files" ]; then
   for file in $staged_root_format_files; do
     pnpm --dir ts exec prettier --write "$ROOT_DIR/$file"

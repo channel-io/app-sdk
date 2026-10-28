@@ -1,4 +1,8 @@
 import {
+  IssueSubscriptionStartInputSchema,
+  IssueSubscriptionStartOutputSchema,
+  IssueSubscriptionStopInputSchema,
+  IssueSubscriptionStopOutputSchema,
   IssueSearchIssuesInputSchema,
   IssueSearchIssuesOutputSchema,
   IssueGetIssueInputSchema,
@@ -483,6 +487,16 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     name: "extension.issue.core.searchIssues",
     input: IssueSearchIssuesInputSchema,
     output: IssueSearchIssuesOutputSchema,
+  },
+  {
+    name: "extension.issue.subscription.start",
+    input: IssueSubscriptionStartInputSchema,
+    output: IssueSubscriptionStartOutputSchema,
+  },
+  {
+    name: "extension.issue.subscription.stop",
+    input: IssueSubscriptionStopInputSchema,
+    output: IssueSubscriptionStopOutputSchema,
   },
   {
     name: "extension.mailRelay.inbound.onMailReceived",
