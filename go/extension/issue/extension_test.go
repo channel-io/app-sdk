@@ -151,3 +151,50 @@ func TestSubscriptionWireContract(t *testing.T) {
 		t.Fatalf("invalid stop: %+v", stop)
 	}
 }
+
+func TestSubscriptionRejectsInvalidIdentityBeforeHandler(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "test"})
+	calls := 0
+	err := app.Use(issue.Extension().StartSubscription(func(_ context.Context, _ appsdk.Context, in *issue.StartSubscriptionRequest) (*issue.StartSubscriptionResponse, error) {
+		calls++
+		return &issue.StartSubscriptionResponse{}, nil
+	}).StopSubscription(func(_ context.Context, _ appsdk.Context, in *issue.StopSubscriptionRequest) (*issue.StopSubscriptionResponse, error) {
+		calls++
+		return &issue.StopSubscriptionResponse{Stopped: true}, nil
+	}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, method := range []string{issue.FunctionStartSubscription, issue.FunctionStopSubscription} {
+		for _, params := range []string{
+			`{}`, `null`, `[]`, `{"subscriptionId":7}`, `{"subscriptionId":null}`,
+			`{"subscriptionId":""}`, `{"subscriptionId":"bad space"}`, `{"subscriptionId":"line\n"}`,
+			`{"subscriptionId":"` + strings.Repeat("a", 129) + `"}`, `{"subscription_id":"sub"}`,
+		} {
+			t.Run(method+params, func(t *testing.T) {
+				result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: method, Params: json.RawMessage(params)})
+				if result.Error == nil || result.Error.Code != appsdk.CodeBadRequest {
+					t.Fatalf("expected bad request: %+v", result)
+				}
+				var data map[string]any
+				if err := json.Unmarshal(result.Error.Data, &data); err != nil || data["type"] != "invalidInput" {
+					t.Fatalf("expected canonical invalidInput: %+v", result.Error)
+				}
+			})
+		}
+	}
+	for _, issueID := range []any{nil, 7, "", " \t\n", "\ufeff"} {
+		params, _ := json.Marshal(map[string]any{"subscriptionId": "sub", "issueId": issueID})
+		result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: issue.FunctionStartSubscription, Params: params})
+		if result.Error == nil || result.Error.Type != "invalidInput" {
+			t.Fatalf("expected invalid issue identity: %+v", result)
+		}
+	}
+	if calls != 0 {
+		t.Fatalf("invalid input reached handler %d times", calls)
+	}
+	result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: issue.FunctionStopSubscription, Params: json.RawMessage(`{"subscriptionId":"sub","subscription_id":"ignored","channelId":"ignored"}`)})
+	if result.Error != nil || calls != 1 {
+		t.Fatalf("unknown fields should be stripped: %+v calls=%d", result, calls)
+	}
+}
