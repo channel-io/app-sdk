@@ -1,5 +1,16 @@
 # @channel.io/app-sdk-server
 
+## 0.40.0
+
+### Patch Changes
+
+- b241385: Add optional Issue subscription start/stop schemas and interfaces, plus trusted subscription context. These contracts require the corresponding App Store authorization and routing implementation before activation.
+
+  Normalize invalid subscription inputs to the shared Issue invalidInput error contract.
+
+- Updated dependencies [b241385]
+  - @channel.io/app-sdk-core@0.40.0
+
 ## 0.39.0
 
 ### Patch Changes
