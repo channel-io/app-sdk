@@ -38,12 +38,14 @@ type extensionSmokeSpec struct {
 }
 
 var extensionSmokeSpecs = []extensionSmokeSpec{
-	{name: issue.ExtensionName, systemVersion: issue.SystemVersion, functions: []string{issue.FunctionSearchIssues, issue.FunctionGetIssue, issue.FunctionGetIssues, issue.FunctionGetIssueTransitions, issue.FunctionExecuteIssueTransition}, build: func() appsdk.Extension {
+	{name: issue.ExtensionName, systemVersion: issue.SystemVersion, functions: []string{issue.FunctionSearchIssues, issue.FunctionGetIssue, issue.FunctionGetIssues, issue.FunctionGetIssueTransitions, issue.FunctionExecuteIssueTransition, issue.FunctionStartSubscription, issue.FunctionStopSubscription}, build: func() appsdk.Extension {
 		return issue.Extension().SearchIssues(smokeZero[issue.SearchIssuesRequest, issue.SearchIssuesResponse]()).
 			GetIssue(smokeZero[issue.GetIssueRequest, issue.GetIssueResponse]()).
 			GetIssues(smokeZero[issue.GetIssuesRequest, issue.GetIssuesResponse]()).
 			GetIssueTransitions(smokeZero[issue.GetIssueTransitionsRequest, issue.GetIssueTransitionsResponse]()).
-			ExecuteIssueTransition(smokeZero[issue.ExecuteIssueTransitionRequest, issue.ExecuteIssueTransitionResponse]())
+			ExecuteIssueTransition(smokeZero[issue.ExecuteIssueTransitionRequest, issue.ExecuteIssueTransitionResponse]()).
+			StartSubscription(smokeZero[issue.StartSubscriptionRequest, issue.StartSubscriptionResponse]()).
+			StopSubscription(smokeZero[issue.StopSubscriptionRequest, issue.StopSubscriptionResponse]())
 	}},
 	{
 		name:          alftask.ExtensionName,

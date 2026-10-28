@@ -1,4 +1,8 @@
 import {
+  IssueSubscriptionStartInputSchema,
+  IssueSubscriptionStartOutputSchema,
+  IssueSubscriptionStopInputSchema,
+  IssueSubscriptionStopOutputSchema,
   ExternalIssueSchema,
   IssueProviderStateSchema,
   IssueErrorSchema,
@@ -275,6 +279,30 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
+  contract(
+    "IssueSubscriptionStartInput",
+    IssueSubscriptionStartInputSchema,
+    "extension",
+    "IssueSubscriptionStartInput"
+  ),
+  contract(
+    "IssueSubscriptionStartOutput",
+    IssueSubscriptionStartOutputSchema,
+    "extension",
+    "IssueSubscriptionStartOutput"
+  ),
+  contract(
+    "IssueSubscriptionStopInput",
+    IssueSubscriptionStopInputSchema,
+    "extension",
+    "IssueSubscriptionStopInput"
+  ),
+  contract(
+    "IssueSubscriptionStopOutput",
+    IssueSubscriptionStopOutputSchema,
+    "extension",
+    "IssueSubscriptionStopOutput"
+  ),
   contract("ExternalIssue", ExternalIssueSchema, "extension", "ExternalIssue"),
   contract("IssueProviderState", IssueProviderStateSchema, "extension", "IssueProviderState"),
   contract("IssueError", IssueErrorSchema, "extension", "IssueError"),

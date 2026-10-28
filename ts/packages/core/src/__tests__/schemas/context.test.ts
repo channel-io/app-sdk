@@ -1,6 +1,10 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
-import { OAuthFlowContextSchema, ProtoContextSchemas } from "../../index.js";
+import {
+  IssueSubscriptionContextSchema,
+  OAuthFlowContextSchema,
+  ProtoContextSchemas,
+} from "../../index.js";
 import type { OAuthFlowContext } from "../../index.js";
 
 describe("OAuth flow context", () => {
@@ -35,5 +39,37 @@ describe("OAuth flow context", () => {
     expect(OAuthFlowContextSchema.parse(target)).toEqual(target);
     expect(() => OAuthFlowContextSchema.parse({ ...target, authScope: "app" })).toThrow();
     expect(() => OAuthFlowContextSchema.parse({ ...target, managerId: "" })).toThrow();
+  });
+});
+
+describe("Issue subscription context", () => {
+  it("allows stop before start without an OAuth connection, but rejects partial bindings", () => {
+    const stop = { subscriptionId: "sub-1" };
+    expect(IssueSubscriptionContextSchema.parse(stop)).toEqual(stop);
+    expect(IssueSubscriptionContextSchema.safeParse({ ...stop, connectionId: "c" }).success).toBe(
+      false
+    );
+    expect(
+      IssueSubscriptionContextSchema.safeParse({ ...stop, connectionGeneration: 1 }).success
+    ).toBe(false);
+  });
+  it("preserves the trusted binding and rejects internal routing fields", () => {
+    const binding = {
+      subscriptionId: "sub-1",
+      connectionId: "connection-1",
+      connectionGeneration: 2,
+    };
+    const parsed = ProtoContextSchemas.FunctionContextProtoSchema.parse({
+      issueSubscription: binding,
+    });
+    expect(parsed.issueSubscription).toEqual(binding);
+    expect(IssueSubscriptionContextSchema.parse(parsed.issueSubscription)).toEqual(binding);
+    for (const connectionGeneration of [0, -1, 1.5, 4294967296])
+      expect(
+        IssueSubscriptionContextSchema.safeParse({ ...binding, connectionGeneration }).success
+      ).toBe(false);
+    expect(
+      IssueSubscriptionContextSchema.safeParse({ ...binding, consumerLinkKey: "internal" }).success
+    ).toBe(false);
   });
 });

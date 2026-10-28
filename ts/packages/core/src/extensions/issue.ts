@@ -1,4 +1,8 @@
 import type {
+  IssueSubscriptionStartInput as ProtoIssueSubscriptionStartInput,
+  IssueSubscriptionStartOutput as ProtoIssueSubscriptionStartOutput,
+  IssueSubscriptionStopInput as ProtoIssueSubscriptionStopInput,
+  IssueSubscriptionStopOutput as ProtoIssueSubscriptionStopOutput,
   IssueExecuteIssueTransitionOutput as ProtoIssueExecuteIssueTransitionOutput,
   IssueExecuteIssueTransitionInput as ProtoIssueExecuteIssueTransitionInput,
   ExternalIssue as ProtoExternalIssue,
@@ -252,4 +256,44 @@ export type IssueExecuteIssueTransitionInput = ProtoBacked<
 export type IssueExecuteIssueTransitionOutput = ProtoBacked<
   z.infer<typeof IssueExecuteIssueTransitionOutputSchema>,
   ProtoIssueExecuteIssueTransitionOutput
+>;
+
+// Identity is selected by Issue and bound by App Store; it is not a credential.
+const SubscriptionID = z
+  .string()
+  .min(1)
+  .max(128)
+  .regex(/^[A-Za-z0-9_-]+$/)
+  .refine((value) => value.trim() === value, "Whitespace is not allowed");
+export const IssueSubscriptionStartInputSchema = z
+  .object({ subscriptionId: SubscriptionID, issueId: Text.regex(/\S/) })
+  .passthrough()
+  .transform(({ subscriptionId, issueId }) => ({ subscriptionId, issueId }));
+export const IssueSubscriptionStartOutputSchema = z
+  .object({
+    status: z.literal("active"),
+    issue: ExternalIssueSchema,
+    providerTenantId: Text.regex(/\S/),
+  })
+  .strict();
+export const IssueSubscriptionStopInputSchema = z
+  .object({ subscriptionId: SubscriptionID })
+  .passthrough()
+  .transform(({ subscriptionId }) => ({ subscriptionId }));
+export const IssueSubscriptionStopOutputSchema = z.object({ stopped: z.literal(true) }).strict();
+export type IssueSubscriptionStartInput = ProtoBacked<
+  z.infer<typeof IssueSubscriptionStartInputSchema>,
+  ProtoIssueSubscriptionStartInput
+>;
+export type IssueSubscriptionStartOutput = ProtoBacked<
+  z.infer<typeof IssueSubscriptionStartOutputSchema>,
+  ProtoIssueSubscriptionStartOutput
+>;
+export type IssueSubscriptionStopInput = ProtoBacked<
+  z.infer<typeof IssueSubscriptionStopInputSchema>,
+  ProtoIssueSubscriptionStopInput
+>;
+export type IssueSubscriptionStopOutput = ProtoBacked<
+  z.infer<typeof IssueSubscriptionStopOutputSchema>,
+  ProtoIssueSubscriptionStopOutput
 >;

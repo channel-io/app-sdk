@@ -67,5 +67,13 @@ export const FunctionContextProtoSchema = z.object({
   seedState: z.any().optional(),
   webhooks: z.record(z.string(), z.lazy(() => WebhookEndpointContextProtoSchema)).optional(),
   oauthFlow: z.lazy(() => OAuthFlowContextProtoSchema).optional(),
+  issueSubscription: z.lazy(() => IssueSubscriptionContextProtoSchema).optional(),
 }) satisfies z.ZodType<pb.FunctionContext>;
 export type FunctionContextProto = z.infer<typeof FunctionContextProtoSchema>;
+
+export const IssueSubscriptionContextProtoSchema = z.object({
+  subscriptionId: z.string().optional(),
+  connectionId: z.string().optional(),
+  connectionGeneration: z.number().int().optional(),
+}) satisfies z.ZodType<pb.IssueSubscriptionContext>;
+export type IssueSubscriptionContextProto = z.infer<typeof IssueSubscriptionContextProtoSchema>;

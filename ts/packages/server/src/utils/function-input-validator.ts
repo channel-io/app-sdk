@@ -36,7 +36,7 @@ export function parseFunctionInputParams<T>(
       : inputSchema.parse(params);
   } catch (error) {
     if (isZodErrorLike(error)) {
-      if (functionName.startsWith("extension.issue.core.")) {
+      if (functionName.startsWith("extension.issue.")) {
         const message = "Invalid Issue Extension input";
         throw new FunctionCallError(message, FunctionCallErrorCode.BadRequest, {
           type: "invalidInput",

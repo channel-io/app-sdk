@@ -62,21 +62,29 @@ type OAuthFlowContext struct {
 	TargetManagerID *string `json:"targetManagerId,omitempty"`
 }
 
+// IssueSubscriptionContext is supplied only by a trusted App Store invocation.
+type IssueSubscriptionContext struct {
+	SubscriptionID       string `json:"subscriptionId"`
+	ConnectionID         string `json:"connectionId,omitempty"`
+	ConnectionGeneration uint32 `json:"connectionGeneration,omitempty"`
+}
+
 type Context struct {
-	Caller          Caller                            `json:"caller"`
-	Channel         Channel                           `json:"channel"`
-	User            *User                             `json:"user,omitempty"`
-	UserChat        *UserChat                         `json:"userChat,omitempty"`
-	AuthToken       string                            `json:"authToken,omitempty"`
-	LegacyAuthToken string                            `json:"legacyAuthToken,omitempty"`
-	APICredentials  map[string]string                 `json:"apiCredentials,omitempty"`
-	Config          map[string]any                    `json:"config,omitempty"`
-	Webhooks        map[string]WebhookEndpointContext `json:"webhooks,omitempty"`
-	OAuthFlow       *OAuthFlowContext                 `json:"oauthFlow,omitempty"`
-	Language        string                            `json:"language,omitempty"`
-	Sandbox         bool                              `json:"sandbox,omitempty"`
-	SessionID       string                            `json:"sessionId,omitempty"`
-	SeedState       any                               `json:"seedState,omitempty"`
+	IssueSubscription *IssueSubscriptionContext         `json:"issueSubscription,omitempty"`
+	Caller            Caller                            `json:"caller"`
+	Channel           Channel                           `json:"channel"`
+	User              *User                             `json:"user,omitempty"`
+	UserChat          *UserChat                         `json:"userChat,omitempty"`
+	AuthToken         string                            `json:"authToken,omitempty"`
+	LegacyAuthToken   string                            `json:"legacyAuthToken,omitempty"`
+	APICredentials    map[string]string                 `json:"apiCredentials,omitempty"`
+	Config            map[string]any                    `json:"config,omitempty"`
+	Webhooks          map[string]WebhookEndpointContext `json:"webhooks,omitempty"`
+	OAuthFlow         *OAuthFlowContext                 `json:"oauthFlow,omitempty"`
+	Language          string                            `json:"language,omitempty"`
+	Sandbox           bool                              `json:"sandbox,omitempty"`
+	SessionID         string                            `json:"sessionId,omitempty"`
+	SeedState         any                               `json:"seedState,omitempty"`
 }
 
 func (c *Context) UnmarshalJSON(data []byte) error {

@@ -446,23 +446,24 @@ func (x *OAuthFlowContext) GetTargetManagerId() string {
 }
 
 type FunctionContext struct {
-	state           protoimpl.MessageState             `protogen:"open.v1"`
-	Caller          *Caller                            `protobuf:"bytes,1,opt,name=caller,proto3" json:"caller,omitempty"`
-	Channel         *Channel                           `protobuf:"bytes,2,opt,name=channel,proto3" json:"channel,omitempty"`
-	User            *User                              `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
-	UserChat        *UserChat                          `protobuf:"bytes,4,opt,name=user_chat,json=userChat,proto3" json:"user_chat,omitempty"`
-	AuthToken       string                             `protobuf:"bytes,5,opt,name=auth_token,json=authToken,proto3" json:"auth_token,omitempty"`
-	LegacyAuthToken string                             `protobuf:"bytes,6,opt,name=legacy_auth_token,json=legacyAuthToken,proto3" json:"legacy_auth_token,omitempty"`
-	ApiCredentials  map[string]string                  `protobuf:"bytes,7,rep,name=api_credentials,json=apiCredentials,proto3" json:"api_credentials,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	Config          *structpb.Struct                   `protobuf:"bytes,8,opt,name=config,proto3" json:"config,omitempty"`
-	Language        string                             `protobuf:"bytes,9,opt,name=language,proto3" json:"language,omitempty"`
-	Sandbox         bool                               `protobuf:"varint,10,opt,name=sandbox,proto3" json:"sandbox,omitempty"`
-	SessionId       string                             `protobuf:"bytes,11,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	SeedState       *structpb.Value                    `protobuf:"bytes,12,opt,name=seed_state,json=seedState,proto3" json:"seed_state,omitempty"`
-	Webhooks        map[string]*WebhookEndpointContext `protobuf:"bytes,13,rep,name=webhooks,proto3" json:"webhooks,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	OauthFlow       *OAuthFlowContext                  `protobuf:"bytes,14,opt,name=oauth_flow,json=oauthFlow,proto3" json:"oauth_flow,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state             protoimpl.MessageState             `protogen:"open.v1"`
+	Caller            *Caller                            `protobuf:"bytes,1,opt,name=caller,proto3" json:"caller,omitempty"`
+	Channel           *Channel                           `protobuf:"bytes,2,opt,name=channel,proto3" json:"channel,omitempty"`
+	User              *User                              `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
+	UserChat          *UserChat                          `protobuf:"bytes,4,opt,name=user_chat,json=userChat,proto3" json:"user_chat,omitempty"`
+	AuthToken         string                             `protobuf:"bytes,5,opt,name=auth_token,json=authToken,proto3" json:"auth_token,omitempty"`
+	LegacyAuthToken   string                             `protobuf:"bytes,6,opt,name=legacy_auth_token,json=legacyAuthToken,proto3" json:"legacy_auth_token,omitempty"`
+	ApiCredentials    map[string]string                  `protobuf:"bytes,7,rep,name=api_credentials,json=apiCredentials,proto3" json:"api_credentials,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Config            *structpb.Struct                   `protobuf:"bytes,8,opt,name=config,proto3" json:"config,omitempty"`
+	Language          string                             `protobuf:"bytes,9,opt,name=language,proto3" json:"language,omitempty"`
+	Sandbox           bool                               `protobuf:"varint,10,opt,name=sandbox,proto3" json:"sandbox,omitempty"`
+	SessionId         string                             `protobuf:"bytes,11,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	SeedState         *structpb.Value                    `protobuf:"bytes,12,opt,name=seed_state,json=seedState,proto3" json:"seed_state,omitempty"`
+	Webhooks          map[string]*WebhookEndpointContext `protobuf:"bytes,13,rep,name=webhooks,proto3" json:"webhooks,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	OauthFlow         *OAuthFlowContext                  `protobuf:"bytes,14,opt,name=oauth_flow,json=oauthFlow,proto3" json:"oauth_flow,omitempty"`
+	IssueSubscription *IssueSubscriptionContext          `protobuf:"bytes,15,opt,name=issue_subscription,json=issueSubscription,proto3" json:"issue_subscription,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *FunctionContext) Reset() {
@@ -593,6 +594,75 @@ func (x *FunctionContext) GetOauthFlow() *OAuthFlowContext {
 	return nil
 }
 
+func (x *FunctionContext) GetIssueSubscription() *IssueSubscriptionContext {
+	if x != nil {
+		return x.IssueSubscription
+	}
+	return nil
+}
+
+// App-facing trusted subscription binding. Internal Issue link IDs are never forwarded.
+type IssueSubscriptionContext struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	SubscriptionId string                 `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	// Both omitted only when stop precedes start.
+	ConnectionId         *string `protobuf:"bytes,2,opt,name=connection_id,json=connectionId,proto3,oneof" json:"connection_id,omitempty"`
+	ConnectionGeneration *uint32 `protobuf:"varint,3,opt,name=connection_generation,json=connectionGeneration,proto3,oneof" json:"connection_generation,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *IssueSubscriptionContext) Reset() {
+	*x = IssueSubscriptionContext{}
+	mi := &file_channel_app_sdk_v1_context_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IssueSubscriptionContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IssueSubscriptionContext) ProtoMessage() {}
+
+func (x *IssueSubscriptionContext) ProtoReflect() protoreflect.Message {
+	mi := &file_channel_app_sdk_v1_context_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IssueSubscriptionContext.ProtoReflect.Descriptor instead.
+func (*IssueSubscriptionContext) Descriptor() ([]byte, []int) {
+	return file_channel_app_sdk_v1_context_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *IssueSubscriptionContext) GetSubscriptionId() string {
+	if x != nil {
+		return x.SubscriptionId
+	}
+	return ""
+}
+
+func (x *IssueSubscriptionContext) GetConnectionId() string {
+	if x != nil && x.ConnectionId != nil {
+		return *x.ConnectionId
+	}
+	return ""
+}
+
+func (x *IssueSubscriptionContext) GetConnectionGeneration() uint32 {
+	if x != nil && x.ConnectionGeneration != nil {
+		return *x.ConnectionGeneration
+	}
+	return 0
+}
+
 var File_channel_app_sdk_v1_context_proto protoreflect.FileDescriptor
 
 const file_channel_app_sdk_v1_context_proto_rawDesc = "" +
@@ -631,7 +701,7 @@ const file_channel_app_sdk_v1_context_proto_rawDesc = "" +
 	"\x03key\x18\x05 \x01(\tH\x00R\x03key\x88\x01\x01\x12/\n" +
 	"\x11target_manager_id\x18\x06 \x01(\tH\x01R\x0ftargetManagerId\x88\x01\x01B\x06\n" +
 	"\x04_keyB\x14\n" +
-	"\x12_target_manager_id\"\x8f\a\n" +
+	"\x12_target_manager_id\"\xec\a\n" +
 	"\x0fFunctionContext\x122\n" +
 	"\x06caller\x18\x01 \x01(\v2\x1a.channel.app.sdk.v1.CallerR\x06caller\x125\n" +
 	"\achannel\x18\x02 \x01(\v2\x1b.channel.app.sdk.v1.ChannelR\achannel\x12,\n" +
@@ -651,13 +721,20 @@ const file_channel_app_sdk_v1_context_proto_rawDesc = "" +
 	"seed_state\x18\f \x01(\v2\x16.google.protobuf.ValueR\tseedState\x12M\n" +
 	"\bwebhooks\x18\r \x03(\v21.channel.app.sdk.v1.FunctionContext.WebhooksEntryR\bwebhooks\x12C\n" +
 	"\n" +
-	"oauth_flow\x18\x0e \x01(\v2$.channel.app.sdk.v1.OAuthFlowContextR\toauthFlow\x1aA\n" +
+	"oauth_flow\x18\x0e \x01(\v2$.channel.app.sdk.v1.OAuthFlowContextR\toauthFlow\x12[\n" +
+	"\x12issue_subscription\x18\x0f \x01(\v2,.channel.app.sdk.v1.IssueSubscriptionContextR\x11issueSubscription\x1aA\n" +
 	"\x13ApiCredentialsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1ag\n" +
 	"\rWebhooksEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12@\n" +
-	"\x05value\x18\x02 \x01(\v2*.channel.app.sdk.v1.WebhookEndpointContextR\x05value:\x028\x01BHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
+	"\x05value\x18\x02 \x01(\v2*.channel.app.sdk.v1.WebhookEndpointContextR\x05value:\x028\x01\"\xd3\x01\n" +
+	"\x18IssueSubscriptionContext\x12'\n" +
+	"\x0fsubscription_id\x18\x01 \x01(\tR\x0esubscriptionId\x12(\n" +
+	"\rconnection_id\x18\x02 \x01(\tH\x00R\fconnectionId\x88\x01\x01\x128\n" +
+	"\x15connection_generation\x18\x03 \x01(\rH\x01R\x14connectionGeneration\x88\x01\x01B\x10\n" +
+	"\x0e_connection_idB\x18\n" +
+	"\x16_connection_generationBHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
 
 var (
 	file_channel_app_sdk_v1_context_proto_rawDescOnce sync.Once
@@ -671,39 +748,41 @@ func file_channel_app_sdk_v1_context_proto_rawDescGZIP() []byte {
 	return file_channel_app_sdk_v1_context_proto_rawDescData
 }
 
-var file_channel_app_sdk_v1_context_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_channel_app_sdk_v1_context_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_channel_app_sdk_v1_context_proto_goTypes = []any{
-	(*Caller)(nil),                 // 0: channel.app.sdk.v1.Caller
-	(*Channel)(nil),                // 1: channel.app.sdk.v1.Channel
-	(*Chat)(nil),                   // 2: channel.app.sdk.v1.Chat
-	(*User)(nil),                   // 3: channel.app.sdk.v1.User
-	(*UserChat)(nil),               // 4: channel.app.sdk.v1.UserChat
-	(*WebhookEndpointContext)(nil), // 5: channel.app.sdk.v1.WebhookEndpointContext
-	(*OAuthFlowContext)(nil),       // 6: channel.app.sdk.v1.OAuthFlowContext
-	(*FunctionContext)(nil),        // 7: channel.app.sdk.v1.FunctionContext
-	nil,                            // 8: channel.app.sdk.v1.FunctionContext.ApiCredentialsEntry
-	nil,                            // 9: channel.app.sdk.v1.FunctionContext.WebhooksEntry
-	(*structpb.Struct)(nil),        // 10: google.protobuf.Struct
-	(*structpb.Value)(nil),         // 11: google.protobuf.Value
+	(*Caller)(nil),                   // 0: channel.app.sdk.v1.Caller
+	(*Channel)(nil),                  // 1: channel.app.sdk.v1.Channel
+	(*Chat)(nil),                     // 2: channel.app.sdk.v1.Chat
+	(*User)(nil),                     // 3: channel.app.sdk.v1.User
+	(*UserChat)(nil),                 // 4: channel.app.sdk.v1.UserChat
+	(*WebhookEndpointContext)(nil),   // 5: channel.app.sdk.v1.WebhookEndpointContext
+	(*OAuthFlowContext)(nil),         // 6: channel.app.sdk.v1.OAuthFlowContext
+	(*FunctionContext)(nil),          // 7: channel.app.sdk.v1.FunctionContext
+	(*IssueSubscriptionContext)(nil), // 8: channel.app.sdk.v1.IssueSubscriptionContext
+	nil,                              // 9: channel.app.sdk.v1.FunctionContext.ApiCredentialsEntry
+	nil,                              // 10: channel.app.sdk.v1.FunctionContext.WebhooksEntry
+	(*structpb.Struct)(nil),          // 11: google.protobuf.Struct
+	(*structpb.Value)(nil),           // 12: google.protobuf.Value
 }
 var file_channel_app_sdk_v1_context_proto_depIdxs = []int32{
-	10, // 0: channel.app.sdk.v1.User.profile:type_name -> google.protobuf.Struct
-	10, // 1: channel.app.sdk.v1.UserChat.profile:type_name -> google.protobuf.Struct
+	11, // 0: channel.app.sdk.v1.User.profile:type_name -> google.protobuf.Struct
+	11, // 1: channel.app.sdk.v1.UserChat.profile:type_name -> google.protobuf.Struct
 	0,  // 2: channel.app.sdk.v1.FunctionContext.caller:type_name -> channel.app.sdk.v1.Caller
 	1,  // 3: channel.app.sdk.v1.FunctionContext.channel:type_name -> channel.app.sdk.v1.Channel
 	3,  // 4: channel.app.sdk.v1.FunctionContext.user:type_name -> channel.app.sdk.v1.User
 	4,  // 5: channel.app.sdk.v1.FunctionContext.user_chat:type_name -> channel.app.sdk.v1.UserChat
-	8,  // 6: channel.app.sdk.v1.FunctionContext.api_credentials:type_name -> channel.app.sdk.v1.FunctionContext.ApiCredentialsEntry
-	10, // 7: channel.app.sdk.v1.FunctionContext.config:type_name -> google.protobuf.Struct
-	11, // 8: channel.app.sdk.v1.FunctionContext.seed_state:type_name -> google.protobuf.Value
-	9,  // 9: channel.app.sdk.v1.FunctionContext.webhooks:type_name -> channel.app.sdk.v1.FunctionContext.WebhooksEntry
+	9,  // 6: channel.app.sdk.v1.FunctionContext.api_credentials:type_name -> channel.app.sdk.v1.FunctionContext.ApiCredentialsEntry
+	11, // 7: channel.app.sdk.v1.FunctionContext.config:type_name -> google.protobuf.Struct
+	12, // 8: channel.app.sdk.v1.FunctionContext.seed_state:type_name -> google.protobuf.Value
+	10, // 9: channel.app.sdk.v1.FunctionContext.webhooks:type_name -> channel.app.sdk.v1.FunctionContext.WebhooksEntry
 	6,  // 10: channel.app.sdk.v1.FunctionContext.oauth_flow:type_name -> channel.app.sdk.v1.OAuthFlowContext
-	5,  // 11: channel.app.sdk.v1.FunctionContext.WebhooksEntry.value:type_name -> channel.app.sdk.v1.WebhookEndpointContext
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	8,  // 11: channel.app.sdk.v1.FunctionContext.issue_subscription:type_name -> channel.app.sdk.v1.IssueSubscriptionContext
+	5,  // 12: channel.app.sdk.v1.FunctionContext.WebhooksEntry.value:type_name -> channel.app.sdk.v1.WebhookEndpointContext
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_channel_app_sdk_v1_context_proto_init() }
@@ -712,13 +791,14 @@ func file_channel_app_sdk_v1_context_proto_init() {
 		return
 	}
 	file_channel_app_sdk_v1_context_proto_msgTypes[6].OneofWrappers = []any{}
+	file_channel_app_sdk_v1_context_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_channel_app_sdk_v1_context_proto_rawDesc), len(file_channel_app_sdk_v1_context_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

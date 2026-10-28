@@ -2400,3 +2400,26 @@ export const OAuthAuthorizationRequestMappingProtoSchema = z.object({
   codeChallengeMethod: z.string().optional(),
 }) satisfies z.ZodType<pb.OAuthAuthorizationRequestMapping>;
 export type OAuthAuthorizationRequestMappingProto = z.infer<typeof OAuthAuthorizationRequestMappingProtoSchema>;
+
+export const IssueSubscriptionStartInputProtoSchema = z.object({
+  subscriptionId: z.string().optional(),
+  issueId: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueSubscriptionStartInput>;
+export type IssueSubscriptionStartInputProto = z.infer<typeof IssueSubscriptionStartInputProtoSchema>;
+
+export const IssueSubscriptionStartOutputProtoSchema = z.object({
+  status: z.string().optional(),
+  issue: z.lazy(() => ExternalIssueProtoSchema).optional(),
+  providerTenantId: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueSubscriptionStartOutput>;
+export type IssueSubscriptionStartOutputProto = z.infer<typeof IssueSubscriptionStartOutputProtoSchema>;
+
+export const IssueSubscriptionStopInputProtoSchema = z.object({
+  subscriptionId: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueSubscriptionStopInput>;
+export type IssueSubscriptionStopInputProto = z.infer<typeof IssueSubscriptionStopInputProtoSchema>;
+
+export const IssueSubscriptionStopOutputProtoSchema = z.object({
+  stopped: z.boolean().optional(),
+}) satisfies z.ZodType<pb.IssueSubscriptionStopOutput>;
+export type IssueSubscriptionStopOutputProto = z.infer<typeof IssueSubscriptionStopOutputProtoSchema>;

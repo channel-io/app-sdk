@@ -3,6 +3,9 @@ package issue
 import (
 	"context"
 	"encoding/json"
+	"regexp"
+	"strings"
+
 	"github.com/channel-io/app-sdk/go/appsdk"
 	extensionkit "github.com/channel-io/app-sdk/go/extension"
 	"github.com/channel-io/app-sdk/go/extension/schemaregistry"
@@ -127,4 +130,77 @@ func handleIssue[In, Out any](handler appsdk.TypedHandlerFunc[In, Out]) appsdk.F
 		}
 		return &issueResult{response: any(response).(proto.Message)}, nil
 	})
+}
+
+// StartSubscription enables delivery for one issue and returns the persisted baseline.
+const FunctionStartSubscription = "extension.issue.subscription.start"
+
+type StartSubscriptionRequest = sdkv1.IssueSubscriptionStartInput
+type StartSubscriptionResponse = sdkv1.IssueSubscriptionStartOutput
+
+func (b *ExtensionBuilder) StartSubscription(handler appsdk.TypedHandlerFunc[StartSubscriptionRequest, StartSubscriptionResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionStartSubscription, schemaregistry.Append(FunctionStartSubscription, handleSubscription(handler, true))...)
+	return b
+}
+
+// StopSubscription ends only the logical subscription, not the provider webhook.
+const FunctionStopSubscription = "extension.issue.subscription.stop"
+
+type StopSubscriptionRequest = sdkv1.IssueSubscriptionStopInput
+type StopSubscriptionResponse = sdkv1.IssueSubscriptionStopOutput
+
+func (b *ExtensionBuilder) StopSubscription(handler appsdk.TypedHandlerFunc[StopSubscriptionRequest, StopSubscriptionResponse]) *ExtensionBuilder {
+	b.base.Func(FunctionStopSubscription, schemaregistry.Append(FunctionStopSubscription, handleSubscription(handler, false))...)
+	return b
+}
+
+var subscriptionIDPattern = regexp.MustCompile(`^[A-Za-z0-9_-]{1,128}$`)
+
+// handleSubscription validates the mutation identity before application code runs.
+// The registry describes discovery schemas; HandleProto alone only decodes them.
+func handleSubscription[In, Out any](handler appsdk.TypedHandlerFunc[In, Out], start bool) appsdk.FunctionOption {
+	return appsdk.RawHandler(func(ctx context.Context, fnCtx appsdk.Context, params json.RawMessage) (json.RawMessage, error) {
+		invalid := func() (json.RawMessage, error) {
+			return nil, appsdk.NewError(appsdk.CodeBadRequest, "invalidInput", "Invalid Issue function input", map[string]string{"type": "invalidInput", "message": "Invalid Issue function input"})
+		}
+		var fields map[string]json.RawMessage
+		if err := json.Unmarshal(params, &fields); err != nil || fields == nil {
+			return invalid()
+		}
+		var subscriptionID string
+		if err := json.Unmarshal(fields["subscriptionId"], &subscriptionID); err != nil || !subscriptionIDPattern.MatchString(subscriptionID) {
+			return invalid()
+		}
+		known := map[string]string{"subscriptionId": subscriptionID}
+		if start {
+			var issueID string
+			if err := json.Unmarshal(fields["issueId"], &issueID); err != nil || !hasIssueText(issueID) {
+				return invalid()
+			}
+			known["issueId"] = issueID
+		}
+		// Select camelCase fields before protobuf decoding, matching the TS schema's
+		// unknown-field stripping (including protobuf's snake_case aliases).
+		data, err := json.Marshal(known)
+		if err != nil {
+			return nil, err
+		}
+		var input In
+		if err := protojson.Unmarshal(data, any(&input).(proto.Message)); err != nil {
+			return invalid()
+		}
+		output, err := handler(ctx, fnCtx, &input)
+		if err != nil || output == nil {
+			if err == nil {
+				return json.RawMessage(`{}`), nil
+			}
+			return nil, err
+		}
+		return (&issueResult{response: any(output).(proto.Message)}).MarshalSDKResult()
+	})
+}
+
+func hasIssueText(value string) bool {
+	// ECMAScript whitespace, matching the canonical Issue input schema's /\S/.
+	return strings.Trim(value, " \t\n\r\v\f\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000\ufeff") != ""
 }

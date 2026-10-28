@@ -2712,3 +2712,23 @@ export interface OAuthAuthorizationRequestMapping {
   /** Omit to disable PKCE. Only S256 is supported. */
   codeChallengeMethod?: string | undefined;
 }
+
+/** Optional Issue subscription group; start and stop must be registered together. */
+export interface IssueSubscriptionStartInput {
+  subscriptionId?: string | undefined;
+  issueId?: string | undefined;
+}
+
+export interface IssueSubscriptionStartOutput {
+  status?: string | undefined;
+  issue?: ExternalIssue | undefined;
+  providerTenantId?: string | undefined;
+}
+
+export interface IssueSubscriptionStopInput {
+  subscriptionId?: string | undefined;
+}
+
+export interface IssueSubscriptionStopOutput {
+  stopped?: boolean | undefined;
+}
