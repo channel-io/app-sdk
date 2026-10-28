@@ -1,5 +1,17 @@
 # @channel.io/app-sdk-server
 
+## 0.38.0
+
+### Minor Changes
+
+- e37d4e8: Restore typed `patchMessage` support for channel-scoped tokens, including `mediumSyncState` and `errorCode`. The app must request the `patchMessage` permission and obtain a token with that grant before calling it. Field masks use the Protobuf JSON comma-separated string format.
+
+### Patch Changes
+
+- Updated dependencies [07dd59f]
+- Updated dependencies [e37d4e8]
+  - @channel.io/app-sdk-core@0.38.0
+
 ## 0.37.0
 
 ### Minor Changes
