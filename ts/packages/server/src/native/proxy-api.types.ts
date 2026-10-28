@@ -1,4 +1,7 @@
 export type {
+  NativePatchMessageBody as PatchMessageBody,
+  NativePatchMessageParams as PatchMessageRequest,
+  NativePatchMessageResult as PatchMessageResult,
   NativeProxyMessage as ProxyMessage,
   NativeProxyManager as ProxyManager,
   NativeProxyUser as ProxyUser,

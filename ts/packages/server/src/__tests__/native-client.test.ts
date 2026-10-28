@@ -61,6 +61,33 @@ describe("NativeFunctionClient", () => {
     vi.restoreAllMocks();
   });
 
+  it.each([
+    { mediumSyncState: "MEDIUM_SYNC_STATE_FAILED", errorCode: 90001 },
+    { mediumSyncState: "MEDIUM_SYNC_STATE_SYNCED", errorCode: 0 },
+  ] as const)("patches delivery fields over the authenticated transport: %j", async (body) => {
+    const params = {
+      channelId: "channel-1",
+      chatType: "userChat",
+      chatId: "chat-1",
+      messageId: "message-1",
+      body,
+      updateMask: "mediumSyncState,errorCode",
+    };
+    mockFetch.mockResolvedValueOnce(
+      mockFetchResponse({ result: { message: { id: "message-1" } } })
+    );
+
+    const result = await client.createProxyApi("channel-token").patchMessage(params);
+
+    expect(result.message.id).toBe("message-1");
+    expect(parseFetchBody(mockFetch)).toEqual({ method: "patchMessage", params });
+    expect(getFetchInit(mockFetch).method).toBe("PUT");
+    expect(getFetchInit(mockFetch).headers).toEqual(
+      expect.objectContaining({ "x-access-token": "channel-token" })
+    );
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
   describe("per-call transport options", () => {
     it.each([false, true])(
       "omits native payloads by default (with token: %s)",

@@ -82,6 +82,10 @@
       "surfaces": ["server"]
     },
     {
+      "name": "patchMessage",
+      "surfaces": ["server"]
+    },
+    {
       "name": "refreshToken",
       "surfaces": ["server"]
     },

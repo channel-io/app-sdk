@@ -37,6 +37,8 @@
 
 import type { NativeFunctionClient } from "./client.js";
 import type {
+  PatchMessageRequest,
+  PatchMessageResult,
   WriteGroupMessageRequest,
   WriteGroupMessageResult,
   WriteGroupMessageAsManagerRequest,
@@ -153,6 +155,11 @@ export class ProxyApi {
       params,
       this.accessToken
     );
+  }
+
+  /** Patch message delivery status with an explicitly granted channel permission. */
+  patchMessage(params: PatchMessageRequest): Promise<PatchMessageResult> {
+    return this.client.callNativeFunctionWithToken("patchMessage", params, this.accessToken);
   }
 
   // ============================================

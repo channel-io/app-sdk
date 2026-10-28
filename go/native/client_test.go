@@ -310,3 +310,43 @@ type roundTripFunc func(*http.Request) (*http.Response, error)
 func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
 	return f(r)
 }
+
+func TestProxyAPIPatchMessage(t *testing.T) {
+	for _, errorCode := range []int32{90001, 0} {
+		params := native.PatchMessageParams{
+			ChannelID: "channel-1", ChatID: "chat-1", ChatType: "userChat", MessageID: "message-1",
+			Body:       native.PatchMessageBody{MediumSyncState: "MEDIUM_SYNC_STATE_FAILED", ErrorCode: errorCode},
+			UpdateMask: "mediumSyncState,errorCode",
+		}
+		calls := 0
+		httpClient := &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			calls++
+			if r.Method != http.MethodPut || r.URL.Path != "/general/v1/native/functions" || r.Header.Get("x-access-token") != "channel-token" {
+				t.Fatalf("unexpected request: %s %s", r.Method, r.URL.Path)
+			}
+			var req struct {
+				Method string                    `json:"method"`
+				Params native.PatchMessageParams `json:"params"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				t.Fatal(err)
+			}
+			if req.Method != "patchMessage" || req.Params.ChannelID != params.ChannelID || req.Params.ChatID != params.ChatID || req.Params.ChatType != params.ChatType || req.Params.MessageID != params.MessageID || req.Params.Body.MediumSyncState != params.Body.MediumSyncState || req.Params.Body.ErrorCode != errorCode || req.Params.UpdateMask != params.UpdateMask {
+				t.Fatalf("unexpected payload: %+v", req)
+			}
+			return &http.Response{
+				StatusCode: http.StatusOK,
+				Body:       io.NopCloser(strings.NewReader(`{"result":{"message":{"id":"message-1"}}}`)),
+				Header:     make(http.Header), Request: r,
+			}, nil
+		})}
+		client := native.NewClient(native.WithBaseURL("https://app-store.test"), native.WithHTTPClient(httpClient))
+		result, err := client.CreateProxyAPI("channel-token").PatchMessage(context.Background(), params)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if result.Message["id"] != "message-1" || calls != 1 {
+			t.Fatalf("unexpected result: %+v, calls: %d", result, calls)
+		}
+	}
+}
