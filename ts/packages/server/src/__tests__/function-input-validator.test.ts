@@ -1,4 +1,9 @@
-import { ValidationError } from "@channel.io/app-sdk-core";
+import {
+  ValidationError,
+  FunctionCallErrorCode,
+  IssueSubscriptionStartInputSchema,
+  IssueSubscriptionStopInputSchema,
+} from "@channel.io/app-sdk-core";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import { parseFunctionInputParams } from "../utils/function-input-validator.js";
@@ -80,6 +85,21 @@ it("returns the Issue invalidInput contract without copying submitted values", (
     )
   ).toThrowError(
     expect.objectContaining({
+      type: "invalidInput",
+      data: { type: "invalidInput", message: "Invalid Issue Extension input" },
+    })
+  );
+});
+
+it.each([
+  ["extension.issue.subscription.start", IssueSubscriptionStartInputSchema],
+  ["extension.issue.subscription.stop", IssueSubscriptionStopInputSchema],
+] as const)("returns a typed input error for %s before invoking the app", (name, schema) => {
+  expect(() =>
+    parseFunctionInputParams(name, schema as z.ZodSchema, { subscriptionId: "private token" })
+  ).toThrowError(
+    expect.objectContaining({
+      code: FunctionCallErrorCode.BadRequest,
       type: "invalidInput",
       data: { type: "invalidInput", message: "Invalid Issue Extension input" },
     })
