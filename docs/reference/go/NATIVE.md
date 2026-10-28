@@ -106,4 +106,6 @@ channel role and a channel token carrying that grant. Use `PatchMessageParams` w
 chat and message IDs, a `PatchMessageBody`, and a comma-separated Protobuf JSON `UpdateMask`.
 For example, use `MediumSyncState: "MEDIUM_SYNC_STATE_FAILED"`, `ErrorCode: 90001`, and
 `UpdateMask: "mediumSyncState,errorCode"`. To record success, use `"MEDIUM_SYNC_STATE_SYNCED"`
-and `ErrorCode: 0` with the same mask. Zero values clear masked fields; unmasked fields stay unchanged.
+and `ErrorCode: 0` with the same mask. Zero values clear masked fields. For app-medium user chats,
+legacy `state` updates can also derive `mediumSyncState` when it is absent from the mask.
+Explicitly masking `mediumSyncState` takes precedence over that compatibility behavior.

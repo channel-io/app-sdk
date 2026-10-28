@@ -117,8 +117,10 @@ await api.patchMessage({
 });
 ```
 
-`updateMask` uses the Protobuf JSON comma-separated string format. Only masked fields are
-updated. To record delivery success, set `mediumSyncState` to `MEDIUM_SYNC_STATE_SYNCED`
+`updateMask` uses the Protobuf JSON comma-separated string format. For app-medium user chats,
+legacy `state` updates can also derive `mediumSyncState` when it is absent from the mask.
+Explicitly masking `mediumSyncState` takes precedence over that compatibility behavior.
+To record delivery success, set `mediumSyncState` to `MEDIUM_SYNC_STATE_SYNCED`
 and clear the previous error with `errorCode: 0`, including both fields in the mask.
 `state` and `options` remain supported. This operation does not itself implement the app's
 `getMediumMessageErrorReason` callback or retry behavior.

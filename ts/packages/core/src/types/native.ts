@@ -9,10 +9,7 @@ import type {
 export type NativeJsonObject = object;
 
 export type NativeSortOrder =
-  | "SORT_ORDER_UNSPECIFIED"
-  | "SORT_ORDER_ASC"
-  | "SORT_ORDER_DESC"
-  | "SORT_ORDER_BOTH";
+  "SORT_ORDER_UNSPECIFIED" | "SORT_ORDER_ASC" | "SORT_ORDER_DESC" | "SORT_ORDER_BOTH";
 
 export interface NativePagination {
   sortOrder?: NativeSortOrder;
