@@ -34,7 +34,7 @@ export class InboxMessagingExtension implements MessagingInboxExtensionInterface
     input: OnMediumMessageCreatedInput,
   ): Promise<OnMediumMessageCreatedOutput> {
     await deliverToProvider(input.userChat, input.message);
-    return { sendResult: { sendState: "sent" } };
+    return { sendResult: { sendState: "succeeded" } };
   }
 }
 ```
@@ -51,6 +51,15 @@ cover writing types, entity validation, custom editors, topic building, and defa
 Implement only the optional Functions your enabled product flow requires. The inbox
 `onMediumMessageCreated` handler is the core delivery Function and is required by
 `MessagingInboxExtensionInterface`.
+
+`sendResult.sendState` accepts `"succeeded"`, `"pending"`, or `"failed"`. Use `"succeeded"` for
+successful delivery; `"sent"` is a stored message state, not a valid callback result.
+
+For synchronous delivery, wait for the provider to confirm success, then return `"succeeded"`.
+Channel updates the message's delivery state, so no separate `patchMessage` call is needed.
+For asynchronous delivery, return `"pending"` after accepting the work, then use `patchMessage`
+to report the final success or failure once delivery completes. See
+[Message delivery updates](../NATIVE.md#message-delivery-updates) for permissions and patch fields.
 
 When delivery fails, return `sendState: "failed"` with a stable numeric `errorCode`. The Channel
 runtime persists that code on the failed message and passes the message to
