@@ -60,11 +60,10 @@ For asynchronous delivery, return `"pending"` after accepting the work, then use
 to report the final success or failure once delivery completes. See
 [Message delivery updates](../NATIVE.md#message-delivery-updates) for permissions and patch fields.
 
-When delivery fails, return `sendState: "failed"` with a stable numeric `errorCode`. The Channel
-runtime persists that code on the failed message and passes the message to
-`getMediumMessageErrorReason`, when implemented, so the app can return a safe user-facing
-`errorMessage`. Leave `errorCode` unset for successful or pending results; an asynchronous sender
-must attach the code when it reports the terminal failure.
+Keep the callback focused on the delivery result. To store an `errorCode` on a failed message,
+use `patchMessage` with the final failure state and code, including both fields in `updateMask`.
+Returning `sendResult.errorCode` alone does not store it on the message. The stored code can be
+used by `getMediumMessageErrorReason` to return a safe user-facing `errorMessage`.
 
 ## Registration and permissions
 
