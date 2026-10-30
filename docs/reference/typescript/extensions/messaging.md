@@ -52,8 +52,7 @@ Implement only the optional Functions your enabled product flow requires. The in
 `onMediumMessageCreated` handler is the core delivery Function and is required by
 `MessagingInboxExtensionInterface`.
 
-`sendResult.sendState` accepts `"succeeded"`, `"pending"`, or `"failed"`. Use `"succeeded"` for
-successful delivery; `"sent"` is a stored message state, not a valid callback result.
+`sendResult.sendState` accepts `"succeeded"`, `"pending"`, or `"failed"`.
 
 For synchronous delivery, wait for the provider to confirm success, then return `"succeeded"`.
 Channel updates the message's delivery state, so no separate `patchMessage` call is needed.
