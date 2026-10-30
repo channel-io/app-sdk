@@ -34,7 +34,7 @@ export class InboxMessagingExtension implements MessagingInboxExtensionInterface
     input: OnMediumMessageCreatedInput,
   ): Promise<OnMediumMessageCreatedOutput> {
     await deliverToProvider(input.userChat, input.message);
-    return { sendResult: { sendState: "sent" } };
+    return { sendResult: { sendState: "succeeded" } };
   }
 }
 ```
@@ -52,11 +52,18 @@ Implement only the optional Functions your enabled product flow requires. The in
 `onMediumMessageCreated` handler is the core delivery Function and is required by
 `MessagingInboxExtensionInterface`.
 
-When delivery fails, return `sendState: "failed"` with a stable numeric `errorCode`. The Channel
-runtime persists that code on the failed message and passes the message to
-`getMediumMessageErrorReason`, when implemented, so the app can return a safe user-facing
-`errorMessage`. Leave `errorCode` unset for successful or pending results; an asynchronous sender
-must attach the code when it reports the terminal failure.
+`sendResult.sendState` accepts `"succeeded"`, `"pending"`, or `"failed"`.
+
+For synchronous delivery, wait for the provider to confirm success, then return `"succeeded"`.
+Channel updates the message's delivery state, so no separate `patchMessage` call is needed.
+For asynchronous delivery, return `"pending"` after accepting the work, then use `patchMessage`
+to report the final success or failure once delivery completes. See
+[Message delivery updates](../NATIVE.md#message-delivery-updates) for permissions and patch fields.
+
+Keep the callback focused on the delivery result. To store an `errorCode` on a failed message,
+use `patchMessage` with the final failure state and code, including both fields in `updateMask`.
+Returning `sendResult.errorCode` alone does not store it on the message. The stored code can be
+used by `getMediumMessageErrorReason` to return a safe user-facing `errorMessage`.
 
 ## Registration and permissions
 

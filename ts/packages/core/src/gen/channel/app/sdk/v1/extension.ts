@@ -2316,8 +2316,8 @@ export interface MessagingSendResult {
     | string
     | undefined;
   /**
-   * Stable app-owned error code for a failed send. The runtime persists this
-   * value on the Channel message for getMediumMessageErrorReason lookups.
+   * Optional app-owned error code. To persist delivery errors on the Channel
+   * message, use patchMessage with errorCode in the update mask.
    */
   errorCode?: number | undefined;
 }
