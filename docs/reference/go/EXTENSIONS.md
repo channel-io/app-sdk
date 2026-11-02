@@ -177,7 +177,7 @@ app.Use(messaging.Extension().
     input *messaging.OnMediumMessageCreatedInput,
   ) (*messaging.OnMediumMessageCreatedOutput, error) {
     return &messaging.OnMediumMessageCreatedOutput{
-      SendResult: &messaging.SendResult{SendState: "sent"},
+      SendResult: &messaging.SendResult{SendState: "succeeded"},
     }, nil
   }),
 )

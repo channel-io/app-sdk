@@ -16965,8 +16965,10 @@ type MessagingSendResult struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	SendState string                 `protobuf:"bytes,1,opt,name=send_state,json=sendState,proto3" json:"send_state,omitempty"`
 	Message   string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	// Stable app-owned error code for a failed send. The runtime persists this
-	// value on the Channel message for getMediumMessageErrorReason lookups.
+	// Optional app-owned error code. Returning this field does not persist it
+	// on the Channel message. To report a final delivery failure, use patchMessage
+	// with mediumSyncState=MEDIUM_SYNC_STATE_FAILED and errorCode, including
+	// both fields in the update mask.
 	ErrorCode     *int32 `protobuf:"varint,3,opt,name=error_code,json=errorCode,proto3,oneof" json:"error_code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
