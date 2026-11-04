@@ -14071,7 +14071,8 @@ type CommerceProductVariant struct {
 	// 의도적으로 다르다 — 카탈로그 소비자가 원하는 값도, 앱이 들고 있는 값도 절대가다.
 	// 0 원이 정상 값이라 presence 가 필요하다.
 	Price *float64 `protobuf:"fixed64,2,opt,name=price,proto3,oneof" json:"price,omitempty"`
-	// 재고 수량. 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공을 구별해야 해서 optional 이다.
+	// 재고 수량. 재고를 관리하지 않으면 비운다 — 0 과 미제공을 구별해야 해서 optional 이다. 수량만 나타내며,
+	// 품절표시를 쓰지 않으면 0 이어도 팔 수 있으므로 판매 가능 여부는 available_for_sale 로 본다.
 	StockQuantity *float64                 `protobuf:"fixed64,3,opt,name=stock_quantity,json=stockQuantity,proto3,oneof" json:"stock_quantity,omitempty"`
 	Options       []*CommerceVariantOption `protobuf:"bytes,4,rep,name=options,proto3" json:"options,omitempty"`
 	// 품목 단위 재고 코드. getOrders 의 items[].sku 와 같은 값이다. 몰의 sku 자체가 판매자 입력값이면

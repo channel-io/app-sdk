@@ -114,7 +114,7 @@ func TestGetOrdersUsesProtoJSONNames(t *testing.T) {
 func TestGetProductsKeepsZeroValuesAndOmitsUnsetFields(t *testing.T) {
 	app := appsdk.New(appsdk.Options{AppID: "app"})
 	price := 0.0
-	managed, sellable := true, false
+	managed, sellable, unmanaged := true, false, false
 	if err := app.Use(commerce.Extension().
 		GetProducts(func(_ context.Context, _ appsdk.Context, in *commerce.GetProductsInput) (*commerce.GetProductsOutput, error) {
 			if in.GetLimit() != 20 {
@@ -131,6 +131,7 @@ func TestGetProductsKeepsZeroValuesAndOmitsUnsetFields(t *testing.T) {
 					Variants: []*commerce.ProductVariant{
 						{Id: "variant-1", Price: &price},
 						{Id: "variant-2", Price: &price, StockQuantity: &price, UseInventory: &managed, AvailableForSale: &sellable},
+						{Id: "variant-3", Price: &price, UseInventory: &unmanaged},
 					},
 				}, {
 					Id:   "product-2",
@@ -198,5 +199,9 @@ func TestGetProductsKeepsZeroValuesAndOmitsUnsetFields(t *testing.T) {
 	}
 	if soldOut["useInventory"] != true || soldOut["availableForSale"] != false {
 		t.Fatalf("expected useInventory true and explicit availableForSale false kept, got %+v", soldOut)
+	}
+	unmanagedVariant := first["variants"].([]any)[2].(map[string]any)
+	if unmanagedVariant["useInventory"] != false {
+		t.Fatalf("expected explicit useInventory false kept, got %+v", unmanagedVariant)
 	}
 }

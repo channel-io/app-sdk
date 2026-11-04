@@ -378,7 +378,8 @@ export const CommerceProductVariantSchema = z.object({
   id: z.string(),
   // variant 의 절대 판매가. CommerceExchangeableVariant.additionalAmount(추가금)와 뜻이 다르다.
   price: z.number(),
-  // 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공은 다른 뜻이다.
+  // 재고를 관리하지 않으면 비운다 — 0 과 미제공은 다른 뜻이다. 수량만 나타내며, 0 이어도 팔 수 있는지는
+  // availableForSale 로 본다.
   stockQuantity: z.number().optional(),
   options: z.array(CommerceVariantOptionSchema).optional(),
   // 품목 단위 재고 코드. getOrders 의 items[].sku 와 같은 값이다. 몰의 sku 자체가 판매자 입력값이면(Shopify)

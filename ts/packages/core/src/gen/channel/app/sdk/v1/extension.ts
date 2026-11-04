@@ -1948,7 +1948,10 @@ export interface CommerceProductVariant {
   price?:
     | number
     | undefined;
-  /** 재고 수량. 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공을 구별해야 해서 optional 이다. */
+  /**
+   * 재고 수량. 재고를 관리하지 않으면 비운다 — 0 과 미제공을 구별해야 해서 optional 이다. 수량만 나타내며,
+   * 품절표시를 쓰지 않으면 0 이어도 팔 수 있으므로 판매 가능 여부는 available_for_sale 로 본다.
+   */
   stockQuantity?: number | undefined;
   options?:
     | CommerceVariantOption[]
