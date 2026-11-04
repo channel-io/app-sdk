@@ -3319,6 +3319,12 @@
                     },
                     "sku": {
                       "type": "string"
+                    },
+                    "useInventory": {
+                      "type": "boolean"
+                    },
+                    "availableForSale": {
+                      "type": "boolean"
                     }
                   },
                   "required": [

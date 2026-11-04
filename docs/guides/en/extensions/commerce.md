@@ -56,6 +56,8 @@ emit it as is; where the mall keeps a separate seller-entered variant code next 
 
 `stockQuantity` is optional sellable inventory for the whole product. Emit an observed quantity only; omit unknown or unmanaged stock and provider sentinel values. Zero means sold out. It does not replace `variants[].stockQuantity` or authorize inventing a variant. Consumers may use positive product stock when variants are absent; when variants are supplied, their stock must also permit a sale. A product-level zero always prevents a sale.
 
+`variants[].useInventory` tells whether the variant's inventory is managed. When it is `false` there is no quantity, so leave `variants[].stockQuantity` unset. `variants[].availableForSale` tells whether the variant can be sold right now, reflecting the variant's display and selling flags and the sold-out rules. It covers cases the quantity alone cannot, such as a variant that stays purchasable at zero stock because the mall does not mark it sold out. It is a variant-level value: product-level display and selling are carried by `state`, and an `inactive` product cannot be sold regardless of this value. Leave either field unset when unknown.
+
 ## TypeScript
 
 Use `@Extension({ name: "commerce", systemVersion: "v1" })` and the canonical schemas exported by
