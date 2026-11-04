@@ -52,6 +52,8 @@ enum `allowedValues`로 광고하고, 그 밖의 키는 거부하며 `name`은 �
 
 `stockQuantity`는 상품 전체의 판매 가능한 재고 수량입니다. 실제 수량을 확인한 경우에만 싣고, 알 수 없거나 재고를 관리하지 않으면 비웁니다. 공급자가 임의로 채운 값도 제외합니다. `0`은 품절입니다. 옵션 재고를 대신하거나 가상의 variant를 만드는 필드가 아닙니다. variant가 없으면 양수인 상품 재고로 판매 가능 여부를 판단할 수 있고, variant가 있으면 옵션 재고도 판매 가능해야 합니다. 상품 재고가 `0`이면 판매 불가입니다.
 
+`variants[].useInventory`는 재고 관리 여부입니다. `false`면 수량 개념이 없으므로 `variants[].stockQuantity`를 비웁니다. `variants[].availableForSale`은 그 품목을 지금 팔 수 있는지를 품목 진열·판매 여부와 품절 조건까지 반영해 알려 줍니다. 품절표시를 쓰지 않아 0개여도 팔 수 있는 품목처럼 수량만으로는 알 수 없는 경우를 구별합니다. 품목 단위 값이므로 상품 단위 진열·판매는 `state`로 판단하며, `state`가 `inactive`면 이 값과 상관없이 판매할 수 없습니다. 두 필드 모두 알 수 없으면 비웁니다.
+
 ## TypeScript
 
 `@Extension({ name: "commerce", systemVersion: "v1" })`과

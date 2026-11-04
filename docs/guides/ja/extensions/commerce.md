@@ -53,6 +53,8 @@ err := app.Use(commerce.Extension().
 
 `stockQuantity` は商品全体の販売可能な在庫数です。確認できた実数のみを設定し、不明・在庫管理なし・プロバイダーの代替値は省略します。`0` は在庫切れです。`variants[].stockQuantity` の代替ではなく、架空の variant を作成してはいけません。variant がなければ正の商品在庫を利用でき、variant がある場合はその在庫も販売可能である必要があります。商品在庫が `0` の場合は販売不可です。
 
+`variants[].useInventory` は在庫管理の有無です。`false` なら数量の概念がないため `variants[].stockQuantity` を省略します。`variants[].availableForSale` はその品目を今販売できるかを、品目の陳列・販売設定と品切れ条件まで反映して示します。品切れ表示を使わず在庫 0 でも購入できる品目のように、数量だけでは判断できない場合を区別します。品目単位の値なので、商品単位の陳列・販売は `state` で判断し、`state` が `inactive` ならこの値に関係なく販売できません。どちらも不明なら省略します。
+
 ## TypeScript
 
 `@Extension({ name: "commerce", systemVersion: "v1" })` と

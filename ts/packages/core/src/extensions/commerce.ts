@@ -378,13 +378,19 @@ export const CommerceProductVariantSchema = z.object({
   id: z.string(),
   // variant 의 절대 판매가. CommerceExchangeableVariant.additionalAmount(추가금)와 뜻이 다르다.
   price: z.number(),
-  // 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공은 다른 뜻이다.
+  // 재고를 관리하지 않으면 비운다 — 0 과 미제공은 다른 뜻이다. 수량만 나타내며, 0 이어도 팔 수 있는지는
+  // availableForSale 로 본다.
   stockQuantity: z.number().optional(),
   options: z.array(CommerceVariantOptionSchema).optional(),
   // 품목 단위 재고 코드. getOrders 의 items[].sku 와 같은 값이다. 몰의 sku 자체가 판매자 입력값이면(Shopify)
   // 그대로 싣는다. 몰이 sku 와 별도로 판매자 품목 코드 입력란을 두는 경우(카페24 "자체 품목코드")에는 그 값을
   // 여기에 넣지 않는다 — 지금 계약에 그 자리는 없다.
   sku: z.string().optional(),
+  // 재고 관리 여부. false 면 stockQuantity 를 비운다. 모르면 비운다(false 와 미제공은 다른 뜻이다).
+  useInventory: z.boolean().optional(),
+  // 품목 단위 판매 가능 여부. 상품 단위 진열·판매는 CommerceProduct.state 로 본다 — state 가 inactive 면
+  // 이 값과 상관없이 팔 수 없다. 모르면 비운다.
+  availableForSale: z.boolean().optional(),
 });
 export type CommerceProductVariant = ProtoBacked<
   z.infer<typeof CommerceProductVariantSchema>,

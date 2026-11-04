@@ -1948,7 +1948,10 @@ export interface CommerceProductVariant {
   price?:
     | number
     | undefined;
-  /** 재고 수량. 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공을 구별해야 해서 optional 이다. */
+  /**
+   * 재고 수량. 재고를 관리하지 않으면 비운다 — 0 과 미제공을 구별해야 해서 optional 이다. 수량만 나타내며,
+   * 품절표시를 쓰지 않으면 0 이어도 팔 수 있으므로 판매 가능 여부는 available_for_sale 로 본다.
+   */
   stockQuantity?: number | undefined;
   options?:
     | CommerceVariantOption[]
@@ -1958,7 +1961,22 @@ export interface CommerceProductVariant {
    * (Shopify) 그대로 싣는다. 몰이 sku 와 별도로 판매자 품목 코드 입력란을 두는 경우(카페24 "자체
    * 품목코드")에는 그 값을 여기에 넣지 않는다 — 지금 계약에 그 자리는 없다.
    */
-  sku?: string | undefined;
+  sku?:
+    | string
+    | undefined;
+  /**
+   * 재고 관리 여부. false 면 수량 개념이 없어 stock_quantity 를 비운다. 모르면 비운다 — false 와
+   * 미제공을 구별해야 해서 optional 이다. CommerceExchangeableVariant.use_inventory 와 같은 뜻이다.
+   */
+  useInventory?:
+    | boolean
+    | undefined;
+  /**
+   * 이 품목을 지금 팔 수 있는지(품목 진열·판매 여부와 품절 조건을 반영). 품목 단위 값이다 — 상품 단위
+   * 진열·판매는 CommerceProduct.state 로 보며, state 가 inactive 면 이 값과 상관없이 팔 수 없다.
+   * 재고 수량만으로는 알 수 없는 경우(품절표시를 쓰지 않아 0개여도 판매 가능 등)를 구별한다. 모르면 비운다.
+   */
+  availableForSale?: boolean | undefined;
 }
 
 export interface WmsShippingInfo {

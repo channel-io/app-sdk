@@ -1636,6 +1636,8 @@ export const CommerceProductVariantProtoSchema = z.object({
   stockQuantity: z.number().optional(),
   options: z.array(z.lazy(() => CommerceVariantOptionProtoSchema)).optional(),
   sku: z.string().optional(),
+  useInventory: z.boolean().optional(),
+  availableForSale: z.boolean().optional(),
 }) satisfies z.ZodType<pb.CommerceProductVariant>;
 export type CommerceProductVariantProto = z.infer<typeof CommerceProductVariantProtoSchema>;
 

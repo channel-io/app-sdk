@@ -14071,15 +14071,23 @@ type CommerceProductVariant struct {
 	// 의도적으로 다르다 — 카탈로그 소비자가 원하는 값도, 앱이 들고 있는 값도 절대가다.
 	// 0 원이 정상 값이라 presence 가 필요하다.
 	Price *float64 `protobuf:"fixed64,2,opt,name=price,proto3,oneof" json:"price,omitempty"`
-	// 재고 수량. 재고를 관리하지 않으면 비운다 — 0(품절)과 미제공을 구별해야 해서 optional 이다.
+	// 재고 수량. 재고를 관리하지 않으면 비운다 — 0 과 미제공을 구별해야 해서 optional 이다. 수량만 나타내며,
+	// 품절표시를 쓰지 않으면 0 이어도 팔 수 있으므로 판매 가능 여부는 available_for_sale 로 본다.
 	StockQuantity *float64                 `protobuf:"fixed64,3,opt,name=stock_quantity,json=stockQuantity,proto3,oneof" json:"stock_quantity,omitempty"`
 	Options       []*CommerceVariantOption `protobuf:"bytes,4,rep,name=options,proto3" json:"options,omitempty"`
 	// 품목 단위 재고 코드. getOrders 의 items[].sku 와 같은 값이다. 몰의 sku 자체가 판매자 입력값이면
 	// (Shopify) 그대로 싣는다. 몰이 sku 와 별도로 판매자 품목 코드 입력란을 두는 경우(카페24 "자체
 	// 품목코드")에는 그 값을 여기에 넣지 않는다 — 지금 계약에 그 자리는 없다.
-	Sku           string `protobuf:"bytes,5,opt,name=sku,proto3" json:"sku,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Sku string `protobuf:"bytes,5,opt,name=sku,proto3" json:"sku,omitempty"`
+	// 재고 관리 여부. false 면 수량 개념이 없어 stock_quantity 를 비운다. 모르면 비운다 — false 와
+	// 미제공을 구별해야 해서 optional 이다. CommerceExchangeableVariant.use_inventory 와 같은 뜻이다.
+	UseInventory *bool `protobuf:"varint,6,opt,name=use_inventory,json=useInventory,proto3,oneof" json:"use_inventory,omitempty"`
+	// 이 품목을 지금 팔 수 있는지(품목 진열·판매 여부와 품절 조건을 반영). 품목 단위 값이다 — 상품 단위
+	// 진열·판매는 CommerceProduct.state 로 보며, state 가 inactive 면 이 값과 상관없이 팔 수 없다.
+	// 재고 수량만으로는 알 수 없는 경우(품절표시를 쓰지 않아 0개여도 판매 가능 등)를 구별한다. 모르면 비운다.
+	AvailableForSale *bool `protobuf:"varint,7,opt,name=available_for_sale,json=availableForSale,proto3,oneof" json:"available_for_sale,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *CommerceProductVariant) Reset() {
@@ -14145,6 +14153,20 @@ func (x *CommerceProductVariant) GetSku() string {
 		return x.Sku
 	}
 	return ""
+}
+
+func (x *CommerceProductVariant) GetUseInventory() bool {
+	if x != nil && x.UseInventory != nil {
+		return *x.UseInventory
+	}
+	return false
+}
+
+func (x *CommerceProductVariant) GetAvailableForSale() bool {
+	if x != nil && x.AvailableForSale != nil {
+		return *x.AvailableForSale
+	}
+	return false
 }
 
 type WmsShippingInfo struct {
@@ -22305,15 +22327,19 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x0estock_quantity\x18\x15 \x01(\x01H\x02R\rstockQuantity\x88\x01\x01B\b\n" +
 	"\x06_priceB\x11\n" +
 	"\x0f_original_priceB\x11\n" +
-	"\x0f_stock_quantity\"\xe3\x01\n" +
+	"\x0f_stock_quantity\"\xe9\x02\n" +
 	"\x16CommerceProductVariant\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\x05price\x18\x02 \x01(\x01H\x00R\x05price\x88\x01\x01\x12*\n" +
 	"\x0estock_quantity\x18\x03 \x01(\x01H\x01R\rstockQuantity\x88\x01\x01\x12C\n" +
 	"\aoptions\x18\x04 \x03(\v2).channel.app.sdk.v1.CommerceVariantOptionR\aoptions\x12\x10\n" +
-	"\x03sku\x18\x05 \x01(\tR\x03skuB\b\n" +
+	"\x03sku\x18\x05 \x01(\tR\x03sku\x12(\n" +
+	"\ruse_inventory\x18\x06 \x01(\bH\x02R\fuseInventory\x88\x01\x01\x121\n" +
+	"\x12available_for_sale\x18\a \x01(\bH\x03R\x10availableForSale\x88\x01\x01B\b\n" +
 	"\x06_priceB\x11\n" +
-	"\x0f_stock_quantity\"\xd1\x02\n" +
+	"\x0f_stock_quantityB\x10\n" +
+	"\x0e_use_inventoryB\x15\n" +
+	"\x13_available_for_sale\"\xd1\x02\n" +
 	"\x0fWmsShippingInfo\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n" +
 	"\n" +
