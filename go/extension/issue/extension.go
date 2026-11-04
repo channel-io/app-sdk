@@ -3,6 +3,7 @@ package issue
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"regexp"
 	"strings"
 
@@ -101,6 +102,27 @@ func (r *issueResult) MarshalSDKResult() (json.RawMessage, error) {
 	case *SearchIssuesResponse:
 		if _, ok := value["issues"]; !ok {
 			value["issues"] = []any{}
+		}
+	case *GetCreateSchemaResponse:
+		if value["availability"] == "externalOnly" {
+			if _, ok := value["fields"]; ok {
+				return nil, errors.New("externalOnly response cannot contain fields")
+			}
+			if _, ok := value["accountRef"]; ok {
+				return nil, errors.New("externalOnly response cannot contain accountRef")
+			}
+		} else if value["availability"] == "available" {
+			if _, ok := value["fields"]; !ok {
+				value["fields"] = []any{}
+			}
+			for _, entry := range value["fields"].([]any) {
+				field := entry.(map[string]any)
+				if field["type"] == "select" || field["type"] == "multiselect" {
+					if _, ok := field["choices"]; !ok {
+						field["choices"] = []any{}
+					}
+				}
+			}
 		}
 	case *GetIssueTransitionsResponse:
 		if _, ok := value["transitions"]; !ok {

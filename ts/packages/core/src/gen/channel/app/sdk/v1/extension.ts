@@ -2625,6 +2625,18 @@ export interface IssueError {
   type?: string | undefined;
   message?: string | undefined;
   retryAfterMs?: number | undefined;
+  fieldErrors?: IssueFieldError[] | undefined;
+  recovery?: IssueRecovery | undefined;
+}
+
+export interface IssueFieldError {
+  key?: string | undefined;
+  message?: string | undefined;
+}
+
+export interface IssueRecovery {
+  sourceIssueId?: string | undefined;
+  externalUrl?: string | undefined;
 }
 
 export interface IssueTransitionField {
@@ -2692,6 +2704,83 @@ export interface IssueGetIssuesResult {
 
 export interface IssueGetIssuesOutput {
   results?: IssueGetIssuesResult[] | undefined;
+}
+
+/** Optional Issue creation group; getCreateSchema and createIssue are registered together. */
+export interface IssueCreateChoice {
+  label?: string | undefined;
+  value?: any | undefined;
+}
+
+export interface IssueCreateFieldValue {
+  key?: string | undefined;
+  value?: any | undefined;
+}
+
+export interface IssueCreateFormField {
+  key?: string | undefined;
+  label?: string | undefined;
+  required?: boolean | undefined;
+  readOnly?: boolean | undefined;
+  defaultValue?: any | undefined;
+  description?: string | undefined;
+  type?: string | undefined;
+  choices?: IssueCreateChoice[] | undefined;
+  min?: number | undefined;
+  max?: number | undefined;
+  maxLength?: number | undefined;
+  maxItems?: number | undefined;
+  next?: string | undefined;
+  triggerFieldKeys?: string[] | undefined;
+}
+
+export interface IssueCreateValues {
+  containerId?: string | undefined;
+  title?: string | undefined;
+  description?: string | undefined;
+  templateId?: string | undefined;
+  fields?: IssueCreateFieldValue[] | undefined;
+}
+
+export interface IssueCreateSelectedValues {
+  containerId?: string | undefined;
+  title?: string | undefined;
+  description?: string | undefined;
+  templateId?: string | undefined;
+  fields?: IssueCreateFieldValue[] | undefined;
+}
+
+export interface IssueCreateSchemaPage {
+  key?: string | undefined;
+  since?: string | undefined;
+}
+
+export interface IssueGetCreateSchemaInput {
+  selected?: IssueCreateSelectedValues | undefined;
+  page?: IssueCreateSchemaPage | undefined;
+}
+
+export interface IssueGetCreateSchemaOutput {
+  availability?: string | undefined;
+  accountRef?: string | undefined;
+  fields?: IssueCreateFormField[] | undefined;
+  reason?: string | undefined;
+  externalUrl?: string | undefined;
+}
+
+export interface IssueCreateIssueInput {
+  containerId?: string | undefined;
+  title?: string | undefined;
+  description?: string | undefined;
+  templateId?: string | undefined;
+  fields?: IssueCreateFieldValue[] | undefined;
+  requestId?: string | undefined;
+  accountRef?: string | undefined;
+  recoveryOnly?: boolean | undefined;
+}
+
+export interface IssueCreateIssueOutput {
+  issue?: ExternalIssue | undefined;
 }
 
 export interface IssueGetIssueTransitionsInput {

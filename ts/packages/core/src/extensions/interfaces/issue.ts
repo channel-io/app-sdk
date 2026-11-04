@@ -1,5 +1,9 @@
 import type { Context } from "../../types/context.js";
 import type {
+  IssueGetCreateSchemaInput,
+  IssueGetCreateSchemaOutput,
+  IssueCreateIssueInput,
+  IssueCreateIssueOutput,
   IssueSubscriptionStartInput,
   IssueSubscriptionStartOutput,
   IssueSubscriptionStopInput,
@@ -34,4 +38,13 @@ export interface IssueExtensionInterface {
 export interface IssueSubscriptionExtensionInterface {
   start(ctx: Context, input: IssueSubscriptionStartInput): Promise<IssueSubscriptionStartOutput>;
   stop(ctx: Context, input: IssueSubscriptionStopInput): Promise<IssueSubscriptionStopOutput>;
+}
+
+/** Optional group, implemented in addition to IssueExtensionInterface. */
+export interface IssueCreateExtensionInterface {
+  getCreateSchema(
+    ctx: Context,
+    input: IssueGetCreateSchemaInput
+  ): Promise<IssueGetCreateSchemaOutput>;
+  createIssue(ctx: Context, input: IssueCreateIssueInput): Promise<IssueCreateIssueOutput>;
 }

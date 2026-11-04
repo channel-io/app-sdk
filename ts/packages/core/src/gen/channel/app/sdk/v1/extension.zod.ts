@@ -2290,8 +2290,22 @@ export const IssueErrorProtoSchema = z.object({
   type: z.string().optional(),
   message: z.string().optional(),
   retryAfterMs: z.number().int().optional(),
+  fieldErrors: z.array(z.lazy(() => IssueFieldErrorProtoSchema)).optional(),
+  recovery: z.lazy(() => IssueRecoveryProtoSchema).optional(),
 }) satisfies z.ZodType<pb.IssueError>;
 export type IssueErrorProto = z.infer<typeof IssueErrorProtoSchema>;
+
+export const IssueFieldErrorProtoSchema = z.object({
+  key: z.string().optional(),
+  message: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueFieldError>;
+export type IssueFieldErrorProto = z.infer<typeof IssueFieldErrorProtoSchema>;
+
+export const IssueRecoveryProtoSchema = z.object({
+  sourceIssueId: z.string().optional(),
+  externalUrl: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueRecovery>;
+export type IssueRecoveryProto = z.infer<typeof IssueRecoveryProtoSchema>;
 
 export const IssueTransitionFieldProtoSchema = z.object({
   type: z.string().optional(),
@@ -2364,6 +2378,92 @@ export const IssueGetIssuesOutputProtoSchema = z.object({
   results: z.array(z.lazy(() => IssueGetIssuesResultProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.IssueGetIssuesOutput>;
 export type IssueGetIssuesOutputProto = z.infer<typeof IssueGetIssuesOutputProtoSchema>;
+
+export const IssueCreateChoiceProtoSchema = z.object({
+  label: z.string().optional(),
+  value: z.any().optional(),
+}) satisfies z.ZodType<pb.IssueCreateChoice>;
+export type IssueCreateChoiceProto = z.infer<typeof IssueCreateChoiceProtoSchema>;
+
+export const IssueCreateFieldValueProtoSchema = z.object({
+  key: z.string().optional(),
+  value: z.any().optional(),
+}) satisfies z.ZodType<pb.IssueCreateFieldValue>;
+export type IssueCreateFieldValueProto = z.infer<typeof IssueCreateFieldValueProtoSchema>;
+
+export const IssueCreateFormFieldProtoSchema = z.object({
+  key: z.string().optional(),
+  label: z.string().optional(),
+  required: z.boolean().optional(),
+  readOnly: z.boolean().optional(),
+  defaultValue: z.any().optional(),
+  description: z.string().optional(),
+  type: z.string().optional(),
+  choices: z.array(z.lazy(() => IssueCreateChoiceProtoSchema)).optional(),
+  min: z.number().optional(),
+  max: z.number().optional(),
+  maxLength: z.number().int().optional(),
+  maxItems: z.number().int().optional(),
+  next: z.string().optional(),
+  triggerFieldKeys: z.array(z.string()).optional(),
+}) satisfies z.ZodType<pb.IssueCreateFormField>;
+export type IssueCreateFormFieldProto = z.infer<typeof IssueCreateFormFieldProtoSchema>;
+
+export const IssueCreateValuesProtoSchema = z.object({
+  containerId: z.string().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  templateId: z.string().optional(),
+  fields: z.array(z.lazy(() => IssueCreateFieldValueProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.IssueCreateValues>;
+export type IssueCreateValuesProto = z.infer<typeof IssueCreateValuesProtoSchema>;
+
+export const IssueCreateSelectedValuesProtoSchema = z.object({
+  containerId: z.string().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  templateId: z.string().optional(),
+  fields: z.array(z.lazy(() => IssueCreateFieldValueProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.IssueCreateSelectedValues>;
+export type IssueCreateSelectedValuesProto = z.infer<typeof IssueCreateSelectedValuesProtoSchema>;
+
+export const IssueCreateSchemaPageProtoSchema = z.object({
+  key: z.string().optional(),
+  since: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueCreateSchemaPage>;
+export type IssueCreateSchemaPageProto = z.infer<typeof IssueCreateSchemaPageProtoSchema>;
+
+export const IssueGetCreateSchemaInputProtoSchema = z.object({
+  selected: z.lazy(() => IssueCreateSelectedValuesProtoSchema).optional(),
+  page: z.lazy(() => IssueCreateSchemaPageProtoSchema).optional(),
+}) satisfies z.ZodType<pb.IssueGetCreateSchemaInput>;
+export type IssueGetCreateSchemaInputProto = z.infer<typeof IssueGetCreateSchemaInputProtoSchema>;
+
+export const IssueGetCreateSchemaOutputProtoSchema = z.object({
+  availability: z.string().optional(),
+  accountRef: z.string().optional(),
+  fields: z.array(z.lazy(() => IssueCreateFormFieldProtoSchema)).optional(),
+  reason: z.string().optional(),
+  externalUrl: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueGetCreateSchemaOutput>;
+export type IssueGetCreateSchemaOutputProto = z.infer<typeof IssueGetCreateSchemaOutputProtoSchema>;
+
+export const IssueCreateIssueInputProtoSchema = z.object({
+  containerId: z.string().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  templateId: z.string().optional(),
+  fields: z.array(z.lazy(() => IssueCreateFieldValueProtoSchema)).optional(),
+  requestId: z.string().optional(),
+  accountRef: z.string().optional(),
+  recoveryOnly: z.boolean().optional(),
+}) satisfies z.ZodType<pb.IssueCreateIssueInput>;
+export type IssueCreateIssueInputProto = z.infer<typeof IssueCreateIssueInputProtoSchema>;
+
+export const IssueCreateIssueOutputProtoSchema = z.object({
+  issue: z.lazy(() => ExternalIssueProtoSchema).optional(),
+}) satisfies z.ZodType<pb.IssueCreateIssueOutput>;
+export type IssueCreateIssueOutputProto = z.infer<typeof IssueCreateIssueOutputProtoSchema>;
 
 export const IssueGetIssueTransitionsInputProtoSchema = z.object({
   issueId: z.string().optional(),

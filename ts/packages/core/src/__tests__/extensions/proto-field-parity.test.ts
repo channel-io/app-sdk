@@ -1,4 +1,16 @@
 import {
+  IssueCreateChoiceSchema,
+  IssueCreateFieldValueSchema,
+  IssueCreateFormFieldSchema,
+  IssueCreateValuesSchema,
+  IssueCreateSelectedValuesSchema,
+  IssueCreateSchemaPageSchema,
+  IssueGetCreateSchemaInputSchema,
+  IssueGetCreateSchemaOutputSchema,
+  IssueCreateIssueInputSchema,
+  IssueCreateIssueOutputSchema,
+  IssueFieldErrorSchema,
+  IssueRecoverySchema,
   IssueSubscriptionStartInputSchema,
   IssueSubscriptionStartOutputSchema,
   IssueSubscriptionStopInputSchema,
@@ -306,6 +318,54 @@ const contracts: Contract[] = [
   contract("ExternalIssue", ExternalIssueSchema, "extension", "ExternalIssue"),
   contract("IssueProviderState", IssueProviderStateSchema, "extension", "IssueProviderState"),
   contract("IssueError", IssueErrorSchema, "extension", "IssueError"),
+  contract("IssueCreateChoice", IssueCreateChoiceSchema, "extension", "IssueCreateChoice"),
+  contract(
+    "IssueCreateFieldValue",
+    IssueCreateFieldValueSchema,
+    "extension",
+    "IssueCreateFieldValue"
+  ),
+  contract("IssueCreateFormField", IssueCreateFormFieldSchema, "extension", "IssueCreateFormField"),
+  contract("IssueCreateValues", IssueCreateValuesSchema, "extension", "IssueCreateValues"),
+  contract(
+    "IssueCreateSelectedValues",
+    IssueCreateSelectedValuesSchema,
+    "extension",
+    "IssueCreateSelectedValues"
+  ),
+  contract(
+    "IssueCreateSchemaPage",
+    IssueCreateSchemaPageSchema,
+    "extension",
+    "IssueCreateSchemaPage"
+  ),
+  contract(
+    "IssueGetCreateSchemaInput",
+    IssueGetCreateSchemaInputSchema,
+    "extension",
+    "IssueGetCreateSchemaInput"
+  ),
+  contract(
+    "IssueGetCreateSchemaOutput",
+    IssueGetCreateSchemaOutputSchema,
+    "extension",
+    "IssueGetCreateSchemaOutput"
+  ),
+  contract(
+    "IssueCreateIssueInput",
+    IssueCreateIssueInputSchema,
+    "extension",
+    "IssueCreateIssueInput"
+  ),
+  contract(
+    "IssueCreateIssueOutput",
+    IssueCreateIssueOutputSchema,
+    "extension",
+    "IssueCreateIssueOutput"
+  ),
+  contract("IssueFieldError", IssueFieldErrorSchema, "extension", "IssueFieldError"),
+  contract("IssueRecovery", IssueRecoverySchema, "extension", "IssueRecovery"),
+
   contract("IssueTransitionInput", IssueTransitionInputSchema, "extension", "IssueTransitionInput"),
   contract("IssueTransition", IssueTransitionSchema, "extension", "IssueTransition"),
   contract(

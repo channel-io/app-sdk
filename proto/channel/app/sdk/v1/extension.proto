@@ -2220,6 +2220,16 @@ message IssueError {
   string type = 1;
   string message = 2;
   optional int32 retry_after_ms = 3;
+  repeated IssueFieldError field_errors = 4;
+  IssueRecovery recovery = 5;
+}
+message IssueFieldError {
+  string key = 1;
+  string message = 2;
+}
+message IssueRecovery {
+  string source_issue_id = 1;
+  optional string external_url = 2;
 }
 message IssueTransitionField {
   string type = 1;
@@ -2272,6 +2282,73 @@ message IssueGetIssuesResult {
 }
 message IssueGetIssuesOutput {
   repeated IssueGetIssuesResult results = 1;
+}
+// Optional Issue creation group; getCreateSchema and createIssue are registered together.
+message IssueCreateChoice {
+  string label = 1;
+  google.protobuf.Value value = 2;
+}
+message IssueCreateFieldValue {
+  string key = 1;
+  google.protobuf.Value value = 2;
+}
+message IssueCreateFormField {
+  string key = 1;
+  string label = 2;
+  optional bool required = 3;
+  optional bool read_only = 4;
+  google.protobuf.Value default_value = 5;
+  optional string description = 6;
+  string type = 7;
+  repeated IssueCreateChoice choices = 8;
+  optional double min = 9;
+  optional double max = 10;
+  optional int32 max_length = 11;
+  optional int32 max_items = 12;
+  optional string next = 13;
+  repeated string trigger_field_keys = 14;
+}
+message IssueCreateValues {
+  string container_id = 1;
+  optional string title = 2;
+  optional string description = 3;
+  optional string template_id = 4;
+  repeated IssueCreateFieldValue fields = 5;
+}
+message IssueCreateSelectedValues {
+  optional string container_id = 1;
+  optional string title = 2;
+  optional string description = 3;
+  optional string template_id = 4;
+  repeated IssueCreateFieldValue fields = 5;
+}
+message IssueCreateSchemaPage {
+  string key = 1;
+  string since = 2;
+}
+message IssueGetCreateSchemaInput {
+  IssueCreateSelectedValues selected = 1;
+  IssueCreateSchemaPage page = 2;
+}
+message IssueGetCreateSchemaOutput {
+  string availability = 1;
+  optional string account_ref = 2;
+  repeated IssueCreateFormField fields = 3;
+  optional string reason = 4;
+  optional string external_url = 5;
+}
+message IssueCreateIssueInput {
+  string container_id = 1;
+  optional string title = 2;
+  optional string description = 3;
+  optional string template_id = 4;
+  repeated IssueCreateFieldValue fields = 5;
+  string request_id = 6;
+  string account_ref = 7;
+  optional bool recovery_only = 8;
+}
+message IssueCreateIssueOutput {
+  ExternalIssue issue = 1;
 }
 message IssueGetIssueTransitionsInput {
   string issue_id = 1;
