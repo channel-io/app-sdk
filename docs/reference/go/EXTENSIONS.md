@@ -389,3 +389,12 @@ app.Use(mailrelay.Extension().OnMailReceived(handler.OnMailReceived))
 
 Deduplicate `sesMessageId` before side effects. Return `retryableFailure` only for temporary
 failures, and never log or return raw MIME, attachment data, relay tokens, or provider PII.
+
+## Issue creation
+
+Issue creation is an optional pair of `extension.issue.core.getCreateSchema` and
+`extension.issue.core.createIssue` functions. Use the Issue builder and its request and
+response types; existing read-only implementations do not need to register the pair.
+The shared contract, form validation, pagination, account binding, and recovery semantics
+are described in the [Issue extension reference](../typescript/extensions/issue.md).
+The SDK definitions alone do not enable platform routing.

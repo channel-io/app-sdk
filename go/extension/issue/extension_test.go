@@ -23,6 +23,7 @@ func TestPublicAliasesCoverIssueMessages(t *testing.T) {
 		&issue.StopSubscriptionRequest{}, &issue.StopSubscriptionResponse{},
 		&issue.ExternalIssue{}, &issue.ProviderState{}, &issue.Transition{}, &issue.Error{},
 		&issue.GetIssuesResult{}, &issue.TransitionInput{}, &issue.TransitionField{}, &issue.Container{}, &issue.Actor{},
+		&issue.GetCreateSchemaRequest{}, &issue.GetCreateSchemaResponse{}, &issue.CreateIssueRequest{}, &issue.CreateIssueResponse{}, &issue.CreateChoice{}, &issue.CreateFieldValue{}, &issue.CreateFormField{}, &issue.CreateValues{}, &issue.CreateSelectedValues{}, &issue.CreateSchemaPage{}, &issue.FieldError{}, &issue.Recovery{},
 	}
 	public := map[protoreflect.FullName]bool{}
 	for _, alias := range aliases {
@@ -196,5 +197,66 @@ func TestSubscriptionRejectsInvalidIdentityBeforeHandler(t *testing.T) {
 	result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: issue.FunctionStopSubscription, Params: json.RawMessage(`{"subscriptionId":"sub","subscription_id":"ignored","channelId":"ignored"}`)})
 	if result.Error != nil || calls != 1 {
 		t.Fatalf("unknown fields should be stripped: %+v calls=%d", result, calls)
+	}
+}
+
+func TestCreateInputAndWire(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "test"})
+	calls := 0
+	account := "account"
+	err := app.Use(issue.Extension().GetCreateSchema(func(_ context.Context, _ appsdk.Context, in *issue.GetCreateSchemaRequest) (*issue.GetCreateSchemaResponse, error) {
+		calls++
+		return &issue.GetCreateSchemaResponse{Availability: "available", AccountRef: &account, Fields: []*issue.CreateFormField{{Key: "labels", Type: "select", Label: "Labels"}}}, nil
+	}).CreateIssue(func(_ context.Context, _ appsdk.Context, in *issue.CreateIssueRequest) (*issue.CreateIssueResponse, error) {
+		calls++
+		if len(in.Fields) != 3 || in.Fields[0].Value.GetBoolValue() || in.Fields[1].Value.GetNumberValue() != 0 || in.Fields[2].Value.GetListValue() == nil || len(in.Fields[2].Value.GetListValue().Values) != 0 || in.RecoveryOnly == nil || *in.RecoveryOnly {
+			t.Fatal("values lost")
+		}
+		return &issue.CreateIssueResponse{Issue: &issue.ExternalIssue{IssueId: "id", Identifier: "TEAM-1", Title: "Example", Url: "https://example.com/issue", State: "open", ProviderState: &issue.ProviderState{Name: "Open"}, CreatedAt: "2026-11-04T00:00:00Z", Container: &issue.Container{Id: "team", Name: "Team"}}}, nil
+	}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct{ method, params string }{
+		{issue.FunctionGetCreateSchema, `{"selected":{"unknown":1}}`},
+		{issue.FunctionGetCreateSchema, `{"page":{"key":"x","since":" "}}`},
+		{issue.FunctionGetCreateSchema, `{"selected":{"fields":[{"key":"title","value":"x"}]}}`},
+		{issue.FunctionGetCreateSchema, `{"selected":{"fields":[{"key":"x","value":[1,"x"]}]}}`},
+		{issue.FunctionGetCreateSchema, `{"selected":{"fields":[{"key":"x","value":["a","a"]}]}}`},
+		{issue.FunctionGetCreateSchema, `{"selected":{"fields":[{"key":"x","value":[0,-0]}]}}`},
+		{issue.FunctionGetCreateSchema, `{"selected":{"fields":[{"key":"x","value":null}]}}`},
+		{issue.FunctionGetCreateSchema, `{"selected":{"fields":[{"key":"x","value":true},{"key":"x","value":false}]}}`},
+		{issue.FunctionCreateIssue, `{"containerId":"team","accountRef":"a","requestId":"00000000-0000-4000-8000-00000000000A"}`},
+		{issue.FunctionCreateIssue, `{"containerId":" ","accountRef":"a","requestId":"00000000-0000-4000-8000-000000000000"}`},
+	} {
+		result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: tc.method, Params: json.RawMessage(tc.params)})
+		if result.Error == nil || result.Error.Type != "invalidInput" {
+			t.Fatalf("expected invalid: %s %+v", tc.params, result)
+		}
+	}
+	if calls != 0 {
+		t.Fatal("invalid input reached handler")
+	}
+	schema := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: issue.FunctionGetCreateSchema, Params: json.RawMessage(`{"selected":{"containerId":"team"},"ignored":true}`)})
+	if schema.Error != nil || !strings.Contains(string(schema.Result), `"choices":[]`) {
+		t.Fatalf("schema: %+v", schema)
+	}
+	created := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: issue.FunctionCreateIssue, Params: json.RawMessage(`{"containerId":"team","accountRef":"a","requestId":"00000000-0000-4000-8000-000000000000","recoveryOnly":false,"fields":[{"key":"a","value":false},{"key":"b","value":0},{"key":"c","value":[]}],"container_id":"ignored"}`)})
+	if created.Error != nil || calls != 2 || !strings.Contains(string(created.Result), `"container":{"id":"team","name":"Team"}`) {
+		t.Fatalf("create: %+v", created)
+	}
+}
+
+func TestExternalOnlyRejectsAvailableFields(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "test"})
+	account := "account"
+	if err := app.Use(issue.Extension().GetCreateSchema(func(context.Context, appsdk.Context, *issue.GetCreateSchemaRequest) (*issue.GetCreateSchemaResponse, error) {
+		return &issue.GetCreateSchemaResponse{Availability: "externalOnly", AccountRef: &account}, nil
+	})); err != nil {
+		t.Fatal(err)
+	}
+	result := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: issue.FunctionGetCreateSchema, Params: json.RawMessage(`{}`)})
+	if result.Error == nil {
+		t.Fatalf("expected contradictory response to fail: %+v", result)
 	}
 }

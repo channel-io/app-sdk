@@ -1,4 +1,8 @@
 import {
+  IssueGetCreateSchemaInputSchema,
+  IssueGetCreateSchemaOutputSchema,
+  IssueCreateIssueInputSchema,
+  IssueCreateIssueOutputSchema,
   IssueSubscriptionStartInputSchema,
   IssueSubscriptionStartOutputSchema,
   IssueSubscriptionStopInputSchema,
@@ -464,9 +468,19 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     output: GetHooksOutputSchema,
   },
   {
+    name: "extension.issue.core.createIssue",
+    input: IssueCreateIssueInputSchema,
+    output: IssueCreateIssueOutputSchema,
+  },
+  {
     name: "extension.issue.core.executeIssueTransition",
     input: IssueExecuteIssueTransitionInputSchema,
     output: IssueExecuteIssueTransitionOutputSchema,
+  },
+  {
+    name: "extension.issue.core.getCreateSchema",
+    input: IssueGetCreateSchemaInputSchema,
+    output: IssueGetCreateSchemaOutputSchema,
   },
   {
     name: "extension.issue.core.getIssue",
