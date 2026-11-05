@@ -18256,6 +18256,66 @@
     }
   },
   {
+    "name": "extension.issue.core.createComment",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "issueId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "body": {
+          "type": "string",
+          "maxLength": 16000,
+          "pattern": "\\S"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 36,
+          "maxLength": 36,
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "accountRef": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "recoveryOnly": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "issueId",
+        "body",
+        "requestId",
+        "accountRef"
+      ],
+      "additionalProperties": true,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "commentId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^[Hh][Tt][Tt][Pp][Ss]:\\/\\/[^/\\s\\\\?#]+(?:[/?#][^\\s\\\\]*)?$"
+        }
+      },
+      "required": [
+        "commentId"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  },
+  {
     "name": "extension.issue.core.createIssue",
     "inputSchema": {
       "type": "object",

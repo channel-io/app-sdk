@@ -11,6 +11,7 @@ The non-exclusive `issue` extension exposes external issues through canonical fu
 | `extension.issue.core.executeIssueTransition` | Optional, together with transitions     | `{issue}`                   |
 | `extension.issue.core.getCreateSchema`        | Optional, together with createIssue     | Creation form schema        |
 | `extension.issue.core.createIssue`            | Optional, together with getCreateSchema | `{issue}`                   |
+| `extension.issue.core.createComment`          | Optional, independent                   | `{commentId, url?}`         |
 
 Use `@Extension({name: "issue", systemVersion: "v1", exclusive: false})`, implement
 `IssueExtensionInterface`, and attach the exported `Issue…InputSchema` and
@@ -113,3 +114,23 @@ not create an issue; return `unsupported` when no record exists or creation has 
 `IssueError` additionally supports `fieldErrors: {key, message}[]` for `invalidInput` and
 `recovery: {sourceIssueId, externalUrl?}` when a created issue is known. `rateLimited`
 requires a nonnegative integer `retryAfterMs`. Do not expose provider secrets in errors.
+
+## Optional comment creation
+
+Register `extension.issue.core.createComment` independently of issue creation and other
+optional functions. Implement `IssueCommentExtensionInterface` and use
+`IssueCreateCommentInputSchema` and `IssueCreateCommentOutputSchema`.
+The SDK definition requires a corresponding platform function definition before invocation.
+
+Authenticate the manager's personal account and authorize access to the target issue.
+`issueId` identifies the stable target, and `accountRef` must exactly match the account
+bound to the request. `body` must be nonblank and at most 16,000 UTF-16 code units; pass
+it without transformation. Use a dedicated lowercase UUIDv4 `requestId` for each logical
+comment. Success returns a nonempty `commentId` and optionally an absolute HTTPS `url`.
+
+The app owns durable deduplication: return the recorded result for the same request and
+reject reuse with changed input. `recoveryOnly: true` only reads a previously recorded
+result, including by a previously recorded provider comment ID. If there is no record,
+it must not create a comment. If a write outcome is unknown, do not resend the write;
+recover the recorded result instead. Provider-specific behavior belongs in the adapter,
+not the wire contract.

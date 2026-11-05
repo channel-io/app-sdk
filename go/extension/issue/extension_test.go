@@ -23,7 +23,7 @@ func TestPublicAliasesCoverIssueMessages(t *testing.T) {
 		&issue.StopSubscriptionRequest{}, &issue.StopSubscriptionResponse{},
 		&issue.ExternalIssue{}, &issue.ProviderState{}, &issue.Transition{}, &issue.Error{},
 		&issue.GetIssuesResult{}, &issue.TransitionInput{}, &issue.TransitionField{}, &issue.Container{}, &issue.Actor{},
-		&issue.GetCreateSchemaRequest{}, &issue.GetCreateSchemaResponse{}, &issue.CreateIssueRequest{}, &issue.CreateIssueResponse{}, &issue.CreateChoice{}, &issue.CreateFieldValue{}, &issue.CreateFormField{}, &issue.CreateValues{}, &issue.CreateSelectedValues{}, &issue.CreateSchemaPage{}, &issue.FieldError{}, &issue.Recovery{},
+		&issue.CreateCommentRequest{}, &issue.CreateCommentResponse{}, &issue.GetCreateSchemaRequest{}, &issue.GetCreateSchemaResponse{}, &issue.CreateIssueRequest{}, &issue.CreateIssueResponse{}, &issue.CreateChoice{}, &issue.CreateFieldValue{}, &issue.CreateFormField{}, &issue.CreateValues{}, &issue.CreateSelectedValues{}, &issue.CreateSchemaPage{}, &issue.FieldError{}, &issue.Recovery{},
 	}
 	public := map[protoreflect.FullName]bool{}
 	for _, alias := range aliases {

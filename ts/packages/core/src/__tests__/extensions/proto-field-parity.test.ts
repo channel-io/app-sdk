@@ -1,4 +1,6 @@
 import {
+  IssueCreateCommentInputSchema,
+  IssueCreateCommentOutputSchema,
   IssueCreateChoiceSchema,
   IssueCreateFieldValueSchema,
   IssueCreateFormFieldSchema,
@@ -318,6 +320,18 @@ const contracts: Contract[] = [
   contract("ExternalIssue", ExternalIssueSchema, "extension", "ExternalIssue"),
   contract("IssueProviderState", IssueProviderStateSchema, "extension", "IssueProviderState"),
   contract("IssueError", IssueErrorSchema, "extension", "IssueError"),
+  contract(
+    "IssueCreateCommentInput",
+    IssueCreateCommentInputSchema,
+    "extension",
+    "IssueCreateCommentInput"
+  ),
+  contract(
+    "IssueCreateCommentOutput",
+    IssueCreateCommentOutputSchema,
+    "extension",
+    "IssueCreateCommentOutput"
+  ),
   contract("IssueCreateChoice", IssueCreateChoiceSchema, "extension", "IssueCreateChoice"),
   contract(
     "IssueCreateFieldValue",
