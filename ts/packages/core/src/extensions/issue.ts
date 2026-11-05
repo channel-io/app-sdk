@@ -1,4 +1,6 @@
 import type {
+  IssueCreateCommentInput as ProtoIssueCreateCommentInput,
+  IssueCreateCommentOutput as ProtoIssueCreateCommentOutput,
   IssueCreateChoice as ProtoIssueCreateChoice,
   IssueCreateFieldValue as ProtoIssueCreateFieldValue,
   IssueCreateFormField as ProtoIssueCreateFormField,
@@ -526,3 +528,34 @@ export type IssueFieldError = ProtoBacked<
   ProtoIssueFieldError
 >;
 export type IssueRecovery = ProtoBacked<z.infer<typeof IssueRecoverySchema>, ProtoIssueRecovery>;
+
+export const IssueCreateCommentInputSchema = z
+  .object({
+    issueId: Text.regex(/\S/),
+    body: z.string().max(16000).regex(/\S/),
+    requestId: z
+      .string()
+      .length(36)
+      .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/),
+    accountRef: Text.regex(/\S/),
+    recoveryOnly: z.boolean().optional(),
+  })
+  .strip();
+export const IssueCreateCommentOutputSchema = z
+  .object({
+    commentId: Text.regex(/\S/),
+    url: z
+      .string()
+      .url()
+      .regex(/^[Hh][Tt][Tt][Pp][Ss]:\/\/[^/\s\\?#]+(?:[/?#][^\s\\]*)?$/)
+      .optional(),
+  })
+  .strict();
+export type IssueCreateCommentInput = ProtoBacked<
+  z.infer<typeof IssueCreateCommentInputSchema>,
+  ProtoIssueCreateCommentInput
+>;
+export type IssueCreateCommentOutput = ProtoBacked<
+  z.infer<typeof IssueCreateCommentOutputSchema>,
+  ProtoIssueCreateCommentOutput
+>;

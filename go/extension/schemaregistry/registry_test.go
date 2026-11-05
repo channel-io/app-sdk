@@ -81,6 +81,7 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 		GetHooks(zero[hook.GetHooksRequest, hook.GetHooksResponse]()))
 
 	use(t, app, issue.Extension().
+		CreateComment(zero[issue.CreateCommentRequest, issue.CreateCommentResponse]()).
 		CreateIssue(zero[issue.CreateIssueRequest, issue.CreateIssueResponse]()).
 		ExecuteIssueTransition(zero[issue.ExecuteIssueTransitionRequest, issue.ExecuteIssueTransitionResponse]()).
 		GetCreateSchema(zero[issue.GetCreateSchemaRequest, issue.GetCreateSchemaResponse]()).
@@ -164,8 +165,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	got := app.Schemas()
 	want := schemaregistry.Schemas()
 
-	if len(got) != 90 {
-		t.Fatalf("expected 90 registered extension function schemas, got %d", len(got))
+	if len(got) != 91 {
+		t.Fatalf("expected 91 registered extension function schemas, got %d", len(got))
 	}
 	if !reflect.DeepEqual(got, want) {
 		for i := range got {

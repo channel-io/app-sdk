@@ -2465,6 +2465,21 @@ export const IssueCreateIssueOutputProtoSchema = z.object({
 }) satisfies z.ZodType<pb.IssueCreateIssueOutput>;
 export type IssueCreateIssueOutputProto = z.infer<typeof IssueCreateIssueOutputProtoSchema>;
 
+export const IssueCreateCommentInputProtoSchema = z.object({
+  issueId: z.string().optional(),
+  body: z.string().optional(),
+  requestId: z.string().optional(),
+  accountRef: z.string().optional(),
+  recoveryOnly: z.boolean().optional(),
+}) satisfies z.ZodType<pb.IssueCreateCommentInput>;
+export type IssueCreateCommentInputProto = z.infer<typeof IssueCreateCommentInputProtoSchema>;
+
+export const IssueCreateCommentOutputProtoSchema = z.object({
+  commentId: z.string().optional(),
+  url: z.string().optional(),
+}) satisfies z.ZodType<pb.IssueCreateCommentOutput>;
+export type IssueCreateCommentOutputProto = z.infer<typeof IssueCreateCommentOutputProtoSchema>;
+
 export const IssueGetIssueTransitionsInputProtoSchema = z.object({
   issueId: z.string().optional(),
 }) satisfies z.ZodType<pb.IssueGetIssueTransitionsInput>;

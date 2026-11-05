@@ -54,7 +54,11 @@ describe("Issue v1", () => {
         .map((s) => s.name)
         .filter((name) => !legacyNames.includes(name))
         .sort()
-    ).toEqual(["extension.issue.core.createIssue", "extension.issue.core.getCreateSchema"]);
+    ).toEqual([
+      "extension.issue.core.createComment",
+      "extension.issue.core.createIssue",
+      "extension.issue.core.getCreateSchema",
+    ]);
     expect(schemas.IssueExecuteIssueTransitionOutputSchema.parse({ issue })).toEqual({ issue });
     expect(
       schemas.IssueExecuteIssueTransitionOutputSchema.safeParse({ issue, operationId: "old" })

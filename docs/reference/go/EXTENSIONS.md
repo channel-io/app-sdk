@@ -398,3 +398,19 @@ response types; existing read-only implementations do not need to register the p
 The shared contract, form validation, pagination, account binding, and recovery semantics
 are described in the [Issue extension reference](../typescript/extensions/issue.md).
 The SDK definitions alone do not enable platform routing.
+
+## Issue comment creation
+
+`extension.issue.core.createComment` is independently optional. Use the Issue builder's
+`CreateComment` with `CreateCommentRequest` and `CreateCommentResponse`. Authenticate the manager's personal account and
+authorize the stable target `issueId`; `accountRef` must exactly match the bound account.
+The body must be nonblank and at most 16,000 UTF-16 code units, without transformation.
+Use a dedicated lowercase UUIDv4 request ID per logical comment. Success returns a nonempty
+comment ID and optionally an absolute HTTPS URL.
+
+Durably deduplicate the same request and reject reuse with changed input. Recovery-only
+requests read a recorded result, including by a previously recorded provider comment ID;
+no record must not cause a new write. Do not resend a write whose outcome is unknown;
+recover the recorded result instead. Provider-specific behavior belongs in the adapter,
+not the wire contract. The SDK definition requires the corresponding platform function
+definition before invocation.

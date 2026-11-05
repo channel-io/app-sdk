@@ -2350,6 +2350,18 @@ message IssueCreateIssueInput {
 message IssueCreateIssueOutput {
   ExternalIssue issue = 1;
 }
+// Optional independent Issue comment creation function.
+message IssueCreateCommentInput {
+  string issue_id = 1;
+  string body = 2;
+  string request_id = 3;
+  string account_ref = 4;
+  optional bool recovery_only = 5;
+}
+message IssueCreateCommentOutput {
+  string comment_id = 1;
+  optional string url = 2;
+}
 message IssueGetIssueTransitionsInput {
   string issue_id = 1;
 }

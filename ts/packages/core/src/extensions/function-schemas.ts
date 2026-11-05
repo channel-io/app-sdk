@@ -1,4 +1,6 @@
 import {
+  IssueCreateCommentInputSchema,
+  IssueCreateCommentOutputSchema,
   IssueGetCreateSchemaInputSchema,
   IssueGetCreateSchemaOutputSchema,
   IssueCreateIssueInputSchema,
@@ -466,6 +468,11 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     name: "extension.hook.metadata.getHooks",
     input: EmptyInputSchema,
     output: GetHooksOutputSchema,
+  },
+  {
+    name: "extension.issue.core.createComment",
+    input: IssueCreateCommentInputSchema,
+    output: IssueCreateCommentOutputSchema,
   },
   {
     name: "extension.issue.core.createIssue",

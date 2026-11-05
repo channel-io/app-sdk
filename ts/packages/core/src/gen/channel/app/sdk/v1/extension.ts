@@ -2783,6 +2783,20 @@ export interface IssueCreateIssueOutput {
   issue?: ExternalIssue | undefined;
 }
 
+/** Optional independent Issue comment creation function. */
+export interface IssueCreateCommentInput {
+  issueId?: string | undefined;
+  body?: string | undefined;
+  requestId?: string | undefined;
+  accountRef?: string | undefined;
+  recoveryOnly?: boolean | undefined;
+}
+
+export interface IssueCreateCommentOutput {
+  commentId?: string | undefined;
+  url?: string | undefined;
+}
+
 export interface IssueGetIssueTransitionsInput {
   issueId?: string | undefined;
 }

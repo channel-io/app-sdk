@@ -38,9 +38,10 @@ type extensionSmokeSpec struct {
 }
 
 var extensionSmokeSpecs = []extensionSmokeSpec{
-	{name: issue.ExtensionName, systemVersion: issue.SystemVersion, functions: []string{issue.FunctionGetCreateSchema, issue.FunctionCreateIssue, issue.FunctionSearchIssues, issue.FunctionGetIssue, issue.FunctionGetIssues, issue.FunctionGetIssueTransitions, issue.FunctionExecuteIssueTransition, issue.FunctionStartSubscription, issue.FunctionStopSubscription}, build: func() appsdk.Extension {
+	{name: issue.ExtensionName, systemVersion: issue.SystemVersion, functions: []string{issue.FunctionGetCreateSchema, issue.FunctionCreateIssue, issue.FunctionCreateComment, issue.FunctionSearchIssues, issue.FunctionGetIssue, issue.FunctionGetIssues, issue.FunctionGetIssueTransitions, issue.FunctionExecuteIssueTransition, issue.FunctionStartSubscription, issue.FunctionStopSubscription}, build: func() appsdk.Extension {
 		return issue.Extension().GetCreateSchema(smokeZero[issue.GetCreateSchemaRequest, issue.GetCreateSchemaResponse]()).
 			CreateIssue(smokeZero[issue.CreateIssueRequest, issue.CreateIssueResponse]()).
+			CreateComment(smokeZero[issue.CreateCommentRequest, issue.CreateCommentResponse]()).
 			SearchIssues(smokeZero[issue.SearchIssuesRequest, issue.SearchIssuesResponse]()).
 			GetIssue(smokeZero[issue.GetIssueRequest, issue.GetIssueResponse]()).
 			GetIssues(smokeZero[issue.GetIssuesRequest, issue.GetIssuesResponse]()).

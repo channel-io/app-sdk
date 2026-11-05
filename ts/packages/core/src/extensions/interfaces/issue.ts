@@ -1,5 +1,7 @@
 import type { Context } from "../../types/context.js";
 import type {
+  IssueCreateCommentInput,
+  IssueCreateCommentOutput,
   IssueGetCreateSchemaInput,
   IssueGetCreateSchemaOutput,
   IssueCreateIssueInput,
@@ -47,4 +49,9 @@ export interface IssueCreateExtensionInterface {
     input: IssueGetCreateSchemaInput
   ): Promise<IssueGetCreateSchemaOutput>;
   createIssue(ctx: Context, input: IssueCreateIssueInput): Promise<IssueCreateIssueOutput>;
+}
+
+/** Optional function, implemented independently of the creation group. */
+export interface IssueCommentExtensionInterface {
+  createComment(ctx: Context, input: IssueCreateCommentInput): Promise<IssueCreateCommentOutput>;
 }
