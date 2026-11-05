@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.42.0
+
+### Minor Changes
+
+- 73b923f: Add the optional Issue createComment function contract.
+
 ## 0.41.0
 
 ### Minor Changes
