@@ -109,7 +109,12 @@ The request ID is a lowercase UUIDv4 identifying one logical creation. The app o
 idempotency and result records: preserve the original input for retries,
 reject conflicting reuse, preserve a confirmed issue ID, and do not automatically retry an
 uncertain mutation. `recoveryOnly: true` only checks a previously recorded result and must
-not create an issue; return `unsupported` when no record exists or creation has not executed.
+not create an issue. Return `outcomeUnknown` when no durable record exists, creation has not
+executed, is still in flight, or its completion is unknown. Keep the same input and
+`requestId`; do not automatically retry creation with a new ID. Return a definitive failure
+only when a stored result confirms the original attempt ended without creating an issue.
+`unsupported` is for capability gaps, such as an unregistered `createComment`, a disabled
+feature, or an unmappable state; an empty recovery result is not a capability gap.
 
 `IssueError` additionally supports `fieldErrors: {key, message}[]` for `invalidInput` and
 `recovery: {sourceIssueId, externalUrl?}` when a created issue is known. `rateLimited`
