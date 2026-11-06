@@ -602,6 +602,46 @@ describe("TokenManager", () => {
     manager.destroy();
   });
 
+  it.each([
+    ["issueToken", 200],
+    ["issueToken", 500],
+    ["refreshToken", 200],
+    ["refreshToken", 500],
+  ])("aborts a stalled %s response body with HTTP %i", async (method, status) => {
+    let signal: AbortSignal | undefined;
+    globalThis.fetch = vi
+      .fn()
+      .mockImplementationOnce((_url, init: RequestInit) => {
+        signal = init.signal as AbortSignal;
+        const body = new ReadableStream({
+          start(controller) {
+            signal!.addEventListener("abort", () => controller.error(signal!.reason), {
+              once: true,
+            });
+          },
+        });
+        return Promise.resolve(new Response(body, { status }));
+      })
+      .mockResolvedValueOnce(
+        createResponse(makeNativeFunctionResponse({ accessToken: "after-timeout" }))
+      );
+    const manager = createManager();
+    const request = () =>
+      method === "issueToken" ? manager.getAppToken() : manager.refreshToken("refresh-token");
+    const timedOut = request();
+    const rejection = expect(timedOut).rejects.toMatchObject({ name: "AbortError" });
+
+    await vi.advanceTimersByTimeAsync(9999);
+    expect(signal?.aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+
+    await rejection;
+    expect(signal?.aborted).toBe(true);
+    await expect(request()).resolves.toMatchObject({ accessToken: "after-timeout" });
+    expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+    manager.destroy();
+  });
+
   it("throws TokenManagerError for transport and native function errors", async () => {
     globalThis.fetch = createMockFetch([{ ok: false, status: 500, body: "server error" }]);
     const manager = createManager();
