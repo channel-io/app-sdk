@@ -19,9 +19,10 @@ gRPC query service は app Function ではありません。Endpoint、authentic
 
 - CamelCase JSON field の `ListCatalogsInput/Output`、`ListTablesInput/Output`、
   `DescribeTableInput/Output` を使います。Catalog alias と table name は stable identifier です。
-- `managerAccess: "owner"` は discovery/query authorization を channel owner に制限します。
-  `"all"` または省略は全 channel manager を許可します。Local query allowlist は同等以上に
-  厳しくします。
+- 各 table の `permissions` に、許可する manager permission の `action`/`scope` ペアを宣言します。
+  Owner は常に許可され、それ以外の manager は宣言したペアのいずれかに一致すると許可されます。
+  Deprecated の `managerAccess` は、`permissions` を宣言していない場合に限り互換 fallback として
+  使われます。Local query allowlist は同等以上に厳しくします。
 - Description sample は任意で、10 row/64 KiB 以下、key は宣言 column と一致させます。
 - gRPC handler は検証済み access-token identity を受け取ります。一つの endpoint が複数 app を
   提供する場合、identity の app scope で signing key と route を決めます。
