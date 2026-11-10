@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Check public content policy
         run: ./scripts/check-public-content.sh
@@ -28,7 +30,7 @@ jobs:
           docker run --rm
           -v "$PWD:/repo"
           ghcr.io/gitleaks/gitleaks:v8.28.0
-          detect --source=/repo --no-git --redact
+          detect --source=/repo --redact --log-opts="--all"
 
   lint:
     name: Lint, Format & Proto

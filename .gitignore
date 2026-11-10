@@ -29,6 +29,10 @@ coverage
 .env.local
 .env.*.local
 
+# Local agent and MCP workspace configuration
+.claude/
+.mcp.json
+
 # Packed archives
 *.tgz
 
