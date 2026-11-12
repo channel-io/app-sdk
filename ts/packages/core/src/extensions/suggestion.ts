@@ -60,8 +60,36 @@ export type GetSuggestionTriggersInput = ProtoBacked<
   ProtoGetSuggestionTriggersInput
 >;
 
+const SuggestionBenefitTextSchema = z
+  .record(
+    // Do not transform keys: trimming can silently overwrite another locale entry.
+    z.string().regex(SuggestionLocalePattern, "Expected a BCP 47 locale"),
+    z
+      .string()
+      .refine(
+        (value) => Array.from(value).length >= 1 && Array.from(value).length <= 120,
+        "Suggestion benefit text must contain 1–120 Unicode code points"
+      )
+      .refine(
+        (value) => !/[\p{Cc}\u2028\u2029<>[\]`]|\*\*|__|:\/\/|www\./iu.test(value),
+        "Suggestion benefit text must be single-line plain text without links or markup"
+      )
+      .transform((value) => value.trim())
+      .refine((value) => value.length > 0, "Suggestion benefit text must not be blank")
+  )
+  .refine(
+    (values) => Object.keys(values).length <= 20,
+    "Suggestion benefit text supports at most 20 locales"
+  )
+  .describe(
+    "Optional BCP 47 locale-to-benefit map: at most 20 locales, each 1–120 Unicode code points of single-line plain text without links or markup. AppStore canonicalizes locales and rejects duplicates."
+  );
+
 export const GetSuggestionTriggersOutputSchema = z
-  .object({ triggers: SuggestionTriggersSchema })
+  .object({
+    triggers: SuggestionTriggersSchema,
+    benefitText: SuggestionBenefitTextSchema.optional(),
+  })
   .strict();
 export type GetSuggestionTriggersOutput = ProtoBacked<
   z.infer<typeof GetSuggestionTriggersOutputSchema>,
@@ -71,6 +99,11 @@ export type GetSuggestionTriggersOutput = ProtoBacked<
 export type SuggestionTriggersProvider =
   SuggestionTriggers | ((ctx: Context) => SuggestionTriggers | Promise<SuggestionTriggers>);
 
+/** A complete metadata response, either static or computed at registration time. */
+export type SuggestionMetadataProvider =
+  | GetSuggestionTriggersOutput
+  | ((ctx: Context) => GetSuggestionTriggersOutput | Promise<GetSuggestionTriggersOutput>);
+
 /** Validate and define the static trigger catalog returned by an app. */
 export function defineSuggestionTriggers(triggers: SuggestionTriggers): SuggestionTriggers {
   return SuggestionTriggersSchema.parse(triggers);
@@ -78,7 +111,7 @@ export function defineSuggestionTriggers(triggers: SuggestionTriggers): Suggesti
 
 /** Build the suggestion:v1 extension with its single metadata Function. */
 export function createSuggestionExtensionV1(
-  provider: SuggestionTriggersProvider
+  provider: SuggestionTriggersProvider | SuggestionMetadataProvider
 ): ExtensionDefinition {
   return {
     name: "suggestion",
@@ -90,8 +123,10 @@ export function createSuggestionExtensionV1(
           input: GetSuggestionTriggersInputSchema,
           output: GetSuggestionTriggersOutputSchema,
           handler: async (ctx) => {
-            const triggers = typeof provider === "function" ? await provider(ctx) : provider;
-            return { triggers: defineSuggestionTriggers(triggers) };
+            const metadata = typeof provider === "function" ? await provider(ctx) : provider;
+            return GetSuggestionTriggersOutputSchema.parse(
+              "triggers" in metadata ? metadata : { triggers: metadata }
+            );
           },
         },
       },

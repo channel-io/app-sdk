@@ -848,6 +848,7 @@ export type SuggestionGetTriggersInputProto = z.infer<typeof SuggestionGetTrigge
 
 export const SuggestionGetTriggersOutputProtoSchema = z.object({
   triggers: z.lazy(() => SuggestionTriggersProtoSchema).optional(),
+  benefitText: z.record(z.string(), z.string()).optional(),
 }) satisfies z.ZodType<pb.SuggestionGetTriggersOutput>;
 export type SuggestionGetTriggersOutputProto = z.infer<typeof SuggestionGetTriggersOutputProtoSchema>;
 

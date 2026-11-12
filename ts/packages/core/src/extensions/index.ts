@@ -251,6 +251,7 @@ export {
   type GetSuggestionTriggersInput,
   type GetSuggestionTriggersOutput,
   type SuggestionTriggersProvider,
+  type SuggestionMetadataProvider,
 } from "./suggestion.js";
 
 // Store Extension Schemas (v1)
