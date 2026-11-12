@@ -183,4 +183,17 @@ describe("suggestion extension", () => {
       )
     ).rejects.toThrow();
   });
+  it.each([
+    { en: "first benefit", " en ": "second benefit" },
+    { " en ": "first benefit", en: "second benefit" },
+  ])("rejects whitespace locale keys instead of silently losing metadata", async (benefitText) => {
+    expect(() => GetSuggestionTriggersOutputSchema.parse({ triggers, benefitText })).toThrow();
+    const registered = registerExtension(createSuggestionExtensionV1({ triggers, benefitText }));
+    await expect(
+      registered.functions[0]?.handler(
+        { caller: { id: "manager-1" }, channel: { id: "channel-1" }, app: { id: "app-1" } },
+        {}
+      )
+    ).rejects.toThrow();
+  });
 });

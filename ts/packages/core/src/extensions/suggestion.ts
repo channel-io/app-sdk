@@ -62,7 +62,8 @@ export type GetSuggestionTriggersInput = ProtoBacked<
 
 const SuggestionBenefitTextSchema = z
   .record(
-    SuggestionLocaleSchema,
+    // Do not transform keys: trimming can silently overwrite another locale entry.
+    z.string().regex(SuggestionLocalePattern, "Expected a BCP 47 locale"),
     z
       .string()
       .refine(
