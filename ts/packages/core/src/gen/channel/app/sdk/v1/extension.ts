@@ -930,7 +930,16 @@ export interface SuggestionGetTriggersInput {
 }
 
 export interface SuggestionGetTriggersOutput {
-  triggers?: SuggestionTriggers | undefined;
+  triggers?:
+    | SuggestionTriggers
+    | undefined;
+  /** Optional localized benefit clause; the platform supplies installation framing. */
+  benefitText?: { [key: string]: string } | undefined;
+}
+
+export interface SuggestionGetTriggersOutput_BenefitTextEntry {
+  key: string;
+  value: string;
 }
 
 export interface MailRelayHeader {

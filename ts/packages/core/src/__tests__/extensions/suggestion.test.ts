@@ -94,4 +94,93 @@ describe("suggestion extension", () => {
   it("exposes the extension-relative function name", () => {
     expect(SuggestionFunctionNames.getTriggers).toBe("metadata.getTriggers");
   });
+  it("accepts and trims optional benefit text without changing omitted metadata", () => {
+    expect(
+      GetSuggestionTriggersOutputSchema.parse({ triggers, benefitText: { ko: " 알림을 받아요. " } })
+    ).toEqual({ triggers, benefitText: { ko: "알림을 받아요." } });
+    expect(GetSuggestionTriggersOutputSchema.parse({ triggers, benefitText: {} })).toEqual({
+      triggers,
+      benefitText: {},
+    });
+    expect(() =>
+      GetSuggestionTriggersOutputSchema.parse({ triggers, benefitText: null })
+    ).toThrow();
+  });
+
+  it("counts Unicode code points, including surrounding whitespace, for benefit text", () => {
+    expect(() =>
+      GetSuggestionTriggersOutputSchema.parse({ triggers, benefitText: { en: "😀".repeat(120) } })
+    ).not.toThrow();
+    for (const text of ["a".repeat(121), "😀".repeat(121), ` ${"a".repeat(120)}`]) {
+      expect(() =>
+        GetSuggestionTriggersOutputSchema.parse({ triggers, benefitText: { en: text } })
+      ).toThrow();
+    }
+  });
+
+  it.each([
+    "",
+    "   ",
+    "\nhello",
+    "hello\t",
+    "hello\u0000",
+    "hello\u2028world",
+    "hello\u2029world",
+    "<b>hello</b>",
+    "[hello](url)",
+    "`code`",
+    "**bold**",
+    "__bold__",
+    "https://example.com",
+    "WWW.example.com",
+  ])("rejects invalid benefit text %j", (text) => {
+    expect(() =>
+      GetSuggestionTriggersOutputSchema.parse({ triggers, benefitText: { en: text } })
+    ).toThrow();
+  });
+
+  it("validates benefit locale syntax and bounds the locale catalog", () => {
+    expect(() =>
+      GetSuggestionTriggersOutputSchema.parse({ triggers, benefitText: { "en-US-u": "hello" } })
+    ).toThrow();
+    const benefitText = Object.fromEntries(
+      Array.from({ length: 20 }, (_, i) => [`x-${i}`, "hello"])
+    );
+    expect(() => GetSuggestionTriggersOutputSchema.parse({ triggers, benefitText })).not.toThrow();
+    expect(() =>
+      GetSuggestionTriggersOutputSchema.parse({
+        triggers,
+        benefitText: { ...benefitText, ko: "안녕하세요" },
+      })
+    ).toThrow();
+  });
+
+  it("serves static and async metadata through the registered function", async () => {
+    const metadata = { triggers, benefitText: { en: "you can receive notifications." } };
+    for (const provider of [metadata, async () => metadata, async () => triggers]) {
+      const registered = registerExtension(createSuggestionExtensionV1(provider));
+      await expect(
+        registered.functions[0]?.handler(
+          { caller: { id: "manager-1" }, channel: { id: "channel-1" }, app: { id: "app-1" } },
+          {}
+        )
+      ).resolves.toEqual(
+        typeof provider === "function" && !("triggers" in (await provider()))
+          ? { triggers }
+          : metadata
+      );
+    }
+  });
+
+  it("rejects invalid metadata returned by a provider", async () => {
+    const registered = registerExtension(
+      createSuggestionExtensionV1(async () => ({ triggers, benefitText: { en: "**bold**" } }))
+    );
+    await expect(
+      registered.functions[0]?.handler(
+        { caller: { id: "manager-1" }, channel: { id: "channel-1" }, app: { id: "app-1" } },
+        {}
+      )
+    ).rejects.toThrow();
+  });
 });

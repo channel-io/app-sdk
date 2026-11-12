@@ -775,6 +775,8 @@ message SuggestionGetTriggersInput {}
 
 message SuggestionGetTriggersOutput {
   SuggestionTriggers triggers = 1;
+  // Optional localized benefit clause; the platform supplies installation framing.
+  map<string, string> benefit_text = 2;
 }
 
 message MailRelayHeader {
