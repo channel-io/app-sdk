@@ -65,11 +65,16 @@ func NewTriggers(urls []string, keywords map[string][]string) (*Triggers, error)
 }
 
 func StaticTriggers(triggers *Triggers) appsdk.TypedHandlerFunc[GetTriggersRequest, GetTriggersResponse] {
+	return StaticMetadata(&GetTriggersResponse{Triggers: triggers})
+}
+
+// StaticMetadata returns triggers and optional localized benefit text during registration.
+func StaticMetadata(response *GetTriggersResponse) appsdk.TypedHandlerFunc[GetTriggersRequest, GetTriggersResponse] {
 	return func(context.Context, appsdk.Context, *GetTriggersRequest) (*GetTriggersResponse, error) {
-		if triggers == nil {
+		if response == nil || response.Triggers == nil {
 			return nil, errors.New("suggestion triggers are required")
 		}
-		return &GetTriggersResponse{Triggers: triggers}, nil
+		return response, nil
 	}
 }
 
@@ -82,6 +87,15 @@ func (r *getTriggersResult) MarshalSDKResult() (json.RawMessage, error) {
 	data, err := (protojson.MarshalOptions{EmitUnpopulated: true}).Marshal(r.response)
 	if err != nil {
 		return nil, err
+	}
+	if len(r.response.GetBenefitText()) == 0 {
+		// Keep legacy payloads compatible with servers that do not yet accept benefitText.
+		var fields map[string]json.RawMessage
+		if err := json.Unmarshal(data, &fields); err != nil {
+			return nil, err
+		}
+		delete(fields, "benefitText")
+		return json.Marshal(fields)
 	}
 	return data, nil
 }
