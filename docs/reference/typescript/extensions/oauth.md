@@ -15,19 +15,25 @@ Implement these function names:
 
 Opt in with `connectionConfig: { mode: "resolved", configBinding: { scope: "channel", fieldKeys: ["subdomain"] } }` in `getAuthConfig`. Static applications may omit `connectionConfig` and keep their existing URLs. Resolved applications may omit registration-time authorization and token URLs, but must implement `connection.resolveAuthConfig` (Go: `ResolveAuthConfig`).
 
+Add this method to your existing `@Extension({ name: "oauth", systemVersion: "v1" })` class. Import the decorators, `Context`, and resolver schemas/types from `@channel.io/app-sdk-core`.
+
 ```typescript
-connection: {
-  resolveAuthConfig: async (_input, ctx) => {
-    const subdomain = String(ctx.config?.subdomain ?? "");
-    if (!/^[a-z0-9][a-z0-9-]*$/.test(subdomain)) {
-      throw new Error("Invalid subdomain");
-    }
-    return {
-      authorizationUrl: `https://${subdomain}.zendesk.com/oauth/authorizations/new`,
-      tokenUrl: `https://${subdomain}.zendesk.com/oauth/tokens`,
-    };
-  },
-},
+@Func("connection.resolveAuthConfig")
+@InputSchema(ResolveAuthConfigInputSchema)
+@OutputSchema(ResolveAuthConfigOutputSchema)
+async resolveAuthConfig(
+  ctx: Context,
+  _params: ResolveAuthConfigInput,
+): Promise<ResolveAuthConfigOutput> {
+  const subdomain = String(ctx.config?.subdomain ?? "");
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(subdomain)) {
+    throw new Error("Invalid subdomain");
+  }
+  return {
+    authorizationUrl: `https://${subdomain}.zendesk.com/oauth/authorizations/new`,
+    tokenUrl: `https://${subdomain}.zendesk.com/oauth/tokens`,
+  };
+}
 ```
 
 The resolver input is `attemptId`, `targetAuthScope`, `requestedOAuthKey`, and `configTarget: { scope, key, revision }`. `ctx.config` contains only the selected saved non-secret fields. `revision` is a hash of those selected values. The result requires `authorizationUrl` and `tokenUrl`; `refreshTokenUrl`, `scopes`, and `additionalParams` are optional. Omitted scopes inherit registered scopes, while an empty array requests none. Scopes cannot exceed the registered set; reserved OAuth parameters cannot be returned. App Store requires public HTTPS endpoints and validates the token destination before sending credentials.
