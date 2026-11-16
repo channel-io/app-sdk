@@ -15,7 +15,7 @@ Implement these function names:
 
 Opt in with `connectionConfig: { mode: "resolved", configBinding: { scope: "channel", fieldKeys: ["subdomain"] } }` in `getAuthConfig`. Static applications may omit `connectionConfig` and keep their existing URLs. Resolved applications may omit registration-time authorization and token URLs, but must implement `connection.resolveAuthConfig` (Go: `ResolveAuthConfig`).
 
-Add this method to your existing `@Extension({ name: "oauth", systemVersion: "v1" })` class. Import the decorators, `Context`, and resolver schemas/types from `@channel.io/app-sdk-core`.
+Add this method to your existing `@Extension({ name: "oauth", systemVersion: "v1" })` class. Import `Func`, `InputSchema`, and `OutputSchema` from `@channel.io/app-sdk-server`. Import `Context` and the resolver schemas/types from `@channel.io/app-sdk-core`.
 
 ```typescript
 @Func("connection.resolveAuthConfig")
