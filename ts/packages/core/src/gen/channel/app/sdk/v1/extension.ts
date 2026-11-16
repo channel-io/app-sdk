@@ -537,6 +537,45 @@ export interface OAuthConfig {
     | undefined;
   /** Caller scope only: use channel credentials when the manager has none. Defaults to true. */
   allowChannelFallback?: boolean | undefined;
+  connectionConfig?: OAuthConnectionConfig | undefined;
+  supportsMultiple?: boolean | undefined;
+  keyResolverFunctionName?: string | undefined;
+}
+
+export interface OAuthConfigBinding {
+  scope?: string | undefined;
+  fieldKeys?: string[] | undefined;
+}
+
+export interface OAuthConnectionConfig {
+  mode?: string | undefined;
+  configBinding?: OAuthConfigBinding | undefined;
+}
+
+export interface OAuthConfigTarget {
+  scope?: string | undefined;
+  key?: string | undefined;
+  revision?: string | undefined;
+}
+
+export interface OAuthResolveAuthConfigInput {
+  attemptId?: string | undefined;
+  targetAuthScope?: string | undefined;
+  requestedOAuthKey?: string | undefined;
+  configTarget?: OAuthConfigTarget | undefined;
+}
+
+export interface OAuthResolveAuthConfigOutput {
+  authorizationUrl?: string | undefined;
+  tokenUrl?: string | undefined;
+  refreshTokenUrl?: string | undefined;
+  scopes?: string[] | undefined;
+  additionalParams?: { [key: string]: string } | undefined;
+}
+
+export interface OAuthResolveAuthConfigOutput_AdditionalParamsEntry {
+  key: string;
+  value: string;
 }
 
 export interface OAuthCredentialValidationInput {

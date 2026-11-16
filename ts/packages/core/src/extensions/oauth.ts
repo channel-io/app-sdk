@@ -1,6 +1,11 @@
 import { z } from "zod";
 import type {
   OAuthConfig as ProtoOAuthConfig,
+  OAuthConnectionConfig as ProtoOAuthConnectionConfig,
+  OAuthConfigBinding as ProtoOAuthConfigBinding,
+  OAuthConfigTarget as ProtoOAuthConfigTarget,
+  OAuthResolveAuthConfigInput as ProtoResolveAuthConfigInput,
+  OAuthResolveAuthConfigOutput as ProtoResolveAuthConfigOutput,
   OAuthStepDisplay as ProtoOAuthStepDisplay,
   OAuthStepLocalizedText as ProtoOAuthStepLocalizedText,
   OAuthFlowStep as ProtoOAuthFlowStep,
@@ -255,20 +260,107 @@ export type OAuthProvider = ProtoBacked<
   }
 >;
 
+/** Saved non-secret Config fields used to resolve one connection. */
+export const OAuthConfigBindingSchema = z.object({
+  scope: z.enum(["channel", "manager"]),
+  fieldKeys: z
+    .array(z.string().min(1))
+    .min(1)
+    .refine((keys) => new Set(keys).size === keys.length, "Duplicate Config field keys"),
+});
+export type OAuthConfigBinding = ProtoBacked<
+  z.infer<typeof OAuthConfigBindingSchema>,
+  ProtoOAuthConfigBinding
+>;
+export const OAuthConnectionConfigSchema = z.discriminatedUnion("mode", [
+  z.object({ mode: z.literal("static") }).strict(),
+  z.object({ mode: z.literal("resolved"), configBinding: OAuthConfigBindingSchema }).strict(),
+]);
+export type OAuthConnectionConfig = ProtoBacked<
+  z.infer<typeof OAuthConnectionConfigSchema>,
+  ProtoOAuthConnectionConfig
+>;
+export const OAuthConfigTargetSchema = z.object({
+  scope: z.enum(["channel", "manager"]),
+  key: z.string().min(1),
+  revision: z.string().min(1),
+});
+export type OAuthConfigTarget = ProtoBacked<
+  z.infer<typeof OAuthConfigTargetSchema>,
+  ProtoOAuthConfigTarget
+>;
+export const ResolveAuthConfigInputSchema = z.object({
+  attemptId: z.string().min(1),
+  targetAuthScope: z.enum(["channel", "manager"]),
+  requestedOAuthKey: z.string().min(1),
+  configTarget: OAuthConfigTargetSchema,
+});
+export type ResolveAuthConfigInput = ProtoBacked<
+  z.infer<typeof ResolveAuthConfigInputSchema>,
+  ProtoResolveAuthConfigInput
+>;
+export const ResolveAuthConfigOutputSchema = z
+  .object({
+    authorizationUrl: z.string().url(),
+    tokenUrl: z.string().url(),
+    refreshTokenUrl: z.string().url().optional(),
+    scopes: z.array(z.string()).optional(),
+    additionalParams: z.record(z.string()).optional(),
+  })
+  .strict();
+export type ResolveAuthConfigOutput = ProtoBacked<
+  z.infer<typeof ResolveAuthConfigOutputSchema>,
+  ProtoResolveAuthConfigOutput
+>;
+
 /**
  * Output schema for extension.oauth.metadata.getAuthConfig.
  */
-export const OAuthConfigSchema = z.object({
-  authType: z.literal("oauth"),
-  authScope: OAuthAuthScopeSchema,
-  oauthProvider: OAuthProviderSchema,
-  /** Caller scope only. Defaults to true; registered but unusable credentials never fall back. */
-  allowChannelFallback: z.boolean().optional(),
-});
+export const OAuthConfigSchema = z
+  .object({
+    authType: z.literal("oauth"),
+    authScope: OAuthAuthScopeSchema,
+    oauthProvider: OAuthProviderSchema.partial({ authorizationUrl: true, tokenUrl: true }),
+    connectionConfig: OAuthConnectionConfigSchema.optional(),
+    supportsMultiple: z.boolean().optional(),
+    keyResolverFunctionName: z.string().optional(),
+    /** Caller scope only. Defaults to true; registered but unusable credentials never fall back. */
+    allowChannelFallback: z.boolean().optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.connectionConfig?.mode !== "resolved") {
+      for (const name of ["authorizationUrl", "tokenUrl"] as const) {
+        if (!value.oauthProvider[name])
+          ctx.addIssue({
+            code: "custom",
+            path: ["oauthProvider", name],
+            message: "Required for static OAuth",
+          });
+      }
+    } else {
+      if (value.keyResolverFunctionName)
+        ctx.addIssue({
+          code: "custom",
+          path: ["keyResolverFunctionName"],
+          message: "Resolved OAuth uses the saved Config key",
+        });
+      if (value.connectionConfig.configBinding.scope === "manager" && value.authScope !== "manager")
+        ctx.addIssue({
+          code: "custom",
+          path: ["connectionConfig"],
+          message: "Manager Config requires manager OAuth",
+        });
+    }
+  });
 
 export type OAuthConfig = ProtoBacked<
   z.infer<typeof OAuthConfigSchema>,
-  Omit<ProtoOAuthConfig, "oauthProvider"> & { oauthProvider?: OAuthProvider | undefined }
+  Omit<ProtoOAuthConfig, "oauthProvider"> & {
+    oauthProvider?: Omit<OAuthProvider, "authorizationUrl" | "tokenUrl"> & {
+      authorizationUrl?: string | undefined;
+      tokenUrl?: string | undefined;
+    };
+  }
 >;
 
 /**

@@ -126,6 +126,11 @@ import type {
   NotebookPayload as ProtoNotebookPayload,
   NotebookTab as ProtoNotebookTab,
   OAuthConfig as ProtoOAuthConfig,
+  OAuthConfigBinding as ProtoOAuthConfigBinding,
+  OAuthConnectionConfig as ProtoOAuthConnectionConfig,
+  OAuthConfigTarget as ProtoOAuthConfigTarget,
+  OAuthResolveAuthConfigInput as ProtoOAuthResolveAuthConfigInput,
+  OAuthResolveAuthConfigOutput as ProtoOAuthResolveAuthConfigOutput,
   OAuthCredentialValidationInput as ProtoOAuthCredentialValidationInput,
   OAuthCredentialValidationResult as ProtoOAuthCredentialValidationResult,
   OAuthProvider as ProtoOAuthProvider,
@@ -809,6 +814,30 @@ export type ExtensionProtoSchemaContracts = [
   >,
 
   Expect<
+    SchemaOutputExtendsProto<typeof OAuthSchemas.OAuthConfigBindingSchema, ProtoOAuthConfigBinding>
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof OAuthSchemas.OAuthConnectionConfigSchema,
+      ProtoOAuthConnectionConfig
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<typeof OAuthSchemas.OAuthConfigTargetSchema, ProtoOAuthConfigTarget>
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof OAuthSchemas.ResolveAuthConfigInputSchema,
+      ProtoOAuthResolveAuthConfigInput
+    >
+  >,
+  Expect<
+    SchemaOutputExtendsProto<
+      typeof OAuthSchemas.ResolveAuthConfigOutputSchema,
+      ProtoOAuthResolveAuthConfigOutput
+    >
+  >,
+  Expect<
     SchemaOutputExtendsProto<
       typeof OAuthSchemas.OAuthProviderSchema,
       Omit<ProtoOAuthProvider, "additionalParams" | "scopedAdditionalParams"> & {
@@ -832,7 +861,10 @@ export type ExtensionProtoSchemaContracts = [
     SchemaOutputExtendsProto<
       typeof OAuthSchemas.OAuthConfigSchema,
       Omit<ProtoOAuthConfig, "oauthProvider"> & {
-        oauthProvider?: OAuthSchemas.OAuthProvider | undefined;
+        oauthProvider?: Omit<OAuthSchemas.OAuthProvider, "authorizationUrl" | "tokenUrl"> & {
+          authorizationUrl?: string | undefined;
+          tokenUrl?: string | undefined;
+        };
       }
     >
   >,

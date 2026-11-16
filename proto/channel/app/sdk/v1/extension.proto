@@ -440,6 +440,40 @@ message OAuthConfig {
   OAuthProvider oauth_provider = 3;
   // Caller scope only: use channel credentials when the manager has none. Defaults to true.
   optional bool allow_channel_fallback = 4;
+  OAuthConnectionConfig connection_config = 5;
+  bool supports_multiple = 6;
+  string key_resolver_function_name = 7;
+}
+
+message OAuthConfigBinding {
+  string scope = 1;
+  repeated string field_keys = 2;
+}
+
+message OAuthConnectionConfig {
+  string mode = 1;
+  OAuthConfigBinding config_binding = 2;
+}
+
+message OAuthConfigTarget {
+  string scope = 1;
+  string key = 2;
+  string revision = 3;
+}
+
+message OAuthResolveAuthConfigInput {
+  string attempt_id = 1;
+  string target_auth_scope = 2;
+  string requested_o_auth_key = 3 [json_name = "requestedOAuthKey"];
+  OAuthConfigTarget config_target = 4;
+}
+
+message OAuthResolveAuthConfigOutput {
+  string authorization_url = 1;
+  string token_url = 2;
+  optional string refresh_token_url = 3;
+  repeated string scopes = 4;
+  map<string, string> additional_params = 5;
 }
 
 message OAuthCredentialValidationInput {

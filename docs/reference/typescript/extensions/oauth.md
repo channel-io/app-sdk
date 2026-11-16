@@ -284,13 +284,13 @@ const display: OAuthStepDisplay = {
 
 `OAuthStepIconSchema.options` lists all supported values for autocomplete and validation:
 
-| Icon | Use | App Store Bezier icon |
-| --- | --- | --- |
-| `installation` | Install or add an app | `DownloadIcon` |
-| `account` | Authorize an account | `PersonIcon` |
-| `organization` | Choose an organization | `GroupIcon` |
-| `permission` | Review access | `LockIcon` |
-| `settings` | Complete configuration | `SettingsIcon` |
+| Icon           | Use                    | App Store Bezier icon |
+| -------------- | ---------------------- | --------------------- |
+| `installation` | Install or add an app  | `DownloadIcon`        |
+| `account`      | Authorize an account   | `PersonIcon`          |
+| `organization` | Choose an organization | `GroupIcon`           |
+| `permission`   | Review access          | `LockIcon`            |
+| `settings`     | Complete configuration | `SettingsIcon`        |
 
 Omit the icon to use the platform's default. URLs, SVGs and colors are unsupported. Titles are required (up to 80 characters); descriptions allow up to 300. Translations support ko/en/ja and reuse the provider locale fallback. All values render as plain text.
 
@@ -304,3 +304,66 @@ return { type: "continue", detail: "example-organization" };
 `detail` is optional and limited to 200 characters. Never include credentials, URLs, or raw errors. Only the validated `continue` action completes the hook. A redirect result leaves it in progress.
 
 `OAuthFlowStepSchema` describes platform-owned progress in the optional `steps` response field. The fixed IDs are `before`, `oauth`, `after`; statuses are `pending`, `in_progress`, `completed`, `failed`, `unknown`. These are display records, not an app-declared execution plan. Native flow requests accept optional `language`. Cancel/expiry retain completed records. Old credentials without hook history do not require reauthorization. OAuth credentials remain usable if the after hook fails.
+
+## Resolve endpoints from saved Config
+
+Unreleased opt-in contract: deploy AppStore support before registering an app that uses it.
+
+```typescript
+const config = {
+  authType: "oauth",
+  authScope: "channel",
+  supportsMultiple: true,
+  oauthProvider: {
+    provider: "zendesk",
+    providerName: "Zendesk",
+    scopes: ["read"],
+  },
+  connectionConfig: {
+    mode: "resolved",
+    configBinding: { scope: "channel", fieldKeys: ["subdomain"] },
+  },
+} satisfies OAuthConfig;
+```
+
+Register `extension.oauth.connection.resolveAuthConfig` with
+`ResolveAuthConfigInputSchema` and `ResolveAuthConfigOutputSchema` from core. Go
+apps use `oauth.Extension().ResolveAuthConfig(handler)` and the corresponding
+`oauth.ResolveAuthConfigInput` / `oauth.ResolveAuthConfigOutput` aliases.
+
+The input contains `attemptId`, concrete `targetAuthScope`, `requestedOAuthKey`,
+and `configTarget: { scope, key, revision }`. `ctx.config` contains only the saved
+non-secret fields listed in `fieldKeys`. Validate a subdomain before interpolating
+it into a URL; never accept a complete arbitrary hostname from that field.
+
+Return required `authorizationUrl` and `tokenUrl`, plus optional
+`refreshTokenUrl`, `scopes`, and string-valued `additionalParams`. URLs must use
+public HTTPS destinations. Scopes can only narrow the registered scopes. The
+platform owns state, client credentials, callback URL and PKCE. Resolver failure
+stops authorization; it does not fall back to a static URL.
+
+Config and OAuth must agree on `supportsMultiple`. Each saved Config key is the
+OAuth key: `store-a` and `store-b` retain independent tokens and endpoint
+snapshots. Resolved mode does not support a post-authorization
+`keyResolverFunctionName`. Manager Config requires manager OAuth; channel Config
+can supply inputs to channel or manager OAuth. Every bound field must have a
+saved nonempty value and cannot be secret, transient, or credential-class.
+
+The standard Config UI displays bound fields before authentication, saves the
+prerequisites, then connects using the saved key. A binding does not automatically
+send fields to the provider: existing `Config.oauth.additionalParams` mappings
+remain separate. Resolver additional parameters override incoming parameters;
+existing authorization-query/default/scope-specific precedence still applies.
+
+AppStore captures the resolved URLs, selected Config values and client ID in the
+OAuth state, then copies them to the credential. Callback validation receives the
+captured Config; refresh uses the captured URL without calling the resolver.
+Changing client ID requires reconnecting; client secrets remain managed by the
+existing credential path. Existing static connections need reconnecting when an
+app opts into resolved mode.
+
+Config edits affect the next connection attempt. Normal app calls still read
+current Config; this feature does not notify apps of edits or reconcile existing
+connections. Apps that allow changing tenant identity must handle that reconnect
+UX. Multiple brands within one Zendesk account can be collection settings under
+one Config/OAuth key.

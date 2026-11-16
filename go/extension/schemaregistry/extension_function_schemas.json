@@ -24251,6 +24251,98 @@
     }
   },
   {
+    "name": "extension.oauth.connection.resolveAuthConfig",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "attemptId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "targetAuthScope": {
+          "type": "string",
+          "enum": [
+            "channel",
+            "manager"
+          ]
+        },
+        "requestedOAuthKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "configTarget": {
+          "type": "object",
+          "properties": {
+            "scope": {
+              "type": "string",
+              "enum": [
+                "channel",
+                "manager"
+              ]
+            },
+            "key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "revision": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "scope",
+            "key",
+            "revision"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "attemptId",
+        "targetAuthScope",
+        "requestedOAuthKey",
+        "configTarget"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "authorizationUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "tokenUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "refreshTokenUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "additionalParams": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "authorizationUrl",
+        "tokenUrl"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  },
+  {
     "name": "extension.oauth.metadata.getAuthConfig",
     "inputSchema": {
       "type": "object",
@@ -24504,12 +24596,72 @@
           },
           "required": [
             "provider",
-            "authorizationUrl",
-            "tokenUrl",
             "scopes",
             "providerName"
           ],
           "additionalProperties": false
+        },
+        "connectionConfig": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "static"
+                }
+              },
+              "required": [
+                "mode"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "resolved"
+                },
+                "configBinding": {
+                  "type": "object",
+                  "properties": {
+                    "scope": {
+                      "type": "string",
+                      "enum": [
+                        "channel",
+                        "manager"
+                      ]
+                    },
+                    "fieldKeys": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "required": [
+                    "scope",
+                    "fieldKeys"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "mode",
+                "configBinding"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "supportsMultiple": {
+          "type": "boolean"
+        },
+        "keyResolverFunctionName": {
+          "type": "string"
         },
         "allowChannelFallback": {
           "type": "boolean"

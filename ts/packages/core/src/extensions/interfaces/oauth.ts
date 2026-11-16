@@ -1,5 +1,7 @@
 import type {
   OAuthConfig,
+  ResolveAuthConfigInput,
+  ResolveAuthConfigOutput,
   CredentialValidationInput,
   CredentialValidationResult,
 } from "../oauth.js";
@@ -55,6 +57,12 @@ export interface OAuthExtensionInterface {
    */
   getAuthConfig(ctx: Context): Promise<OAuthConfig>;
 
+  /** Resolve saved Config immediately before authorization; required in resolved mode. */
+  resolveAuthConfig?(
+    ctx: Context,
+    params: ResolveAuthConfigInput
+  ): Promise<ResolveAuthConfigOutput>;
+
   /**
    * Validate an OAuth credential (access token)
    *
@@ -75,5 +83,6 @@ export interface OAuthExtensionInterface {
  */
 export const OAuthFunctionNames = {
   getAuthConfig: "metadata.getAuthConfig",
+  resolveAuthConfig: "connection.resolveAuthConfig",
   validateCredentials: "validation.validateCredentials",
 } as const;

@@ -16,6 +16,7 @@ const (
 	ExtensionName = "oauth"
 	SystemVersion = "v1"
 
+	FunctionResolveAuthConfig   = "extension.oauth.connection.resolveAuthConfig"
 	FunctionGetAuthConfig       = "extension.oauth.metadata.getAuthConfig"
 	FunctionValidateCredentials = "extension.oauth.validation.validateCredentials"
 
@@ -55,6 +56,11 @@ func (b *ExtensionBuilder) GetAuthConfig(handler appsdk.TypedHandlerFunc[GetAuth
 	})
 	// Restore canonical input/output schemas after HandleProtoInput supplies its inferred input.
 	b.base.Func(FunctionGetAuthConfig, append([]appsdk.FunctionOption{handlerOption}, schemaregistry.FunctionOptions(FunctionGetAuthConfig)...)...)
+	return b
+}
+
+func (b *ExtensionBuilder) ResolveAuthConfig(handler appsdk.TypedHandlerFunc[ResolveAuthConfigInput, ResolveAuthConfigOutput]) *ExtensionBuilder {
+	b.base.Func(FunctionResolveAuthConfig, schemaregistry.Append(FunctionResolveAuthConfig, appsdk.HandleProto(handler))...)
 	return b
 }
 
@@ -167,3 +173,9 @@ func marshalAuthConfig(config *AuthConfig) (json.RawMessage, error) {
 	}
 	return json.Marshal(wire)
 }
+
+type ConnectionConfig = sdkv1.OAuthConnectionConfig
+type ConfigBinding = sdkv1.OAuthConfigBinding
+type ConfigTarget = sdkv1.OAuthConfigTarget
+type ResolveAuthConfigInput = sdkv1.OAuthResolveAuthConfigInput
+type ResolveAuthConfigOutput = sdkv1.OAuthResolveAuthConfigOutput
