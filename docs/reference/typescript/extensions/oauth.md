@@ -11,6 +11,35 @@ Implement these function names:
 
 `validateCredentials` is the contract AppStore expects for extension-based OAuth.
 
+## Resolve URLs from saved Config
+
+Opt in with `connectionConfig: { mode: "resolved", configBinding: { scope: "channel", fieldKeys: ["subdomain"] } }` in `getAuthConfig`. Static applications may omit `connectionConfig` and keep their existing URLs. Resolved applications may omit registration-time authorization and token URLs, but must implement `connection.resolveAuthConfig` (Go: `ResolveAuthConfig`).
+
+```typescript
+connection: {
+  resolveAuthConfig: async (_input, ctx) => {
+    const subdomain = String(ctx.config?.subdomain ?? "");
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(subdomain)) {
+      throw new Error("Invalid subdomain");
+    }
+    return {
+      authorizationUrl: `https://${subdomain}.zendesk.com/oauth/authorizations/new`,
+      tokenUrl: `https://${subdomain}.zendesk.com/oauth/tokens`,
+    };
+  },
+},
+```
+
+The resolver input is `attemptId`, `targetAuthScope`, `requestedOAuthKey`, and `configTarget: { scope, key, revision }`. `ctx.config` contains only the selected saved non-secret fields. `revision` is a hash of those selected values. The result requires `authorizationUrl` and `tokenUrl`; `refreshTokenUrl`, `scopes`, and `additionalParams` are optional. Omitted scopes inherit registered scopes, while an empty array requests none. Scopes cannot exceed the registered set; reserved OAuth parameters cannot be returned. App Store requires public HTTPS endpoints and validates the token destination before sending credentials.
+
+The standard settings UI reuses the existing additional-params input and save-before-connect flow. Saving or validating the whole Config must succeed before authorization. Binding fields are not automatically provider query parameters; declare `Config.oauth.additionalParams` separately when needed.
+
+App Store captures Config values and resolved endpoints in the authorization state and retains them with the credential after callback. Callback, credential validation, and token refresh use that snapshot. Editing Config affects the next authorization, not an existing connection. Ordinary app calls still read current Config; applications must keep their resource targets consistent with the connected account.
+
+This initial contract supports one default Config and OAuth connection. Manager Config requires manager OAuth; channel Config may back either concrete OAuth scope. Multiple Config/OAuth declarations and post-authentication key resolvers are unsupported in resolved mode. Keys remain strings in the contract: future multi support can map each Config key to the same OAuth key and reuse this resolver and per-credential snapshot. Connection selection/management and per-connection collection remain future work. Several brands within one domain need not imply separate OAuth connections.
+
+Deploy the App Store migration/server/WAM support before enabling resolved applications with this SDK. Existing static connections require reauthorization when switched to resolved mode so a snapshot can be created. Secrets and tokens are never part of the Config snapshot.
+
 ## Registration
 
 Registration is still the generic extension flow:
@@ -284,13 +313,13 @@ const display: OAuthStepDisplay = {
 
 `OAuthStepIconSchema.options` lists all supported values for autocomplete and validation:
 
-| Icon | Use | App Store Bezier icon |
-| --- | --- | --- |
-| `installation` | Install or add an app | `DownloadIcon` |
-| `account` | Authorize an account | `PersonIcon` |
-| `organization` | Choose an organization | `GroupIcon` |
-| `permission` | Review access | `LockIcon` |
-| `settings` | Complete configuration | `SettingsIcon` |
+| Icon           | Use                    | App Store Bezier icon |
+| -------------- | ---------------------- | --------------------- |
+| `installation` | Install or add an app  | `DownloadIcon`        |
+| `account`      | Authorize an account   | `PersonIcon`          |
+| `organization` | Choose an organization | `GroupIcon`           |
+| `permission`   | Review access          | `LockIcon`            |
+| `settings`     | Complete configuration | `SettingsIcon`        |
 
 Omit the icon to use the platform's default. URLs, SVGs and colors are unsupported. Titles are required (up to 80 characters); descriptions allow up to 300. Translations support ko/en/ja and reuse the provider locale fallback. All values render as plain text.
 

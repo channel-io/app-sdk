@@ -29,9 +29,7 @@ describe("OAuth flow hook exported types", () => {
       OAuthExtensionInterface,
       "getAuthConfig" | "validateCredentials"
     >;
-    const unchanged: keyof OAuthExtensionInterface extends keyof ExistingOAuthMethods
-      ? true
-      : false = true;
+    const unchanged: ExistingOAuthMethods extends OAuthExtensionInterface ? true : false = true;
     void input;
     void proceed;
     void redirect;

@@ -167,6 +167,11 @@ import {
   MessagingWritingTypeStateSchema,
   NameDescI18nSchema,
   OAuthConfigSchema,
+  OAuthConfigBindingSchema,
+  OAuthConnectionConfigSchema,
+  OAuthConfigTargetSchema,
+  ResolveAuthConfigInputSchema,
+  ResolveAuthConfigOutputSchema,
   OAuthProviderLocalizedTextSchema,
   OAuthProviderSchema,
   OAuthScopedParamValueSchema,
@@ -509,6 +514,26 @@ const contracts: Contract[] = [
   ),
   // The JSON projection folds this additive binary field into additionalParams.
   // Its value shape is checked below; runtime projection is covered in Go OAuth tests.
+  contract("OAuthConfigBinding", OAuthConfigBindingSchema, "extension", "OAuthConfigBinding"),
+  contract(
+    "OAuthConnectionConfig",
+    OAuthConnectionConfigSchema,
+    "extension",
+    "OAuthConnectionConfig"
+  ),
+  contract("OAuthConfigTarget", OAuthConfigTargetSchema, "extension", "OAuthConfigTarget"),
+  contract(
+    "OAuthResolveAuthConfigInput",
+    ResolveAuthConfigInputSchema,
+    "extension",
+    "OAuthResolveAuthConfigInput"
+  ),
+  contract(
+    "OAuthResolveAuthConfigOutput",
+    ResolveAuthConfigOutputSchema,
+    "extension",
+    "OAuthResolveAuthConfigOutput"
+  ),
   contract("OAuthProvider", OAuthProviderSchema, "extension", "OAuthProvider", [
     "scopedAdditionalParams",
   ]),

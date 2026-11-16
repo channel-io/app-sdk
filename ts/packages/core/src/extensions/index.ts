@@ -701,3 +701,16 @@ export {
   type OAuthFlowStep,
 } from "./oauth.js";
 export * from "./issue.js";
+
+export {
+  OAuthConfigBindingSchema,
+  OAuthConnectionConfigSchema,
+  OAuthConfigTargetSchema,
+  ResolveAuthConfigInputSchema,
+  ResolveAuthConfigOutputSchema,
+  type OAuthConfigBinding,
+  type OAuthConnectionConfig,
+  type OAuthConfigTarget,
+  type ResolveAuthConfigInput,
+  type ResolveAuthConfigOutput,
+} from "./oauth.js";

@@ -16,6 +16,7 @@ const (
 	ExtensionName = "oauth"
 	SystemVersion = "v1"
 
+	FunctionResolveAuthConfig   = "extension.oauth.connection.resolveAuthConfig"
 	FunctionGetAuthConfig       = "extension.oauth.metadata.getAuthConfig"
 	FunctionValidateCredentials = "extension.oauth.validation.validateCredentials"
 
@@ -56,6 +57,36 @@ func (b *ExtensionBuilder) GetAuthConfig(handler appsdk.TypedHandlerFunc[GetAuth
 	// Restore canonical input/output schemas after HandleProtoInput supplies its inferred input.
 	b.base.Func(FunctionGetAuthConfig, append([]appsdk.FunctionOption{handlerOption}, schemaregistry.FunctionOptions(FunctionGetAuthConfig)...)...)
 	return b
+}
+
+func (b *ExtensionBuilder) ResolveAuthConfig(handler appsdk.TypedHandlerFunc[ResolveAuthConfigInput, ResolveAuthConfigOutput]) *ExtensionBuilder {
+	handlerOption := appsdk.HandleProtoInput(func(ctx context.Context, fnCtx appsdk.Context, input *ResolveAuthConfigInput) (any, error) {
+		result, err := handler(ctx, fnCtx, input)
+		if err != nil {
+			return nil, err
+		}
+		return marshalResolvedAuthConfig(result)
+	})
+	b.base.Func(FunctionResolveAuthConfig, append([]appsdk.FunctionOption{handlerOption}, schemaregistry.FunctionOptions(FunctionResolveAuthConfig)...)...)
+	return b
+}
+
+// Omitted scopes inherit registered scopes; an explicit empty slice requests none.
+// Proto JSON omits both, so preserve the resolver handler's choice at this boundary.
+func marshalResolvedAuthConfig(result *ResolveAuthConfigOutput) (json.RawMessage, error) {
+	if result == nil {
+		return json.RawMessage(`{}`), nil
+	}
+	encoded, err := protojson.Marshal(result)
+	if err != nil || result.Scopes == nil || len(result.Scopes) > 0 {
+		return encoded, err
+	}
+	var wire map[string]json.RawMessage
+	if err := json.Unmarshal(encoded, &wire); err != nil {
+		return nil, err
+	}
+	wire["scopes"] = json.RawMessage(`[]`)
+	return json.Marshal(wire)
 }
 
 func (b *ExtensionBuilder) ValidateCredentials(handler appsdk.TypedHandlerFunc[CredentialValidationInput, CredentialValidationResult]) *ExtensionBuilder {
@@ -167,3 +198,9 @@ func marshalAuthConfig(config *AuthConfig) (json.RawMessage, error) {
 	}
 	return json.Marshal(wire)
 }
+
+type ConnectionConfig = sdkv1.OAuthConnectionConfig
+type ConfigBinding = sdkv1.OAuthConfigBinding
+type ConfigTarget = sdkv1.OAuthConfigTarget
+type ResolveAuthConfigInput = sdkv1.OAuthResolveAuthConfigInput
+type ResolveAuthConfigOutput = sdkv1.OAuthResolveAuthConfigOutput

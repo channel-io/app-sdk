@@ -112,6 +112,7 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 		GetNotebooks(zero[notebook.GetNotebooksRequest, notebook.GetNotebooksResponse]()))
 
 	use(t, app, oauth.Extension().
+		ResolveAuthConfig(zero[oauth.ResolveAuthConfigInput, oauth.ResolveAuthConfigOutput]()).
 		GetAuthConfig(zero[oauth.GetAuthConfigRequest, oauth.AuthConfig]()).
 		ValidateCredentials(zero[oauth.CredentialValidationInput, oauth.CredentialValidationResult]()))
 
@@ -165,8 +166,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	got := app.Schemas()
 	want := schemaregistry.Schemas()
 
-	if len(got) != 91 {
-		t.Fatalf("expected 91 registered extension function schemas, got %d", len(got))
+	if len(got) != 92 {
+		t.Fatalf("expected 92 registered extension function schemas, got %d", len(got))
 	}
 	if !reflect.DeepEqual(got, want) {
 		for i := range got {
