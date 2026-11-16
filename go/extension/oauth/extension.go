@@ -60,8 +60,33 @@ func (b *ExtensionBuilder) GetAuthConfig(handler appsdk.TypedHandlerFunc[GetAuth
 }
 
 func (b *ExtensionBuilder) ResolveAuthConfig(handler appsdk.TypedHandlerFunc[ResolveAuthConfigInput, ResolveAuthConfigOutput]) *ExtensionBuilder {
-	b.base.Func(FunctionResolveAuthConfig, schemaregistry.Append(FunctionResolveAuthConfig, appsdk.HandleProto(handler))...)
+	handlerOption := appsdk.HandleProtoInput(func(ctx context.Context, fnCtx appsdk.Context, input *ResolveAuthConfigInput) (any, error) {
+		result, err := handler(ctx, fnCtx, input)
+		if err != nil {
+			return nil, err
+		}
+		return marshalResolvedAuthConfig(result)
+	})
+	b.base.Func(FunctionResolveAuthConfig, append([]appsdk.FunctionOption{handlerOption}, schemaregistry.FunctionOptions(FunctionResolveAuthConfig)...)...)
 	return b
+}
+
+// Omitted scopes inherit registered scopes; an explicit empty slice requests none.
+// Proto JSON omits both, so preserve the resolver handler's choice at this boundary.
+func marshalResolvedAuthConfig(result *ResolveAuthConfigOutput) (json.RawMessage, error) {
+	if result == nil {
+		return json.RawMessage(`{}`), nil
+	}
+	encoded, err := protojson.Marshal(result)
+	if err != nil || result.Scopes == nil || len(result.Scopes) > 0 {
+		return encoded, err
+	}
+	var wire map[string]json.RawMessage
+	if err := json.Unmarshal(encoded, &wire); err != nil {
+		return nil, err
+	}
+	wire["scopes"] = json.RawMessage(`[]`)
+	return json.Marshal(wire)
 }
 
 func (b *ExtensionBuilder) ValidateCredentials(handler appsdk.TypedHandlerFunc[CredentialValidationInput, CredentialValidationResult]) *ExtensionBuilder {

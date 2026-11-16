@@ -338,7 +338,9 @@ it into a URL; never accept a complete arbitrary hostname from that field.
 
 Return required `authorizationUrl` and `tokenUrl`, plus optional
 `refreshTokenUrl`, `scopes`, and string-valued `additionalParams`. URLs must use
-public HTTPS destinations. Scopes can only narrow the registered scopes. The
+public HTTPS destinations. Scopes can only narrow the registered scopes. Omit
+`scopes` to inherit them; return `[]` to request none. Go handlers use a nil
+`Scopes` slice to inherit and a non-nil empty slice to request none. The
 platform owns state, client credentials, callback URL and PKCE. Resolver failure
 stops authorization; it does not fall back to a static URL.
 
