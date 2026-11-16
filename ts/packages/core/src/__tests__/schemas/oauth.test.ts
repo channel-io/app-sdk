@@ -209,23 +209,19 @@ describe("resolved OAuth connection metadata", () => {
   const config = {
     authType: "oauth",
     authScope: "channel",
-    supportsMultiple: true,
     oauthProvider: { provider: "zendesk", providerName: "Zendesk", scopes: ["read"] },
     connectionConfig: {
       mode: "resolved",
       configBinding: { scope: "channel", fieldKeys: ["subdomain"] },
     },
   };
-  it("allows per-connection endpoints with an explicit saved Config binding", () => {
+  it("allows Config-resolved endpoints with an explicit saved Config binding", () => {
     expect(OAuthConfigSchema.parse(config)).toEqual(config);
   });
   it("retains static endpoint requirements and rejects ambiguous connection identities", () => {
     expect(OAuthConfigSchema.safeParse({ ...config, connectionConfig: undefined }).success).toBe(
       false
     );
-    expect(
-      OAuthConfigSchema.safeParse({ ...config, keyResolverFunctionName: "resolve.key" }).success
-    ).toBe(false);
     expect(
       OAuthConfigSchema.safeParse({
         ...config,

@@ -322,8 +322,6 @@ export const OAuthConfigSchema = z
     authScope: OAuthAuthScopeSchema,
     oauthProvider: OAuthProviderSchema.partial({ authorizationUrl: true, tokenUrl: true }),
     connectionConfig: OAuthConnectionConfigSchema.optional(),
-    supportsMultiple: z.boolean().optional(),
-    keyResolverFunctionName: z.string().optional(),
     /** Caller scope only. Defaults to true; registered but unusable credentials never fall back. */
     allowChannelFallback: z.boolean().optional(),
   })
@@ -338,12 +336,6 @@ export const OAuthConfigSchema = z
           });
       }
     } else {
-      if (value.keyResolverFunctionName)
-        ctx.addIssue({
-          code: "custom",
-          path: ["keyResolverFunctionName"],
-          message: "Resolved OAuth uses the saved Config key",
-        });
       if (value.connectionConfig.configBinding.scope === "manager" && value.authScope !== "manager")
         ctx.addIssue({
           code: "custom",

@@ -313,7 +313,6 @@ Unreleased opt-in contract: deploy AppStore support before registering an app th
 const config = {
   authType: "oauth",
   authScope: "channel",
-  supportsMultiple: true,
   oauthProvider: {
     provider: "zendesk",
     providerName: "Zendesk",
@@ -344,10 +343,10 @@ public HTTPS destinations. Scopes can only narrow the registered scopes. Omit
 platform owns state, client credentials, callback URL and PKCE. Resolver failure
 stops authorization; it does not fall back to a static URL.
 
-Config and OAuth must agree on `supportsMultiple`. Each saved Config key is the
-OAuth key: `store-a` and `store-b` retain independent tokens and endpoint
-snapshots. Resolved mode does not support a post-authorization
-`keyResolverFunctionName`. Manager Config requires manager OAuth; channel Config
+Resolved mode currently supports one default Config and one default OAuth
+connection. Both `requestedOAuthKey` and `configTarget.key` are `default`.
+Multi-connection setup and post-authorization key resolution are unsupported.
+Manager Config requires manager OAuth; channel Config
 can supply inputs to channel or manager OAuth. Every bound field must have a
 saved nonempty value and cannot be secret, transient, or credential-class.
 
@@ -367,5 +366,5 @@ app opts into resolved mode.
 Config edits affect the next connection attempt. Normal app calls still read
 current Config; this feature does not notify apps of edits or reconcile existing
 connections. Apps that allow changing tenant identity must handle that reconnect
-UX. Multiple brands within one Zendesk account can be collection settings under
-one Config/OAuth key.
+UX. The key-bearing snapshot contract leaves room for future multi-connection
+support; this change does not enable it.

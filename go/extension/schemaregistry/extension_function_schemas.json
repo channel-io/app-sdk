@@ -24657,12 +24657,6 @@
             }
           ]
         },
-        "supportsMultiple": {
-          "type": "boolean"
-        },
-        "keyResolverFunctionName": {
-          "type": "string"
-        },
         "allowChannelFallback": {
           "type": "boolean"
         }
