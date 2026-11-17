@@ -812,6 +812,9 @@ export const PollingPollerProtoSchema = z.object({
   maxConcurrency: z.number().int().optional(),
   rps: z.number().int().optional(),
   executionScope: z.string().optional(),
+  pollerId: z.string().optional(),
+  cronExpression: z.string().optional(),
+  timezone: z.string().optional(),
 }) satisfies z.ZodType<pb.PollingPoller>;
 export type PollingPollerProto = z.infer<typeof PollingPollerProtoSchema>;
 

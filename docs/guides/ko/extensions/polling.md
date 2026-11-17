@@ -5,14 +5,14 @@ AppStore가 channel 또는 manager 단위 작업을 반복 실행해야 할 때 
 
 ## 계약
 
-| Function                                | 필수 여부     | 역할                             |
-| --------------------------------------- | ------------- | -------------------------------- |
-| `extension.polling.metadata.getPollers` | 필수          | Schedule과 target Function 선언  |
-| `extension.polling.target.getChannels`  | 조건부        | 설치된 channel target pagination |
+| Function                                | 필수 여부     | 역할                              |
+| --------------------------------------- | ------------- | --------------------------------- |
+| `extension.polling.metadata.getPollers` | 필수          | Schedule과 target Function 선언   |
+| `extension.polling.target.getChannels`  | 조건부        | 설치된 channel target pagination  |
 | `extension.polling.target.getManagers`  | 조건부        | channel/manager target pagination |
-| Poller의 `functionName`                 | Poller별 필수 | 제한된 polling batch 실행        |
+| Poller의 `functionName`                 | Poller별 필수 | 제한된 polling batch 실행         |
 
-각 poller의 `intervalSeconds`는 양수입니다. `timeoutSeconds`를 생략하면 30초이며
+interval 방식의 `intervalSeconds`는 양수이며 cron 방식에서는 생략합니다. `timeoutSeconds`를 생략하면 30초이며
 `maxConcurrency`/`rps`로 worker 부하를 제한할 수 있습니다. `executionScope`의 기본값은 `channel`이며,
 manager caller로 실행하려면 `manager`를 사용합니다. 선언한 scope별 resolver를 구현해야 합니다. 두 resolver는
 Function name, optional cursor, 최대 500의 양수 limit을 받습니다. `hasNextPage`가 true면 `nextCursor`가 필수입니다.
@@ -44,3 +44,13 @@ appsdk.MustRegister(app, "example.poll", handler.Poll)
   retry를 테스트합니다.
 
 [Go Extension 레퍼런스](../../../reference/go/EXTENSIONS.md)도 확인하세요.
+
+## Cron
+
+cron은 5개 필드와 명시적인 IANA 시간대(또는 UTC)를 사용합니다. 같은 함수에 여러 스케줄을 등록하려면 서로 다른 `pollerId`를 지정하고, cron에서는 `intervalSeconds`를 생략합니다. 밀린 실행은 한 번으로 합치며 큐 전달 시각은 초 단위로 보장하지 않습니다.
+
+```ts
+{ pollerId: "daily", functionName: "poll", cronExpression: "0 9 * * *", timezone: "Asia/Seoul" }
+```
+
+[TypeScript contract](../../../reference/typescript/extensions/polling.md#cron-schedules-and-schedule-identity)

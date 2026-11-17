@@ -12,7 +12,7 @@ queueing、アプリは target paging、cursor、provider call、idempotency を
 | `extension.polling.target.getManagers`  | 条件付き          | channel/manager target を page で返す      |
 | Poller の `functionName`                | Poller ごとに必須 | 制限された polling batch を実行            |
 
-各 poller の `intervalSeconds` は正の値です。`timeoutSeconds` を省略すると 30 秒で、
+interval 方式の `intervalSeconds` は正の値で、cron 方式では省略します。`timeoutSeconds` を省略すると 30 秒で、
 `maxConcurrency`/`rps` で worker load を制限できます。`executionScope` の default は `channel` で、
 manager caller で実行する場合は `manager` を指定します。宣言した scope ごとの resolver が必要です。
 両 resolver は Function name、optional cursor、最大 500 の正の limit を受け取ります。
@@ -45,3 +45,13 @@ appsdk.MustRegister(app, "example.poll", handler.Poll)
   retry を test します。
 
 [Go Extension reference](../../../reference/go/EXTENSIONS.md) も参照してください。
+
+## Cron
+
+cron は5フィールドと明示的な IANA タイムゾーン（または UTC）を使います。同じ関数に複数のスケジュールを登録する場合は別の `pollerId` を指定し、cron では `intervalSeconds` を省略します。未実行分は1回にまとめられ、キューの配信時刻は秒単位では保証されません。
+
+```ts
+{ pollerId: "daily", functionName: "poll", cronExpression: "0 9 * * *", timezone: "Asia/Seoul" }
+```
+
+[TypeScript contract](../../../reference/typescript/extensions/polling.md#cron-schedules-and-schedule-identity)

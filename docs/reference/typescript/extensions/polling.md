@@ -88,17 +88,47 @@ export class PollingExtension {
 
 ## Poller fields
 
-| Field             | Required | Description                                    |
-| ----------------- | -------- | ---------------------------------------------- |
-| `functionName`    | Yes      | Full function name called with scoped context  |
-| `intervalSeconds` | Yes      | Run creation interval                          |
-| `timeoutSeconds`  | No       | Per-call timeout; default `30`                 |
-| `maxConcurrency`  | No       | Per-worker in-flight limit; default `5`        |
-| `rps`             | No       | Per-worker rate limit; default `1`             |
-| `executionScope`  | No       | `channel` (default) or `manager`                |
+| Field             | Required      | Description                                                  |
+| ----------------- | ------------- | ------------------------------------------------------------ |
+| `functionName`    | Yes           | Full function name called with scoped context                |
+| `pollerId`        | No            | Stable ID; defaults to functionName; at most 256 UTF-8 bytes |
+| `intervalSeconds` | Interval only | Positive run creation interval; omit for cron                |
+| `cronExpression`  | Cron only     | Five-field cron; omit for interval                           |
+| `timezone`        | Cron only     | Explicit IANA timezone or UTC                                |
+| `timeoutSeconds`  | No            | Per-call timeout; default `30`                               |
+| `maxConcurrency`  | No            | Per-worker in-flight limit; default `5`                      |
+| `rps`             | No            | Per-worker rate limit; default `1`                           |
+| `executionScope`  | No            | `channel` (default) or `manager`                             |
 
 Both target resolvers receive `functionName`, optional `cursor`, and `limit` (maximum 500). `getChannels` returns `channelIds`; `getManagers` returns `targets` containing `{ channelId, managerId }`. Each manager target counts toward `limit`, so the app pages targets directly instead of asking AppStore to fan out channel credentials. If `hasNextPage` is true, `nextCursor` is required.
 
 Manager-scoped pollers run with the target manager as caller. The existing AppStore function-call path uses that caller to hydrate manager OAuth, API key, and manager config; polling itself is not coupled to OAuth.
 
 Enable `autoRegister` for the decorated class. AppStore reads poller metadata during `registerExtension("polling", "v1")` and requires the resolver for every declared execution scope.
+
+## Cron schedules and schedule identity
+
+`intervalSeconds` and `cronExpression` are mutually exclusive. Cron requires an explicit IANA `timezone` (or `UTC`) and five fields: minute, hour, day of month, month, day of week. Seconds, `@daily` and inline timezone overrides are unsupported. App Store validates cron syntax and rejects impossible dates during registration.
+
+```ts
+const pollers = [
+  {
+    pollerId: "morning",
+    functionName: "poll",
+    cronExpression: "0 9 * * *",
+    timezone: "Asia/Seoul",
+  },
+  {
+    pollerId: "evening",
+    functionName: "poll",
+    cronExpression: "0 18 * * *",
+    timezone: "Asia/Seoul",
+  },
+];
+```
+
+`pollerId` defaults to `functionName`; IDs must be unique within one extension implementation. Distinct IDs can call the same function. Target resolvers still receive `functionName`, and callbacks still receive empty params. Schedule identity does not change the callback contract.
+
+The scheduler creates a due run at its next tick (normally within 30 seconds), then queues targets. This is not an exact-second delivery guarantee. Missed occurrences coalesce to one run, then advance beyond the current time. Nonexistent DST times are skipped; repeated DST times run twice. Apps must enforce business idempotency.
+
+Register cron declarations only after all App Store scheduler/registry/worker resources support them and the polling schema migration has completed. Before rolling back to interval-only binaries, disable cron handlers and drain existing work. Removing an ID cancels pending work; changing its function, scope or schedule replaces the handler to fence queued old work. Already executing calls may finish.

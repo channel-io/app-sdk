@@ -19,7 +19,17 @@ export const PollingExecutionScopeSchema = z.enum(["channel", "manager"]);
 /**
  * Polling handler metadata returned from extension.polling.metadata.getPollers.
  */
-export const PollingPollerSchema = z.object({
+const PollingPollerFieldsSchema = z.object({
+  pollerId: z
+    .string()
+    .trim()
+    .min(1)
+    .max(256)
+    .refine(
+      (value) => new TextEncoder().encode(value).length <= 256,
+      "pollerId must be at most 256 UTF-8 bytes"
+    )
+    .optional(),
   /**
    * Full app function name invoked with channel context and empty params.
    */
@@ -27,7 +37,9 @@ export const PollingPollerSchema = z.object({
   /**
    * Handler run creation interval, in seconds.
    */
-  intervalSeconds: PositiveIntegerSchema,
+  intervalSeconds: PositiveIntegerSchema.optional(),
+  cronExpression: z.string().trim().min(1).max(256).optional(),
+  timezone: z.string().trim().min(1).optional(),
   /**
    * Per-call timeout, in seconds. AppStore defaults to 30 when omitted.
    */
@@ -46,13 +58,55 @@ export const PollingPollerSchema = z.object({
   executionScope: PollingExecutionScopeSchema.optional(),
 });
 
+// Union branches preserve the mutually exclusive schedule contract in generated JSON Schema.
+export const PollingPollerSchema = z.union([
+  PollingPollerFieldsSchema.extend({
+    intervalSeconds: PositiveIntegerSchema,
+    cronExpression: z.never().optional(),
+    timezone: z.never().optional(),
+  }),
+  PollingPollerFieldsSchema.extend({
+    intervalSeconds: z.never().optional(),
+    cronExpression: z
+      .string()
+      .trim()
+      .min(1)
+      .max(256)
+      .refine(
+        (value) => value.split(/\s+/).length === 5 && !value.includes("="),
+        "Use five cron fields; seconds, descriptors and inline timezone overrides are unsupported"
+      ),
+    timezone: z.string().refine((value) => {
+      if (!value || value === "Local" || /^[+-]/.test(value)) return false;
+      try {
+        new Intl.DateTimeFormat("en", { timeZone: value });
+        return true;
+      } catch {
+        return false;
+      }
+    }, "Use an explicit IANA timezone or UTC"),
+  }),
+]);
+
 export type PollingPoller = ProtoBacked<z.infer<typeof PollingPollerSchema>, ProtoPollingPoller>;
 
 /**
  * Metadata response schema for polling handler registration.
  */
 export const GetPollersOutputSchema = z.object({
-  pollers: z.array(PollingPollerSchema),
+  pollers: z.array(PollingPollerSchema).superRefine((pollers, ctx) => {
+    const seen = new Set<string>();
+    pollers.forEach((poller, index) => {
+      const id = poller.pollerId ?? poller.functionName.trim();
+      if (seen.has(id))
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Duplicate pollerId",
+          path: [index, "pollerId"],
+        });
+      seen.add(id);
+    });
+  }),
 });
 
 export type GetPollersOutput = ProtoBacked<

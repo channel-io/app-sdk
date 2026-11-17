@@ -6903,8 +6903,14 @@ type PollingPoller struct {
 	MaxConcurrency  int32                  `protobuf:"varint,4,opt,name=max_concurrency,json=maxConcurrency,proto3" json:"max_concurrency,omitempty"`
 	Rps             int32                  `protobuf:"varint,5,opt,name=rps,proto3" json:"rps,omitempty"`
 	ExecutionScope  string                 `protobuf:"bytes,6,opt,name=execution_scope,json=executionScope,proto3" json:"execution_scope,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Stable schedule identity. Defaults to function_name for legacy interval pollers.
+	PollerId string `protobuf:"bytes,7,opt,name=poller_id,json=pollerId,proto3" json:"poller_id,omitempty"`
+	// Five-field cron. Exactly one of interval_seconds and cron_expression.
+	CronExpression string `protobuf:"bytes,8,opt,name=cron_expression,json=cronExpression,proto3" json:"cron_expression,omitempty"`
+	// Explicit IANA timezone (or UTC), required for cron.
+	Timezone      string `protobuf:"bytes,9,opt,name=timezone,proto3" json:"timezone,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PollingPoller) Reset() {
@@ -6975,6 +6981,27 @@ func (x *PollingPoller) GetRps() int32 {
 func (x *PollingPoller) GetExecutionScope() string {
 	if x != nil {
 		return x.ExecutionScope
+	}
+	return ""
+}
+
+func (x *PollingPoller) GetPollerId() string {
+	if x != nil {
+		return x.PollerId
+	}
+	return ""
+}
+
+func (x *PollingPoller) GetCronExpression() string {
+	if x != nil {
+		return x.CronExpression
+	}
+	return ""
+}
+
+func (x *PollingPoller) GetTimezone() string {
+	if x != nil {
+		return x.Timezone
 	}
 	return ""
 }
@@ -22615,14 +22642,17 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\a_detail\"\x13\n" +
 	"\x11HookGetHooksInput\"J\n" +
 	"\x12HookGetHooksOutput\x124\n" +
-	"\x05hooks\x18\x01 \x03(\v2\x1e.channel.app.sdk.v1.HookConfigR\x05hooks\"\xec\x01\n" +
+	"\x05hooks\x18\x01 \x03(\v2\x1e.channel.app.sdk.v1.HookConfigR\x05hooks\"\xce\x02\n" +
 	"\rPollingPoller\x12#\n" +
 	"\rfunction_name\x18\x01 \x01(\tR\ffunctionName\x12)\n" +
 	"\x10interval_seconds\x18\x02 \x01(\x05R\x0fintervalSeconds\x12'\n" +
 	"\x0ftimeout_seconds\x18\x03 \x01(\x05R\x0etimeoutSeconds\x12'\n" +
 	"\x0fmax_concurrency\x18\x04 \x01(\x05R\x0emaxConcurrency\x12\x10\n" +
 	"\x03rps\x18\x05 \x01(\x05R\x03rps\x12'\n" +
-	"\x0fexecution_scope\x18\x06 \x01(\tR\x0eexecutionScope\"\x18\n" +
+	"\x0fexecution_scope\x18\x06 \x01(\tR\x0eexecutionScope\x12\x1b\n" +
+	"\tpoller_id\x18\a \x01(\tR\bpollerId\x12'\n" +
+	"\x0fcron_expression\x18\b \x01(\tR\x0ecronExpression\x12\x1a\n" +
+	"\btimezone\x18\t \x01(\tR\btimezone\"\x18\n" +
 	"\x16PollingGetPollersInput\"V\n" +
 	"\x17PollingGetPollersOutput\x12;\n" +
 	"\apollers\x18\x01 \x03(\v2!.channel.app.sdk.v1.PollingPollerR\apollers\"r\n" +
