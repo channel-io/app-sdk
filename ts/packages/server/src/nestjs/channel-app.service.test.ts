@@ -541,6 +541,64 @@ describe("ChannelAppService", () => {
 
   describe("function discovery", () => {
     it.each([false, true])(
+      "preserves access through getFunctions (extension: %s)",
+      async (isExtension) => {
+        class Functions {
+          @Func({
+            name: "personal",
+            access: { callerTypes: ["manager"], credentialScopes: ["manager"] },
+          })
+          personal() {}
+          @Func("legacy")
+          legacy() {}
+        }
+        if (isExtension) Extension("calendar")(Functions);
+        const module = await Test.createTestingModule({
+          imports: [DiscoveryModule],
+          providers: [
+            {
+              provide: ExtensionDiscoveryService,
+              useFactory: (discovery: DiscoveryService, reflector: Reflector) =>
+                new ExtensionDiscoveryService(discovery, reflector),
+              inject: [DiscoveryService, Reflector],
+            },
+            Functions,
+          ],
+        }).compile();
+        try {
+          await module.init();
+          const service = createService(
+            { appId: "test-app", appSecret: "test-secret" },
+            module.get(ExtensionDiscoveryService)
+          );
+          const response = await service.handleFunctionCall({
+            method: "extension.core.function.getFunctions",
+            context: {} as never,
+            params: {},
+          });
+          const prefix = isExtension ? "extension.calendar." : "";
+          expect(response.result).toEqual({
+            functions: [
+              {
+                name: `${prefix}personal`,
+                inputSchema: { type: "object" },
+                access: { callerTypes: ["manager"], credentialScopes: ["manager"] },
+              },
+              { name: `${prefix}legacy`, inputSchema: { type: "object" } },
+            ],
+            success: true,
+            errorMessage: "",
+          });
+          expect(ProtoFunctionSchemas.GetFunctionsResultProtoSchema.parse(response.result)).toEqual(
+            response.result
+          );
+        } finally {
+          await module.close();
+        }
+      }
+    );
+
+    it.each([false, true])(
       "should preserve deprecation through discovery and calls (extension: %s)",
       async (isExtension) => {
         class Functions {

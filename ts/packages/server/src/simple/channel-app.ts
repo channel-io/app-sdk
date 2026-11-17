@@ -1,3 +1,4 @@
+import { FunctionAccessSchema, type FunctionAccess } from "@channel.io/app-sdk-core";
 import {
   type DynamicModule,
   Module,
@@ -34,6 +35,7 @@ const SIMPLE_FUNCTIONS = Symbol("SIMPLE_FUNCTIONS");
 const SIMPLE_OPTIONS = Symbol("SIMPLE_OPTIONS");
 
 interface SimpleFunctionDefinition {
+  access?: FunctionAccess;
   name: string;
   description?: string;
   test?: boolean;
@@ -98,7 +100,7 @@ export class ChannelApp {
     name: string,
     inputSchema: TInput,
     handler: (ctx: Context, params: z.infer<TInput>) => Promise<unknown>,
-    options?: { description?: string }
+    options?: { description?: string; access?: FunctionAccess }
   ): this {
     return this.defineFunction(name, inputSchema, handler, options, false);
   }
@@ -114,7 +116,7 @@ export class ChannelApp {
     name: string,
     inputSchema: TInput,
     handler: (ctx: Context, params: z.infer<TInput>) => Promise<unknown>,
-    options?: { description?: string }
+    options?: { description?: string; access?: FunctionAccess }
   ): this {
     return this.defineFunction(name, inputSchema, handler, options, true);
   }
@@ -123,7 +125,7 @@ export class ChannelApp {
     name: string,
     inputSchema: TInput,
     handler: (ctx: Context, params: z.infer<TInput>) => Promise<unknown>,
-    options: { description?: string } | undefined,
+    options: { description?: string; access?: FunctionAccess } | undefined,
     test: boolean
   ): this {
     const inputJsonSchema = zodToJsonSchema(inputSchema, { $refStrategy: "none" }) as Record<
@@ -142,6 +144,10 @@ export class ChannelApp {
         return handler(ctx, validated);
       },
     };
+
+    if (options?.access !== undefined) {
+      def.access = FunctionAccessSchema.parse(options.access);
+    }
 
     if (options?.description) {
       def.description = options.description;
@@ -297,6 +303,10 @@ class ChannelAppSimpleService implements OnModuleInit {
         name: `extension.${func.name}`,
         inputSchema: func.inputJsonSchema,
       };
+
+      if (func.access !== undefined) {
+        schema.access = func.access;
+      }
 
       if (func.description) {
         schema.description = func.description;

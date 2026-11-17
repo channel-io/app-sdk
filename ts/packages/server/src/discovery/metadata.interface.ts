@@ -1,3 +1,4 @@
+import type { FunctionAccess } from "@channel.io/app-sdk-core";
 import type { z } from "zod";
 
 /**
@@ -22,6 +23,7 @@ export interface ExtensionMetadata {
  * Metadata for a discovered function
  */
 export interface FunctionMetadata {
+  access?: FunctionAccess;
   /** Function name (e.g., "getAvailability" or "booking.create") */
   name: string;
   /** Full method name for routing (e.g., "extension.calendar.getAvailability") */

@@ -27,10 +27,21 @@ message FunctionSchema {
   google.protobuf.Struct output_schema = 4;
   // Deprecated functions remain discoverable and callable.
   optional bool deprecated = 5;
+  // Optional AppPerson discovery/execution restriction; never grants authority.
+  FunctionAccess access = 6;
 }
 
 message GetFunctionsResult {
   repeated FunctionSchema functions = 1;
   bool success = 2;
   string error_message = 3;
+}
+
+// Both allowlists must be nonempty when access is declared. Missing access
+// preserves legacy behavior. Matching requires BOTH caller and credential scope.
+message FunctionAccess {
+  // Supported values: system, manager, user, app.
+  repeated string caller_types = 1;
+  // Supported values: channel, manager. This is an owner scope, not OAuth authScope.
+  repeated string credential_scopes = 2;
 }

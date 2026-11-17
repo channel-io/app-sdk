@@ -152,9 +152,10 @@ type ExtensionRegistration struct {
 }
 
 type FunctionSchema struct {
-	Name         string         `json:"name"`
-	Description  string         `json:"description,omitempty"`
-	InputSchema  map[string]any `json:"inputSchema"`
-	OutputSchema map[string]any `json:"outputSchema,omitempty"`
-	Deprecated   *bool          `json:"deprecated,omitempty"`
+	Access       *FunctionAccess `json:"access,omitempty"`
+	Name         string          `json:"name"`
+	Description  string          `json:"description,omitempty"`
+	InputSchema  map[string]any  `json:"inputSchema"`
+	OutputSchema map[string]any  `json:"outputSchema,omitempty"`
+	Deprecated   *bool           `json:"deprecated,omitempty"`
 }

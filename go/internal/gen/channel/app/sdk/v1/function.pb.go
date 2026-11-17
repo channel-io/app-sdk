@@ -7,12 +7,13 @@
 package sdkv1
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
@@ -149,7 +150,9 @@ type FunctionSchema struct {
 	InputSchema  *structpb.Struct       `protobuf:"bytes,3,opt,name=input_schema,json=inputSchema,proto3" json:"input_schema,omitempty"`
 	OutputSchema *structpb.Struct       `protobuf:"bytes,4,opt,name=output_schema,json=outputSchema,proto3" json:"output_schema,omitempty"`
 	// Deprecated functions remain discoverable and callable.
-	Deprecated    *bool `protobuf:"varint,5,opt,name=deprecated,proto3,oneof" json:"deprecated,omitempty"`
+	Deprecated *bool `protobuf:"varint,5,opt,name=deprecated,proto3,oneof" json:"deprecated,omitempty"`
+	// Optional AppPerson discovery/execution restriction; never grants authority.
+	Access        *FunctionAccess `protobuf:"bytes,6,opt,name=access,proto3" json:"access,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -219,6 +222,13 @@ func (x *FunctionSchema) GetDeprecated() bool {
 	return false
 }
 
+func (x *FunctionSchema) GetAccess() *FunctionAccess {
+	if x != nil {
+		return x.Access
+	}
+	return nil
+}
+
 type GetFunctionsResult struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Functions     []*FunctionSchema      `protobuf:"bytes,1,rep,name=functions,proto3" json:"functions,omitempty"`
@@ -279,6 +289,62 @@ func (x *GetFunctionsResult) GetErrorMessage() string {
 	return ""
 }
 
+// Both allowlists must be nonempty when access is declared. Missing access
+// preserves legacy behavior. Matching requires BOTH caller and credential scope.
+type FunctionAccess struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Supported values: system, manager, user, app.
+	CallerTypes []string `protobuf:"bytes,1,rep,name=caller_types,json=callerTypes,proto3" json:"caller_types,omitempty"`
+	// Supported values: channel, manager. This is an owner scope, not OAuth authScope.
+	CredentialScopes []string `protobuf:"bytes,2,rep,name=credential_scopes,json=credentialScopes,proto3" json:"credential_scopes,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *FunctionAccess) Reset() {
+	*x = FunctionAccess{}
+	mi := &file_channel_app_sdk_v1_function_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FunctionAccess) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FunctionAccess) ProtoMessage() {}
+
+func (x *FunctionAccess) ProtoReflect() protoreflect.Message {
+	mi := &file_channel_app_sdk_v1_function_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FunctionAccess.ProtoReflect.Descriptor instead.
+func (*FunctionAccess) Descriptor() ([]byte, []int) {
+	return file_channel_app_sdk_v1_function_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *FunctionAccess) GetCallerTypes() []string {
+	if x != nil {
+		return x.CallerTypes
+	}
+	return nil
+}
+
+func (x *FunctionAccess) GetCredentialScopes() []string {
+	if x != nil {
+		return x.CredentialScopes
+	}
+	return nil
+}
+
 var File_channel_app_sdk_v1_function_proto protoreflect.FileDescriptor
 
 const file_channel_app_sdk_v1_function_proto_rawDesc = "" +
@@ -291,7 +357,7 @@ const file_channel_app_sdk_v1_function_proto_rawDesc = "" +
 	"\x0esystem_version\x18\x04 \x01(\tR\rsystemVersion\"{\n" +
 	"\x10FunctionResponse\x12.\n" +
 	"\x06result\x18\x01 \x01(\v2\x16.google.protobuf.ValueR\x06result\x127\n" +
-	"\x05error\x18\x02 \x01(\v2!.channel.app.sdk.v1.FunctionErrorR\x05error\"\xf4\x01\n" +
+	"\x05error\x18\x02 \x01(\v2!.channel.app.sdk.v1.FunctionErrorR\x05error\"\xb0\x02\n" +
 	"\x0eFunctionSchema\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
@@ -299,12 +365,16 @@ const file_channel_app_sdk_v1_function_proto_rawDesc = "" +
 	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12#\n" +
 	"\n" +
 	"deprecated\x18\x05 \x01(\bH\x00R\n" +
-	"deprecated\x88\x01\x01B\r\n" +
+	"deprecated\x88\x01\x01\x12:\n" +
+	"\x06access\x18\x06 \x01(\v2\".channel.app.sdk.v1.FunctionAccessR\x06accessB\r\n" +
 	"\v_deprecated\"\x95\x01\n" +
 	"\x12GetFunctionsResult\x12@\n" +
 	"\tfunctions\x18\x01 \x03(\v2\".channel.app.sdk.v1.FunctionSchemaR\tfunctions\x12\x18\n" +
 	"\asuccess\x18\x02 \x01(\bR\asuccess\x12#\n" +
-	"\rerror_message\x18\x03 \x01(\tR\ferrorMessageBHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
+	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"`\n" +
+	"\x0eFunctionAccess\x12!\n" +
+	"\fcaller_types\x18\x01 \x03(\tR\vcallerTypes\x12+\n" +
+	"\x11credential_scopes\x18\x02 \x03(\tR\x10credentialScopesBHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
 
 var (
 	file_channel_app_sdk_v1_function_proto_rawDescOnce sync.Once
@@ -318,30 +388,32 @@ func file_channel_app_sdk_v1_function_proto_rawDescGZIP() []byte {
 	return file_channel_app_sdk_v1_function_proto_rawDescData
 }
 
-var file_channel_app_sdk_v1_function_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_channel_app_sdk_v1_function_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_channel_app_sdk_v1_function_proto_goTypes = []any{
 	(*FunctionRequest)(nil),    // 0: channel.app.sdk.v1.FunctionRequest
 	(*FunctionResponse)(nil),   // 1: channel.app.sdk.v1.FunctionResponse
 	(*FunctionSchema)(nil),     // 2: channel.app.sdk.v1.FunctionSchema
 	(*GetFunctionsResult)(nil), // 3: channel.app.sdk.v1.GetFunctionsResult
-	(*structpb.Value)(nil),     // 4: google.protobuf.Value
-	(*FunctionContext)(nil),    // 5: channel.app.sdk.v1.FunctionContext
-	(*FunctionError)(nil),      // 6: channel.app.sdk.v1.FunctionError
-	(*structpb.Struct)(nil),    // 7: google.protobuf.Struct
+	(*FunctionAccess)(nil),     // 4: channel.app.sdk.v1.FunctionAccess
+	(*structpb.Value)(nil),     // 5: google.protobuf.Value
+	(*FunctionContext)(nil),    // 6: channel.app.sdk.v1.FunctionContext
+	(*FunctionError)(nil),      // 7: channel.app.sdk.v1.FunctionError
+	(*structpb.Struct)(nil),    // 8: google.protobuf.Struct
 }
 var file_channel_app_sdk_v1_function_proto_depIdxs = []int32{
-	4, // 0: channel.app.sdk.v1.FunctionRequest.params:type_name -> google.protobuf.Value
-	5, // 1: channel.app.sdk.v1.FunctionRequest.context:type_name -> channel.app.sdk.v1.FunctionContext
-	4, // 2: channel.app.sdk.v1.FunctionResponse.result:type_name -> google.protobuf.Value
-	6, // 3: channel.app.sdk.v1.FunctionResponse.error:type_name -> channel.app.sdk.v1.FunctionError
-	7, // 4: channel.app.sdk.v1.FunctionSchema.input_schema:type_name -> google.protobuf.Struct
-	7, // 5: channel.app.sdk.v1.FunctionSchema.output_schema:type_name -> google.protobuf.Struct
-	2, // 6: channel.app.sdk.v1.GetFunctionsResult.functions:type_name -> channel.app.sdk.v1.FunctionSchema
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	5, // 0: channel.app.sdk.v1.FunctionRequest.params:type_name -> google.protobuf.Value
+	6, // 1: channel.app.sdk.v1.FunctionRequest.context:type_name -> channel.app.sdk.v1.FunctionContext
+	5, // 2: channel.app.sdk.v1.FunctionResponse.result:type_name -> google.protobuf.Value
+	7, // 3: channel.app.sdk.v1.FunctionResponse.error:type_name -> channel.app.sdk.v1.FunctionError
+	8, // 4: channel.app.sdk.v1.FunctionSchema.input_schema:type_name -> google.protobuf.Struct
+	8, // 5: channel.app.sdk.v1.FunctionSchema.output_schema:type_name -> google.protobuf.Struct
+	4, // 6: channel.app.sdk.v1.FunctionSchema.access:type_name -> channel.app.sdk.v1.FunctionAccess
+	2, // 7: channel.app.sdk.v1.GetFunctionsResult.functions:type_name -> channel.app.sdk.v1.FunctionSchema
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_channel_app_sdk_v1_function_proto_init() }
@@ -358,7 +430,7 @@ func file_channel_app_sdk_v1_function_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_channel_app_sdk_v1_function_proto_rawDesc), len(file_channel_app_sdk_v1_function_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

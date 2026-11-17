@@ -285,6 +285,10 @@ function checkGoCoreDTOs() {
       ]),
     },
     {
+      relPath: "go/appsdk/function_access.go",
+      allowedStructs: new Set(["FunctionAccess"]),
+    },
+    {
       relPath: "go/appsdk/errors.go",
       allowedStructs: new Set(["FunctionError"]),
     },
@@ -328,6 +332,7 @@ function checkTypeScriptCoreDTOs() {
       relPath: "ts/packages/core/src/types/function.ts",
       protoBackedExports: new Map([
         ["FunctionSchema", "ProtoFunctionSchema"],
+        ["FunctionAccess", "ProtoFunctionAccess"],
         ["GetFunctionsResult", "ProtoGetFunctionsResult"],
       ]),
       allowedExports: new Set([

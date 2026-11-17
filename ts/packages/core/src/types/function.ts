@@ -2,8 +2,18 @@ import type { z } from "zod";
 import type { Context } from "./context.js";
 import type {
   FunctionSchema as ProtoFunctionSchema,
+  FunctionAccess as ProtoFunctionAccess,
   GetFunctionsResult as ProtoGetFunctionsResult,
 } from "../gen/channel/app/sdk/v1/function.js";
+
+/** AppPerson restrictions. Omitting access preserves legacy discovery. */
+export interface FunctionAccess extends Omit<
+  ProtoFunctionAccess,
+  "callerTypes" | "credentialScopes"
+> {
+  callerTypes: ("system" | "manager" | "user" | "app")[];
+  credentialScopes: ("channel" | "manager")[];
+}
 
 /**
  * Function handler type
@@ -20,6 +30,7 @@ export interface FunctionDefinition<
   TInput extends z.ZodType = z.ZodType,
   TOutput extends z.ZodType = z.ZodType,
 > {
+  access?: FunctionAccess;
   /** Function description for documentation */
   description?: string;
   /** Zod schema for input validation */
@@ -34,6 +45,7 @@ export interface FunctionDefinition<
  * Registered function with metadata
  */
 export interface RegisteredFunction {
+  access?: FunctionAccess;
   /** Full function name (e.g., "calendar.booking.createBooking") */
   name: string;
   /** Function description */
@@ -51,8 +63,9 @@ export interface RegisteredFunction {
  */
 export interface FunctionSchema extends Omit<
   ProtoFunctionSchema,
-  "name" | "inputSchema" | "outputSchema"
+  "name" | "inputSchema" | "outputSchema" | "access"
 > {
+  access?: FunctionAccess;
   /** Full function name */
   name: string;
   /** Function description */

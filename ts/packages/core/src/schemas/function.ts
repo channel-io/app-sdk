@@ -160,6 +160,14 @@ export type FunctionUserInputAnswer = z.infer<typeof FunctionUserInputAnswerSche
 export type FunctionUserInputAnswers = z.infer<typeof FunctionUserInputAnswersSchema>;
 export type NeedsUserInputResult = z.infer<typeof NeedsUserInputResultSchema>;
 
+/** AppPerson access metadata is restrictive and cannot contain unknown values. */
+export const FunctionAccessSchema = z
+  .object({
+    callerTypes: z.array(z.enum(["system", "manager", "user", "app"])).min(1),
+    credentialScopes: z.array(z.enum(["channel", "manager"])).min(1),
+  })
+  .strict();
+
 /**
  * Create a registered function from a definition
  * @internal
@@ -188,6 +196,10 @@ export function createRegisteredFunction(
     inputSchema,
     handler: wrappedHandler,
   };
+
+  if (definition.access !== undefined) {
+    result.access = FunctionAccessSchema.parse(definition.access);
+  }
 
   if (definition.description !== undefined) {
     result.description = definition.description;

@@ -7,9 +7,10 @@ import (
 	"strings"
 	"testing"
 
+	"google.golang.org/protobuf/reflect/protoreflect"
+
 	"github.com/channel-io/app-sdk/go/appsdk"
 	sdkv1 "github.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 func TestCoreDTOJSONFieldsMatchProto(t *testing.T) {
@@ -77,6 +78,11 @@ func TestCoreDTOJSONFieldsMatchProto(t *testing.T) {
 			name:       "FunctionSchema",
 			runtime:    appsdk.FunctionSchema{},
 			descriptor: sdkv1.File_channel_app_sdk_v1_function_proto.Messages().ByName("FunctionSchema"),
+		},
+		{
+			name:       "FunctionAccess",
+			runtime:    appsdk.FunctionAccess{},
+			descriptor: sdkv1.File_channel_app_sdk_v1_function_proto.Messages().ByName("FunctionAccess"),
 		},
 		{
 			name:       "GetFunctionsResult",

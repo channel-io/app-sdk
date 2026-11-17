@@ -25,6 +25,7 @@ export const FunctionSchemaProtoSchema = z.object({
   inputSchema: z.record(z.string(), z.any()).optional(),
   outputSchema: z.record(z.string(), z.any()).optional(),
   deprecated: z.boolean().optional(),
+  access: z.lazy(() => FunctionAccessProtoSchema).optional(),
 }) satisfies z.ZodType<pb.FunctionSchema>;
 export type FunctionSchemaProto = z.infer<typeof FunctionSchemaProtoSchema>;
 
@@ -34,3 +35,9 @@ export const GetFunctionsResultProtoSchema = z.object({
   errorMessage: z.string().optional(),
 }) satisfies z.ZodType<pb.GetFunctionsResult>;
 export type GetFunctionsResultProto = z.infer<typeof GetFunctionsResultProtoSchema>;
+
+export const FunctionAccessProtoSchema = z.object({
+  callerTypes: z.array(z.string()).optional(),
+  credentialScopes: z.array(z.string()).optional(),
+}) satisfies z.ZodType<pb.FunctionAccess>;
+export type FunctionAccessProto = z.infer<typeof FunctionAccessProtoSchema>;

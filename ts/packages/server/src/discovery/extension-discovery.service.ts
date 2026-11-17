@@ -180,6 +180,10 @@ export class ExtensionDiscoveryService implements OnModuleInit {
         handler,
       };
 
+      if (funcMeta.access !== undefined) {
+        funcMetadata.access = funcMeta.access;
+      }
+
       if (description) {
         funcMetadata.description = description;
       }

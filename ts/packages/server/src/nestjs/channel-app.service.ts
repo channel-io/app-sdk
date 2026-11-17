@@ -405,6 +405,10 @@ export class ChannelAppService implements OnModuleInit, OnApplicationBootstrap {
         inputSchema: func.inputJsonSchema ?? { type: "object" },
       };
 
+      if (func.access !== undefined) {
+        schema.access = func.access;
+      }
+
       if (func.description) {
         schema.description = func.description;
       }

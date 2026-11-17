@@ -1,3 +1,4 @@
+import { FunctionAccessSchema, type FunctionAccess } from "@channel.io/app-sdk-core";
 import "reflect-metadata";
 import { Injectable } from "@nestjs/common";
 
@@ -5,6 +6,8 @@ export const FUNCTION_METADATA = Symbol("FUNCTION_METADATA");
 export const FUNCTIONS_METADATA = Symbol("FUNCTIONS_METADATA");
 
 export interface FunctionOptions {
+  /** Optional restrictive AppPerson access metadata. */
+  access?: FunctionAccess;
   /** Function name (e.g., "getAvailability" or "calendar.getAvailability") */
   name?: string;
   /** Function description for documentation */
@@ -16,6 +19,7 @@ export interface FunctionOptions {
 }
 
 export interface FunctionMetadataValue {
+  access?: FunctionAccess;
   name: string;
   methodName: string | symbol;
   description?: string;
@@ -87,6 +91,10 @@ function createFunctionDecorator(
       name: functionName,
       methodName: propertyKey,
     };
+
+    if (options.access !== undefined) {
+      metadata.access = FunctionAccessSchema.parse(options.access);
+    }
 
     if (test) {
       metadata.test = true;

@@ -30,11 +30,28 @@ export interface FunctionSchema {
     | { [key: string]: any }
     | undefined;
   /** Deprecated functions remain discoverable and callable. */
-  deprecated?: boolean | undefined;
+  deprecated?:
+    | boolean
+    | undefined;
+  /** Optional AppPerson discovery/execution restriction; never grants authority. */
+  access?: FunctionAccess | undefined;
 }
 
 export interface GetFunctionsResult {
   functions?: FunctionSchema[] | undefined;
   success?: boolean | undefined;
   errorMessage?: string | undefined;
+}
+
+/**
+ * Both allowlists must be nonempty when access is declared. Missing access
+ * preserves legacy behavior. Matching requires BOTH caller and credential scope.
+ */
+export interface FunctionAccess {
+  /** Supported values: system, manager, user, app. */
+  callerTypes?:
+    | string[]
+    | undefined;
+  /** Supported values: channel, manager. This is an owner scope, not OAuth authScope. */
+  credentialScopes?: string[] | undefined;
 }

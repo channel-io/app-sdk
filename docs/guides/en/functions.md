@@ -226,3 +226,31 @@ packages include `extension/config`, `extension/oauth`, `extension/calendar`,
 
 Continue with the [Command guide](extensions/command.md), [WAM guide](wam.md),
 [Extension guide](extensions.md), and [production readiness guide](app-development.md).
+
+## AppPerson function access metadata
+
+`FunctionSchema.access` optionally declares `callerTypes` and `credentialScopes`.
+Both arrays must be nonempty. Supported callers are `system`, `manager`, `user`,
+and `app`; credential owner scopes are `channel` and `manager` (not OAuth
+`authScope: caller`). Both dimensions must match. A missing `access` preserves
+legacy behavior; malformed declarations must fail closed.
+
+```typescript
+@Func({
+  name: "personal.listIssues",
+  access: { callerTypes: ["manager"], credentialScopes: ["manager"] },
+})
+```
+
+Nest decorators, simple `.function(..., { access })`, core definitions and Go
+`Access(FunctionAccess{...})` publish the same JSON. `getFunctions` remains a
+context-free catalog. An updated App Store consumer filters the catalog for the
+verified AppPerson run after caching and rechecks access at execution. SDK
+metadata alone does not enforce platform authorization or grant credentials;
+keep handler/provider permission checks. Group and UserChat mentions use
+`system`/`channel`; app DM uses `manager`/`manager`. No fallback or scope switching
+is introduced. Generic CoS and other callers retain existing behavior.
+
+Roll out the compatible App Store consumer before adopting these declarations
+in apps. Until both consumer and app updates are deployed, functions with no
+metadata can still appear in contexts where the app's own checks reject them.
