@@ -12,7 +12,7 @@ queueing; the app owns target paging, cursors, provider calls, and idempotency.
 | `extension.polling.target.getManagers`  | Conditional | Pages through channel/manager targets   |
 | Poller `functionName`                   | Per poller  | Executes one bounded polling batch      |
 
-Each poller has a positive `intervalSeconds`; `timeoutSeconds` defaults to 30 when omitted, and
+An interval poller has a positive `intervalSeconds`; cron pollers omit it; `timeoutSeconds` defaults to 30 when omitted, and
 `maxConcurrency`/`rps` may bound worker load. `executionScope` defaults to `channel`; choose `manager`
 to run with a manager caller. Implement the resolver for every declared scope. Both resolvers receive
 the Function name, optional cursor, and a positive limit up to 500. If `hasNextPage` is true,

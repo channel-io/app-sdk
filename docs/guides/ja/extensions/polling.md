@@ -12,7 +12,7 @@ queueing、アプリは target paging、cursor、provider call、idempotency を
 | `extension.polling.target.getManagers`  | 条件付き          | channel/manager target を page で返す      |
 | Poller の `functionName`                | Poller ごとに必須 | 制限された polling batch を実行            |
 
-各 poller の `intervalSeconds` は正の値です。`timeoutSeconds` を省略すると 30 秒で、
+interval 方式の `intervalSeconds` は正の値で、cron 方式では省略します。`timeoutSeconds` を省略すると 30 秒で、
 `maxConcurrency`/`rps` で worker load を制限できます。`executionScope` の default は `channel` で、
 manager caller で実行する場合は `manager` を指定します。宣言した scope ごとの resolver が必要です。
 両 resolver は Function name、optional cursor、最大 500 の正の limit を受け取ります。

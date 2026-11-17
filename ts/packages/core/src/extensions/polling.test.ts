@@ -51,6 +51,29 @@ describe("polling schedules", () => {
       }).success
     ).toBe(false);
   });
+  it("uses the server UTF-8 byte bound for multilingual IDs", () => {
+    expect(
+      PollingPollerSchema.safeParse({
+        pollerId: "가".repeat(85),
+        functionName: "poll",
+        intervalSeconds: 60,
+      }).success
+    ).toBe(true);
+    expect(
+      PollingPollerSchema.safeParse({
+        pollerId: "가".repeat(86),
+        functionName: "poll",
+        intervalSeconds: 60,
+      }).success
+    ).toBe(false);
+    expect(
+      PollingPollerSchema.safeParse({
+        pollerId: "a".repeat(256),
+        functionName: "poll",
+        intervalSeconds: 60,
+      }).success
+    ).toBe(true);
+  });
   it("exports both schedule alternatives in JSON Schema", () => {
     const schema = zodToJsonSchema(PollingPollerSchema);
     expect(schema).toHaveProperty("anyOf");

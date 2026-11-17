@@ -88,14 +88,17 @@ export class PollingExtension {
 
 ## Poller fields
 
-| Field             | Required | Description                                   |
-| ----------------- | -------- | --------------------------------------------- |
-| `functionName`    | Yes      | Full function name called with scoped context |
-| `intervalSeconds` | Yes      | Run creation interval                         |
-| `timeoutSeconds`  | No       | Per-call timeout; default `30`                |
-| `maxConcurrency`  | No       | Per-worker in-flight limit; default `5`       |
-| `rps`             | No       | Per-worker rate limit; default `1`            |
-| `executionScope`  | No       | `channel` (default) or `manager`              |
+| Field             | Required      | Description                                                  |
+| ----------------- | ------------- | ------------------------------------------------------------ |
+| `functionName`    | Yes           | Full function name called with scoped context                |
+| `pollerId`        | No            | Stable ID; defaults to functionName; at most 256 UTF-8 bytes |
+| `intervalSeconds` | Interval only | Positive run creation interval; omit for cron                |
+| `cronExpression`  | Cron only     | Five-field cron; omit for interval                           |
+| `timezone`        | Cron only     | Explicit IANA timezone or UTC                                |
+| `timeoutSeconds`  | No            | Per-call timeout; default `30`                               |
+| `maxConcurrency`  | No            | Per-worker in-flight limit; default `5`                      |
+| `rps`             | No            | Per-worker rate limit; default `1`                           |
+| `executionScope`  | No            | `channel` (default) or `manager`                             |
 
 Both target resolvers receive `functionName`, optional `cursor`, and `limit` (maximum 500). `getChannels` returns `channelIds`; `getManagers` returns `targets` containing `{ channelId, managerId }`. Each manager target counts toward `limit`, so the app pages targets directly instead of asking AppStore to fan out channel credentials. If `hasNextPage` is true, `nextCursor` is required.
 

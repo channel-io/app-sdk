@@ -20,7 +20,16 @@ export const PollingExecutionScopeSchema = z.enum(["channel", "manager"]);
  * Polling handler metadata returned from extension.polling.metadata.getPollers.
  */
 const PollingPollerFieldsSchema = z.object({
-  pollerId: z.string().trim().min(1).max(256).optional(),
+  pollerId: z
+    .string()
+    .trim()
+    .min(1)
+    .max(256)
+    .refine(
+      (value) => new TextEncoder().encode(value).length <= 256,
+      "pollerId must be at most 256 UTF-8 bytes"
+    )
+    .optional(),
   /**
    * Full app function name invoked with channel context and empty params.
    */

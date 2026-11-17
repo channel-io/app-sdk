@@ -12,7 +12,7 @@ AppStore가 channel 또는 manager 단위 작업을 반복 실행해야 할 때 
 | `extension.polling.target.getManagers`  | 조건부        | channel/manager target pagination |
 | Poller의 `functionName`                 | Poller별 필수 | 제한된 polling batch 실행         |
 
-각 poller의 `intervalSeconds`는 양수입니다. `timeoutSeconds`를 생략하면 30초이며
+interval 방식의 `intervalSeconds`는 양수이며 cron 방식에서는 생략합니다. `timeoutSeconds`를 생략하면 30초이며
 `maxConcurrency`/`rps`로 worker 부하를 제한할 수 있습니다. `executionScope`의 기본값은 `channel`이며,
 manager caller로 실행하려면 `manager`를 사용합니다. 선언한 scope별 resolver를 구현해야 합니다. 두 resolver는
 Function name, optional cursor, 최대 500의 양수 limit을 받습니다. `hasNextPage`가 true면 `nextCursor`가 필수입니다.
