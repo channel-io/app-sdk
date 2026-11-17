@@ -77,7 +77,7 @@ export const PollingPollerSchema = z.union([
         "Use five cron fields; seconds, descriptors and inline timezone overrides are unsupported"
       ),
     timezone: z.string().refine((value) => {
-      if (value !== "UTC" && !value.includes("/")) return false;
+      if (!value || value === "Local" || /^[+-]/.test(value)) return false;
       try {
         new Intl.DateTimeFormat("en", { timeZone: value });
         return true;

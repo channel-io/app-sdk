@@ -37,6 +37,9 @@ describe("polling schedules", () => {
       { cronExpression: "@daily", timezone: "UTC" },
       { cronExpression: "0 0 9 * * *", timezone: "UTC" },
       { cronExpression: "0 9 * * *", timezone: "Local" },
+      { cronExpression: "0 9 * * *", timezone: "" },
+      { cronExpression: "0 9 * * *", timezone: "+09:00" },
+      { cronExpression: "0 9 * * *", timezone: "-05:00" },
       { cronExpression: "0 9 * * *", timezone: "Asia/Missing" },
     ])
       expect(PollingPollerSchema.safeParse({ functionName: "poll", ...fields }).success).toBe(
@@ -50,6 +53,15 @@ describe("polling schedules", () => {
         ],
       }).success
     ).toBe(false);
+  });
+  it("accepts IANA links without a slash", () => {
+    expect(
+      PollingPollerSchema.safeParse({
+        functionName: "poll",
+        cronExpression: "0 9 * * *",
+        timezone: "Japan",
+      }).success
+    ).toBe(true);
   });
   it("uses the server UTF-8 byte bound for multilingual IDs", () => {
     expect(
