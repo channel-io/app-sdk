@@ -895,7 +895,19 @@ export interface PollingPoller {
   timeoutSeconds?: number | undefined;
   maxConcurrency?: number | undefined;
   rps?: number | undefined;
-  executionScope?: string | undefined;
+  executionScope?:
+    | string
+    | undefined;
+  /** Stable schedule identity. Defaults to function_name for legacy interval pollers. */
+  pollerId?:
+    | string
+    | undefined;
+  /** Five-field cron. Exactly one of interval_seconds and cron_expression. */
+  cronExpression?:
+    | string
+    | undefined;
+  /** Explicit IANA timezone (or UTC), required for cron. */
+  timezone?: string | undefined;
 }
 
 export interface PollingGetPollersInput {

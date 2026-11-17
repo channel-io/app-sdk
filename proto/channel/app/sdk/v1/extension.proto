@@ -744,6 +744,12 @@ message PollingPoller {
   int32 max_concurrency = 4;
   int32 rps = 5;
   string execution_scope = 6;
+  // Stable schedule identity. Defaults to function_name for legacy interval pollers.
+  string poller_id = 7;
+  // Five-field cron. Exactly one of interval_seconds and cron_expression.
+  string cron_expression = 8;
+  // Explicit IANA timezone (or UTC), required for cron.
+  string timezone = 9;
 }
 
 message PollingGetPollersInput {}

@@ -45,3 +45,13 @@ appsdk.MustRegister(app, "example.poll", handler.Poll)
   retry を test します。
 
 [Go Extension reference](../../../reference/go/EXTENSIONS.md) も参照してください。
+
+## Cron
+
+cron は5フィールドと明示的な IANA タイムゾーン（または UTC）を使います。同じ関数に複数のスケジュールを登録する場合は別の `pollerId` を指定し、cron では `intervalSeconds` を省略します。未実行分は1回にまとめられ、キューの配信時刻は秒単位では保証されません。
+
+```ts
+{ pollerId: "daily", functionName: "poll", cronExpression: "0 9 * * *", timezone: "Asia/Seoul" }
+```
+
+[TypeScript contract](../../../reference/typescript/extensions/polling.md#cron-schedules-and-schedule-identity)

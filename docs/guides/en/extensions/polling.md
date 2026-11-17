@@ -9,7 +9,7 @@ queueing; the app owns target paging, cursors, provider calls, and idempotency.
 | --------------------------------------- | ----------- | --------------------------------------- |
 | `extension.polling.metadata.getPollers` | Required    | Declares schedules and target Functions |
 | `extension.polling.target.getChannels`  | Conditional | Pages through installed channel targets |
-| `extension.polling.target.getManagers`  | Conditional | Pages through channel/manager targets    |
+| `extension.polling.target.getManagers`  | Conditional | Pages through channel/manager targets   |
 | Poller `functionName`                   | Per poller  | Executes one bounded polling batch      |
 
 Each poller has a positive `intervalSeconds`; `timeoutSeconds` defaults to 30 when omitted, and
@@ -46,3 +46,13 @@ appsdk.MustRegister(app, "example.poll", handler.Poll)
   after process restart.
 
 See the [Go Extension reference](../../../reference/go/EXTENSIONS.md).
+
+## Cron
+
+Cron uses five fields and an explicit IANA timezone (or UTC). Set `pollerId` to register multiple schedules for one function; omit `intervalSeconds` for cron. Missed runs coalesce once, and queue delivery is not an exact-second guarantee.
+
+```ts
+{ pollerId: "daily", functionName: "poll", cronExpression: "0 9 * * *", timezone: "Asia/Seoul" }
+```
+
+[TypeScript contract](../../../reference/typescript/extensions/polling.md#cron-schedules-and-schedule-identity)

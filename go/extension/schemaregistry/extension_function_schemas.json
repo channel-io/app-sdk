@@ -25881,41 +25881,106 @@
         "pollers": {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "functionName": {
-                "type": "string",
-                "minLength": 1
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "pollerId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "functionName": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "intervalSeconds": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "cronExpression": {
+                    "not": {}
+                  },
+                  "timezone": {
+                    "not": {}
+                  },
+                  "timeoutSeconds": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "maxConcurrency": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "rps": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "executionScope": {
+                    "type": "string",
+                    "enum": [
+                      "channel",
+                      "manager"
+                    ]
+                  }
+                },
+                "required": [
+                  "functionName",
+                  "intervalSeconds"
+                ],
+                "additionalProperties": false
               },
-              "intervalSeconds": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "timeoutSeconds": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "maxConcurrency": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "rps": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "executionScope": {
-                "type": "string",
-                "enum": [
-                  "channel",
-                  "manager"
-                ]
+              {
+                "type": "object",
+                "properties": {
+                  "pollerId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "functionName": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "intervalSeconds": {
+                    "not": {}
+                  },
+                  "cronExpression": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "timezone": {
+                    "type": "string"
+                  },
+                  "timeoutSeconds": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "maxConcurrency": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "rps": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "executionScope": {
+                    "type": "string",
+                    "enum": [
+                      "channel",
+                      "manager"
+                    ]
+                  }
+                },
+                "required": [
+                  "functionName",
+                  "cronExpression",
+                  "timezone"
+                ],
+                "additionalProperties": false
               }
-            },
-            "required": [
-              "functionName",
-              "intervalSeconds"
-            ],
-            "additionalProperties": false
+            ]
           }
         }
       },
