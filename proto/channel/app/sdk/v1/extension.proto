@@ -2436,9 +2436,10 @@ message OAuthResolveAuthConfigInput {
 }
 
 message OAuthResolveAuthConfigOutput {
-  string authorization_url = 1;
-  string token_url = 2;
-  optional string refresh_token_url = 3;
+  // JSON string or {value: string, secret: true}; validated by the public schema.
+  google.protobuf.Value authorization_url = 1;
+  google.protobuf.Value token_url = 2;
+  google.protobuf.Value refresh_token_url = 3;
   repeated string scopes = 4;
   map<string, string> additional_params = 5;
 }

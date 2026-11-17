@@ -24310,16 +24310,82 @@
       "type": "object",
       "properties": {
         "authorizationUrl": {
-          "type": "string",
-          "format": "uri"
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "secret": {
+                  "type": "boolean",
+                  "const": true
+                }
+              },
+              "required": [
+                "value",
+                "secret"
+              ],
+              "additionalProperties": false
+            }
+          ]
         },
         "tokenUrl": {
-          "type": "string",
-          "format": "uri"
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "secret": {
+                  "type": "boolean",
+                  "const": true
+                }
+              },
+              "required": [
+                "value",
+                "secret"
+              ],
+              "additionalProperties": false
+            }
+          ]
         },
         "refreshTokenUrl": {
-          "type": "string",
-          "format": "uri"
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "secret": {
+                  "type": "boolean",
+                  "const": true
+                }
+              },
+              "required": [
+                "value",
+                "secret"
+              ],
+              "additionalProperties": false
+            }
+          ]
         },
         "scopes": {
           "type": "array",

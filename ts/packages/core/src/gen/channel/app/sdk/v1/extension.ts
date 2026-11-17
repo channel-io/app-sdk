@@ -2881,9 +2881,10 @@ export interface OAuthResolveAuthConfigInput {
 }
 
 export interface OAuthResolveAuthConfigOutput {
-  authorizationUrl?: string | undefined;
-  tokenUrl?: string | undefined;
-  refreshTokenUrl?: string | undefined;
+  /** JSON string or {value: string, secret: true}; validated by the public schema. */
+  authorizationUrl?: any | undefined;
+  tokenUrl?: any | undefined;
+  refreshTokenUrl?: any | undefined;
   scopes?: string[] | undefined;
   additionalParams?: { [key: string]: string } | undefined;
 }

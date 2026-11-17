@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/channel-io/app-sdk/go/appsdk"
+	"github.com/channel-io/app-sdk/go/extension/oauth"
 	"github.com/channel-io/app-sdk/go/native"
 	sdkgin "github.com/channel-io/app-sdk/go/server/gin"
 	ginlib "github.com/gin-gonic/gin"
@@ -33,6 +34,38 @@ type requestHandlerFunc func(context.Context, appsdk.FunctionRequest) appsdk.Fun
 
 func (f requestHandlerFunc) HandleRequest(ctx context.Context, req appsdk.FunctionRequest) appsdk.FunctionResponse {
 	return f(ctx, req)
+}
+
+func TestResolverPanicDoesNotReachHTTPRecoveryLogs(t *testing.T) {
+	var logs bytes.Buffer
+	oldWriter, oldErrorWriter := ginlib.DefaultWriter, ginlib.DefaultErrorWriter
+	ginlib.DefaultWriter, ginlib.DefaultErrorWriter = &logs, &logs
+	t.Cleanup(func() {
+		ginlib.DefaultWriter, ginlib.DefaultErrorWriter = oldWriter, oldErrorWriter
+	})
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	if err := app.Use(oauth.Extension().ResolveAuthConfig(func(context.Context, appsdk.Context, *oauth.ResolveAuthConfigInput) (*oauth.ResolveAuthConfigOutput, error) {
+		panic("synthetic-private-resolver-marker")
+	})); err != nil {
+		t.Fatal(err)
+	}
+	server := sdkgin.NewServer(app)
+	body := `{"method":"extension.oauth.connection.resolveAuthConfig","params":{}}`
+	response := httptest.NewRecorder()
+	server.Engine().ServeHTTP(response, httptest.NewRequest(http.MethodPut, "/functions/v1", strings.NewReader(body)))
+	if strings.Contains(logs.String(), "synthetic-private-resolver-marker") || strings.Contains(response.Body.String(), "synthetic-private-resolver-marker") {
+		t.Fatal("resolver panic exposed a secret in HTTP logs or response")
+	}
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected a JSON-RPC error response, got HTTP %d", response.Code)
+	}
+	var result appsdk.FunctionResponse
+	if err := json.Unmarshal(response.Body.Bytes(), &result); err != nil {
+		t.Fatal(err)
+	}
+	if result.Error == nil || result.Error.Code != appsdk.CodeInternal || result.Error.Message != "internal error" || len(result.Result) != 0 {
+		t.Fatalf("expected a sanitized resolver failure: %+v", result)
+	}
 }
 
 func TestHandlerVerifiesTypeScriptCompatibleSignature(t *testing.T) {

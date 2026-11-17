@@ -10,6 +10,7 @@ import (
 	"github.com/channel-io/app-sdk/go/extension/schemaregistry"
 	sdkv1 "github.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
@@ -60,12 +61,24 @@ func (b *ExtensionBuilder) GetAuthConfig(handler appsdk.TypedHandlerFunc[GetAuth
 }
 
 func (b *ExtensionBuilder) ResolveAuthConfig(handler appsdk.TypedHandlerFunc[ResolveAuthConfigInput, ResolveAuthConfigOutput]) *ExtensionBuilder {
-	handlerOption := appsdk.HandleProtoInput(func(ctx context.Context, fnCtx appsdk.Context, input *ResolveAuthConfigInput) (any, error) {
+	handlerOption := appsdk.HandleProtoInput(func(ctx context.Context, fnCtx appsdk.Context, input *ResolveAuthConfigInput) (output any, outputErr error) {
+		// Panics can contain decrypted Config or private endpoints too. Contain them
+		// before the HTTP server's recovery middleware logs the panic value.
+		defer func() {
+			if recover() != nil {
+				output = nil
+				outputErr = fmt.Errorf("OAuth connection resolver failed")
+			}
+		}()
 		result, err := handler(ctx, fnCtx, input)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("OAuth connection resolver failed")
 		}
-		return marshalResolvedAuthConfig(result)
+		encoded, err := marshalResolvedAuthConfig(result)
+		if err != nil {
+			return nil, fmt.Errorf("invalid OAuth resolver result")
+		}
+		return encoded, nil
 	})
 	b.base.Func(FunctionResolveAuthConfig, append([]appsdk.FunctionOption{handlerOption}, schemaregistry.FunctionOptions(FunctionResolveAuthConfig)...)...)
 	return b
@@ -75,7 +88,17 @@ func (b *ExtensionBuilder) ResolveAuthConfig(handler appsdk.TypedHandlerFunc[Res
 // Proto JSON omits both, so preserve the resolver handler's choice at this boundary.
 func marshalResolvedAuthConfig(result *ResolveAuthConfigOutput) (json.RawMessage, error) {
 	if result == nil {
-		return json.RawMessage(`{}`), nil
+		return nil, fmt.Errorf("OAuth resolver result is required")
+	}
+	for _, endpoint := range []*structpb.Value{result.AuthorizationUrl, result.TokenUrl} {
+		if err := validateEndpoint(endpoint); err != nil {
+			return nil, err
+		}
+	}
+	if result.RefreshTokenUrl != nil {
+		if err := validateEndpoint(result.RefreshTokenUrl); err != nil {
+			return nil, err
+		}
 	}
 	encoded, err := protojson.Marshal(result)
 	if err != nil || result.Scopes == nil || len(result.Scopes) > 0 {

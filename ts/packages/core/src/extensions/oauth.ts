@@ -260,7 +260,7 @@ export type OAuthProvider = ProtoBacked<
   }
 >;
 
-/** Saved non-secret Config fields used to resolve one connection. */
+/** Selected saved Config fields; secret fields are decrypted by App Store for the resolver. */
 export const OAuthConfigBindingSchema = z.object({
   scope: z.enum(["channel", "manager"]),
   fieldKeys: z
@@ -299,18 +299,26 @@ export type ResolveAuthConfigInput = ProtoBacked<
   z.infer<typeof ResolveAuthConfigInputSchema>,
   ProtoResolveAuthConfigInput
 >;
+/** Resolver endpoint. Secret URL values are encrypted by App Store before storage. */
+export const OAuthEndpointSchema = z.union([
+  z.string().url(),
+  z.object({ value: z.string().url(), secret: z.literal(true) }).strict(),
+]);
+export type OAuthEndpoint = z.infer<typeof OAuthEndpointSchema>;
+
 export const ResolveAuthConfigOutputSchema = z
   .object({
-    authorizationUrl: z.string().url(),
-    tokenUrl: z.string().url(),
-    refreshTokenUrl: z.string().url().optional(),
+    authorizationUrl: OAuthEndpointSchema,
+    tokenUrl: OAuthEndpointSchema,
+    refreshTokenUrl: OAuthEndpointSchema.optional(),
     scopes: z.array(z.string()).optional(),
     additionalParams: z.record(z.string()).optional(),
   })
   .strict();
 export type ResolveAuthConfigOutput = ProtoBacked<
   z.infer<typeof ResolveAuthConfigOutputSchema>,
-  ProtoResolveAuthConfigOutput
+  // google.protobuf.Value generates `any`; keep the public endpoint union strict.
+  Omit<ProtoResolveAuthConfigOutput, "authorizationUrl" | "tokenUrl" | "refreshTokenUrl">
 >;
 
 /**

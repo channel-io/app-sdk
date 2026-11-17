@@ -703,6 +703,8 @@ export {
 export * from "./issue.js";
 
 export {
+  OAuthEndpointSchema,
+  type OAuthEndpoint,
   OAuthConfigBindingSchema,
   OAuthConnectionConfigSchema,
   OAuthConfigTargetSchema,

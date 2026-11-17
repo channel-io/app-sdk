@@ -22184,12 +22184,13 @@ func (x *OAuthResolveAuthConfigInput) GetConfigTarget() *OAuthConfigTarget {
 }
 
 type OAuthResolveAuthConfigOutput struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	AuthorizationUrl string                 `protobuf:"bytes,1,opt,name=authorization_url,json=authorizationUrl,proto3" json:"authorization_url,omitempty"`
-	TokenUrl         string                 `protobuf:"bytes,2,opt,name=token_url,json=tokenUrl,proto3" json:"token_url,omitempty"`
-	RefreshTokenUrl  *string                `protobuf:"bytes,3,opt,name=refresh_token_url,json=refreshTokenUrl,proto3,oneof" json:"refresh_token_url,omitempty"`
-	Scopes           []string               `protobuf:"bytes,4,rep,name=scopes,proto3" json:"scopes,omitempty"`
-	AdditionalParams map[string]string      `protobuf:"bytes,5,rep,name=additional_params,json=additionalParams,proto3" json:"additional_params,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// JSON string or {value: string, secret: true}; validated by the public schema.
+	AuthorizationUrl *structpb.Value   `protobuf:"bytes,1,opt,name=authorization_url,json=authorizationUrl,proto3" json:"authorization_url,omitempty"`
+	TokenUrl         *structpb.Value   `protobuf:"bytes,2,opt,name=token_url,json=tokenUrl,proto3" json:"token_url,omitempty"`
+	RefreshTokenUrl  *structpb.Value   `protobuf:"bytes,3,opt,name=refresh_token_url,json=refreshTokenUrl,proto3" json:"refresh_token_url,omitempty"`
+	Scopes           []string          `protobuf:"bytes,4,rep,name=scopes,proto3" json:"scopes,omitempty"`
+	AdditionalParams map[string]string `protobuf:"bytes,5,rep,name=additional_params,json=additionalParams,proto3" json:"additional_params,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -22224,25 +22225,25 @@ func (*OAuthResolveAuthConfigOutput) Descriptor() ([]byte, []int) {
 	return file_channel_app_sdk_v1_extension_proto_rawDescGZIP(), []int{317}
 }
 
-func (x *OAuthResolveAuthConfigOutput) GetAuthorizationUrl() string {
+func (x *OAuthResolveAuthConfigOutput) GetAuthorizationUrl() *structpb.Value {
 	if x != nil {
 		return x.AuthorizationUrl
 	}
-	return ""
+	return nil
 }
 
-func (x *OAuthResolveAuthConfigOutput) GetTokenUrl() string {
+func (x *OAuthResolveAuthConfigOutput) GetTokenUrl() *structpb.Value {
 	if x != nil {
 		return x.TokenUrl
 	}
-	return ""
+	return nil
 }
 
-func (x *OAuthResolveAuthConfigOutput) GetRefreshTokenUrl() string {
-	if x != nil && x.RefreshTokenUrl != nil {
-		return *x.RefreshTokenUrl
+func (x *OAuthResolveAuthConfigOutput) GetRefreshTokenUrl() *structpb.Value {
+	if x != nil {
+		return x.RefreshTokenUrl
 	}
-	return ""
+	return nil
 }
 
 func (x *OAuthResolveAuthConfigOutput) GetScopes() []string {
@@ -24331,17 +24332,16 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"attempt_id\x18\x01 \x01(\tR\tattemptId\x12*\n" +
 	"\x11target_auth_scope\x18\x02 \x01(\tR\x0ftargetAuthScope\x12/\n" +
 	"\x14requested_o_auth_key\x18\x03 \x01(\tR\x11requestedOAuthKey\x12J\n" +
-	"\rconfig_target\x18\x04 \x01(\v2%.channel.app.sdk.v1.OAuthConfigTargetR\fconfigTarget\"\x81\x03\n" +
-	"\x1cOAuthResolveAuthConfigOutput\x12+\n" +
-	"\x11authorization_url\x18\x01 \x01(\tR\x10authorizationUrl\x12\x1b\n" +
-	"\ttoken_url\x18\x02 \x01(\tR\btokenUrl\x12/\n" +
-	"\x11refresh_token_url\x18\x03 \x01(\tH\x00R\x0frefreshTokenUrl\x88\x01\x01\x12\x16\n" +
+	"\rconfig_target\x18\x04 \x01(\v2%.channel.app.sdk.v1.OAuthConfigTargetR\fconfigTarget\"\xae\x03\n" +
+	"\x1cOAuthResolveAuthConfigOutput\x12C\n" +
+	"\x11authorization_url\x18\x01 \x01(\v2\x16.google.protobuf.ValueR\x10authorizationUrl\x123\n" +
+	"\ttoken_url\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\btokenUrl\x12B\n" +
+	"\x11refresh_token_url\x18\x03 \x01(\v2\x16.google.protobuf.ValueR\x0frefreshTokenUrl\x12\x16\n" +
 	"\x06scopes\x18\x04 \x03(\tR\x06scopes\x12s\n" +
 	"\x11additional_params\x18\x05 \x03(\v2F.channel.app.sdk.v1.OAuthResolveAuthConfigOutput.AdditionalParamsEntryR\x10additionalParams\x1aC\n" +
 	"\x15AdditionalParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x14\n" +
-	"\x12_refresh_token_urlBHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01BHZFgithub.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1b\x06proto3"
 
 var (
 	file_channel_app_sdk_v1_extension_proto_rawDescOnce sync.Once
@@ -25039,35 +25039,38 @@ var file_channel_app_sdk_v1_extension_proto_depIdxs = []int32{
 	277, // 323: channel.app.sdk.v1.IssueSubscriptionStartOutput.issue:type_name -> channel.app.sdk.v1.ExternalIssue
 	313, // 324: channel.app.sdk.v1.OAuthConnectionConfig.config_binding:type_name -> channel.app.sdk.v1.OAuthConfigBinding
 	315, // 325: channel.app.sdk.v1.OAuthResolveAuthConfigInput.config_target:type_name -> channel.app.sdk.v1.OAuthConfigTarget
-	344, // 326: channel.app.sdk.v1.OAuthResolveAuthConfigOutput.additional_params:type_name -> channel.app.sdk.v1.OAuthResolveAuthConfigOutput.AdditionalParamsEntry
-	10,  // 327: channel.app.sdk.v1.ConfigChoice.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 328: channel.app.sdk.v1.ConfigInlineLink.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 329: channel.app.sdk.v1.ConfigValidationNotice.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 330: channel.app.sdk.v1.ConfigOverview.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 331: channel.app.sdk.v1.ConfigDefaultSelector.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 332: channel.app.sdk.v1.ConfigSettings.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 333: channel.app.sdk.v1.ConfigField.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 334: channel.app.sdk.v1.ConfigBlock.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 335: channel.app.sdk.v1.ConfigGetConfigSchemaOutput.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	10,  // 336: channel.app.sdk.v1.ConfigValidationError.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
-	37,  // 337: channel.app.sdk.v1.OAuthStepDisplay.I18nMapEntry.value:type_name -> channel.app.sdk.v1.OAuthStepLocalizedText
-	35,  // 338: channel.app.sdk.v1.OAuthProvider.I18nMapEntry.value:type_name -> channel.app.sdk.v1.OAuthProviderLocalizedText
-	307, // 339: channel.app.sdk.v1.OAuthProvider.ScopedAdditionalParamsEntry.value:type_name -> channel.app.sdk.v1.OAuthScopedParamValue
-	60,  // 340: channel.app.sdk.v1.CommandChoice.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameDescI18n
-	61,  // 341: channel.app.sdk.v1.CommandParamDefinition.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandParamDefI18n
-	59,  // 342: channel.app.sdk.v1.CommandConfig.ButtonNameI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameI18n
-	60,  // 343: channel.app.sdk.v1.CommandConfig.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameDescI18n
-	73,  // 344: channel.app.sdk.v1.WidgetConfig.DefaultNameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.WidgetNameDescI18n
-	79,  // 345: channel.app.sdk.v1.CustomTabConfig.NameI18nMapEntry.value:type_name -> channel.app.sdk.v1.CustomTabNameI18n
-	109, // 346: channel.app.sdk.v1.StoreGetProfileOutput.I18nMapEntry.value:type_name -> channel.app.sdk.v1.StoreProfileLocalizedContent
-	148, // 347: channel.app.sdk.v1.OrderOperationOptions.FieldConfigsEntry.value:type_name -> channel.app.sdk.v1.OrderFieldConfig
-	225, // 348: channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntry.value:type_name -> channel.app.sdk.v1.WmsFieldConfig
-	281, // 349: channel.app.sdk.v1.IssueTransitionInput.PropertiesEntry.value:type_name -> channel.app.sdk.v1.IssueTransitionField
-	350, // [350:350] is the sub-list for method output_type
-	350, // [350:350] is the sub-list for method input_type
-	350, // [350:350] is the sub-list for extension type_name
-	350, // [350:350] is the sub-list for extension extendee
-	0,   // [0:350] is the sub-list for field type_name
+	346, // 326: channel.app.sdk.v1.OAuthResolveAuthConfigOutput.authorization_url:type_name -> google.protobuf.Value
+	346, // 327: channel.app.sdk.v1.OAuthResolveAuthConfigOutput.token_url:type_name -> google.protobuf.Value
+	346, // 328: channel.app.sdk.v1.OAuthResolveAuthConfigOutput.refresh_token_url:type_name -> google.protobuf.Value
+	344, // 329: channel.app.sdk.v1.OAuthResolveAuthConfigOutput.additional_params:type_name -> channel.app.sdk.v1.OAuthResolveAuthConfigOutput.AdditionalParamsEntry
+	10,  // 330: channel.app.sdk.v1.ConfigChoice.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 331: channel.app.sdk.v1.ConfigInlineLink.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 332: channel.app.sdk.v1.ConfigValidationNotice.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 333: channel.app.sdk.v1.ConfigOverview.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 334: channel.app.sdk.v1.ConfigDefaultSelector.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 335: channel.app.sdk.v1.ConfigSettings.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 336: channel.app.sdk.v1.ConfigField.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 337: channel.app.sdk.v1.ConfigBlock.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 338: channel.app.sdk.v1.ConfigGetConfigSchemaOutput.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	10,  // 339: channel.app.sdk.v1.ConfigValidationError.I18nMapEntry.value:type_name -> channel.app.sdk.v1.ConfigLocalizedText
+	37,  // 340: channel.app.sdk.v1.OAuthStepDisplay.I18nMapEntry.value:type_name -> channel.app.sdk.v1.OAuthStepLocalizedText
+	35,  // 341: channel.app.sdk.v1.OAuthProvider.I18nMapEntry.value:type_name -> channel.app.sdk.v1.OAuthProviderLocalizedText
+	307, // 342: channel.app.sdk.v1.OAuthProvider.ScopedAdditionalParamsEntry.value:type_name -> channel.app.sdk.v1.OAuthScopedParamValue
+	60,  // 343: channel.app.sdk.v1.CommandChoice.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameDescI18n
+	61,  // 344: channel.app.sdk.v1.CommandParamDefinition.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandParamDefI18n
+	59,  // 345: channel.app.sdk.v1.CommandConfig.ButtonNameI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameI18n
+	60,  // 346: channel.app.sdk.v1.CommandConfig.NameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.CommandNameDescI18n
+	73,  // 347: channel.app.sdk.v1.WidgetConfig.DefaultNameDescI18nMapEntry.value:type_name -> channel.app.sdk.v1.WidgetNameDescI18n
+	79,  // 348: channel.app.sdk.v1.CustomTabConfig.NameI18nMapEntry.value:type_name -> channel.app.sdk.v1.CustomTabNameI18n
+	109, // 349: channel.app.sdk.v1.StoreGetProfileOutput.I18nMapEntry.value:type_name -> channel.app.sdk.v1.StoreProfileLocalizedContent
+	148, // 350: channel.app.sdk.v1.OrderOperationOptions.FieldConfigsEntry.value:type_name -> channel.app.sdk.v1.OrderFieldConfig
+	225, // 351: channel.app.sdk.v1.WmsOperationOptions.FieldConfigsEntry.value:type_name -> channel.app.sdk.v1.WmsFieldConfig
+	281, // 352: channel.app.sdk.v1.IssueTransitionInput.PropertiesEntry.value:type_name -> channel.app.sdk.v1.IssueTransitionField
+	353, // [353:353] is the sub-list for method output_type
+	353, // [353:353] is the sub-list for method input_type
+	353, // [353:353] is the sub-list for extension type_name
+	353, // [353:353] is the sub-list for extension extendee
+	0,   // [0:353] is the sub-list for field type_name
 }
 
 func init() { file_channel_app_sdk_v1_extension_proto_init() }
@@ -25120,7 +25123,6 @@ func file_channel_app_sdk_v1_extension_proto_init() {
 	file_channel_app_sdk_v1_extension_proto_msgTypes[302].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[307].OneofWrappers = []any{}
 	file_channel_app_sdk_v1_extension_proto_msgTypes[308].OneofWrappers = []any{}
-	file_channel_app_sdk_v1_extension_proto_msgTypes[317].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

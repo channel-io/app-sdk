@@ -2570,9 +2570,9 @@ export const OAuthResolveAuthConfigInputProtoSchema = z.object({
 export type OAuthResolveAuthConfigInputProto = z.infer<typeof OAuthResolveAuthConfigInputProtoSchema>;
 
 export const OAuthResolveAuthConfigOutputProtoSchema = z.object({
-  authorizationUrl: z.string().optional(),
-  tokenUrl: z.string().optional(),
-  refreshTokenUrl: z.string().optional(),
+  authorizationUrl: z.any().optional(),
+  tokenUrl: z.any().optional(),
+  refreshTokenUrl: z.any().optional(),
   scopes: z.array(z.string()).optional(),
   additionalParams: z.record(z.string(), z.string()).optional(),
 }) satisfies z.ZodType<pb.OAuthResolveAuthConfigOutput>;

@@ -539,6 +539,35 @@ describe("ChannelAppService", () => {
     });
   });
 
+  it("redacts arbitrary resolver inputs, outputs, and errors", async () => {
+    const discovery = createMockDiscoveryService([]);
+    const service = createService(
+      { appId: "test-app", appSecret: "test-secret", debug: true },
+      discovery
+    );
+    const handler = vi
+      .fn()
+      .mockResolvedValue({
+        authorizationUrl: "https://example.com/auth",
+        tokenUrl: { value: "https://example.com/private-marker", secret: true },
+      });
+    (discovery as any).getFunction = vi.fn().mockReturnValue({ handler });
+    const request = {
+      method: "extension.oauth.connection.resolveAuthConfig",
+      context: { config: { tenant: "private-marker" } } as never,
+      params: {},
+    };
+    const response = await service.handleFunctionCall(request);
+    expect(response.result).toHaveProperty("tokenUrl.value", "https://example.com/private-marker");
+    handler.mockRejectedValueOnce(new Error("private-marker"));
+    await expect(service.handleFunctionCall(request)).rejects.toThrow(
+      "OAuth connection resolver failed"
+    );
+    expect(JSON.stringify((service as any).logger.debug.mock.calls)).not.toContain(
+      "private-marker"
+    );
+  });
+
   describe("function discovery", () => {
     it.each([false, true])(
       "should preserve deprecation through discovery and calls (extension: %s)",
