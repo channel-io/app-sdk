@@ -545,12 +545,10 @@ describe("ChannelAppService", () => {
       { appId: "test-app", appSecret: "test-secret", debug: true },
       discovery
     );
-    const handler = vi
-      .fn()
-      .mockResolvedValue({
-        authorizationUrl: "https://example.com/auth",
-        tokenUrl: { value: "https://example.com/private-marker", secret: true },
-      });
+    const handler = vi.fn().mockResolvedValue({
+      authorizationUrl: "https://example.com/auth",
+      tokenUrl: { value: "https://example.com/private-marker", secret: true },
+    });
     (discovery as any).getFunction = vi.fn().mockReturnValue({ handler });
     const request = {
       method: "extension.oauth.connection.resolveAuthConfig",
