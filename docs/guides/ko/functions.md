@@ -95,6 +95,9 @@ Command, custom tab, widget, config Function은 각자 선언한 언어 입력 �
 기존 앱은 AppStore의 자동 주입을 제거하기 전에 `context.language`도 읽도록 수정하고,
 명시적인 언어 인자의 의미는 보존하세요. Context 언어는 선택 값이므로 없을 때 사용할 기본값도 정하세요.
 
+입력 schema 검증은 handler보다 먼저 실행됩니다. 자동 주입된 표시 언어에만 의존해 `language`를
+필수로 선언했다면, 자동 주입을 중단하기 전에 해당 필드를 선택 값으로 바꾸세요.
+업무 계약상 필수인 언어 인자는 계속 필수로 유지하고 호출자가 직접 전달해야 합니다.
 
 ## 수신 처리와 discovery
 

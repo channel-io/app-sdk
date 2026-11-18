@@ -100,6 +100,10 @@ When migrating an existing app, accept `context.language` before AppStore stops 
 injection, and preserve the semantics of any explicit language argument. Context language is optional;
 choose an appropriate default when it is absent.
 
+Input-schema validation runs before the handler. If an existing schema requires `language` solely
+because it previously received the automatically injected locale, make that field optional before
+automatic injection ends. Keep any language argument required by the Function's business contract
+required; its caller must still provide it.
 
 ## Incoming handling and discovery
 
