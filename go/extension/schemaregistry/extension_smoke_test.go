@@ -239,11 +239,13 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 		name:          oauth.ExtensionName,
 		systemVersion: oauth.SystemVersion,
 		functions: []string{
+			oauth.FunctionResolveAuthConfig,
 			oauth.FunctionGetAuthConfig,
 			oauth.FunctionValidateCredentials,
 		},
 		build: func() appsdk.Extension {
 			return oauth.Extension().
+				ResolveAuthConfig(smokeZero[oauth.ResolveAuthConfigInput, oauth.ResolveAuthConfigOutput]()).
 				GetAuthConfig(smokeZero[oauth.GetAuthConfigRequest, oauth.AuthConfig]()).
 				ValidateCredentials(smokeZero[oauth.CredentialValidationInput, oauth.CredentialValidationResult]())
 		},

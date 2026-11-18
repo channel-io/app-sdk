@@ -6,6 +6,7 @@ import type {
   OAuthFlowHookResult,
   HookExtensionInterface,
   OAuthExtensionInterface,
+  ResolveAuthConfigOutput,
 } from "../../index.js";
 
 describe("OAuth flow hook exported types", () => {
@@ -29,9 +30,7 @@ describe("OAuth flow hook exported types", () => {
       OAuthExtensionInterface,
       "getAuthConfig" | "validateCredentials"
     >;
-    const unchanged: keyof OAuthExtensionInterface extends keyof ExistingOAuthMethods
-      ? true
-      : false = true;
+    const unchanged: ExistingOAuthMethods extends OAuthExtensionInterface ? true : false = true;
     void input;
     void proceed;
     void redirect;
@@ -99,5 +98,27 @@ describe("Webhook response exported types", () => {
     void xml;
     void missing;
     void invalid;
+  });
+});
+
+describe("resolved OAuth endpoint exported types", () => {
+  it("retains the strict endpoint union despite Proto Value", () => {
+    const result: ResolveAuthConfigOutput = {
+      authorizationUrl: "https://example.com/auth",
+      tokenUrl: { value: "https://example.com/token", secret: true },
+    };
+    const invalid: ResolveAuthConfigOutput = {
+      // @ts-expect-error Proto Value must not widen the public URL to any.
+      authorizationUrl: 123,
+      tokenUrl: "https://example.com/token",
+    };
+    const invalidSecret: ResolveAuthConfigOutput = {
+      authorizationUrl: "https://example.com/auth",
+      // @ts-expect-error A secret endpoint must have secret: true.
+      tokenUrl: { value: "https://example.com/token", secret: false },
+    };
+    void result;
+    void invalid;
+    void invalidSecret;
   });
 });

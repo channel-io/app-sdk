@@ -10,12 +10,14 @@ import (
 	"github.com/channel-io/app-sdk/go/extension/schemaregistry"
 	sdkv1 "github.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
 	ExtensionName = "oauth"
 	SystemVersion = "v1"
 
+	FunctionResolveAuthConfig   = "extension.oauth.connection.resolveAuthConfig"
 	FunctionGetAuthConfig       = "extension.oauth.metadata.getAuthConfig"
 	FunctionValidateCredentials = "extension.oauth.validation.validateCredentials"
 
@@ -56,6 +58,58 @@ func (b *ExtensionBuilder) GetAuthConfig(handler appsdk.TypedHandlerFunc[GetAuth
 	// Restore canonical input/output schemas after HandleProtoInput supplies its inferred input.
 	b.base.Func(FunctionGetAuthConfig, append([]appsdk.FunctionOption{handlerOption}, schemaregistry.FunctionOptions(FunctionGetAuthConfig)...)...)
 	return b
+}
+
+func (b *ExtensionBuilder) ResolveAuthConfig(handler appsdk.TypedHandlerFunc[ResolveAuthConfigInput, ResolveAuthConfigOutput]) *ExtensionBuilder {
+	handlerOption := appsdk.HandleProtoInput(func(ctx context.Context, fnCtx appsdk.Context, input *ResolveAuthConfigInput) (output any, outputErr error) {
+		// Panics can contain decrypted Config or private endpoints too. Contain them
+		// before the HTTP server's recovery middleware logs the panic value.
+		defer func() {
+			if recover() != nil {
+				output = nil
+				outputErr = fmt.Errorf("OAuth connection resolver failed")
+			}
+		}()
+		result, err := handler(ctx, fnCtx, input)
+		if err != nil {
+			return nil, fmt.Errorf("OAuth connection resolver failed")
+		}
+		encoded, err := marshalResolvedAuthConfig(result)
+		if err != nil {
+			return nil, fmt.Errorf("invalid OAuth resolver result")
+		}
+		return encoded, nil
+	})
+	b.base.Func(FunctionResolveAuthConfig, append([]appsdk.FunctionOption{handlerOption}, schemaregistry.FunctionOptions(FunctionResolveAuthConfig)...)...)
+	return b
+}
+
+// Omitted scopes inherit registered scopes; an explicit empty slice requests none.
+// Proto JSON omits both, so preserve the resolver handler's choice at this boundary.
+func marshalResolvedAuthConfig(result *ResolveAuthConfigOutput) (json.RawMessage, error) {
+	if result == nil {
+		return nil, fmt.Errorf("OAuth resolver result is required")
+	}
+	for _, endpoint := range []*structpb.Value{result.AuthorizationUrl, result.TokenUrl} {
+		if err := validateEndpoint(endpoint); err != nil {
+			return nil, err
+		}
+	}
+	if result.RefreshTokenUrl != nil {
+		if err := validateEndpoint(result.RefreshTokenUrl); err != nil {
+			return nil, err
+		}
+	}
+	encoded, err := protojson.Marshal(result)
+	if err != nil || result.Scopes == nil || len(result.Scopes) > 0 {
+		return encoded, err
+	}
+	var wire map[string]json.RawMessage
+	if err := json.Unmarshal(encoded, &wire); err != nil {
+		return nil, err
+	}
+	wire["scopes"] = json.RawMessage(`[]`)
+	return json.Marshal(wire)
 }
 
 func (b *ExtensionBuilder) ValidateCredentials(handler appsdk.TypedHandlerFunc[CredentialValidationInput, CredentialValidationResult]) *ExtensionBuilder {
@@ -167,3 +221,9 @@ func marshalAuthConfig(config *AuthConfig) (json.RawMessage, error) {
 	}
 	return json.Marshal(wire)
 }
+
+type ConnectionConfig = sdkv1.OAuthConnectionConfig
+type ConfigBinding = sdkv1.OAuthConfigBinding
+type ConfigTarget = sdkv1.OAuthConfigTarget
+type ResolveAuthConfigInput = sdkv1.OAuthResolveAuthConfigInput
+type ResolveAuthConfigOutput = sdkv1.OAuthResolveAuthConfigOutput

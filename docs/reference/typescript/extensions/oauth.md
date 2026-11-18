@@ -11,6 +11,64 @@ Implement these function names:
 
 `validateCredentials` is the contract AppStore expects for extension-based OAuth.
 
+## Resolve URLs from saved Config
+
+Opt in with `connectionConfig: { mode: "resolved", configBinding: { scope: "channel", fieldKeys: ["subdomain"] } }` in `getAuthConfig`. Static applications may omit `connectionConfig` and keep their existing URLs. Resolved applications may omit registration-time authorization and token URLs, but must implement `connection.resolveAuthConfig` (Go: `ResolveAuthConfig`).
+
+Add this method to your existing `@Extension({ name: "oauth", systemVersion: "v1" })` class. Import `Func`, `InputSchema`, and `OutputSchema` from `@channel.io/app-sdk-server`. Import `Context` and the resolver schemas/types from `@channel.io/app-sdk-core`.
+
+```typescript
+@Func("connection.resolveAuthConfig")
+@InputSchema(ResolveAuthConfigInputSchema)
+@OutputSchema(ResolveAuthConfigOutputSchema)
+async resolveAuthConfig(
+  ctx: Context,
+  _params: ResolveAuthConfigInput,
+): Promise<ResolveAuthConfigOutput> {
+  const subdomain = String(ctx.config?.subdomain ?? "");
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(subdomain)) {
+    throw new Error("Invalid subdomain");
+  }
+  return {
+    authorizationUrl: `https://${subdomain}.zendesk.com/oauth/authorizations/new`,
+    tokenUrl: `https://${subdomain}.zendesk.com/oauth/tokens`,
+  };
+}
+```
+
+The resolver input is `attemptId`, `targetAuthScope`, `requestedOAuthKey`, and `configTarget: { scope, key, revision }`. Config owns field definitions; OAuth binding selects final storage keys (`resolvesTo.key` when present). `ctx.config` contains only the selected saved fields, including server-decrypted secret or credential fields. Missing, duplicate, transient, and scope-mismatched fields are rejected. `revision` is an opaque read identifier, not a hash of secret inputs or a snapshot version.
+
+The result requires `authorizationUrl` and `tokenUrl`; `refreshTokenUrl`, `scopes`, and `additionalParams` are optional. Each endpoint accepts a string or `{ value: string, secret: true }`:
+
+```typescript
+return {
+  authorizationUrl: "https://provider.example.com/authorize",
+  tokenUrl: { value: `https://provider.example.com/${ctx.config?.tenant}/token`, secret: true },
+  // Omit refreshTokenUrl to reuse the resolved token URL.
+};
+```
+
+Go uses the same JSON contract through helpers in `go/extension/oauth`:
+
+```go
+return &oauth.ResolveAuthConfigOutput{
+    AuthorizationUrl: oauth.Endpoint("https://provider.example.com/authorize"),
+    TokenUrl: oauth.SecretEndpoint("https://provider.example.com/private-tenant/token"),
+}, nil
+```
+
+Return complete endpoints, including variable domains, paths, and query parameters, before per-attempt state, code, or PKCE parameters are added. Omitted scopes inherit registered scopes; an empty array requests none. Scopes cannot exceed the registered set. `additionalParams` supplies authorization query parameters and token/refresh request body parameters; reserved OAuth parameters cannot be returned. App Store requires public HTTPS endpoints and validates token destinations and disallows redirects before sending credentials.
+
+The settings UI reads OAuth metadata separately from Config schema and places bound inputs before the connect button, followed by ordinary settings. The connect button requires only the binding and existing OAuth additional-parameter/client-credential prerequisites. Changed or unsaved connection fields are validated and saved before authorization; ordinary settings and their unsaved drafts can be completed later. Overall Config validity is not required, including a post-save `valid: false` result. Save failures and explicit `validateBeforeSave` rejection still stop authorization. Existing secret masking preserves saved values without returning plaintext to the UI. Resolved installations open settings first; static installation redirects are unchanged. Binding fields are not automatically provider query parameters. Existing `Config.oauth.additionalParams` and `Config.oauth.clientCredentials` declarations remain supported.
+
+App Store stores resolved endpoints in authorization state and then in the credential on successful callback. **It does not store Config value snapshots.** Marked secret endpoints are encrypted using versioned storage; ordinary strings remain plain. Secret inputs and endpoints must not appear in logs or read responses. The authorization URL still reaches the browser for navigation: `secret` protects storage and logging, not browser visibility. Callback uses the saved endpoints; validation uses the existing token/additional params and `oauthFlow` scope/key. Refresh uses saved endpoints without calling the resolver or reading binding Config. Client credential lookup and additional-params persistence retain their existing behavior.
+
+Saving edited Config before reconnect is allowed. Failure or cancellation leaves the edited Config and old token/endpoints in place. Successful reauthorization replaces the token and endpoints together. Ordinary app calls still read current Config, so applications must keep resource targets consistent with the connected account.
+
+Only the `default` Config/OAuth connection is supported. The saved Config key is carried through initiation, resolver input, state, callback, and credential without another OAuth key resolver or fallback to a different row. Manager Config requires manager OAuth; channel Config may back either concrete OAuth scope. Multi OAuth and changes to default selection remain out of scope.
+
+Deploy database compatibility changes, App Store server/WAM, and the SDK in that order before enabling resolved applications. Existing apps are not migrated automatically. Static connections switched to resolved mode require reauthorization to capture endpoints; older servers cannot read encrypted endpoint storage.
+
 ## Registration
 
 Registration is still the generic extension flow:
@@ -284,13 +342,13 @@ const display: OAuthStepDisplay = {
 
 `OAuthStepIconSchema.options` lists all supported values for autocomplete and validation:
 
-| Icon | Use | App Store Bezier icon |
-| --- | --- | --- |
-| `installation` | Install or add an app | `DownloadIcon` |
-| `account` | Authorize an account | `PersonIcon` |
-| `organization` | Choose an organization | `GroupIcon` |
-| `permission` | Review access | `LockIcon` |
-| `settings` | Complete configuration | `SettingsIcon` |
+| Icon           | Use                    | App Store Bezier icon |
+| -------------- | ---------------------- | --------------------- |
+| `installation` | Install or add an app  | `DownloadIcon`        |
+| `account`      | Authorize an account   | `PersonIcon`          |
+| `organization` | Choose an organization | `GroupIcon`           |
+| `permission`   | Review access          | `LockIcon`            |
+| `settings`     | Complete configuration | `SettingsIcon`        |
 
 Omit the icon to use the platform's default. URLs, SVGs and colors are unsupported. Titles are required (up to 80 characters); descriptions allow up to 300. Translations support ko/en/ja and reuse the provider locale fallback. All values render as plain text.
 

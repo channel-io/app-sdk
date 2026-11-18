@@ -77,6 +77,8 @@ import {
   CredentialValidationInputSchema,
   CredentialValidationResultSchema,
   OAuthConfigSchema,
+  ResolveAuthConfigInputSchema,
+  ResolveAuthConfigOutputSchema,
 } from "./oauth.js";
 import {
   AddressSchema,
@@ -588,6 +590,11 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     name: "extension.notebook.core.getNotebooks",
     input: EmptyInputSchema,
     output: GetNotebooksResponseSchema,
+  },
+  {
+    name: "extension.oauth.connection.resolveAuthConfig",
+    input: ResolveAuthConfigInputSchema,
+    output: ResolveAuthConfigOutputSchema,
   },
   {
     name: "extension.oauth.metadata.getAuthConfig",

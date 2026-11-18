@@ -2,6 +2,17 @@ import { describe, expect, it } from "vitest";
 import { sanitizeForLogging } from "../utils/sanitize-for-logging.js";
 
 describe("sanitizeForLogging", () => {
+  it("redacts the entire secret endpoint without changing the wire result", () => {
+    const value = {
+      tokenUrl: { value: "https://example.com/private-path", secret: true },
+      authorizationUrl: "https://example.com/auth",
+    };
+    expect(sanitizeForLogging(value)).toEqual({
+      tokenUrl: "[REDACTED]",
+      authorizationUrl: value.authorizationUrl,
+    });
+    expect(value.tokenUrl.value).toContain("private-path");
+  });
   it.each(["privateKey", "private_key", "private-key", "PRIVATE_KEY"])(
     "redacts nested %s fields without changing the input or unrelated config",
     (key) => {

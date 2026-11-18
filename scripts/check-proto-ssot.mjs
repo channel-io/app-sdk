@@ -47,6 +47,9 @@ const allowedTsHelperTypes = new Set([
   "MessagingPrebuiltProvider",
   "NotebookExtensionProvider",
   "OAuthProviderI18nMap",
+  // JSON scalar/object union carried by OAuthResolveAuthConfigOutput's google.protobuf.Value.
+  // Its containing DTO has proto-field parity; schemas/oauth.test.ts covers both wire variants.
+  "OAuthEndpoint",
   "StaticDataSourceMetadata",
   "StoreProfileProvider",
   "SuggestionTriggersProvider",
@@ -54,6 +57,7 @@ const allowedTsHelperTypes = new Set([
 const allowedTsHelperSchemas = new Set([
   "ConfigI18nMapSchema",
   "OAuthProviderI18nMapSchema",
+  "OAuthEndpointSchema",
 ]);
 
 const allowedGoHelpers = new Set([

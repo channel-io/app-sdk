@@ -331,6 +331,7 @@ export class ChannelAppService implements OnModuleInit, OnApplicationBootstrap {
     _version?: string
   ): Promise<FunctionCallResponse> {
     const { method, context, params } = request;
+    const isOAuthResolver = method === "extension.oauth.connection.resolveAuthConfig";
 
     // Handle getFunctions request
     if (method === "extension.core.function.getFunctions") {
@@ -351,7 +352,9 @@ export class ChannelAppService implements OnModuleInit, OnApplicationBootstrap {
 
     if (this.options.debug) {
       this.logger.debug(`Calling function: ${method}`);
-      this.logger.debug(`Request: ${JSON.stringify(sanitizeForLogging(request))}`);
+      this.logger.debug(
+        `Request: ${isOAuthResolver ? "[REDACTED]" : JSON.stringify(sanitizeForLogging(request))}`
+      );
     }
 
     try {
@@ -359,11 +362,17 @@ export class ChannelAppService implements OnModuleInit, OnApplicationBootstrap {
       const result = normalizeExtensionResult(method, await func.handler(context, params ?? {}));
 
       if (this.options.debug) {
-        this.logger.debug(`Output: ${JSON.stringify(sanitizeForLogging(result))}`);
+        this.logger.debug(
+          `Output: ${isOAuthResolver ? "[REDACTED]" : JSON.stringify(sanitizeForLogging(result))}`
+        );
       }
 
       return { result };
     } catch (error) {
+      if (isOAuthResolver) {
+        // User errors and schema failures may embed the secret inputs or endpoints.
+        throw new Error("OAuth connection resolver failed");
+      }
       if (error instanceof FunctionCallError) {
         const response: FunctionCallResponse = { error: error.toResponse() };
 

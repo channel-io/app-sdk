@@ -537,6 +537,7 @@ export interface OAuthConfig {
     | undefined;
   /** Caller scope only: use channel credentials when the manager has none. Defaults to true. */
   allowChannelFallback?: boolean | undefined;
+  connectionConfig?: OAuthConnectionConfig | undefined;
 }
 
 export interface OAuthCredentialValidationInput {
@@ -2866,4 +2867,41 @@ export interface IssueSubscriptionStopInput {
 
 export interface IssueSubscriptionStopOutput {
   stopped?: boolean | undefined;
+}
+
+export interface OAuthConfigBinding {
+  scope?: string | undefined;
+  fieldKeys?: string[] | undefined;
+}
+
+export interface OAuthConnectionConfig {
+  mode?: string | undefined;
+  configBinding?: OAuthConfigBinding | undefined;
+}
+
+export interface OAuthConfigTarget {
+  scope?: string | undefined;
+  key?: string | undefined;
+  revision?: string | undefined;
+}
+
+export interface OAuthResolveAuthConfigInput {
+  attemptId?: string | undefined;
+  targetAuthScope?: string | undefined;
+  requestedOAuthKey?: string | undefined;
+  configTarget?: OAuthConfigTarget | undefined;
+}
+
+export interface OAuthResolveAuthConfigOutput {
+  /** JSON string or {value: string, secret: true}; validated by the public schema. */
+  authorizationUrl?: any | undefined;
+  tokenUrl?: any | undefined;
+  refreshTokenUrl?: any | undefined;
+  scopes?: string[] | undefined;
+  additionalParams?: { [key: string]: string } | undefined;
+}
+
+export interface OAuthResolveAuthConfigOutput_AdditionalParamsEntry {
+  key: string;
+  value: string;
 }

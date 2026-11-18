@@ -59,6 +59,10 @@ export function sanitizeForLogging(value: unknown, key?: string, seen = new Weak
   }
 
   if (value && typeof value === "object") {
+    // Resolver endpoints may contain credentials in any part of the URL.
+    if ("secret" in value && value.secret === true) {
+      return REDACTED_LOG_VALUE;
+    }
     if (seen.has(value)) {
       return CIRCULAR_LOG_VALUE;
     }

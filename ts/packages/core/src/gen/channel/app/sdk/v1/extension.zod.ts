@@ -467,6 +467,7 @@ export const OAuthConfigProtoSchema = z.object({
   authScope: z.string().optional(),
   oauthProvider: z.lazy(() => OAuthProviderProtoSchema).optional(),
   allowChannelFallback: z.boolean().optional(),
+  connectionConfig: z.lazy(() => OAuthConnectionConfigProtoSchema).optional(),
 }) satisfies z.ZodType<pb.OAuthConfig>;
 export type OAuthConfigProto = z.infer<typeof OAuthConfigProtoSchema>;
 
@@ -2543,3 +2544,39 @@ export const IssueSubscriptionStopOutputProtoSchema = z.object({
   stopped: z.boolean().optional(),
 }) satisfies z.ZodType<pb.IssueSubscriptionStopOutput>;
 export type IssueSubscriptionStopOutputProto = z.infer<typeof IssueSubscriptionStopOutputProtoSchema>;
+
+export const OAuthConfigBindingProtoSchema = z.object({
+  scope: z.string().optional(),
+  fieldKeys: z.array(z.string()).optional(),
+}) satisfies z.ZodType<pb.OAuthConfigBinding>;
+export type OAuthConfigBindingProto = z.infer<typeof OAuthConfigBindingProtoSchema>;
+
+export const OAuthConnectionConfigProtoSchema = z.object({
+  mode: z.string().optional(),
+  configBinding: z.lazy(() => OAuthConfigBindingProtoSchema).optional(),
+}) satisfies z.ZodType<pb.OAuthConnectionConfig>;
+export type OAuthConnectionConfigProto = z.infer<typeof OAuthConnectionConfigProtoSchema>;
+
+export const OAuthConfigTargetProtoSchema = z.object({
+  scope: z.string().optional(),
+  key: z.string().optional(),
+  revision: z.string().optional(),
+}) satisfies z.ZodType<pb.OAuthConfigTarget>;
+export type OAuthConfigTargetProto = z.infer<typeof OAuthConfigTargetProtoSchema>;
+
+export const OAuthResolveAuthConfigInputProtoSchema = z.object({
+  attemptId: z.string().optional(),
+  targetAuthScope: z.string().optional(),
+  requestedOAuthKey: z.string().optional(),
+  configTarget: z.lazy(() => OAuthConfigTargetProtoSchema).optional(),
+}) satisfies z.ZodType<pb.OAuthResolveAuthConfigInput>;
+export type OAuthResolveAuthConfigInputProto = z.infer<typeof OAuthResolveAuthConfigInputProtoSchema>;
+
+export const OAuthResolveAuthConfigOutputProtoSchema = z.object({
+  authorizationUrl: z.any().optional(),
+  tokenUrl: z.any().optional(),
+  refreshTokenUrl: z.any().optional(),
+  scopes: z.array(z.string()).optional(),
+  additionalParams: z.record(z.string(), z.string()).optional(),
+}) satisfies z.ZodType<pb.OAuthResolveAuthConfigOutput>;
+export type OAuthResolveAuthConfigOutputProto = z.infer<typeof OAuthResolveAuthConfigOutputProtoSchema>;

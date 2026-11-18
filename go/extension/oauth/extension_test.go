@@ -2,7 +2,11 @@ package oauth
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"reflect"
 	"regexp"
 	"testing"
 
@@ -12,6 +16,61 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
+
+func TestResolveAuthConfigPreservesScopeSelection(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		scopes []string
+	}{
+		{"inherit registered scopes", nil},
+		{"request no scopes", []string{}},
+		{"request subset", []string{"read"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			app := appsdk.New(appsdk.Options{AppID: "app"})
+			output := &ResolveAuthConfigOutput{AuthorizationUrl: Endpoint("https://example.com/authorize"), TokenUrl: Endpoint("https://example.com/token"), Scopes: tc.scopes}
+			if err := app.Use(Extension().ResolveAuthConfig(func(context.Context, appsdk.Context, *ResolveAuthConfigInput) (*ResolveAuthConfigOutput, error) {
+				return output, nil
+			})); err != nil {
+				t.Fatal(err)
+			}
+			response := app.HandleRequest(t.Context(), appsdk.FunctionRequest{Method: FunctionResolveAuthConfig, Params: json.RawMessage(`{"attemptId":"attempt","targetAuthScope":"channel","requestedOAuthKey":"default","configTarget":{"scope":"channel","key":"default","revision":"revision"}}`)})
+			if response.Error != nil {
+				t.Fatalf("handler failed: %+v", response.Error)
+			}
+			var decoded struct {
+				AuthorizationURL string   `json:"authorizationUrl"`
+				TokenURL         string   `json:"tokenUrl"`
+				Scopes           []string `json:"scopes"`
+			}
+			if err := json.Unmarshal(response.Result, &decoded); err != nil {
+				t.Fatal(err)
+			}
+			if !reflect.DeepEqual(decoded.Scopes, tc.scopes) || decoded.AuthorizationURL != output.AuthorizationUrl.GetStringValue() || decoded.TokenURL != output.TokenUrl.GetStringValue() {
+				t.Fatalf("resolver changed selected scopes or endpoints: %s", response.Result)
+			}
+			if !reflect.DeepEqual(output.Scopes, tc.scopes) {
+				t.Fatal("serialization mutated the handler result")
+			}
+		})
+	}
+}
+
+func TestResolveAuthConfigDiscardsResultOnError(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	if err := app.Use(Extension().ResolveAuthConfig(func(context.Context, appsdk.Context, *ResolveAuthConfigInput) (*ResolveAuthConfigOutput, error) {
+		return &ResolveAuthConfigOutput{AuthorizationUrl: Endpoint("https://example.com/authorize"), TokenUrl: Endpoint("https://example.com/token")}, errors.New("synthetic-private-url-marker")
+	})); err != nil {
+		t.Fatal(err)
+	}
+	response := app.HandleRequest(t.Context(), appsdk.FunctionRequest{Method: FunctionResolveAuthConfig, Params: json.RawMessage(`{}`)})
+	if bytes.Contains([]byte(fmt.Sprint(response.Error)), []byte("synthetic-private-url-marker")) {
+		t.Fatal("resolver error exposed private endpoint")
+	}
+	if response.Error == nil || len(response.Result) != 0 {
+		t.Fatalf("expected failed resolution without a result: %+v", response)
+	}
+}
 
 func TestAuthConfigPreservesChannelFallbackPresence(t *testing.T) {
 	for _, tc := range []struct {
@@ -144,4 +203,27 @@ func TestOAuthRegistrationPatternsCompileInGo(t *testing.T) {
 		}
 	}
 	visit(schema.OutputSchema)
+}
+
+func TestResolvedSecretEndpointWireShape(t *testing.T) {
+	output := &ResolveAuthConfigOutput{AuthorizationUrl: Endpoint("https://example.com/authorize"), TokenUrl: SecretEndpoint("https://example.com/private-token")}
+	raw, err := marshalResolvedAuthConfig(output)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var decoded map[string]any
+	if err := json.Unmarshal(raw, &decoded); err != nil {
+		t.Fatal(err)
+	}
+	if decoded["authorizationUrl"] != "https://example.com/authorize" {
+		t.Fatalf("plain URL lost: %s", raw)
+	}
+	secret, ok := decoded["tokenUrl"].(map[string]any)
+	if !ok || secret["secret"] != true || secret["value"] != "https://example.com/private-token" {
+		t.Fatal("secret URL wire shape mismatch")
+	}
+	output.TokenUrl = nil
+	if _, err := marshalResolvedAuthConfig(output); err == nil {
+		t.Fatal("missing token URL accepted")
+	}
 }

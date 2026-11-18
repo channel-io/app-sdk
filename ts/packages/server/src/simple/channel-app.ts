@@ -271,6 +271,12 @@ class ChannelAppSimpleService implements OnModuleInit {
       const result = normalizeExtensionResult(method, await func.handler(context, params ?? {}));
       return { result };
     } catch (error) {
+      if (
+        method === "extension.oauth.connection.resolveAuthConfig" ||
+        method === "oauth.connection.resolveAuthConfig"
+      ) {
+        throw new Error("OAuth connection resolver failed");
+      }
       if (error instanceof FunctionCallError) {
         return { error: error.toResponse() };
       }

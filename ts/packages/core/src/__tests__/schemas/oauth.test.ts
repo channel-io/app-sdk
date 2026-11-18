@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   CredentialValidationInputSchema,
+  ResolveAuthConfigOutputSchema,
   OAuthConfigSchema,
   OAuthProviderSchema,
   OAuthAuthorizationRequestMappingSchema,
@@ -202,5 +203,68 @@ describe("oauth extension schema", () => {
     expect(CredentialValidationInputSchema.parse({ accessToken: "token" }).accessToken).toBe(
       "token"
     );
+  });
+});
+
+describe("resolved OAuth connection metadata", () => {
+  const config = {
+    authType: "oauth",
+    authScope: "channel",
+    oauthProvider: { provider: "zendesk", providerName: "Zendesk", scopes: ["read"] },
+    connectionConfig: {
+      mode: "resolved",
+      configBinding: { scope: "channel", fieldKeys: ["subdomain"] },
+    },
+  };
+  it("allows Config-resolved endpoints with an explicit saved Config binding", () => {
+    expect(OAuthConfigSchema.parse(config)).toEqual(config);
+  });
+  it("retains static endpoint requirements and rejects ambiguous connection identities", () => {
+    expect(OAuthConfigSchema.safeParse({ ...config, connectionConfig: undefined }).success).toBe(
+      false
+    );
+    expect(
+      OAuthConfigSchema.safeParse({
+        ...config,
+        connectionConfig: {
+          mode: "resolved",
+          configBinding: { scope: "manager", fieldKeys: ["subdomain"] },
+        },
+      }).success
+    ).toBe(false);
+    expect(
+      OAuthConfigSchema.safeParse({
+        ...config,
+        connectionConfig: {
+          mode: "resolved",
+          configBinding: { scope: "channel", fieldKeys: ["subdomain", "subdomain"] },
+        },
+      }).success
+    ).toBe(false);
+  });
+});
+
+describe("resolved secret endpoints", () => {
+  it("accepts mixed string and secret endpoints", () => {
+    const value = ResolveAuthConfigOutputSchema.parse({
+      authorizationUrl: "https://example.com/auth",
+      tokenUrl: { value: "https://example.com/private-token", secret: true },
+    });
+    expect(value.tokenUrl).toEqual({ value: "https://example.com/private-token", secret: true });
+  });
+  it.each([
+    null,
+    123,
+    {},
+    { value: "https://example.com", secret: false },
+    { value: "invalid", secret: true },
+    { value: "https://example.com", secret: true, extra: 1 },
+  ])("rejects malformed endpoints: %j", (tokenUrl) => {
+    expect(
+      ResolveAuthConfigOutputSchema.safeParse({
+        authorizationUrl: "https://example.com/auth",
+        tokenUrl,
+      }).success
+    ).toBe(false);
   });
 });
