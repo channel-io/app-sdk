@@ -85,6 +85,17 @@ return {
 Channel, caller에 바인딩해 서명하세요. 재개 호출도 새 호출과 동일하게 입력 검증, 권한 검증,
 실행 정책을 적용해야 합니다. token에 credential이나 원문 고객 데이터를 넣지 마세요.
 
+## 호출 언어
+
+일반 Function에서는 `context.language`로 호출자의 표시 언어를 읽습니다.
+AppStore는 일반 Function의 `params.language` 자동 추가를 보장하지 않습니다.
+호출자가 Function 입력 schema에 선언된 언어 인자를 직접 보내면 그 값은 그대로 전달합니다.
+
+Command, custom tab, widget, config Function은 각자 선언한 언어 입력 계약을 유지합니다.
+기존 앱은 AppStore의 자동 주입을 제거하기 전에 `context.language`도 읽도록 수정하고,
+명시적인 언어 인자의 의미는 보존하세요. Context 언어는 선택 값이므로 없을 때 사용할 기본값도 정하세요.
+
+
 ## 수신 처리와 discovery
 
 Developer portal에는 Function root를 등록하고 AppStore는 system version이 붙은 route를 호출합니다.

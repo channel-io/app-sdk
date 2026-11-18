@@ -88,6 +88,19 @@ with bindings for the app, Function, Channel, and caller. A resumed call must re
 input validation, authorization, and execution-policy checks. Never store credentials or raw
 customer data in the token.
 
+## Invocation language
+
+For general Functions, read the caller's display language from `context.language` when present.
+AppStore does not guarantee an automatically added `params.language` for general Functions.
+A caller may still send an explicit language argument declared by the Function's input schema;
+AppStore preserves that argument.
+
+Command, custom tab, widget, and config Functions retain their declared language input contracts.
+When migrating an existing app, accept `context.language` before AppStore stops legacy automatic
+injection, and preserve the semantics of any explicit language argument. Context language is optional;
+choose an appropriate default when it is absent.
+
+
 ## Incoming handling and discovery
 
 Register the Function root in the developer portal. AppStore calls the route with a system version.
