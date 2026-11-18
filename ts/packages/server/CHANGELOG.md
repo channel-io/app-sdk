@@ -1,5 +1,14 @@
 # @channel.io/app-sdk-server
 
+## 0.43.0
+
+### Patch Changes
+
+- 301f0d1: Add optional Config-bound OAuth endpoint resolution and Go/TypeScript resolver contracts, including secret endpoint declarations. Redact resolver inputs, results, and errors in SDK logging. Existing static OAuth remains compatible.
+- Updated dependencies [301f0d1]
+- Updated dependencies [44edabe]
+  - @channel.io/app-sdk-core@0.43.0
+
 ## 0.42.0
 
 ### Patch Changes
