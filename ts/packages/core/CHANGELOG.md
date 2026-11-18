@@ -1,5 +1,12 @@
 # @channel.io/app-sdk-core
 
+## 0.43.0
+
+### Minor Changes
+
+- 301f0d1: Add optional Config-bound OAuth endpoint resolution and Go/TypeScript resolver contracts, including secret endpoint declarations. Redact resolver inputs, results, and errors in SDK logging. Existing static OAuth remains compatible.
+- 44edabe: Support timezone-aware cron schedules and stable poller IDs in the polling extension, while preserving existing interval declarations.
+
 ## 0.42.0
 
 ### Minor Changes
