@@ -85,6 +85,20 @@ return {
 Channel、caller に結び付けて署名してください。再開された呼び出しにも通常の入力検証、権限検証、
 実行ポリシーを適用し、credential や生の顧客データを token に保存しないでください。
 
+## 呼び出しの言語
+
+通常の Function では、呼び出し元の表示言語を `context.language` から取得します。
+AppStore は通常の Function の `params.language` 自動追加を保証しません。
+呼び出し元が Function の入力 schema に定義された言語引数を指定した場合、その値は保持されます。
+
+Command、custom tab、widget、config Function は、それぞれ定義された言語入力契約を維持します。
+既存アプリは、自動追加が廃止される前に `context.language` にも対応し、明示的な言語引数の意味を
+保持してください。Context の言語は省略可能なので、存在しない場合の既定値も決めてください。
+
+入力 schema の検証は handler より先に実行されます。自動追加された表示言語だけに依存して
+`language` を必須にしていた場合、自動追加の廃止前にその field を任意にしてください。
+業務上必須の言語引数は必須のまま維持し、呼び出し元が指定してください。
+
 ## 受信処理と discovery
 
 Developer portal には Function root を登録し、AppStore は system version 付き route を呼び出します。
