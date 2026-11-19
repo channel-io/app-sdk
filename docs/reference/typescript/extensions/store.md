@@ -16,6 +16,7 @@ The function returns the persisted metadata directly. Do not wrap it in a `profi
 
 ```typescript
 type StoreProfileMetadata = {
+  searchKeyword?: string[];
   relatedAppIds: string[];
   i18nMap: {
     ko: StoreProfileLocalizedContent;
@@ -34,6 +35,7 @@ type StoreProfileLocalizedContent = {
 };
 ```
 
+- `searchKeyword` is an optional multilingual array. Non-empty terms replace the app title in public Desk App Store, homepage, and related-app picker searches; omitted or empty terms use server-managed search terms when available, then fall back to the title. Include the app name in the array if it should remain searchable. Values are trimmed, must not be blank, and are deduplicated. There is no Developer UI editor. Deploy server schema/storage support before registering apps that return this field.
 - `relatedAppIds` lists apps that work with this app.
 - `images[].key` is the opaque relative key returned by the App Store media upload API. Do not assume a storage prefix or pass an external URL.
 - `images[].alt` is limited to 120 characters.

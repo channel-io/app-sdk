@@ -26330,6 +26330,13 @@
     "outputSchema": {
       "type": "object",
       "properties": {
+        "searchKeyword": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
         "relatedAppIds": {
           "type": "array",
           "items": {

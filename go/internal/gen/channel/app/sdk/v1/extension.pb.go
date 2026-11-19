@@ -8074,7 +8074,9 @@ func (*StoreGetProfileInput) Descriptor() ([]byte, []int) {
 }
 
 type StoreGetProfileOutput struct {
-	state         protoimpl.MessageState                   `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional multilingual search terms; empty uses server-managed terms, then the app title.
+	SearchKeyword []string                                 `protobuf:"bytes,3,rep,name=search_keyword,json=searchKeyword,proto3" json:"search_keyword,omitempty"`
 	RelatedAppIds []string                                 `protobuf:"bytes,1,rep,name=related_app_ids,json=relatedAppIds,proto3" json:"related_app_ids,omitempty"`
 	I18NMap       map[string]*StoreProfileLocalizedContent `protobuf:"bytes,2,rep,name=i18n_map,json=i18nMap,proto3" json:"i18n_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
@@ -8109,6 +8111,13 @@ func (x *StoreGetProfileOutput) ProtoReflect() protoreflect.Message {
 // Deprecated: Use StoreGetProfileOutput.ProtoReflect.Descriptor instead.
 func (*StoreGetProfileOutput) Descriptor() ([]byte, []int) {
 	return file_channel_app_sdk_v1_extension_proto_rawDescGZIP(), []int{111}
+}
+
+func (x *StoreGetProfileOutput) GetSearchKeyword() []string {
+	if x != nil {
+		return x.SearchKeyword
+	}
+	return nil
 }
 
 func (x *StoreGetProfileOutput) GetRelatedAppIds() []string {
@@ -23061,8 +23070,9 @@ const file_channel_app_sdk_v1_extension_proto_rawDesc = "" +
 	"\x06images\x18\x01 \x03(\v2%.channel.app.sdk.v1.StoreProfileImageR\x06images\x12;\n" +
 	"\x05intro\x18\x02 \x01(\v2%.channel.app.sdk.v1.StoreProfileIntroR\x05intro\x120\n" +
 	"\x04faqs\x18\x03 \x03(\v2\x1c.channel.app.sdk.v1.StoreFaqR\x04faqs\"\x16\n" +
-	"\x14StoreGetProfileInput\"\x80\x02\n" +
-	"\x15StoreGetProfileOutput\x12&\n" +
+	"\x14StoreGetProfileInput\"\xa7\x02\n" +
+	"\x15StoreGetProfileOutput\x12%\n" +
+	"\x0esearch_keyword\x18\x03 \x03(\tR\rsearchKeyword\x12&\n" +
 	"\x0frelated_app_ids\x18\x01 \x03(\tR\rrelatedAppIds\x12Q\n" +
 	"\bi18n_map\x18\x02 \x03(\v26.channel.app.sdk.v1.StoreGetProfileOutput.I18nMapEntryR\ai18nMap\x1al\n" +
 	"\fI18nMapEntry\x12\x10\n" +

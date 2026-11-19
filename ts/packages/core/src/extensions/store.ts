@@ -59,6 +59,10 @@ export type StoreProfileLocalizedContent = ProtoBacked<
 
 export const StoreProfileMetadataSchema = z
   .object({
+    searchKeyword: z
+      .array(StoreNonEmptyStringSchema)
+      .transform((values) => [...new Set(values)])
+      .optional(),
     relatedAppIds: z.array(StoreNonEmptyStringSchema),
     i18nMap: z
       .object({

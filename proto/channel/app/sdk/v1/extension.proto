@@ -859,6 +859,8 @@ message StoreProfileLocalizedContent {
 message StoreGetProfileInput {}
 
 message StoreGetProfileOutput {
+  // Optional multilingual search terms; empty uses server-managed terms, then the app title.
+  repeated string search_keyword = 3;
   repeated string related_app_ids = 1;
   map<string, StoreProfileLocalizedContent> i18n_map = 2;
 }
