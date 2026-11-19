@@ -53,6 +53,7 @@ const allowedTsHelperTypes = new Set([
   "StaticDataSourceMetadata",
   "StoreProfileProvider",
   "SuggestionTriggersProvider",
+  "SuggestionMetadataProvider",
 ]);
 const allowedTsHelperSchemas = new Set([
   "ConfigI18nMapSchema",

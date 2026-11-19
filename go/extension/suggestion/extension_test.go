@@ -94,6 +94,9 @@ func TestExtensionSerializesRequiredTriggerCollections(t *testing.T) {
 			if err := json.Unmarshal(response.Result, &result); err != nil {
 				t.Fatalf("Unmarshal() error = %v", err)
 			}
+			if _, exists := result["benefitText"]; exists {
+				t.Fatalf("legacy response unexpectedly includes benefitText: %s", response.Result)
+			}
 			serializedTriggers, ok := result["triggers"].(map[string]any)
 			if !ok {
 				t.Fatalf("triggers = %#v", result["triggers"])
@@ -107,5 +110,53 @@ func TestExtensionSerializesRequiredTriggerCollections(t *testing.T) {
 				t.Fatalf("keywords = %#v", serializedTriggers["keywords"])
 			}
 		})
+	}
+}
+
+func TestStaticMetadataRejectsMissingTriggers(t *testing.T) {
+	for _, metadata := range []*GetTriggersResponse{nil, {BenefitText: map[string]string{"en": "hello"}}} {
+		if _, err := StaticMetadata(metadata)(context.Background(), appsdk.Context{}, &GetTriggersRequest{}); err == nil {
+			t.Fatal("expected missing triggers error")
+		}
+	}
+}
+
+func TestExtensionSerializesBenefitText(t *testing.T) {
+	for _, benefit := range []map[string]string{nil, {}, {"ko": "채널톡 알림을 받아볼 수 있어요.", "en": "you can receive notifications."}} {
+		triggers, err := NewTriggers(nil, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		app := appsdk.New(appsdk.Options{})
+		if err := Extension().GetTriggers(StaticMetadata(&GetTriggersResponse{
+			Triggers: triggers, BenefitText: benefit,
+		})).Register(app); err != nil {
+			t.Fatal(err)
+		}
+		response := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: FunctionGetTriggers})
+		if response.IsError() {
+			t.Fatal(response.Error)
+		}
+		var result struct {
+			Triggers struct {
+				Urls     []string            `json:"urls"`
+				Keywords map[string][]string `json:"keywords"`
+			} `json:"triggers"`
+			BenefitText map[string]string `json:"benefitText"`
+		}
+		if err := json.Unmarshal(response.Result, &result); err != nil {
+			t.Fatal(err)
+		}
+		if result.Triggers.Urls == nil || result.Triggers.Keywords == nil {
+			t.Fatalf("required collections missing: %s", response.Result)
+		}
+		if len(result.BenefitText) != len(benefit) {
+			t.Fatalf("benefitText = %v", result.BenefitText)
+		}
+		for locale, text := range benefit {
+			if result.BenefitText[locale] != text {
+				t.Fatalf("benefitText[%q] = %q", locale, result.BenefitText[locale])
+			}
+		}
 	}
 }
