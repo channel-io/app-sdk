@@ -1,5 +1,13 @@
 # @tutorial-example/server
 
+## 0.0.39
+
+### Patch Changes
+
+- Updated dependencies [57d938f]
+  - @channel.io/app-sdk-core@0.44.0
+  - @channel.io/app-sdk-server@0.44.0
+
 ## 0.0.38
 
 ### Patch Changes

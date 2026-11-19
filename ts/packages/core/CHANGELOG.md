@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.44.0
+
+### Minor Changes
+
+- 57d938f: Support optional `searchKeyword` in store profile metadata. Public App Store and related-app searches use these terms instead of the app title when present. Existing apps may omit the field.
+
 ## 0.43.1
 
 ### Patch Changes
