@@ -35,6 +35,33 @@ describe("store extension schemas", () => {
     expect(parsed.i18nMap.en.intro.helpsWith).toContain("shipping");
   });
 
+  it("accepts optional search terms and rejects blank or non-array values", () => {
+    expect(defineStoreProfile(storeProfileMetadata).searchKeyword).toBeUndefined();
+    expect(
+      defineStoreProfile({ ...storeProfileMetadata, searchKeyword: [] }).searchKeyword
+    ).toEqual([]);
+    expect(
+      defineStoreProfile({ ...storeProfileMetadata, searchKeyword: [" Slack ", "슬랙", "Slack"] })
+        .searchKeyword
+    ).toEqual(["Slack", "슬랙"]);
+    for (const searchKeyword of ["Slack", ["  "], [1]]) {
+      expect(() =>
+        StoreProfileMetadataSchema.parse({ ...storeProfileMetadata, searchKeyword })
+      ).toThrow();
+    }
+  });
+
+  it("registers search metadata through the store function", async () => {
+    const registered = registerExtension(
+      createStoreExtension({ ...storeProfileMetadata, searchKeyword: ["Slack", "슬랙"] })
+    );
+    const result = await registered.functions[0]?.handler(
+      { caller: { id: "manager-1" }, channel: { id: "channel-1" }, app: { id: "app-1" } },
+      {}
+    );
+    expect(result).toMatchObject({ searchKeyword: ["Slack", "슬랙"] });
+  });
+
   it("rejects the legacy runtime profile shapes", () => {
     expect(() => GetStoreProfileOutputSchema.parse({ profile: storeProfileMetadata })).toThrow();
     expect(() =>

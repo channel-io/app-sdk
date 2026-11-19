@@ -1029,6 +1029,8 @@ export interface StoreGetProfileInput {
 }
 
 export interface StoreGetProfileOutput {
+  /** Optional multilingual search terms; an empty list falls back to the app title. */
+  searchKeyword?: string[] | undefined;
   relatedAppIds?: string[] | undefined;
   i18nMap?: { [key: string]: StoreProfileLocalizedContent } | undefined;
 }

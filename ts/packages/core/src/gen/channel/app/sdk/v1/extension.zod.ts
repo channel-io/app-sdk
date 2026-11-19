@@ -940,6 +940,7 @@ export const StoreGetProfileInputProtoSchema = z.object({}) satisfies z.ZodType<
 export type StoreGetProfileInputProto = z.infer<typeof StoreGetProfileInputProtoSchema>;
 
 export const StoreGetProfileOutputProtoSchema = z.object({
+  searchKeyword: z.array(z.string()).optional(),
   relatedAppIds: z.array(z.string()).optional(),
   i18nMap: z.record(z.string(), z.lazy(() => StoreProfileLocalizedContentProtoSchema)).optional(),
 }) satisfies z.ZodType<pb.StoreGetProfileOutput>;
