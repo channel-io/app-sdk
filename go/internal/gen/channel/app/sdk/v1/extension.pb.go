@@ -8075,7 +8075,7 @@ func (*StoreGetProfileInput) Descriptor() ([]byte, []int) {
 
 type StoreGetProfileOutput struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional multilingual search terms; an empty list falls back to the app title.
+	// Optional multilingual search terms; empty uses server-managed terms, then the app title.
 	SearchKeyword []string                                 `protobuf:"bytes,3,rep,name=search_keyword,json=searchKeyword,proto3" json:"search_keyword,omitempty"`
 	RelatedAppIds []string                                 `protobuf:"bytes,1,rep,name=related_app_ids,json=relatedAppIds,proto3" json:"related_app_ids,omitempty"`
 	I18NMap       map[string]*StoreProfileLocalizedContent `protobuf:"bytes,2,rep,name=i18n_map,json=i18nMap,proto3" json:"i18n_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
