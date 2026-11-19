@@ -1,5 +1,11 @@
 # @channel.io/app-sdk-core
 
+## 0.43.1
+
+### Patch Changes
+
+- 6314ed7: Support optional localized suggestion benefit text. The suggestion helper accepts complete metadata responses while preserving existing trigger-only calls.
+
 ## 0.43.0
 
 ### Minor Changes
