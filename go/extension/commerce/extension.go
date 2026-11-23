@@ -56,6 +56,11 @@ func (b *ExtensionBuilder) ChangeShippingAddress(handler appsdk.TypedHandlerFunc
 	return b
 }
 
+func (b *ExtensionBuilder) SearchProduct(handler appsdk.TypedHandlerFunc[SearchProductInput, SearchProductOutput]) *ExtensionBuilder {
+	b.base.Func(FunctionSearchProduct, schemaregistry.Append(FunctionSearchProduct, handleSearchProduct(handler))...)
+	return b
+}
+
 func (b *ExtensionBuilder) GetProducts(handler appsdk.TypedHandlerFunc[GetProductsInput, GetProductsOutput]) *ExtensionBuilder {
 	b.base.Func(FunctionGetProducts, schemaregistry.Append(FunctionGetProducts, appsdk.HandleProto(handler))...)
 	return b

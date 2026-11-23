@@ -7,7 +7,8 @@
   "include": [
     "src/__tests__/extensions/hook.type.test.ts",
     "src/__tests__/schemas/context.test.ts",
-    "src/__tests__/schemas/native.test.ts"
+    "src/__tests__/schemas/native.test.ts",
+    "src/__tests__/extensions/commerce-search.type.ts"
   ],
   "exclude": []
 }

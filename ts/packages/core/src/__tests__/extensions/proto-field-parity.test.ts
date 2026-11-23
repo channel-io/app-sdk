@@ -285,6 +285,12 @@ import {
   CommerceProductVariantSchema,
   CommerceProductSchema,
   CommerceGetProductsInputSchema,
+  CommerceSearchProductImageSchema,
+  CommerceSearchProductOptionSchema,
+  CommerceSearchProductVariantSchema,
+  CommerceSearchProductSchema,
+  CommerceSearchProductInputSchema,
+  CommerceSearchProductOutputSchema,
   CommerceGetProductsOutputSchema,
 } from "../../extensions/commerce.js";
 
@@ -946,6 +952,42 @@ const contracts: Contract[] = [
     CommerceGetProductsOutputSchema,
     "extension",
     "CommerceGetProductsOutput"
+  ),
+  contract(
+    "CommerceSearchProductImage",
+    CommerceSearchProductImageSchema,
+    "extension",
+    "CommerceSearchProductImage"
+  ),
+  contract(
+    "CommerceSearchProductOption",
+    CommerceSearchProductOptionSchema,
+    "extension",
+    "CommerceSearchProductOption"
+  ),
+  contract(
+    "CommerceSearchProductVariant",
+    CommerceSearchProductVariantSchema,
+    "extension",
+    "CommerceSearchProductVariant"
+  ),
+  contract(
+    "CommerceSearchProduct",
+    CommerceSearchProductSchema,
+    "extension",
+    "CommerceSearchProduct"
+  ),
+  contract(
+    "CommerceSearchProductInput",
+    CommerceSearchProductInputSchema,
+    "extension",
+    "CommerceSearchProductInput"
+  ),
+  contract(
+    "CommerceSearchProductOutput",
+    CommerceSearchProductOutputSchema,
+    "extension",
+    "CommerceSearchProductOutput"
   ),
   contract("WmsShippingInfo", WmsShippingInfoSchema, "extension", "WmsShippingInfo"),
   contract("WmsDelivery", WmsDeliverySchema, "extension", "WmsDelivery"),

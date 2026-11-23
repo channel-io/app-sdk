@@ -15,6 +15,7 @@ const (
 	FunctionGetExchangeableItems  = "extension.commerce.order.getExchangeableItems"
 	FunctionChangeShippingAddress = "extension.commerce.order.changeShippingAddress"
 	FunctionGetProducts           = "extension.commerce.product.getProducts"
+	FunctionSearchProduct         = "extension.commerce.product.searchProduct"
 )
 
 // commerce 전용 타입
@@ -37,6 +38,14 @@ type GetExchangeableItemsOutput = sdkv1.CommerceGetExchangeableItemsOutput
 type ChangeShippingAddressInput = sdkv1.CommerceChangeShippingAddressInput
 type GetProductsInput = sdkv1.CommerceGetProductsInput
 type GetProductsOutput = sdkv1.CommerceGetProductsOutput
+
+// Search types preserve Cafe24's size/amount/quantity contract.
+type SearchProductInput = sdkv1.CommerceSearchProductInput
+type SearchProductOutput = sdkv1.CommerceSearchProductOutput
+type SearchProduct = sdkv1.CommerceSearchProduct
+type SearchProductImage = sdkv1.CommerceSearchProductImage
+type SearchProductVariant = sdkv1.CommerceSearchProductVariant
+type SearchProductOption = sdkv1.CommerceSearchProductOption
 
 // 변경 없는 값 타입은 Order* / Buyer 재사용
 type Buyer = sdkv1.Buyer

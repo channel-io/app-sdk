@@ -1558,6 +1558,70 @@ message CommerceChangeShippingAddressInput {
 
 // --- product group: 카탈로그 열람·ID 조회. 이름 검색은 받지 않는다 ---
 
+// Search keeps the established Cafe24 searchProducts JSON contract. It is not
+// the catalog getProducts contract: size, amount and quantity retain their names.
+message CommerceSearchProductInput {
+  string query = 1;
+  // JSON integer, intentionally not int32: oversized requests reach the core clamp.
+  optional double size = 2;
+  google.protobuf.Value search_filter = 3;
+  string since = 4;
+}
+
+message CommerceSearchProductOutput {
+  repeated CommerceSearchProduct products = 1;
+  string next = 2;
+}
+
+message CommerceSearchProduct {
+  string id = 1;
+  string name = 2;
+  string app_commerce_type = 3;
+  CommerceSearchProductImage default_image = 4;
+  repeated string images = 5;
+  optional double amount = 6;
+  optional double retail_amount = 7;
+  string currency = 8;
+  string state = 9;
+  string vendor = 10;
+  string product_type = 11;
+  repeated string categories = 12;
+  string summary = 13;
+  string description = 14;
+  string product_url = 15;
+  repeated string tags = 16;
+  optional double created_at = 17;
+  optional double updated_at = 18;
+  repeated CommerceSearchProductVariant variants = 19;
+}
+
+message CommerceSearchProductImage {
+  string bucket = 1;
+  string key = 2;
+  string id = 3;
+  string type = 4;
+  string name = 5;
+  string ext = 6;
+  optional double size = 7;
+  string content_type = 8;
+  optional double width = 9;
+  optional double height = 10;
+  optional bool animated = 11;
+}
+
+message CommerceSearchProductVariant {
+  string variant_id = 1;
+  optional double amount = 2;
+  optional double quantity = 3;
+  optional bool use_inventory = 4;
+  repeated CommerceSearchProductOption options = 5;
+}
+
+message CommerceSearchProductOption {
+  string name = 1;
+  string value = 2;
+}
+
 message CommerceGetProductsInput {
   // getOrders 와 같은 필터 표현. 안쪽 키는 protojson 이 변환하지 않는 데이터라 camelCase 그대로다 —
   // 공통 키는 productId(복수 id 조회 포함 — 커머스 필터 방언에서 any-of 는 $eq 에 복수 values 다)·

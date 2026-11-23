@@ -1606,6 +1606,73 @@ export const CommerceChangeShippingAddressInputProtoSchema = z.object({
 }) satisfies z.ZodType<pb.CommerceChangeShippingAddressInput>;
 export type CommerceChangeShippingAddressInputProto = z.infer<typeof CommerceChangeShippingAddressInputProtoSchema>;
 
+export const CommerceSearchProductInputProtoSchema = z.object({
+  query: z.string().optional(),
+  size: z.number().optional(),
+  searchFilter: z.any().optional(),
+  since: z.string().optional(),
+}) satisfies z.ZodType<pb.CommerceSearchProductInput>;
+export type CommerceSearchProductInputProto = z.infer<typeof CommerceSearchProductInputProtoSchema>;
+
+export const CommerceSearchProductOutputProtoSchema = z.object({
+  products: z.array(z.lazy(() => CommerceSearchProductProtoSchema)).optional(),
+  next: z.string().optional(),
+}) satisfies z.ZodType<pb.CommerceSearchProductOutput>;
+export type CommerceSearchProductOutputProto = z.infer<typeof CommerceSearchProductOutputProtoSchema>;
+
+export const CommerceSearchProductProtoSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().optional(),
+  appCommerceType: z.string().optional(),
+  defaultImage: z.lazy(() => CommerceSearchProductImageProtoSchema).optional(),
+  images: z.array(z.string()).optional(),
+  amount: z.number().optional(),
+  retailAmount: z.number().optional(),
+  currency: z.string().optional(),
+  state: z.string().optional(),
+  vendor: z.string().optional(),
+  productType: z.string().optional(),
+  categories: z.array(z.string()).optional(),
+  summary: z.string().optional(),
+  description: z.string().optional(),
+  productUrl: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  createdAt: z.number().optional(),
+  updatedAt: z.number().optional(),
+  variants: z.array(z.lazy(() => CommerceSearchProductVariantProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.CommerceSearchProduct>;
+export type CommerceSearchProductProto = z.infer<typeof CommerceSearchProductProtoSchema>;
+
+export const CommerceSearchProductImageProtoSchema = z.object({
+  bucket: z.string().optional(),
+  key: z.string().optional(),
+  id: z.string().optional(),
+  type: z.string().optional(),
+  name: z.string().optional(),
+  ext: z.string().optional(),
+  size: z.number().optional(),
+  contentType: z.string().optional(),
+  width: z.number().optional(),
+  height: z.number().optional(),
+  animated: z.boolean().optional(),
+}) satisfies z.ZodType<pb.CommerceSearchProductImage>;
+export type CommerceSearchProductImageProto = z.infer<typeof CommerceSearchProductImageProtoSchema>;
+
+export const CommerceSearchProductVariantProtoSchema = z.object({
+  variantId: z.string().optional(),
+  amount: z.number().optional(),
+  quantity: z.number().optional(),
+  useInventory: z.boolean().optional(),
+  options: z.array(z.lazy(() => CommerceSearchProductOptionProtoSchema)).optional(),
+}) satisfies z.ZodType<pb.CommerceSearchProductVariant>;
+export type CommerceSearchProductVariantProto = z.infer<typeof CommerceSearchProductVariantProtoSchema>;
+
+export const CommerceSearchProductOptionProtoSchema = z.object({
+  name: z.string().optional(),
+  value: z.string().optional(),
+}) satisfies z.ZodType<pb.CommerceSearchProductOption>;
+export type CommerceSearchProductOptionProto = z.infer<typeof CommerceSearchProductOptionProtoSchema>;
+
 export const CommerceGetProductsInputProtoSchema = z.object({
   searchFilter: z.any().optional(),
   since: z.string().optional(),

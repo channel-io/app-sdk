@@ -61,7 +61,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 		RequestCancelOrder(zero[commerce.CancelOrderInput, commerce.ActionResult]()).
 		RequestExchangeOrder(zero[commerce.ExchangeOrderInput, commerce.ActionResult]()).
 		RequestReturnOrder(zero[commerce.ReturnOrderInput, commerce.ActionResult]()).
-		GetProducts(zero[commerce.GetProductsInput, commerce.GetProductsOutput]()))
+		GetProducts(zero[commerce.GetProductsInput, commerce.GetProductsOutput]()).
+		SearchProduct(zero[commerce.SearchProductInput, commerce.SearchProductOutput]()))
 
 	use(t, app, config.Extension().
 		GetConfigSchema(zero[config.GetConfigSchemaRequest, config.GetConfigSchemaResponse]()).
@@ -166,8 +167,8 @@ func TestRegisteredExtensionSchemasMatchCanonicalRegistry(t *testing.T) {
 	got := app.Schemas()
 	want := schemaregistry.Schemas()
 
-	if len(got) != 92 {
-		t.Fatalf("expected 92 registered extension function schemas, got %d", len(got))
+	if len(got) != 93 {
+		t.Fatalf("expected 93 registered extension function schemas, got %d", len(got))
 	}
 	if !reflect.DeepEqual(got, want) {
 		for i := range got {

@@ -102,6 +102,8 @@ import {
   CommerceGetOrdersOutputSchema,
   CommerceGetProductsInputSchema,
   CommerceGetProductsOutputSchema,
+  CommerceSearchProductInputSchema,
+  CommerceSearchProductOutputSchema,
   CommerceResultSchema,
   CommerceAcceptReturnOrderInputSchema,
   CommerceReturnOrderInputSchema,
@@ -425,6 +427,11 @@ export const extensionFunctionSchemaDefinitions: FunctionSchemaDefinition[] = [
     name: "extension.commerce.product.getProducts",
     input: CommerceGetProductsInputSchema,
     output: CommerceGetProductsOutputSchema,
+  },
+  {
+    name: "extension.commerce.product.searchProduct",
+    input: CommerceSearchProductInputSchema,
+    output: CommerceSearchProductOutputSchema,
   },
   {
     name: "extension.config.metadata.getConfigSchema",
