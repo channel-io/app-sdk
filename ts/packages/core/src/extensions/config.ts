@@ -244,7 +244,7 @@ export const ConfigDraftResolutionParamsSchema = z.object({
   channelId: z.string(),
   managerId: z.string().optional(),
   changedFieldKey: z.string(),
-  changedValue: z.unknown(),
+  changedValue: z.unknown().optional(),
   values: z.record(z.string(), z.unknown()),
 });
 export type ConfigDraftResolutionParams = ProtoBacked<

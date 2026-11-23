@@ -37,8 +37,12 @@ func TestContinueOnlyOAuthHookWireMatchesRequiredSchemaFields(t *testing.T) {
 				t.Fatal("empty repeated fields should keep their existing proto JSON omission")
 			}
 			items := schema.OutputSchema["properties"].(map[string]any)["hooks"].(map[string]any)["items"].(map[string]any)
+			branches, ok := items["oneOf"].([]any)
+			if !ok || len(branches) == 0 {
+				t.Fatal("hook metadata must expose non-empty discriminated alternatives")
+			}
 			found := false
-			for _, candidate := range items["anyOf"].([]any) {
+			for _, candidate := range branches {
 				branch := candidate.(map[string]any)
 				if branch["properties"].(map[string]any)["type"].(map[string]any)["const"] != kind {
 					continue

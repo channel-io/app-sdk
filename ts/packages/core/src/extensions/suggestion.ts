@@ -21,8 +21,8 @@ const SuggestionUrlSchema = z
   .trim()
   .min(1)
   .max(2048)
-  .check(z.url())
   .regex(SuggestionUrlPattern, "Suggestion URLs must use HTTP(S) and must not contain user info")
+  .check(z.url())
   .refine((value) => {
     const url = new URL(value);
     return (

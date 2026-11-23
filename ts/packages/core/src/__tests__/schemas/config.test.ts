@@ -730,3 +730,14 @@ describe("config extension schema", () => {
     expect(parsed.notices?.[0]?.blockId).toBe("wms-settings");
   });
 });
+
+it("preserves omitted draft values during load and clear", () => {
+  const params = { scope: "channel", channelId: "1", changedFieldKey: "optionalField", values: {} };
+  expect(ConfigDraftResolutionParamsSchema.parse(params)).toEqual(params);
+  for (const changedValue of [undefined, null, false, 0, ""]) {
+    expect(ConfigDraftResolutionParamsSchema.parse({ ...params, changedValue })).toEqual({
+      ...params,
+      changedValue,
+    });
+  }
+});
