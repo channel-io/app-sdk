@@ -17844,6 +17844,13 @@
                           "executionScope": {
                             "type": "string",
                             "const": "app"
+                          },
+                          "bodyDelivery": {
+                            "type": "string",
+                            "enum": [
+                              "body",
+                              "reference"
+                            ]
                           }
                         },
                         "required": [
@@ -17917,6 +17924,13 @@
                                 ],
                                 "additionalProperties": false
                               }
+                            ]
+                          },
+                          "bodyDelivery": {
+                            "type": "string",
+                            "enum": [
+                              "body",
+                              "reference"
                             ]
                           }
                         },

@@ -523,6 +523,26 @@ describe("NativeFunctionClient", () => {
     });
   });
 
+  describe("webhook functions", () => {
+    it("should read a stored webhook body with an app token", async () => {
+      const expected = { rawBodyBase64: "e30=", size: 2, sha256: "4".repeat(64) };
+      mockFetch.mockResolvedValueOnce(mockFetchResponse({ result: expected }));
+
+      const result = await client.getWebhookBody(
+        { targetId: "github.events", deliveryId: "delivery-1" },
+        "app-token"
+      );
+
+      expect(parseFetchBody(mockFetch)).toEqual({
+        method: "getWebhookBody",
+        params: { targetId: "github.events", deliveryId: "delivery-1" },
+      });
+      const init = getFetchInit(mockFetch);
+      expect((init.headers as Record<string, string>)["x-access-token"]).toBe("app-token");
+      expect(result).toEqual(expected);
+    });
+  });
+
   // ============================================
   // Typed Native Function Calls
   // ============================================

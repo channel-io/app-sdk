@@ -334,6 +334,54 @@ SDK setting and re-registering apps. Existing apps need no re-registration.
 Dynamic request-dependent replies, synchronous app calls, and custom headers
 are not supported.
 
+### Large bodies by reference
+
+By default the Function input carries both `request.body` and
+`request.rawBodyBase64`, so a JSON webhook reaches the app server at about 2.33
+times its raw size. An app server that limits JSON request bodies to 1 MiB cannot
+receive raw bodies from about 450 KB. Set
+`webhook.bodyDelivery: "reference"` to receive such bodies by reference:
+
+```ts
+webhook: { endpointToken, bodyDelivery: "reference" }
+// Manager scope: webhook: { executionScope: "manager", bodyDelivery: "reference" }
+```
+
+AppStore then sends `request.bodyRef` instead of `request.body` and
+`request.rawBodyBase64`, but only for deliveries whose body it stored outside its
+queue (large bodies in environments with the body store on). Every other delivery
+still arrives inline, so handle both shapes. Validate the reference with
+`WebhookBodyRefSchema`:
+
+```json
+"request": {
+  "method": "POST",
+  "headers": { "Content-Type": ["application/json"] },
+  "bodyRef": { "size": 450449, "sha256": "<lowercase hex SHA-256>", "contentType": "application/json" }
+}
+```
+
+Read the body with the `getWebhookBody` native function and an app token, passing
+the input's own `targetId` and `deliveryId`. Verify the result before using it:
+
+```ts
+const { rawBodyBase64, size, sha256 } = await nativeClient.getWebhookBody(
+  { targetId: input.targetId, deliveryId: input.deliveryId },
+  await tokenManager.getAppToken()
+);
+const raw = Buffer.from(rawBodyBase64, "base64");
+if (size !== bodyRef.size || sha256 !== bodyRef.sha256 || raw.length !== size) {
+  throw new Error("webhook body does not match its reference");
+}
+```
+
+`rawBodyBase64` equals the inline `request.rawBodyBase64`, so verify provider
+signatures on the decoded bytes as before. The app is taken from the token, so an
+app reads only its own deliveries. Another app's delivery, a body that was not
+stored, and a body past its retention (AppStore deletes stored bodies 14 days after
+receipt) all fail with NotFound; read the body while the Function runs. Roll out the
+AppStore migration and servers that support `bodyDelivery` before re-registering.
+
 ## Registration
 
 Hooks register through:

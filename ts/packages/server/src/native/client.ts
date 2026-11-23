@@ -9,6 +9,8 @@ import type {
   NativeFunctionResult,
   NativeGetAppDataTableSchemaParams,
   NativeGetAppDataTableSchemaResult,
+  NativeGetWebhookBodyParams,
+  NativeGetWebhookBodyResult,
   NativeListActiveOAuthManagerTargetsParams,
   NativeListActiveOAuthManagerTargetsResult,
   NativeUpsertAppDataTableRowsParams,
@@ -293,6 +295,29 @@ export class NativeFunctionClient {
       NativeListActiveOAuthManagerTargetsParams,
       NativeListActiveOAuthManagerTargetsResult
     >("listActiveOAuthManagerTargets", params, accessToken);
+  }
+
+  // ============================================
+  // Webhook Functions
+  // ============================================
+
+  /**
+   * Read the stored body of a `webhook.received` delivery sent with `request.bodyRef`.
+   *
+   * Pass the delivery's `targetId` and `deliveryId` from the Function input, with an app
+   * token from `TokenManager.getAppToken()`. Check that `sha256` equals
+   * `request.bodyRef.sha256` before trusting the body. Another app's delivery, a body
+   * that was not stored, and an expired body (about 14 days) all fail with NotFound.
+   */
+  getWebhookBody(
+    params: NativeGetWebhookBodyParams,
+    accessToken: string
+  ): Promise<NativeGetWebhookBodyResult> {
+    return this.callNativeFunctionWithToken<NativeGetWebhookBodyParams, NativeGetWebhookBodyResult>(
+      "getWebhookBody",
+      params,
+      accessToken
+    );
   }
 
   // ============================================

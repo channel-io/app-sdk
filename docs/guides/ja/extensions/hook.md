@@ -76,3 +76,14 @@ app scope と manager scope の両方で任意の `webhook.response` を設定�
 引き続き使用します。XML 入力は既存の `rawBodyBase64` で受け取れます。
 migration と全プラットフォームサーバーのデプロイ後に新しい SDK 設定を使用してください。
 XML・空の本文・設定解除は [固定応答の例](../../../reference/typescript/extensions/hook.md#fixed-acknowledgement-response) を参照してください。
+
+## 大きな webhook 本文を参照で受け取る
+
+アプリサーバーがリクエストサイズを制限する場合は `webhook.bodyDelivery: "reference"` を
+指定します。インラインの JSON webhook は、元の本文が約 450 KB を超えるとリクエストが 1 MiB を超えます。この設定では、App Store が保管した本文を
+`request.body` と `request.rawBodyBase64` の代わりに `request.bodyRef`（`size`、`sha256`、
+任意の `contentType`）で送ります。保管しなかった delivery は引き続きインラインで届くため、
+両方の形を処理してください。本文は `NativeFunctionClient.getWebhookBody({ targetId, deliveryId }, appToken)`
+で読み、`size` と `sha256` が `bodyRef` と一致することを確認してから provider の署名を検証します。
+保管した本文は受信 14 日後に削除されます。インライン入力と参照入力の両方を test してください。
+詳細は [参照受け取りのリファレンス](../../../reference/typescript/extensions/hook.md#large-bodies-by-reference) を参照してください。

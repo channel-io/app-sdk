@@ -117,6 +117,21 @@ export const NativeListActiveOAuthManagerTargetsResultSchema = z
   })
   .strict();
 
+export const NativeGetWebhookBodyParamsSchema = z
+  .object({
+    targetId: NativeNonEmptyStringSchema,
+    deliveryId: NativeNonEmptyStringSchema,
+  })
+  .strict();
+
+export const NativeGetWebhookBodyResultSchema = z
+  .object({
+    rawBodyBase64: z.string(),
+    size: z.number().int().min(0),
+    sha256: z.string().regex(/^[0-9a-f]{64}$/),
+  })
+  .strict();
+
 export const NativeOAuthFlowSchema = z
   .object({
     id: NativeNonEmptyStringSchema,
@@ -211,6 +226,13 @@ export const nativeFunctionSchemaDefinitions = [
     description: "Page active manager-scoped OAuth targets within the app token's own app scope.",
     input: NativeListActiveOAuthManagerTargetsParamsSchema,
     output: NativeListActiveOAuthManagerTargetsResultSchema,
+  },
+  {
+    name: "getWebhookBody",
+    description:
+      "Read the stored body of one of the app token's own webhook deliveries sent with request.bodyRef.",
+    input: NativeGetWebhookBodyParamsSchema,
+    output: NativeGetWebhookBodyResultSchema,
   },
 ] satisfies NativeFunctionSchemaDefinition[];
 

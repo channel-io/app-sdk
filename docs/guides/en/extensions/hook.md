@@ -78,3 +78,14 @@ Omitting `response`, including on re-registration, keeps or restores the default
 Deploy the migration and all platform servers before using the new SDK setting.
 See [fixed response examples](../../../reference/typescript/extensions/hook.md#fixed-acknowledgement-response)
 for XML, empty bodies, and removal.
+
+## Large webhook bodies by reference
+
+Set `webhook.bodyDelivery: "reference"` when the app server limits request size.
+An inline JSON webhook passes a 1 MiB request limit from a raw body of about 450 KB. AppStore then sends `request.bodyRef` (`size`, `sha256`, optional
+`contentType`) instead of `request.body` and `request.rawBodyBase64`, but only for
+bodies it stored; other deliveries stay inline, so handle both. Read the body with
+`NativeFunctionClient.getWebhookBody({ targetId, deliveryId }, appToken)` and check
+`size` and `sha256` against `bodyRef` before verifying the provider signature.
+Stored bodies expire 14 days after receipt. Test both the inline and reference
+inputs. See [bodies by reference](../../../reference/typescript/extensions/hook.md#large-bodies-by-reference).

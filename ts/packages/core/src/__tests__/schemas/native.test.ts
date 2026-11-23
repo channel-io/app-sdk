@@ -7,6 +7,8 @@ import {
   NativeOAuthFlowResultSchema,
   NativeListActiveOAuthManagerTargetsParamsSchema,
   NativeListActiveOAuthManagerTargetsResultSchema,
+  NativeGetWebhookBodyParamsSchema,
+  NativeGetWebhookBodyResultSchema,
   NativeUpsertAppDataTableRowsParamsSchema,
   getNativeFunctionSchemas,
   nativeFunctionSchemaDefinitions,
@@ -20,6 +22,8 @@ import type {
   NativeFunctionResult,
   NativeListActiveOAuthManagerTargetsParams,
   NativeListActiveOAuthManagerTargetsResult,
+  NativeGetWebhookBodyParams,
+  NativeGetWebhookBodyResult,
 } from "../../types/native.js";
 
 describe("native function schemas", () => {
@@ -36,8 +40,9 @@ describe("native function schemas", () => {
       "upsertAppDataTableRows",
       "getAppNotebookVersions",
       "listActiveOAuthManagerTargets",
+      "getWebhookBody",
     ]);
-    expect(nativeFunctionSchemaDefinitions).toHaveLength(9);
+    expect(nativeFunctionSchemaDefinitions).toHaveLength(10);
   });
 
   it("validates createAppDataTable input", () => {
@@ -136,6 +141,31 @@ describe("native function schemas", () => {
 
     expectTypeOf<Params>().toEqualTypeOf<NativeListActiveOAuthManagerTargetsParams>();
     expectTypeOf<Result>().toEqualTypeOf<NativeListActiveOAuthManagerTargetsResult>();
+  });
+
+  it("identifies a stored webhook body by the delivery's own identifiers", () => {
+    const params = { targetId: "github.events", deliveryId: "delivery-1" };
+    expect(NativeGetWebhookBodyParamsSchema.parse(params)).toEqual(params);
+    for (const input of [
+      { targetId: "github.events" },
+      { targetId: "", deliveryId: "delivery-1" },
+      { ...params, appId: "other-app" },
+    ]) {
+      expect(() => NativeGetWebhookBodyParamsSchema.parse(input)).toThrow();
+    }
+
+    const result = { rawBodyBase64: "e30=", size: 2, sha256: "4".repeat(64) };
+    expect(NativeGetWebhookBodyResultSchema.parse(result)).toEqual(result);
+    expect(() =>
+      NativeGetWebhookBodyResultSchema.parse({ ...result, sha256: "not-hex" })
+    ).toThrow();
+
+    expectTypeOf<
+      NativeFunctionParams<"getWebhookBody">
+    >().toEqualTypeOf<NativeGetWebhookBodyParams>();
+    expectTypeOf<
+      NativeFunctionResult<"getWebhookBody">
+    >().toEqualTypeOf<NativeGetWebhookBodyResult>();
   });
 });
 

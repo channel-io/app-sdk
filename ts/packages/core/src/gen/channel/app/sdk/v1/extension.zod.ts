@@ -762,8 +762,16 @@ export const HookWebhookConfigProtoSchema = z.object({
   endpointToken: z.string().optional(),
   executionScope: z.string().optional(),
   response: z.lazy(() => HookWebhookResponseProtoSchema).optional(),
+  bodyDelivery: z.string().optional(),
 }) satisfies z.ZodType<pb.HookWebhookConfig>;
 export type HookWebhookConfigProto = z.infer<typeof HookWebhookConfigProtoSchema>;
+
+export const HookWebhookBodyRefProtoSchema = z.object({
+  size: z.number().int().optional(),
+  sha256: z.string().optional(),
+  contentType: z.string().optional(),
+}) satisfies z.ZodType<pb.HookWebhookBodyRef>;
+export type HookWebhookBodyRefProto = z.infer<typeof HookWebhookBodyRefProtoSchema>;
 
 export const HookWebhookResponseProtoSchema = z.object({
   statusCode: z.number().int().optional(),

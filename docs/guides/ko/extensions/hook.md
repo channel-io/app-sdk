@@ -74,3 +74,14 @@ appsdk.MustRegister(app, "example.hook.receive", handler.Receive)
 내부 추적에는 유지합니다. XML 입력은 이미 `rawBodyBase64`로 전달됩니다.
 DB migration과 전체 서버 배포 후 새 SDK 설정을 사용하세요.
 XML·빈 응답·설정 제거는 [고정 응답 예시](../../../reference/typescript/extensions/hook.md#fixed-acknowledgement-response)를 참고하세요.
+
+## 큰 webhook 본문을 참조로 받기
+
+앱 서버가 요청 크기를 제한하면 `webhook.bodyDelivery: "reference"`를 지정합니다.
+인라인 JSON webhook은 원문이 약 450 KB를 넘으면 요청 크기가 1 MiB를 넘습니다. 이렇게 등록하면 App Store가 보관한 본문은 `request.body`와
+`request.rawBodyBase64` 대신 `request.bodyRef`(`size`, `sha256`, 선택적 `contentType`)로
+보냅니다. 보관하지 않은 delivery는 계속 인라인으로 오므로 두 형태를 모두 처리합니다.
+원문은 `NativeFunctionClient.getWebhookBody({ targetId, deliveryId }, appToken)`로 읽고,
+`size`와 `sha256`이 `bodyRef`와 같은지 확인한 뒤 provider 서명을 검증합니다. 보관한
+본문은 수신 14일 뒤 삭제됩니다. 인라인 입력과 참조 입력을 모두 테스트하세요. 자세한 내용은
+[참조 전달 레퍼런스](../../../reference/typescript/extensions/hook.md#large-bodies-by-reference)를 참고하세요.

@@ -828,7 +828,32 @@ export interface HookWebhookConfig {
     | string
     | undefined;
   /** Fixed HTTP acknowledgement after durable acceptance. Omit to retain 202. */
-  response?: HookWebhookResponse | undefined;
+  response?:
+    | HookWebhookResponse
+    | undefined;
+  /**
+   * body (default) or reference. With reference, a body AppStore stored is sent as
+   * request.bodyRef and the app reads it with the getWebhookBody native function.
+   */
+  bodyDelivery?: string | undefined;
+}
+
+/**
+ * request.bodyRef of a webhook.received Function input registered with bodyDelivery
+ * reference. It replaces request.body and request.rawBodyBase64; getWebhookBody returns
+ * the body it describes.
+ */
+export interface HookWebhookBodyRef {
+  /** Raw body bytes; at most the webhook endpoint's 1 MiB body limit. */
+  size?:
+    | number
+    | undefined;
+  /** Lowercase hex SHA-256 of the raw body. */
+  sha256?:
+    | string
+    | undefined;
+  /** The request's Content-Type header; omitted when the request had none. */
+  contentType?: string | undefined;
 }
 
 export interface HookWebhookResponse {

@@ -40,6 +40,9 @@ const (
 
 	WebhookExecutionScopeApp     = "app"
 	WebhookExecutionScopeManager = "manager"
+	// WebhookBodyDeliveryReference sends a stored body as request.bodyRef; read it with getWebhookBody.
+	WebhookBodyDeliveryBody      = "body"
+	WebhookBodyDeliveryReference = "reference"
 	OAuthFlowResultContinue      = "continue"
 	OAuthFlowResultRedirect      = "redirect"
 )

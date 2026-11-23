@@ -12,6 +12,11 @@ func validateHookMetadata(hooks []*Config) error {
 		return err
 	}
 	for _, config := range hooks {
+		switch config.GetWebhook().GetBodyDelivery() {
+		case "", WebhookBodyDeliveryBody, WebhookBodyDeliveryReference:
+		default:
+			return fmt.Errorf("webhook.bodyDelivery must be body or reference")
+		}
 		response := config.GetWebhook().GetResponse()
 		if response == nil {
 			continue
