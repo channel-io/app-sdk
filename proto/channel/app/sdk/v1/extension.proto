@@ -692,6 +692,21 @@ message HookWebhookConfig {
   string execution_scope = 2;
   // Fixed HTTP acknowledgement after durable acceptance. Omit to retain 202.
   HookWebhookResponse response = 3;
+  // body (default) or reference. With reference, a body AppStore stored is sent as
+  // request.bodyRef and the app reads it with the getWebhookBody native function.
+  string body_delivery = 4;
+}
+
+// request.bodyRef of a webhook.received Function input registered with bodyDelivery
+// reference. It replaces request.body and request.rawBodyBase64; getWebhookBody returns
+// the body it describes.
+message HookWebhookBodyRef {
+  // Raw body bytes; at most the webhook endpoint's 1 MiB body limit.
+  int32 size = 1;
+  // Lowercase hex SHA-256 of the raw body.
+  string sha256 = 2;
+  // The request's Content-Type header; omitted when the request had none.
+  string content_type = 3;
 }
 
 message HookWebhookResponse {

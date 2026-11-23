@@ -70,6 +70,10 @@
       "surfaces": ["server"]
     },
     {
+      "name": "getWebhookBody",
+      "surfaces": ["server"]
+    },
+    {
       "name": "issueToken",
       "surfaces": ["server"]
     },

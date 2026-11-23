@@ -223,6 +223,7 @@ import {
   TimeSlotSchema,
   ValidateCredentialsOutputSchema,
   ValidateStoredConfigOutputSchema,
+  WebhookBodyRefSchema,
   WebhookConfigSchema,
   WebhookResponseSchema,
   WidgetActionResultSchema,
@@ -617,6 +618,7 @@ const contracts: Contract[] = [
 
   contract("WebhookResponse", WebhookResponseSchema, "extension", "HookWebhookResponse"),
   contract("WebhookConfig", WebhookConfigSchema, "extension", "HookWebhookConfig"),
+  contract("WebhookBodyRef", WebhookBodyRefSchema, "extension", "HookWebhookBodyRef"),
   contract("HookConfig", HookConfigSchema, "extension", "HookConfig"),
   contract("OAuthFlowHookInput", OAuthFlowHookInputSchema, "extension", "OAuthFlowHookInput"),
   contract("OAuthStepDisplay", OAuthStepDisplaySchema, "extension", "OAuthStepDisplay"),

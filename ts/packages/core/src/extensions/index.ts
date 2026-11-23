@@ -178,6 +178,8 @@ export {
 export {
   HookTypeSchema,
   WebhookExecutionScopeSchema,
+  WebhookBodyDeliverySchema,
+  WebhookBodyRefSchema,
   WebhookConfigSchema,
   HookConfigSchema,
   WebhookResponseSchema,
@@ -192,6 +194,7 @@ export {
   OAuthFlowHookResultSchema,
   type HookType,
   type WebhookConfig,
+  type WebhookBodyRef,
   type WebhookResponse,
   type HookConfig,
   type GetHooksOutput,

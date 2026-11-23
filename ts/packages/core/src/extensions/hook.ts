@@ -8,6 +8,7 @@ import type {
   HookTeamChatMessageCreatedResult as ProtoTeamChatMessageCreatedHookResult,
   HookUserChatOpenedInput as ProtoUserChatOpenedHookInput,
   HookUserChatOpenedResult as ProtoUserChatOpenedHookResult,
+  HookWebhookBodyRef as ProtoWebhookBodyRef,
   HookWebhookConfig as ProtoWebhookConfig,
   HookWebhookResponse as ProtoWebhookResponse,
   OAuthFlowHookInput as ProtoOAuthFlowHookInput,
@@ -96,6 +97,27 @@ const WebhookEndpointTokenSchema = z
   .regex(/^[A-Za-z0-9_-]+$/);
 
 export const WebhookExecutionScopeSchema = z.enum(["app", "manager"]);
+
+/**
+ * How AppStore passes a webhook body it stored instead of queueing.
+ * `body` (default) keeps `request.body` and `request.rawBodyBase64`; `reference`
+ * sends `request.bodyRef` and the app reads the body with `getWebhookBody`.
+ */
+export const WebhookBodyDeliverySchema = z.enum(["body", "reference"]);
+
+/**
+ * `request.bodyRef` of a `webhook.received` Function input registered with
+ * `bodyDelivery: "reference"`. It replaces `request.body` and `request.rawBodyBase64`.
+ */
+export const WebhookBodyRefSchema = z
+  .object({
+    size: z.number().int().min(0),
+    sha256: z.string().regex(/^[0-9a-f]{64}$/),
+    contentType: z.string().optional(),
+  })
+  .strict();
+
+export type WebhookBodyRef = ProtoBacked<z.infer<typeof WebhookBodyRefSchema>, ProtoWebhookBodyRef>;
 
 export const UserChatOpenKindSchema = z.enum(["first_open", "reopen"]);
 
@@ -291,6 +313,7 @@ const AppWebhookConfigSchema = z
     endpointToken: WebhookEndpointTokenSchema,
     response: WebhookResponseSchema.optional(),
     executionScope: z.literal("app").optional(),
+    bodyDelivery: WebhookBodyDeliverySchema.optional(),
   })
   .strict();
 
@@ -298,6 +321,7 @@ const ManagerWebhookConfigSchema = z
   .object({
     executionScope: z.literal("manager"),
     response: WebhookResponseSchema.optional(),
+    bodyDelivery: WebhookBodyDeliverySchema.optional(),
   })
   .strict();
 

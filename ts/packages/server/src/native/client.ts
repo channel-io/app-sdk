@@ -9,6 +9,8 @@ import type {
   NativeFunctionResult,
   NativeGetAppDataTableSchemaParams,
   NativeGetAppDataTableSchemaResult,
+  NativeGetWebhookBodyParams,
+  NativeGetWebhookBodyResult,
   NativeListActiveOAuthManagerTargetsParams,
   NativeListActiveOAuthManagerTargetsResult,
   NativeUpsertAppDataTableRowsParams,
@@ -293,6 +295,31 @@ export class NativeFunctionClient {
       NativeListActiveOAuthManagerTargetsParams,
       NativeListActiveOAuthManagerTargetsResult
     >("listActiveOAuthManagerTargets", params, accessToken);
+  }
+
+  // ============================================
+  // Webhook Functions
+  // ============================================
+
+  /**
+   * Read the stored body of a `webhook.received` delivery sent with `request.bodyRef`.
+   *
+   * Pass the delivery's `targetId` and `deliveryId` from the Function input unchanged, with
+   * the `accessToken` of `TokenManager.getAppToken()`. The app role needs `getWebhookBody`,
+   * a default permission; roles created before it was added can call it through
+   * `registerExtension`. Hash the decoded `rawBodyBase64` yourself and compare it, and its
+   * length, with `request.bodyRef` before trusting the body. Another app's delivery, a body
+   * that was not stored, and an expired body (14 days after receipt) all fail with NotFound.
+   */
+  getWebhookBody(
+    params: NativeGetWebhookBodyParams,
+    accessToken: string
+  ): Promise<NativeGetWebhookBodyResult> {
+    return this.callNativeFunctionWithToken<NativeGetWebhookBodyParams, NativeGetWebhookBodyResult>(
+      "getWebhookBody",
+      params,
+      accessToken
+    );
   }
 
   // ============================================

@@ -514,6 +514,19 @@ export interface NativeListActiveOAuthManagerTargetsResult {
   nextCursor?: string;
 }
 
+/** Identifies a webhook delivery by the `targetId` and `deliveryId` of its Function input. */
+export interface NativeGetWebhookBodyParams {
+  targetId: string;
+  deliveryId: string;
+}
+
+/** The original request body; `sha256` equals `request.bodyRef.sha256` of the delivery. */
+export interface NativeGetWebhookBodyResult {
+  rawBodyBase64: string;
+  size: number;
+  sha256: string;
+}
+
 /** Manager-authenticated flow state. No provider credentials are returned. */
 export interface NativeOAuthFlow extends OAuthFlow {
   id: string;
@@ -660,6 +673,10 @@ export interface NativeFunctionTypeMap {
   listActiveOAuthManagerTargets: {
     params: NativeListActiveOAuthManagerTargetsParams;
     result: NativeListActiveOAuthManagerTargetsResult;
+  };
+  getWebhookBody: {
+    params: NativeGetWebhookBodyParams;
+    result: NativeGetWebhookBodyResult;
   };
 }
 

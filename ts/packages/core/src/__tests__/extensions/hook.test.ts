@@ -6,6 +6,7 @@ import {
   OAuthFlowHookInputSchema,
   OAuthFlowHookResultSchema,
   TeamChatMessageCreatedHookInputSchema,
+  WebhookBodyRefSchema,
   WebhookConfigSchema,
 } from "../../extensions/hook.js";
 
@@ -348,6 +349,40 @@ describe("WebhookConfigSchema", () => {
     expect(WebhookConfigSchema.parse({ endpointToken: "a".repeat(128) })).toEqual({
       endpointToken: "a".repeat(128),
     });
+  });
+
+  it.each([{ endpointToken }, { executionScope: "manager" }])(
+    "accepts body or reference delivery in %j",
+    (scope) => {
+      for (const bodyDelivery of ["body", "reference"]) {
+        expect(WebhookConfigSchema.parse({ ...scope, bodyDelivery })).toEqual({
+          ...scope,
+          bodyDelivery,
+        });
+      }
+      expect(() => WebhookConfigSchema.parse({ ...scope, bodyDelivery: "stream" })).toThrow();
+    }
+  );
+});
+
+describe("WebhookBodyRefSchema", () => {
+  const sha256 = "a".repeat(64);
+
+  it("accepts the size, lowercase hex SHA-256 and optional content type", () => {
+    expect(WebhookBodyRefSchema.parse({ size: 450449, sha256 })).toEqual({ size: 450449, sha256 });
+    expect(
+      WebhookBodyRefSchema.parse({ size: 1, sha256, contentType: "application/json" })
+    ).toEqual({ size: 1, sha256, contentType: "application/json" });
+  });
+
+  it.each([
+    { size: -1, sha256 },
+    { size: 1.5, sha256 },
+    { size: 1, sha256: "A".repeat(64) },
+    { size: 1, sha256: "a".repeat(63) },
+    { size: 1, sha256, body: {} },
+  ])("rejects %j", (bodyRef) => {
+    expect(() => WebhookBodyRefSchema.parse(bodyRef)).toThrow();
   });
 });
 

@@ -63,3 +63,25 @@ func TestFixedWebhookResponse(t *testing.T) {
 		})
 	}
 }
+
+func TestWebhookBodyDelivery(t *testing.T) {
+	hooks := func(mode string) *Config {
+		return &Config{Type: TypeWebhookReceived, ActionFunctionName: "hooks.receive", TargetId: "orders", Webhook: &WebhookConfig{EndpointToken: strings.Repeat("a", 32), BodyDelivery: mode}}
+	}
+	for _, mode := range []string{"", WebhookBodyDeliveryBody, WebhookBodyDeliveryReference} {
+		result, err := StaticHooks(hooks(mode))(context.Background(), appsdk.Context{}, &GetHooksRequest{})
+		if err != nil {
+			t.Fatalf("bodyDelivery %q: %v", mode, err)
+		}
+		encoded, err := protojson.Marshal(result)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if mode == WebhookBodyDeliveryReference && !strings.Contains(string(encoded), `"bodyDelivery":"reference"`) {
+			t.Fatalf("bodyDelivery is not serialized as camelCase: %s", encoded)
+		}
+	}
+	if _, err := StaticHooks(hooks("stream"))(context.Background(), appsdk.Context{}, &GetHooksRequest{}); err == nil {
+		t.Fatal("unsupported bodyDelivery was accepted")
+	}
+}
