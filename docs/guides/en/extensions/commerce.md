@@ -72,7 +72,9 @@ providers.
 
 `searchProduct` uses Cafe24's existing `searchProducts` wire contract. Inputs are optional
 `query`, `size`, `searchFilter`, and `since`. An empty query lists products; `size` defaults to
-20 and the search core caps it at 100. Return `{ products: [...], next?: string }`, including
+20 and is capped at 100. The platform search path applies these limits in its search core;
+apps that implement the function directly must apply the same defaults, size cap, and search-depth
+limit in their handlers. Return `{ products: [...], next?: string }`, including
 `products: []` for an empty page. Pass `next` back as the opaque `since` cursor. Search is bounded
 to 200 results; list mode has no search-depth cap.
 

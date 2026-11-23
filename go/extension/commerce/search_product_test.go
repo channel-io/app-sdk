@@ -150,3 +150,26 @@ func TestSearchProductRejectsFractionalSizeBeforeHandler(t *testing.T) {
 		t.Fatalf("fractional size reached handler: %+v", response.Error)
 	}
 }
+
+func TestSearchProductNilSuccessKeepsRequiredProductsArray(t *testing.T) {
+	app := appsdk.New(appsdk.Options{AppID: "app"})
+	if err := app.Use(commerce.Extension().SearchProduct(func(context.Context, appsdk.Context, *commerce.SearchProductInput) (*commerce.SearchProductOutput, error) {
+		return nil, nil
+	})); err != nil {
+		t.Fatal(err)
+	}
+	response := app.HandleRequest(context.Background(), appsdk.FunctionRequest{Method: commerce.FunctionSearchProduct, Params: json.RawMessage(`{}`)})
+	if response.Error != nil {
+		t.Fatalf("unexpected error: %+v", response.Error)
+	}
+	var output map[string]any
+	if err := json.Unmarshal(response.Result, &output); err != nil {
+		t.Fatal(err)
+	}
+	if products, ok := output["products"].([]any); !ok || len(products) != 0 {
+		t.Fatalf("required empty products missing: %s", response.Result)
+	}
+	if len(output) != 1 {
+		t.Fatalf("unexpected optional fields: %s", response.Result)
+	}
+}

@@ -71,8 +71,11 @@ func handleSearchProduct(handler appsdk.TypedHandlerFunc[SearchProductInput, Sea
 			return nil, appsdk.NewError(appsdk.CodeBadRequest, "invalidParams", "size must be an integer")
 		}
 		response, err := handler(ctx, fnCtx, input)
-		if err != nil || response == nil {
+		if err != nil {
 			return nil, err
+		}
+		if response == nil {
+			response = &SearchProductOutput{}
 		}
 		return &searchProductResult{response: response}, nil
 	})
