@@ -349,9 +349,9 @@ webhook: { endpointToken, bodyDelivery: "reference" }
 
 AppStore then sends `request.bodyRef` instead of `request.body` and
 `request.rawBodyBase64`, but only for deliveries whose body it stored outside its
-queue: deliveries whose stored payload, which carries the body twice, exceeds 256 KiB
-(raw bodies from roughly 110 KB) in an environment where AppStore's body store is
-enabled. The body store is off by default, and while it is off the option changes
+queue: deliveries whose stored payload, which carries the body as JSON and again as
+base64, exceeds 256 KiB (raw bodies from roughly 110 KB) in an environment where
+AppStore's body store is enabled. The body store is off by default, and while it is off the option changes
 nothing. Every other delivery still arrives inline, so handle both shapes, and deduplicate
 on `deliveryId` across them: a rare redelivery can arrive in the other shape. The
 option applies as registered at delivery time. Validate the reference with
