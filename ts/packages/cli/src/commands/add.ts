@@ -265,8 +265,8 @@ export const customTabExtension = createExtension({
   hook: `import { createExtension, defineFunction, GetHooksOutputSchema } from "@channel.io/app-sdk";
 import { z } from "zod";
 
-const HookEventInput = z.object({}).passthrough();
-const HookEventOutput = z.object({}).passthrough();
+const HookEventInput = z.object({}).loose();
+const HookEventOutput = z.object({}).loose();
 
 export const hookExtension = createExtension({
   name: "hook",
@@ -331,7 +331,7 @@ export const hookExtension = createExtension({
 } from "@channel.io/app-sdk";
 import { z } from "zod";
 
-const PollingFunctionOutput = z.object({}).passthrough();
+const PollingFunctionOutput = z.object({}).loose();
 
 export const pollingExtension = createExtension({
   name: "polling",

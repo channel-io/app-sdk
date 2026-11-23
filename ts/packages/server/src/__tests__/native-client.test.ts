@@ -1,4 +1,4 @@
-import { describe, it, expect, expectTypeOf, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, expectTypeOf, vi, beforeEach, afterEach, type Mock } from "vitest";
 import { NativeFunctionClient, NativeFunctionError } from "../native/client.js";
 
 /**
@@ -21,17 +21,17 @@ interface ParsedRequest {
   systemVersion?: string;
 }
 
-function parseFetchBody(mockFetch: ReturnType<typeof vi.fn>, callIndex = 0): ParsedRequest {
+function parseFetchBody(mockFetch: Mock<typeof globalThis.fetch>, callIndex = 0): ParsedRequest {
   const call = mockFetch.mock.calls[callIndex] as [string, RequestInit];
   return JSON.parse(call[1].body as string) as ParsedRequest;
 }
 
-function getFetchUrl(mockFetch: ReturnType<typeof vi.fn>, callIndex = 0): string {
+function getFetchUrl(mockFetch: Mock<typeof globalThis.fetch>, callIndex = 0): string {
   const call = mockFetch.mock.calls[callIndex] as [string, RequestInit];
   return call[0];
 }
 
-function getFetchInit(mockFetch: ReturnType<typeof vi.fn>, callIndex = 0): RequestInit {
+function getFetchInit(mockFetch: Mock<typeof globalThis.fetch>, callIndex = 0): RequestInit {
   const call = mockFetch.mock.calls[callIndex] as [string, RequestInit];
   return call[1];
 }
@@ -47,13 +47,13 @@ describe("NativeFunctionClient", () => {
   const APP_ID = "test-app-id";
   const APP_SECRET = "test-app-secret";
   let client: NativeFunctionClient;
-  let mockFetch: ReturnType<typeof vi.fn>;
+  let mockFetch: Mock<typeof globalThis.fetch>;
 
   beforeEach(() => {
     client = new NativeFunctionClient({
       appStoreUrl: "https://test-app-store.example.com",
     });
-    mockFetch = vi.fn();
+    mockFetch = vi.fn<typeof globalThis.fetch>();
     globalThis.fetch = mockFetch;
   });
 

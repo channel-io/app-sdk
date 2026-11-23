@@ -28,3 +28,5 @@ TypeScript SDK surfaces; runnable end-to-end code lives in the
 
 The installed package exports are authoritative when prose and code disagree. Public JSON payloads
 use camelCase.
+
+For SDK upgrades, see the [Zod 4 migration](./ZOD.md).

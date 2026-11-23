@@ -42,22 +42,22 @@ export const FunctionUserInputQuestionSchema = z.discriminatedUnion("inputType",
   z.object({
     ...FunctionUserInputQuestionFields,
     inputType: z.literal("date"),
-    min: z.string().date().optional(),
-    max: z.string().date().optional(),
+    min: z.iso.date().optional(),
+    max: z.iso.date().optional(),
   }),
   z.object({
     ...FunctionUserInputQuestionFields,
     inputType: z.literal("number"),
-    min: z.number().finite().optional(),
-    max: z.number().finite().optional(),
-    step: z.number().positive().finite().optional(),
+    min: z.number().optional(),
+    max: z.number().optional(),
+    step: z.number().positive().optional(),
     placeholder: z.string().max(500).optional(),
   }),
 ]);
 
 export const FunctionUserInputAnswerSchema = z.union([
   z.string(),
-  z.number().finite(),
+  z.number(),
   z.array(z.string()).max(50),
 ]);
 
@@ -80,7 +80,7 @@ export const NeedsUserInputResultSchema = z
     result.questions.forEach((question, questionIndex) => {
       if (questionKeys.has(question.key)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: `Duplicate question key: ${question.key}`,
           path: ["questions", questionIndex, "key"],
         });
@@ -92,7 +92,7 @@ export const NeedsUserInputResultSchema = z
         question.options.forEach((option, optionIndex) => {
           if (optionValues.has(option.value)) {
             ctx.addIssue({
-              code: z.ZodIssueCode.custom,
+              code: "custom",
               message: `Duplicate option value: ${option.value}`,
               path: ["questions", questionIndex, "options", optionIndex, "value"],
             });
@@ -108,7 +108,7 @@ export const NeedsUserInputResultSchema = z
         question.minSelections > question.maxSelections
       ) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "minSelections must be less than or equal to maxSelections",
           path: ["questions", questionIndex, "minSelections"],
         });
@@ -120,7 +120,7 @@ export const NeedsUserInputResultSchema = z
           (question.maxSelections != null && question.maxSelections > question.options.length))
       ) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "selection bounds must not exceed the number of options",
           path: ["questions", questionIndex, "options"],
         });
@@ -133,7 +133,7 @@ export const NeedsUserInputResultSchema = z
         question.minLength > question.maxLength
       ) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "minLength must be less than or equal to maxLength",
           path: ["questions", questionIndex, "minLength"],
         });
@@ -146,7 +146,7 @@ export const NeedsUserInputResultSchema = z
         question.min > question.max
       ) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "min must be less than or equal to max",
           path: ["questions", questionIndex, "min"],
         });

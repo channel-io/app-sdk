@@ -97,7 +97,7 @@ export const ConfigI18nMapSchema = z
     for (const locale of Object.keys(value)) {
       if (!ConfigSupportedLocaleSchema.safeParse(locale).success) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: [locale],
           message: "Unsupported config i18n locale. Supported locales: ko, ja, en.",
         });

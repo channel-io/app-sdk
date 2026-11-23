@@ -13,7 +13,7 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import type { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { zodToJsonSchema } from "@channel.io/app-sdk-core";
 import type {
   Context,
   FunctionCallRequest,
@@ -37,7 +37,7 @@ interface SimpleFunctionDefinition {
   name: string;
   description?: string;
   test?: boolean;
-  inputSchema: z.ZodSchema;
+  inputSchema: z.ZodType;
   inputJsonSchema: Record<string, unknown>;
   handler: (ctx: Context, params: unknown) => Promise<unknown>;
 }
@@ -94,7 +94,7 @@ export class ChannelApp {
    * @param handler Function handler
    * @param options Additional options
    */
-  function<TInput extends z.ZodSchema>(
+  function<TInput extends z.ZodType>(
     name: string,
     inputSchema: TInput,
     handler: (ctx: Context, params: z.infer<TInput>) => Promise<unknown>,
@@ -110,7 +110,7 @@ export class ChannelApp {
    * `extension.core.function.getTestFunctions`, but are intentionally hidden from
    * `extension.core.function.getFunctions`.
    */
-  testFunction<TInput extends z.ZodSchema>(
+  testFunction<TInput extends z.ZodType>(
     name: string,
     inputSchema: TInput,
     handler: (ctx: Context, params: z.infer<TInput>) => Promise<unknown>,
@@ -119,17 +119,14 @@ export class ChannelApp {
     return this.defineFunction(name, inputSchema, handler, options, true);
   }
 
-  private defineFunction<TInput extends z.ZodSchema>(
+  private defineFunction<TInput extends z.ZodType>(
     name: string,
     inputSchema: TInput,
     handler: (ctx: Context, params: z.infer<TInput>) => Promise<unknown>,
     options: { description?: string } | undefined,
     test: boolean
   ): this {
-    const inputJsonSchema = zodToJsonSchema(inputSchema, { $refStrategy: "none" }) as Record<
-      string,
-      unknown
-    >;
+    const inputJsonSchema = zodToJsonSchema(inputSchema);
 
     const def: SimpleFunctionDefinition = {
       name,

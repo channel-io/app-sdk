@@ -11,19 +11,21 @@ import type { ExtensionMetadata } from "../discovery/metadata.interface.js";
 // Mock NativeFunctionClient
 vi.mock("../native/client.js", () => {
   return {
-    NativeFunctionClient: vi.fn().mockImplementation(() => ({
-      issueToken: vi.fn().mockResolvedValue({
-        accessToken: "mock-access-token",
-        refreshToken: "mock-refresh-token",
-        expiresIn: 3600,
-      }),
-      refreshToken: vi.fn().mockResolvedValue({
-        accessToken: "mock-refreshed-token",
-        refreshToken: "mock-new-refresh-token",
-        expiresIn: 3600,
-      }),
-      registerExtension: vi.fn().mockResolvedValue({ success: true }),
-    })),
+    NativeFunctionClient: vi.fn().mockImplementation(function () {
+      return {
+        issueToken: vi.fn().mockResolvedValue({
+          accessToken: "mock-access-token",
+          refreshToken: "mock-refresh-token",
+          expiresIn: 3600,
+        }),
+        refreshToken: vi.fn().mockResolvedValue({
+          accessToken: "mock-refreshed-token",
+          refreshToken: "mock-new-refresh-token",
+          expiresIn: 3600,
+        }),
+        registerExtension: vi.fn().mockResolvedValue({ success: true }),
+      };
+    }),
     NativeFunctionError: class NativeFunctionError extends Error {},
   };
 });

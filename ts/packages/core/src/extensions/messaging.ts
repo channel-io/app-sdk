@@ -57,7 +57,7 @@ import type { FunctionDefinition } from "../types/function.js";
 
 type ProtoBacked<T, Proto> = T & Proto;
 
-const JsonObjectSchema = z.object({}).passthrough();
+const JsonObjectSchema = z.object({}).loose();
 // Protobuf JSON serializes int64 values as decimal strings to avoid precision
 // loss in JavaScript. These messaging counters/versions are non-negative in
 // practice, so keep them as non-negative decimal strings instead of numbers.
@@ -250,7 +250,7 @@ export const MessagingAlfSchema = z
     references: z.array(JsonObjectSchema).optional(),
     mentionAlfAnswered: z.boolean().optional(),
   })
-  .passthrough();
+  .loose();
 export type MessagingAlf = ProtoBacked<z.infer<typeof MessagingAlfSchema>, ProtoMessagingAlf>;
 
 export const MessagingMeetSchema = z
@@ -265,7 +265,7 @@ export const MessagingMeetSchema = z
     roomStartedAt: z.string().optional(),
     amassedPersons: z.array(z.string()).optional(),
   })
-  .passthrough();
+  .loose();
 export type MessagingMeet = ProtoBacked<z.infer<typeof MessagingMeetSchema>, ProtoMessagingMeet>;
 
 export const MessagingMessageFileSchema = z
@@ -274,7 +274,7 @@ export const MessagingMessageFileSchema = z
     mime: z.string(),
     fileName: z.string(),
   })
-  .passthrough();
+  .loose();
 export type MessagingMessageFile = ProtoBacked<
   z.infer<typeof MessagingMessageFileSchema>,
   ProtoMessagingMessageFile
@@ -293,7 +293,7 @@ export const MessagingMessageThreadSchema = z
     replyCount: z.number().int().optional(),
     repliedManagerIds: z.array(z.string()).optional(),
   })
-  .passthrough();
+  .loose();
 export type MessagingMessageThread = ProtoBacked<
   z.infer<typeof MessagingMessageThreadSchema>,
   ProtoMessagingMessageThread
@@ -305,7 +305,7 @@ export const MessagingMessageButtonSchema = z
     action: JsonObjectSchema,
     colorVariant: MessagingMessageColorVariantSchema.optional(),
   })
-  .passthrough();
+  .loose();
 export type MessagingMessageButton = ProtoBacked<
   z.infer<typeof MessagingMessageButtonSchema>,
   ProtoMessagingMessageButton
@@ -316,7 +316,7 @@ export const MessagingCustomPayloadSchema = z
     data: JsonObjectSchema.optional(),
     paramMapper: JsonObjectSchema.optional(),
   })
-  .passthrough();
+  .loose();
 export type MessagingCustomPayload = ProtoBacked<
   z.infer<typeof MessagingCustomPayloadSchema>,
   ProtoMessagingCustomPayload
@@ -355,7 +355,7 @@ const MessagingMessageShape = {
   inboundEmailId: z.string().optional(),
 };
 
-export const MessagingMessageSchema = z.object(MessagingMessageShape).passthrough();
+export const MessagingMessageSchema = z.object(MessagingMessageShape).loose();
 export type MessagingMessage = ProtoBacked<
   z.infer<typeof MessagingMessageSchema>,
   ProtoMessagingMessage
@@ -387,7 +387,7 @@ const MessagingPrebuiltMessageShape = {
   customPayload: MessagingCustomPayloadSchema.optional(),
 };
 
-export const MessagingPrebuiltMessageSchema = z.object(MessagingPrebuiltMessageShape).passthrough();
+export const MessagingPrebuiltMessageSchema = z.object(MessagingPrebuiltMessageShape).loose();
 export type MessagingPrebuiltMessage = ProtoBacked<
   z.infer<typeof MessagingPrebuiltMessageSchema>,
   ProtoMessagingPrebuiltMessage
@@ -462,7 +462,7 @@ export const MessagingUserChatSchema = z
     operationTotalReplyTime: MessagingNonNegativeInt64StringSchema.optional(),
     firstAssigneeIdAfterOpen: z.string().optional(),
   })
-  .passthrough();
+  .loose();
 export type MessagingUserChat = ProtoBacked<
   z.infer<typeof MessagingUserChatSchema>,
   ProtoMessagingUserChat
@@ -505,7 +505,7 @@ export const MessagingUserSchema = z
     unsubscribeTexting: z.boolean().optional(),
     mobileNumberQualified: z.boolean().optional(),
   })
-  .passthrough();
+  .loose();
 export type MessagingUser = ProtoBacked<z.infer<typeof MessagingUserSchema>, ProtoMessagingUser>;
 
 export const MessagingWamResultSchema = z
@@ -517,9 +517,9 @@ export const MessagingWamResultSchema = z
         name: z.string(),
         wamArgs: JsonObjectSchema,
       })
-      .passthrough(),
+      .loose(),
   })
-  .passthrough();
+  .loose();
 export type MessagingWamResult = ProtoBacked<
   z.infer<typeof MessagingWamResultSchema>,
   ProtoMessagingWamResult
@@ -531,7 +531,7 @@ export const MessagingUnavailableReasonSchema = z
     link: z.string().optional(),
     linkText: z.string().optional(),
   })
-  .passthrough();
+  .loose();
 export type MessagingUnavailableReason = ProtoBacked<
   z.infer<typeof MessagingUnavailableReasonSchema>,
   ProtoMessagingUnavailableReason
@@ -542,7 +542,7 @@ export const MessagingWritingTypeStateSchema = z
     state: MessagingWritingTypeAvailabilityStateSchema,
     unavailableReasons: z.array(MessagingUnavailableReasonSchema).optional(),
   })
-  .passthrough();
+  .loose();
 export type MessagingWritingTypeState = ProtoBacked<
   z.infer<typeof MessagingWritingTypeStateSchema>,
   ProtoMessagingWritingTypeState
@@ -553,7 +553,7 @@ export const MessagingWritingTypeMapSchema = z
     custom: MessagingWritingTypeStateSchema.optional(),
     standard: MessagingWritingTypeStateSchema.optional(),
   })
-  .passthrough();
+  .loose();
 export type MessagingWritingTypeMap = ProtoBacked<
   z.infer<typeof MessagingWritingTypeMapSchema>,
   ProtoMessagingWritingTypeMap
@@ -565,7 +565,7 @@ export const MessagingMediumProfileSchema = z
     mediumSenderId: z.string().optional(),
     mediumSenderName: z.string().optional(),
   })
-  .passthrough();
+  .loose();
 export type MessagingMediumProfile = ProtoBacked<
   z.infer<typeof MessagingMediumProfileSchema>,
   ProtoMessagingMediumProfile
@@ -576,7 +576,7 @@ export const OnMediumMessageCreatedInputSchema = z
     userChat: MessagingUserChatSchema,
     message: MessagingMessageSchema,
   })
-  .passthrough();
+  .loose();
 export type OnMediumMessageCreatedInput = ProtoBacked<
   z.infer<typeof OnMediumMessageCreatedInputSchema>,
   ProtoOnMediumMessageCreatedInput
@@ -590,9 +590,9 @@ export const OnMediumMessageCreatedOutputSchema = z
         message: z.string().optional(),
         errorCode: z.number().int().min(-2_147_483_648).max(2_147_483_647).optional(),
       })
-      .passthrough(),
+      .loose(),
   })
-  .passthrough();
+  .loose();
 export type OnMediumMessageCreatedOutput = ProtoBacked<
   z.infer<typeof OnMediumMessageCreatedOutputSchema>,
   ProtoOnMediumMessageCreatedOutput
@@ -602,13 +602,13 @@ export const InboxOnMediumUserChatClosedInputSchema = z
   .object({
     userChat: MessagingUserChatSchema,
   })
-  .passthrough();
+  .loose();
 export type InboxOnMediumUserChatClosedInput = ProtoBacked<
   z.infer<typeof InboxOnMediumUserChatClosedInputSchema>,
   ProtoInboxOnMediumUserChatClosedInput
 >;
 
-export const InboxOnMediumUserChatClosedOutputSchema = z.object({}).passthrough();
+export const InboxOnMediumUserChatClosedOutputSchema = z.object({}).loose();
 export type InboxOnMediumUserChatClosedOutput = ProtoBacked<
   z.infer<typeof InboxOnMediumUserChatClosedOutputSchema>,
   ProtoInboxOnMediumUserChatClosedOutput
@@ -618,7 +618,7 @@ export const InboxGetWritingTypesInputSchema = z
   .object({
     userChat: MessagingUserChatSchema,
   })
-  .passthrough();
+  .loose();
 export type InboxGetWritingTypesInput = ProtoBacked<
   z.infer<typeof InboxGetWritingTypesInputSchema>,
   ProtoInboxGetWritingTypesInput
@@ -630,7 +630,7 @@ export const InboxGetWritingTypesOutputSchema = z
   .object({
     writingTypeMap: MessagingWritingTypeMapSchema,
   })
-  .passthrough();
+  .loose();
 export type InboxGetWritingTypesOutput = ProtoBacked<
   z.infer<typeof InboxGetWritingTypesOutputSchema>,
   ProtoInboxGetWritingTypesOutput
@@ -645,7 +645,7 @@ export const InboxGetCustomEditorWamInputSchema = z
     mediumTopicLabels: z.array(z.string()).optional(),
     message: MessagingPartialMessageSchema.optional(),
   })
-  .passthrough();
+  .loose();
 export type InboxGetCustomEditorWamInput = ProtoBacked<
   z.infer<typeof InboxGetCustomEditorWamInputSchema>,
   ProtoInboxGetCustomEditorWamInput
@@ -661,7 +661,7 @@ export const InboxGetMediumTopicSelectorWamInputSchema = z
   .object({
     user: MessagingUserSchema,
   })
-  .passthrough();
+  .loose();
 export type InboxGetMediumTopicSelectorWamInput = ProtoBacked<
   z.infer<typeof InboxGetMediumTopicSelectorWamInputSchema>,
   ProtoInboxGetMediumTopicSelectorWamInput
@@ -678,7 +678,7 @@ export const InboxGetMediumMessageErrorReasonInputSchema = z
     userChat: MessagingUserChatSchema,
     message: MessagingMessageSchema.extend({ errorCode: z.string() }),
   })
-  .passthrough();
+  .loose();
 export type InboxGetMediumMessageErrorReasonInput = ProtoBacked<
   z.infer<typeof InboxGetMediumMessageErrorReasonInputSchema>,
   ProtoInboxGetMediumMessageErrorReasonInput
@@ -688,13 +688,13 @@ export const InboxGetMediumMessageErrorReasonOutputSchema = z
   .object({
     errorMessage: z.string(),
   })
-  .passthrough();
+  .loose();
 export type InboxGetMediumMessageErrorReasonOutput = ProtoBacked<
   z.infer<typeof InboxGetMediumMessageErrorReasonOutputSchema>,
   ProtoInboxGetMediumMessageErrorReasonOutput
 >;
 
-export const PrebuiltGetWritingTypesInputSchema = z.object({}).passthrough();
+export const PrebuiltGetWritingTypesInputSchema = z.object({}).loose();
 export type PrebuiltGetWritingTypesInput = ProtoBacked<
   z.infer<typeof PrebuiltGetWritingTypesInputSchema>,
   ProtoPrebuiltGetWritingTypesInput
@@ -704,7 +704,7 @@ export const PrebuiltGetWritingTypesOutputSchema = z
   .object({
     writingTypeMap: MessagingWritingTypeMapSchema,
   })
-  .passthrough();
+  .loose();
 export type PrebuiltGetWritingTypesOutput = ProtoBacked<
   z.infer<typeof PrebuiltGetWritingTypesOutputSchema>,
   ProtoPrebuiltGetWritingTypesOutput
@@ -718,7 +718,7 @@ export const PrebuiltValidateEntityInputSchema = z
     mediumTopicBuildKey: z.string(),
     mediumTopicBuildLabels: z.array(z.string()).optional(),
   })
-  .passthrough();
+  .loose();
 export type PrebuiltValidateEntityInput = ProtoBacked<
   z.infer<typeof PrebuiltValidateEntityInputSchema>,
   ProtoPrebuiltValidateEntityInput
@@ -730,7 +730,7 @@ export const PrebuiltValidateEntityOutputSchema = z
     entityId: z.string(),
     reasons: z.array(MessagingUnavailableReasonSchema),
   })
-  .passthrough();
+  .loose();
 export type PrebuiltValidateEntityOutput = ProtoBacked<
   z.infer<typeof PrebuiltValidateEntityOutputSchema>,
   ProtoPrebuiltValidateEntityOutput
@@ -746,7 +746,7 @@ export const PrebuiltGetCustomEditorWamInputSchema = z
     triggerEventName: z.string().optional(),
     triggerEventNameI18nMap: JsonObjectSchema.optional(),
   })
-  .passthrough();
+  .loose();
 export type PrebuiltGetCustomEditorWamInput = ProtoBacked<
   z.infer<typeof PrebuiltGetCustomEditorWamInputSchema>,
   ProtoPrebuiltGetCustomEditorWamInput
@@ -762,7 +762,7 @@ export const PrebuiltGetMediumTopicBuilderSelectorWamInputSchema = z
   .object({
     entityType: MessagingPrebuiltEntityTypeSchema,
   })
-  .passthrough();
+  .loose();
 export type PrebuiltGetMediumTopicBuilderSelectorWamInput = ProtoBacked<
   z.infer<typeof PrebuiltGetMediumTopicBuilderSelectorWamInputSchema>,
   ProtoPrebuiltGetMediumTopicBuilderSelectorWamInput
@@ -780,7 +780,7 @@ export const PrebuiltBuildMediumTopicsInputSchema = z
     entityType: MessagingPrebuiltEntityTypeSchema,
     mediumTopicBuilderKey: z.string(),
   })
-  .passthrough();
+  .loose();
 export type PrebuiltBuildMediumTopicsInput = ProtoBacked<
   z.infer<typeof PrebuiltBuildMediumTopicsInputSchema>,
   ProtoPrebuiltBuildMediumTopicsInput
@@ -792,13 +792,13 @@ export const PrebuiltBuildMediumTopicsOutputSchema = z
     mediumTopicLabels: z.array(z.string()),
     mediumProfile: MessagingMediumProfileSchema,
   })
-  .passthrough();
+  .loose();
 export type PrebuiltBuildMediumTopicsOutput = ProtoBacked<
   z.infer<typeof PrebuiltBuildMediumTopicsOutputSchema>,
   ProtoPrebuiltBuildMediumTopicsOutput
 >;
 
-export const PrebuiltGetDefaultOptionsInputSchema = z.object({}).passthrough();
+export const PrebuiltGetDefaultOptionsInputSchema = z.object({}).loose();
 export type PrebuiltGetDefaultOptionsInput = ProtoBacked<
   z.infer<typeof PrebuiltGetDefaultOptionsInputSchema>,
   ProtoPrebuiltGetDefaultOptionsInput
@@ -813,9 +813,9 @@ export const PrebuiltGetDefaultOptionsOutputSchema = z
         "campaign.selectableAdvertising": z.boolean().optional(),
         "oneTimeMsg.selectableAdvertising": z.boolean().optional(),
       })
-      .passthrough(),
+      .loose(),
   })
-  .passthrough();
+  .loose();
 export type PrebuiltGetDefaultOptionsOutput = ProtoBacked<
   z.infer<typeof PrebuiltGetDefaultOptionsOutputSchema>,
   ProtoPrebuiltGetDefaultOptionsOutput

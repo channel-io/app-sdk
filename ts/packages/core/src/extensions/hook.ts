@@ -58,7 +58,7 @@ export const OAuthFlowHookInputSchema = z
   .object({
     flowId: z.string().min(1).max(255),
     resumeUrl: HTTPSRedirectURLSchema,
-    expiresAt: z.string().datetime({ offset: true }),
+    expiresAt: z.iso.datetime({ offset: true }),
   })
   .strict();
 
@@ -150,7 +150,7 @@ export const UserChatOpenedHookInputSchema = z
     openKind: UserChatOpenKindSchema,
     actorKind: UserChatOpenedActorKindSchema,
     triggerMessageId: UserChatOpenedIdentifierSchema.optional(),
-    occurredAt: z.string().datetime({ offset: true }),
+    occurredAt: z.iso.datetime({ offset: true }),
     version: UserChatOpenedVersionSchema,
   })
   .strict();
@@ -198,7 +198,7 @@ export const TeamChatMessageCreatedHookInputSchema = z
     channelId: TeamChatMessageCreatedIdentifierSchema,
     groupId: TeamChatMessageCreatedIdentifierSchema,
     messageId: TeamChatMessageCreatedIdentifierSchema,
-    occurredAt: z.string().datetime({ offset: true }),
+    occurredAt: z.iso.datetime({ offset: true }),
     sourceAppId: TeamChatMessageCreatedIdentifierSchema.optional(),
     snapshot: TeamChatMessageCreatedSnapshotSchema,
   })
@@ -287,7 +287,7 @@ export const WebhookResponseSchema = z
         : raw;
       if (parameters.has(name) && parameters.get(name) !== value) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["contentType"],
           message: "Conflicting MIME parameters",
         });
@@ -296,7 +296,7 @@ export const WebhookResponseSchema = z
     }
     if (new TextEncoder().encode(response.body ?? "").length > 64 * 1024) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["body"],
         message: "Body must be at most 64 KiB",
       });
@@ -419,7 +419,7 @@ export const GetHooksOutputSchema = z.object({
       const key = `${hook.type}:${hook.authScope ?? ""}`;
       if (seen.has(key)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: [index],
           message: "Duplicate OAuth hook type and authScope",
         });

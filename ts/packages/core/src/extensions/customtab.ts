@@ -43,7 +43,7 @@ export const CustomTabConfigSchema = z.object({
   /**
    * i18n name map keyed by language code (e.g., "ko", "en", "ja")
    */
-  nameI18nMap: z.record(CustomTabNameI18nSchema).optional(),
+  nameI18nMap: z.record(z.string(), CustomTabNameI18nSchema).optional(),
 });
 
 export type CustomTabConfig = ProtoBacked<
@@ -69,7 +69,7 @@ export type GetCustomTabsOutput = ProtoBacked<
 export const CustomTabActionResultSchema = z
   .object({
     type: z.string().min(1),
-    attributes: z.record(z.unknown()).optional(),
+    attributes: z.record(z.string(), z.unknown()).optional(),
   })
   .strict();
 

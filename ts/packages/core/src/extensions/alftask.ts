@@ -31,7 +31,7 @@ export type MemoryDefinition = ProtoBacked<
 export const WorkflowNodeSchema = z.object({
   id: z.string(),
   type: z.string(),
-  config: z.record(z.unknown()).optional(),
+  config: z.record(z.string(), z.unknown()).optional(),
   next: z.string().optional(),
 });
 

@@ -22,9 +22,9 @@ const CommandActionInput = z.object({
   }),
   trigger: z.object({
     type: z.string(),
-    attributes: z.record(z.string()),
+    attributes: z.record(z.string(), z.string()),
   }),
-  input: z.record(z.unknown()),
+  input: z.record(z.string(), z.unknown()),
   language: z.string(),
 });
 

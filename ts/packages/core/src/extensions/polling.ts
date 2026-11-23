@@ -100,7 +100,7 @@ export const GetPollersOutputSchema = z.object({
       const id = poller.pollerId ?? poller.functionName.trim();
       if (seen.has(id))
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Duplicate pollerId",
           path: [index, "pollerId"],
         });
@@ -149,7 +149,7 @@ export const GetPollingTargetChannelsOutputSchema = z
   .superRefine((value, ctx) => {
     if (value.hasNextPage === true && !value.nextCursor) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "nextCursor is required when hasNextPage is true",
         path: ["nextCursor"],
       });
@@ -203,7 +203,7 @@ export const GetPollingTargetManagersOutputSchema = z
   .superRefine((value, ctx) => {
     if (value.hasNextPage === true && !value.nextCursor) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "nextCursor is required when hasNextPage is true",
         path: ["nextCursor"],
       });

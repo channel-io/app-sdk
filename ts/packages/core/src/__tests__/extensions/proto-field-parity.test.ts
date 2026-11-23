@@ -292,7 +292,7 @@ type GeneratedFile = "common" | "extension";
 
 interface Contract {
   name: string;
-  schema: z.ZodTypeAny;
+  schema: z.ZodType;
   generatedFile: GeneratedFile;
   protoInterface: string;
   allowMissingProtoKeys?: string[];
@@ -1252,7 +1252,7 @@ describe("extension zod schemas and generated proto fields", () => {
 
 function contract(
   name: string,
-  schema: z.ZodTypeAny,
+  schema: z.ZodType,
   generatedFile: GeneratedFile,
   protoInterface: string,
   allowMissingProtoKeys?: string[]
@@ -1279,21 +1279,21 @@ function generatedInterfaceKeys(source: string, interfaceName: string): Set<stri
   return keys;
 }
 
-function schemaKeys(schema: z.ZodTypeAny): Set<string> {
+function schemaKeys(schema: z.ZodType): Set<string> {
   const unwrapped = unwrapSchema(schema);
   if (unwrapped instanceof z.ZodObject) {
     return new Set(Object.keys(unwrapped.shape));
   }
   if (unwrapped instanceof z.ZodDiscriminatedUnion) {
-    return unionKeys(discriminatedUnionOptions(unwrapped));
+    return unionKeys(unwrapped.options);
   }
   if (unwrapped instanceof z.ZodUnion) {
     return unionKeys(unwrapped.options);
   }
-  throw new Error(`Expected an object-like Zod schema, got ${unwrapped._def.typeName}`);
+  throw new Error(`Expected an object-like Zod schema, got ${unwrapped.type}`);
 }
 
-function unionKeys(options: z.ZodTypeAny[]): Set<string> {
+function unionKeys(options: readonly z.ZodType[]): Set<string> {
   const keys = new Set<string>();
   for (const option of options) {
     for (const key of schemaKeys(option)) {
@@ -1303,13 +1303,13 @@ function unionKeys(options: z.ZodTypeAny[]): Set<string> {
   return keys;
 }
 
-function schemaPassesThrough(schema: z.ZodTypeAny): boolean {
+function schemaPassesThrough(schema: z.ZodType): boolean {
   const unwrapped = unwrapSchema(schema);
   if (unwrapped instanceof z.ZodObject) {
-    return unwrapped._def.unknownKeys === "passthrough";
+    return unwrapped.def.catchall instanceof z.ZodUnknown;
   }
   if (unwrapped instanceof z.ZodDiscriminatedUnion) {
-    return discriminatedUnionOptions(unwrapped).some(schemaPassesThrough);
+    return unwrapped.options.some(schemaPassesThrough);
   }
   if (unwrapped instanceof z.ZodUnion) {
     return unwrapped.options.some(schemaPassesThrough);
@@ -1317,25 +1317,19 @@ function schemaPassesThrough(schema: z.ZodTypeAny): boolean {
   return false;
 }
 
-function discriminatedUnionOptions(
-  schema: z.ZodDiscriminatedUnion<string, z.ZodObject[]>
-): z.ZodTypeAny[] {
-  return [...schema.optionsMap.values()];
-}
-
-function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
+function unwrapSchema(schema: z.ZodType): z.ZodType {
   let current = schema;
   while (
-    current instanceof z.ZodEffects ||
+    current instanceof z.ZodPipe ||
     current instanceof z.ZodOptional ||
     current instanceof z.ZodNullable ||
     current instanceof z.ZodDefault
   ) {
-    if (current instanceof z.ZodEffects) {
-      current = current.innerType();
+    if (current instanceof z.ZodPipe) {
+      current = current.in;
       continue;
     }
-    current = current._def.innerType;
+    current = current.unwrap();
   }
   return current;
 }

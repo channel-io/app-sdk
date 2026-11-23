@@ -25,11 +25,11 @@ function isZodErrorLike(error: unknown): error is ZodErrorLike {
   );
 }
 
-export function parseFunctionInputParams<T>(
+export function parseFunctionInputParams<Schema extends z.ZodType>(
   functionName: string,
-  inputSchema: z.ZodSchema<T>,
+  inputSchema: Schema,
   params: unknown
-): T {
+): z.output<Schema> {
   try {
     return isMessagingExtensionMethod(functionName)
       ? parseMessagingExtensionInputParams(inputSchema, params)

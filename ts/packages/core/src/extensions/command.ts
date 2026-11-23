@@ -71,7 +71,7 @@ export type CommandParamDefI18n = ProtoBacked<
 export const CommandChoiceSchema = z.object({
   name: z.string(),
   value: z.union([z.string(), z.number(), z.boolean()]),
-  nameDescI18nMap: z.record(CommandNameDescI18nSchema).optional(),
+  nameDescI18nMap: z.record(z.string(), CommandNameDescI18nSchema).optional(),
 });
 export type CommandChoice = ProtoBacked<z.infer<typeof CommandChoiceSchema>, ProtoCommandChoice>;
 
@@ -84,7 +84,7 @@ export const CommandParamDefinitionSchema = z.object({
   required: z.boolean(),
   description: z.string().max(50).optional(),
   choices: z.array(CommandChoiceSchema).max(10).optional(),
-  nameDescI18nMap: z.record(CommandParamDefI18nSchema).optional(),
+  nameDescI18nMap: z.record(z.string(), CommandParamDefI18nSchema).optional(),
   autoComplete: z.boolean().optional(),
   alfDescription: z.string().max(1500).optional(),
 });
@@ -100,9 +100,9 @@ export const CommandConfigSchema = z.object({
   name: z.string().min(1).max(30),
   scope: CommandScopeSchema,
   buttonName: z.string().min(1).max(30).optional(),
-  buttonNameI18nMap: z.record(CommandNameI18nSchema).optional(),
+  buttonNameI18nMap: z.record(z.string(), CommandNameI18nSchema).optional(),
   description: z.string().max(100).optional(),
-  nameDescI18nMap: z.record(CommandNameDescI18nSchema).optional(),
+  nameDescI18nMap: z.record(z.string(), CommandNameDescI18nSchema).optional(),
   actionFunctionName: z.string().min(1),
   autoCompleteFunctionName: z.string().min(1).optional(),
   systemVersion: z.string().optional(),
@@ -133,7 +133,7 @@ export type GetCommandsOutput = ProtoBacked<
 export const CommandResultSchema = z
   .object({
     type: z.string().min(1),
-    attributes: z.record(z.unknown()).optional(),
+    attributes: z.record(z.string(), z.unknown()).optional(),
   })
   .strict();
 

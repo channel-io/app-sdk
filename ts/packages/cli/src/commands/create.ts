@@ -96,7 +96,7 @@ export async function createApp(name: string, options: CreateAppOptions = {}): P
         dotenv: "^17.2.3",
         "reflect-metadata": "^0.2.2",
         rxjs: "^7.8.2",
-        zod: "^3.25.76",
+        zod: "^4.6.7",
       },
       devDependencies: {
         "@nestjs/cli": "^11.0.23",
@@ -139,7 +139,7 @@ export async function createApp(name: string, options: CreateAppOptions = {}): P
       types: "./dist/index.d.ts",
       exports: { ".": { types: "./dist/index.d.ts", import: "./dist/index.js" } },
       scripts: { build: "tsc", typecheck: "tsc --noEmit" },
-      dependencies: { zod: "^3.25.76" },
+      dependencies: { zod: "^4.6.7" },
       devDependencies: { typescript: "^5.9.3" },
     }),
     "packages/shared/tsconfig.json": json({
@@ -235,7 +235,7 @@ function commandExtension(name: string): string {
 }
 
 function sharedContract(): string {
-  return `import { z } from "zod";\n\nexport const HELLO_FUNCTION = "hello.open";\nexport const HELLO_WAM_NAME = "hello";\n\nexport const CommandActionInputSchema = z.object({\n  chat: z.object({ type: z.string(), id: z.string() }).optional(),\n  trigger: z.object({ type: z.string(), attributes: z.record(z.string()).nullish() }).optional(),\n  input: z.record(z.unknown()).nullish().transform((value) => value ?? {}),\n  language: z.string().optional(),\n});\n\nexport const HelloWamDataSchema = z.object({\n  appId: z.string(),\n  channelId: z.string(),\n  message: z.string(),\n  language: z.string(),\n});\n`;
+  return `import { z } from "zod";\n\nexport const HELLO_FUNCTION = "hello.open";\nexport const HELLO_WAM_NAME = "hello";\n\nexport const CommandActionInputSchema = z.object({\n  chat: z.object({ type: z.string(), id: z.string() }).optional(),\n  trigger: z.object({ type: z.string(), attributes: z.record(z.string(), z.string()).nullish() }).optional(),\n  input: z.record(z.string(), z.unknown()).nullish().transform((value) => value ?? {}),\n  language: z.string().optional(),\n});\n\nexport const HelloWamDataSchema = z.object({\n  appId: z.string(),\n  channelId: z.string(),\n  message: z.string(),\n  language: z.string(),\n});\n`;
 }
 
 function wamMain(): string {

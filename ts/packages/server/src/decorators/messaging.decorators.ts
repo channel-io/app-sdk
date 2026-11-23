@@ -30,7 +30,7 @@ import { Func } from "./function.decorator.js";
 import { Ctx, Input } from "./param.decorator.js";
 import { InputSchema, OutputSchema } from "./schema.decorator.js";
 
-function messagingFunction(name: string, input: z.ZodSchema, output: z.ZodSchema): MethodDecorator {
+function messagingFunction(name: string, input: z.ZodType, output: z.ZodType): MethodDecorator {
   return (target, propertyKey, descriptor) => {
     Func(name)(target, propertyKey, descriptor);
     InputSchema(input)(target, propertyKey, descriptor);

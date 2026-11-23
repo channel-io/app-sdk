@@ -125,7 +125,7 @@ export const OAuthProviderI18nMapSchema = z
     for (const locale of Object.keys(value)) {
       if (!OAuthProviderSupportedLocaleSchema.safeParse(locale).success) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: [locale],
           message: "Unsupported OAuth provider i18n locale. Supported locales: ko, ja, en.",
         });
@@ -206,17 +206,19 @@ export type OAuthTokenResponseMapping = ProtoBacked<
 export const OAuthProviderSchema = z.object({
   authorizationDisplay: OAuthStepDisplaySchema.optional(),
   provider: z.string().min(1),
-  authorizationUrl: z.string().url(),
-  tokenUrl: z.string().url(),
-  refreshTokenUrl: z.string().url().optional(),
+  authorizationUrl: z.url(),
+  tokenUrl: z.url(),
+  refreshTokenUrl: z.url().optional(),
   scopes: z.array(z.string()).min(1),
   providerName: z.string().min(1),
   providerDescription: z.string().optional(),
   i18nMap: OAuthProviderI18nMapSchema.optional(),
-  providerIconUrl: z.string().url().optional(),
+  providerIconUrl: z.url().optional(),
   pkceRequired: z.boolean().optional(),
   /** Strings are common defaults; objects select the resolved credential target. */
-  additionalParams: z.record(z.union([z.string(), OAuthScopedParamValueSchema])).optional(),
+  additionalParams: z
+    .record(z.string(), z.union([z.string(), OAuthScopedParamValueSchema]))
+    .optional(),
   authorizationRequest: OAuthAuthorizationRequestMappingSchema.optional(),
   /**
    * OAuth standard parameter naming convention. Defaults to `"snake"` (RFC 6749).
@@ -301,8 +303,8 @@ export type ResolveAuthConfigInput = ProtoBacked<
 >;
 /** Resolver endpoint. Secret URL values are encrypted by App Store before storage. */
 export const OAuthEndpointSchema = z.union([
-  z.string().url(),
-  z.object({ value: z.string().url(), secret: z.literal(true) }).strict(),
+  z.url(),
+  z.object({ value: z.url(), secret: z.literal(true) }).strict(),
 ]);
 export type OAuthEndpoint = z.infer<typeof OAuthEndpointSchema>;
 
@@ -312,7 +314,7 @@ export const ResolveAuthConfigOutputSchema = z
     tokenUrl: OAuthEndpointSchema,
     refreshTokenUrl: OAuthEndpointSchema.optional(),
     scopes: z.array(z.string()).optional(),
-    additionalParams: z.record(z.string()).optional(),
+    additionalParams: z.record(z.string(), z.string()).optional(),
   })
   .strict();
 export type ResolveAuthConfigOutput = ProtoBacked<
@@ -374,7 +376,7 @@ export const CredentialValidationInputSchema = z
   .object({
     accessToken: z.string().optional(),
   })
-  .passthrough();
+  .loose();
 
 export type CredentialValidationInput = ProtoBacked<
   z.infer<typeof CredentialValidationInputSchema>,
