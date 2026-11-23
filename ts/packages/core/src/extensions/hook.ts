@@ -111,7 +111,7 @@ export const WebhookBodyDeliverySchema = z.enum(["body", "reference"]);
  */
 export const WebhookBodyRefSchema = z
   .object({
-    size: z.number().int().min(1),
+    size: z.number().int().min(0),
     sha256: z.string().regex(/^[0-9a-f]{64}$/),
     contentType: z.string().optional(),
   })

@@ -376,7 +376,8 @@ describe("WebhookBodyRefSchema", () => {
   });
 
   it.each([
-    { size: 0, sha256 },
+    { size: -1, sha256 },
+    { size: 1.5, sha256 },
     { size: 1, sha256: "A".repeat(64) },
     { size: 1, sha256: "a".repeat(63) },
     { size: 1, sha256, body: {} },

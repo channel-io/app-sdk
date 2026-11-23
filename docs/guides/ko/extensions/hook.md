@@ -83,5 +83,8 @@ XML·빈 응답·설정 제거는 [고정 응답 예시](../../../reference/type
 보냅니다. 보관하지 않은 delivery는 계속 인라인으로 오므로 두 형태를 모두 처리합니다.
 원문은 `NativeFunctionClient.getWebhookBody({ targetId, deliveryId }, appToken)`로 읽고,
 `size`와 `sha256`이 `bodyRef`와 같은지 확인한 뒤 provider 서명을 검증합니다. 보관한
-본문은 수신 14일 뒤 삭제됩니다. 인라인 입력과 참조 입력을 모두 테스트하세요. 자세한 내용은
+본문은 수신 14일 뒤 삭제됩니다. 앱 역할에는 기본 권한인 `getWebhookBody`가 필요합니다.
+다른 앱의 delivery, 보관하지 않은 본문, 보관 기간이 지난 본문은 모두 NotFound입니다.
+App Store migration과 서버를 먼저 배포한 뒤 이 옵션으로 재등록하고, 옵션을 쓰지 않는 앱은
+재등록할 필요가 없습니다. 인라인 입력과 참조 입력을 모두 테스트하세요. 자세한 내용은
 [참조 전달 레퍼런스](../../../reference/typescript/extensions/hook.md#large-bodies-by-reference)를 참고하세요.

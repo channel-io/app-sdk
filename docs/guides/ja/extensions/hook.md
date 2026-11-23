@@ -85,5 +85,8 @@ XML・空の本文・設定解除は [固定応答の例](../../../reference/typ
 任意の `contentType`）で送ります。保管しなかった delivery は引き続きインラインで届くため、
 両方の形を処理してください。本文は `NativeFunctionClient.getWebhookBody({ targetId, deliveryId }, appToken)`
 で読み、`size` と `sha256` が `bodyRef` と一致することを確認してから provider の署名を検証します。
-保管した本文は受信 14 日後に削除されます。インライン入力と参照入力の両方を test してください。
+保管した本文は受信 14 日後に削除されます。アプリのロールには既定の権限である `getWebhookBody` が
+必要です。他のアプリの delivery、保管されなかった本文、保管期限切れの本文はいずれも NotFound です。
+App Store の migration とサーバーを先にデプロイしてからこのオプションで再登録し、オプションを使わない
+アプリは再登録不要です。インライン入力と参照入力の両方を test してください。
 詳細は [参照受け取りのリファレンス](../../../reference/typescript/extensions/hook.md#large-bodies-by-reference) を参照してください。

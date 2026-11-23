@@ -349,8 +349,10 @@ webhook: { endpointToken, bodyDelivery: "reference" }
 
 AppStore then sends `request.bodyRef` instead of `request.body` and
 `request.rawBodyBase64`, but only for deliveries whose body it stored outside its
-queue (large bodies in environments with the body store on). Every other delivery
-still arrives inline, so handle both shapes. Validate the reference with
+queue: deliveries above 256 KiB in an environment where AppStore's body store is
+enabled. The body store is off by default, and while it is off the option changes
+nothing. Every other delivery still arrives inline, so handle both shapes. The
+option applies as registered at delivery time. Validate the reference with
 `WebhookBodyRefSchema`:
 
 ```json
@@ -365,22 +367,35 @@ Read the body with the `getWebhookBody` native function and an app token, passin
 the input's own `targetId` and `deliveryId`. Verify the result before using it:
 
 ```ts
-const { rawBodyBase64, size, sha256 } = await nativeClient.getWebhookBody(
+import { createHash } from "node:crypto";
+import { WebhookBodyRefSchema } from "@channel.io/app-sdk-server";
+
+const bodyRef = WebhookBodyRefSchema.parse(input.request.bodyRef);
+const { accessToken } = await tokenManager.getAppToken();
+const { rawBodyBase64 } = await nativeClient.getWebhookBody(
   { targetId: input.targetId, deliveryId: input.deliveryId },
-  await tokenManager.getAppToken()
+  accessToken
 );
 const raw = Buffer.from(rawBodyBase64, "base64");
-if (size !== bodyRef.size || sha256 !== bodyRef.sha256 || raw.length !== size) {
+// Hash the bytes yourself; do not rely on the returned size or sha256.
+if (
+  raw.length !== bodyRef.size ||
+  createHash("sha256").update(raw).digest("hex") !== bodyRef.sha256
+) {
   throw new Error("webhook body does not match its reference");
 }
 ```
 
 `rawBodyBase64` equals the inline `request.rawBodyBase64`, so verify provider
 signatures on the decoded bytes as before. The app is taken from the token, so an
-app reads only its own deliveries. Another app's delivery, a body that was not
+app reads only its own deliveries. The app role needs `getWebhookBody`, which is a
+default permission; roles created before it was added can call it through their
+`registerExtension` permission. Another app's delivery, a body that was not
 stored, and a body past its retention (AppStore deletes stored bodies 14 days after
 receipt) all fail with NotFound; read the body while the Function runs. Roll out the
-AppStore migration and servers that support `bodyDelivery` before re-registering.
+AppStore migration and servers that support `bodyDelivery` before re-registering with
+the option; AppStore rejects it until then. Apps that omit the option need no
+re-registration.
 
 ## Registration
 

@@ -87,5 +87,8 @@ An inline JSON webhook passes a 1 MiB request limit from a raw body of about 450
 bodies it stored; other deliveries stay inline, so handle both. Read the body with
 `NativeFunctionClient.getWebhookBody({ targetId, deliveryId }, appToken)` and check
 `size` and `sha256` against `bodyRef` before verifying the provider signature.
-Stored bodies expire 14 days after receipt. Test both the inline and reference
+The app role needs the default `getWebhookBody` permission. Another app's delivery,
+a body that was not stored, and an expired body (14 days after receipt) all fail with
+NotFound. Deploy the AppStore migration and servers first, then re-register with the
+option; apps that omit it need no re-registration. Test both the inline and reference
 inputs. See [bodies by reference](../../../reference/typescript/extensions/hook.md#large-bodies-by-reference).

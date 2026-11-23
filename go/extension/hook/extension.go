@@ -40,8 +40,9 @@ const (
 
 	WebhookExecutionScopeApp     = "app"
 	WebhookExecutionScopeManager = "manager"
+	// WebhookBodyDeliveryBody (the default) keeps request.body and request.rawBodyBase64.
+	WebhookBodyDeliveryBody = "body"
 	// WebhookBodyDeliveryReference sends a stored body as request.bodyRef; read it with getWebhookBody.
-	WebhookBodyDeliveryBody      = "body"
 	WebhookBodyDeliveryReference = "reference"
 	OAuthFlowResultContinue      = "continue"
 	OAuthFlowResultRedirect      = "redirect"
