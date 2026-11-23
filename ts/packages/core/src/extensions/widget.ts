@@ -55,7 +55,7 @@ const WidgetMetadataBaseSchema = z.object({
   /**
    * i18n default name/description map keyed by language code.
    */
-  defaultNameDescI18nMap: z.record(NameDescI18nSchema).optional(),
+  defaultNameDescI18nMap: z.record(z.string(), NameDescI18nSchema).optional(),
 });
 
 /**
@@ -96,7 +96,7 @@ export type GetWidgetsOutput = ProtoBacked<
 export const WidgetActionResultSchema = z
   .object({
     type: z.string().min(1),
-    attributes: z.record(z.unknown()).optional(),
+    attributes: z.record(z.string(), z.unknown()).optional(),
   })
   .strict();
 

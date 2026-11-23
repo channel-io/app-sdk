@@ -38,8 +38,8 @@ export const NotebookCellSchema = z.object({
   cellKey: z.string().min(1),
   type: NotebookCellTypeSchema,
   name: z.string().optional(),
-  definition: z.record(z.unknown()),
-  presentation: z.record(z.unknown()).optional(),
+  definition: z.record(z.string(), z.unknown()),
+  presentation: z.record(z.string(), z.unknown()).optional(),
 });
 export type NotebookCell = ProtoBacked<z.infer<typeof NotebookCellSchema>, ProtoNotebookCell>;
 

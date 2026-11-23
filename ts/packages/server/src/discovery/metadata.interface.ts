@@ -37,9 +37,9 @@ export interface FunctionMetadata {
   /** Whether this function is omitted from Function discovery */
   hidden?: boolean;
   /** Input schema (Zod) */
-  inputSchema?: z.ZodSchema;
+  inputSchema?: z.ZodType;
   /** Output schema (Zod) */
-  outputSchema?: z.ZodSchema;
+  outputSchema?: z.ZodType;
   /** JSON Schema for input */
   inputJsonSchema?: Record<string, unknown>;
   /** JSON Schema for output */

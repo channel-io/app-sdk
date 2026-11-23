@@ -151,7 +151,7 @@ import { zodToJsonSchema } from "../utils/zod-to-json-schema.js";
 import type { FunctionSchema } from "../types/function.js";
 
 const EmptyInputSchema = z.object({});
-const JsonObjectSchema = z.object({}).passthrough();
+const JsonObjectSchema = z.object({}).loose();
 const JsonValueSchema = z.unknown();
 
 const AlfTaskGetTasksInputSchema = z.object({
@@ -221,7 +221,7 @@ const CommandAutoCompleteArgumentSchema = z.object({
 
 const CommandTriggerSchema = z.object({
   type: z.string().optional(),
-  attributes: z.record(z.string()).optional(),
+  attributes: z.record(z.string(), z.string()).optional(),
 });
 
 const CommandGetSuggestionsInputSchema = z.object({

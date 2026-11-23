@@ -436,7 +436,7 @@ export const CommerceProductSchema = z.object({
   sellerProductCode: z.string().optional(),
   // Whole-product sellable stock; omit unknown/unmanaged inventory. Variant stock,
   // when provided, must also permit a sale. Zero is distinct from absence.
-  stockQuantity: z.number().finite().nonnegative().optional(),
+  stockQuantity: z.number().nonnegative().optional(),
 });
 export type CommerceProduct = ProtoBacked<
   z.infer<typeof CommerceProductSchema>,

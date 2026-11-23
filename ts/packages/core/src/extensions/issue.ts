@@ -57,19 +57,19 @@ export const ExternalIssueSchema = z
     issueId: Text,
     identifier: Text,
     title: Text,
-    url: Text.url(),
+    url: Text.check(z.url()),
     state: ExternalIssueStateSchema,
     providerState: IssueProviderStateSchema,
-    createdAt: z.string().datetime({ offset: true }),
+    createdAt: z.iso.datetime({ offset: true }),
     container: z.object({ id: Text, name: Text }).strict().optional(),
     description: z.string().optional(),
-    updatedAt: z.string().datetime({ offset: true }).nullish(),
-    closedAt: z.string().datetime({ offset: true }).nullish(),
+    updatedAt: z.iso.datetime({ offset: true }).nullish(),
+    closedAt: z.iso.datetime({ offset: true }).nullish(),
     closedBy: z
       .object({
         name: Text,
         id: Text.optional(),
-        url: Text.url().optional(),
+        url: Text.check(z.url()).optional(),
         type: z.enum(["user", "bot"]).optional(),
       })
       .strict()
@@ -96,7 +96,7 @@ export const IssueErrorSchema = z
     retryAfterMs: z.number().int().nonnegative().optional(),
     fieldErrors: z.array(z.object({ key: Text, message: Text }).strict()).optional(),
     recovery: z
-      .object({ sourceIssueId: Text, externalUrl: Text.url().optional() })
+      .object({ sourceIssueId: Text, externalUrl: Text.check(z.url()).optional() })
       .strict()
       .optional(),
   })
@@ -105,6 +105,7 @@ export const IssueTransitionInputSchema = z
   .object({
     type: z.literal("object"),
     properties: z.record(
+      z.string(),
       z
         .object({
           type: z.enum(["string", "number", "integer", "boolean"]),
@@ -125,7 +126,7 @@ const Transition = z.object({
   targetProviderState: IssueProviderStateSchema.optional(),
   inputSchema: IssueTransitionInputSchema.optional(),
   reason: Text.optional(),
-  externalUrl: Text.url().optional(),
+  externalUrl: Text.check(z.url()).optional(),
 });
 export const IssueTransitionSchema = z.discriminatedUnion("availability", [
   Transition.extend({
@@ -135,7 +136,7 @@ export const IssueTransitionSchema = z.discriminatedUnion("availability", [
   Transition.extend({
     availability: z.literal("externalOnly"),
     reason: Text,
-    externalUrl: Text.url(),
+    externalUrl: Text.check(z.url()),
   }).strict(),
 ]);
 
@@ -149,7 +150,7 @@ export const IssueSearchIssuesInputSchema = z
     orderBy: z.literal("createdAt").optional(),
     orderDirection: z.literal("desc").optional(),
   })
-  .passthrough()
+  .loose()
   .transform(({ query, containerId, since, limit, orderBy, orderDirection }) => ({
     ...(query === undefined ? {} : { query }),
     ...(containerId === undefined ? {} : { containerId }),
@@ -169,11 +170,11 @@ export const IssueGetIssueInputSchema = z
     issueId: Text.regex(/\S/).optional(),
     url: z
       .string()
-      .url()
       .regex(/^https:\/\/[^/\s?#]+(?:[/?#][^\s]*)?$/)
+      .check(z.url())
       .optional(),
   })
-  .passthrough()
+  .loose()
   .transform(({ issueId, url }) => ({
     ...(issueId === undefined ? {} : { issueId }),
     ...(url === undefined ? {} : { url }),
@@ -186,7 +187,7 @@ export const IssueGetIssuesInputSchema = z
   .object({
     issueIds: z.array(Text).min(1).max(100).refine(unique, "issueIds must be unique"),
   })
-  .passthrough()
+  .loose()
   .transform(({ issueIds }) => ({ issueIds }));
 export const IssueGetIssuesOutputSchema = z
   .object({
@@ -203,7 +204,7 @@ export const IssueGetIssuesOutputSchema = z
   .strict();
 export const IssueGetIssueTransitionsInputSchema = z
   .object({ issueId: Text })
-  .passthrough()
+  .loose()
   .transform(({ issueId }) => ({ issueId }));
 export const IssueGetIssueTransitionsOutputSchema = z
   .object({
@@ -217,9 +218,9 @@ export const IssueExecuteIssueTransitionInputSchema = z
     transitionId: Text,
     stateToken: Text,
     requestId: Text,
-    fields: z.record(Scalar).optional(),
+    fields: z.record(z.string(), Scalar).optional(),
   })
-  .passthrough()
+  .loose()
   .transform(({ issueId, transitionId, stateToken, requestId, fields }) => ({
     issueId,
     transitionId,
@@ -286,7 +287,7 @@ const SubscriptionID = z
   .refine((value) => value.trim() === value, "Whitespace is not allowed");
 export const IssueSubscriptionStartInputSchema = z
   .object({ subscriptionId: SubscriptionID, issueId: Text.regex(/\S/) })
-  .passthrough()
+  .loose()
   .transform(({ subscriptionId, issueId }) => ({ subscriptionId, issueId }));
 export const IssueSubscriptionStartOutputSchema = z
   .object({
@@ -297,7 +298,7 @@ export const IssueSubscriptionStartOutputSchema = z
   .strict();
 export const IssueSubscriptionStopInputSchema = z
   .object({ subscriptionId: SubscriptionID })
-  .passthrough()
+  .loose()
   .transform(({ subscriptionId }) => ({ subscriptionId }));
 export const IssueSubscriptionStopOutputSchema = z.object({ stopped: z.literal(true) }).strict();
 export type IssueSubscriptionStartInput = ProtoBacked<
@@ -317,7 +318,7 @@ export type IssueSubscriptionStopOutput = ProtoBacked<
   ProtoIssueSubscriptionStopOutput
 >;
 
-const CreateNumber = z.number().finite();
+const CreateNumber = z.number();
 const CreateValue = z.union([
   z.string(),
   CreateNumber,
@@ -371,7 +372,7 @@ export const IssueCreateFormFieldSchema = z
   })
   .strict()
   .superRefine((field, ctx) => {
-    const fail = (message: string) => ctx.addIssue({ code: z.ZodIssueCode.custom, message });
+    const fail = (message: string) => ctx.addIssue({ code: "custom", message });
     const selectable = field.type === "select" || field.type === "multiselect";
     if (selectable && !field.choices) fail("Select fields require choices");
     if (
@@ -425,7 +426,7 @@ export const IssueGetCreateSchemaInputSchema = z
     selected: IssueCreateSelectedValuesSchema.optional(),
     page: IssueCreateSchemaPageSchema.optional(),
   })
-  .passthrough()
+  .loose()
   .transform(({ selected, page }) => ({
     ...(selected === undefined ? {} : { selected }),
     ...(page === undefined ? {} : { page }),
@@ -441,7 +442,11 @@ export const IssueGetCreateSchemaOutputSchema = z.discriminatedUnion("availabili
     })
     .strict(),
   z
-    .object({ availability: z.literal("externalOnly"), reason: Text, externalUrl: Text.url() })
+    .object({
+      availability: z.literal("externalOnly"),
+      reason: Text,
+      externalUrl: Text.check(z.url()),
+    })
     .strict(),
 ]);
 export const IssueCreateIssueInputSchema = z
@@ -454,7 +459,7 @@ export const IssueCreateIssueInputSchema = z
     accountRef: Text.regex(/\S/),
     recoveryOnly: z.boolean().optional(),
   })
-  .passthrough()
+  .loose()
   .transform(
     ({
       containerId,
@@ -532,7 +537,11 @@ export type IssueRecovery = ProtoBacked<z.infer<typeof IssueRecoverySchema>, Pro
 export const IssueCreateCommentInputSchema = z
   .object({
     issueId: Text.regex(/\S/),
-    body: z.string().max(16000).regex(/\S/),
+    body: z
+      .string()
+      .max(16000)
+      .refine((value) => value.length <= 16000, "Comment body must not exceed 16000 UTF-16 units")
+      .regex(/\S/),
     requestId: z
       .string()
       .length(36)
@@ -546,8 +555,8 @@ export const IssueCreateCommentOutputSchema = z
     commentId: Text.regex(/\S/),
     url: z
       .string()
-      .url()
       .regex(/^[Hh][Tt][Tt][Pp][Ss]:\/\/[^/\s\\?#]+(?:[/?#][^\s\\]*)?$/)
+      .check(z.url())
       .optional(),
   })
   .strict();

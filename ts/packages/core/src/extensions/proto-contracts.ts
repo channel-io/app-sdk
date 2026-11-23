@@ -247,9 +247,9 @@ import type * as WmsSchemas from "./wms.js";
 import type * as CommerceSchemas from "./commerce.js";
 
 type Expect<T extends true> = T;
-type SchemaOutput<Schema extends z.ZodTypeAny> = z.output<Schema>;
+type SchemaOutput<Schema extends z.ZodType> = z.output<Schema>;
 type IsAssignable<Actual, Expected> = [Actual] extends [Expected] ? true : false;
-type SchemaOutputExtendsProto<Schema extends z.ZodTypeAny, Proto> = IsAssignable<
+type SchemaOutputExtendsProto<Schema extends z.ZodType, Proto> = IsAssignable<
   SchemaOutput<Schema>,
   Proto
 >;

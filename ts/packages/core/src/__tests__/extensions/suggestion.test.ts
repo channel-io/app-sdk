@@ -197,3 +197,15 @@ describe("suggestion extension", () => {
     ).rejects.toThrow();
   });
 });
+
+it.each(["\t", "\n", "\r"])("rejects raw hostname control characters (%j)", (character) => {
+  expect(
+    SuggestionTriggersSchema.safeParse({
+      urls: [`https://exam${character}ple.example/`],
+      keywords: {},
+    }).success
+  ).toBe(false);
+  expect(
+    SuggestionTriggersSchema.parse({ urls: [" https://example.com/ "], keywords: {} }).urls
+  ).toEqual(["https://example.com/"]);
+});

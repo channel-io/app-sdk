@@ -1,6 +1,6 @@
 import { Injectable, type OnModuleInit, Logger, type Type } from "@nestjs/common";
 import { DiscoveryService, Reflector } from "@nestjs/core";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { zodToJsonSchema } from "@channel.io/app-sdk-core";
 import type { z } from "zod";
 import {
   EXTENSION_METADATA,
@@ -135,12 +135,12 @@ export class ExtensionDiscoveryService implements OnModuleInit {
       if (!funcMeta) continue;
 
       // Get schema metadata
-      const inputSchema: z.ZodSchema | undefined = Reflect.getMetadata(
+      const inputSchema: z.ZodType | undefined = Reflect.getMetadata(
         INPUT_SCHEMA_METADATA,
         metatype,
         methodName
       );
-      const outputSchema: z.ZodSchema | undefined = Reflect.getMetadata(
+      const outputSchema: z.ZodType | undefined = Reflect.getMetadata(
         OUTPUT_SCHEMA_METADATA,
         metatype,
         methodName
@@ -156,12 +156,8 @@ export class ExtensionDiscoveryService implements OnModuleInit {
       const fullName = namePrefix ? `${namePrefix}.${funcMeta.name}` : funcMeta.name;
 
       // Convert schemas to JSON Schema
-      const inputJsonSchema = inputSchema
-        ? (zodToJsonSchema(inputSchema, { $refStrategy: "none" }) as Record<string, unknown>)
-        : undefined;
-      const outputJsonSchema = outputSchema
-        ? (zodToJsonSchema(outputSchema, { $refStrategy: "none" }) as Record<string, unknown>)
-        : undefined;
+      const inputJsonSchema = inputSchema ? zodToJsonSchema(inputSchema) : undefined;
+      const outputJsonSchema = outputSchema ? zodToJsonSchema(outputSchema) : undefined;
 
       // Create bound handler with parameter injection
       const handler = this.createHandler(
@@ -219,8 +215,8 @@ export class ExtensionDiscoveryService implements OnModuleInit {
     fullName: string,
     methodName: string | symbol,
     paramMeta: FunctionParamMetadata[],
-    inputSchema?: z.ZodSchema,
-    outputSchema?: z.ZodSchema
+    inputSchema?: z.ZodType,
+    outputSchema?: z.ZodType
   ): (ctx: unknown, params: unknown) => Promise<unknown> {
     const method = (instance as Record<string | symbol, unknown>)[methodName] as (
       ...args: unknown[]

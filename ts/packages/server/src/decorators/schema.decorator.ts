@@ -20,7 +20,7 @@ export const DESCRIPTION_METADATA = Symbol("DESCRIPTION_METADATA");
  * async getAvailability(@Ctx() ctx, @Input() params) { ... }
  * ```
  */
-export function InputSchema(schema: z.ZodSchema): MethodDecorator {
+export function InputSchema(schema: z.ZodType): MethodDecorator {
   return (target, propertyKey) => {
     Reflect.defineMetadata(INPUT_SCHEMA_METADATA, schema, target.constructor, propertyKey);
   };
@@ -40,7 +40,7 @@ export function InputSchema(schema: z.ZodSchema): MethodDecorator {
  * async getAvailability(@Ctx() ctx, @Input() params) { ... }
  * ```
  */
-export function OutputSchema(schema: z.ZodSchema): MethodDecorator {
+export function OutputSchema(schema: z.ZodType): MethodDecorator {
   return (target, propertyKey) => {
     Reflect.defineMetadata(OUTPUT_SCHEMA_METADATA, schema, target.constructor, propertyKey);
   };

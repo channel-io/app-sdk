@@ -124,7 +124,7 @@ export function createTestExtension<T>(
       Reflect.getMetadata(PARAM_METADATA, ExtensionClass, methodKey) ?? [];
 
     // Get input schema for validation
-    const inputSchema: z.ZodSchema | undefined = Reflect.getMetadata(
+    const inputSchema: z.ZodType | undefined = Reflect.getMetadata(
       INPUT_SCHEMA_METADATA,
       ExtensionClass,
       methodKey
@@ -175,7 +175,7 @@ export function createTestExtension<T>(
     const result = await method.apply(instance, args);
 
     // Validate output if schema exists
-    const outputSchema: z.ZodSchema | undefined = Reflect.getMetadata(
+    const outputSchema: z.ZodType | undefined = Reflect.getMetadata(
       OUTPUT_SCHEMA_METADATA,
       ExtensionClass,
       methodKey

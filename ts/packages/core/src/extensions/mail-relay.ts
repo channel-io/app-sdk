@@ -27,7 +27,7 @@ export const MailRelayCommonHeadersSchema = z
     messageId: z.string().optional(),
     date: z.string().optional(),
   })
-  .passthrough();
+  .loose();
 
 export const MailRelayMailSchema = z
   .object({
@@ -37,7 +37,7 @@ export const MailRelayMailSchema = z
     commonHeaders: MailRelayCommonHeadersSchema.default({}),
     headers: z.array(MailRelayHeaderSchema),
   })
-  .passthrough();
+  .loose();
 
 export const MailRelayReceiptSchema = z
   .object({
@@ -48,7 +48,7 @@ export const MailRelayReceiptSchema = z
     dkimVerdict: z.string().optional(),
     dmarcVerdict: z.string().optional(),
   })
-  .passthrough();
+  .loose();
 
 export const MailRelayInboundInputSchema = z.object({
   slug: NonEmptyStringSchema,

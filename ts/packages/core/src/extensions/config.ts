@@ -97,7 +97,7 @@ export const ConfigI18nMapSchema = z
     for (const locale of Object.keys(value)) {
       if (!ConfigSupportedLocaleSchema.safeParse(locale).success) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: [locale],
           message: "Unsupported config i18n locale. Supported locales: ko, ja, en.",
         });
@@ -244,7 +244,7 @@ export const ConfigDraftResolutionParamsSchema = z.object({
   channelId: z.string(),
   managerId: z.string().optional(),
   changedFieldKey: z.string(),
-  changedValue: z.unknown(),
+  changedValue: z.unknown().optional(),
   values: z.record(z.string(), z.unknown()),
 });
 export type ConfigDraftResolutionParams = ProtoBacked<

@@ -34,8 +34,7 @@
     "@channel.io/app-sdk-core": "workspace:*",
     "@grpc/grpc-js": "^1.14.4",
     "protobufjs": "^8.7.1",
-    "zod": "^3.24.1",
-    "zod-to-json-schema": "^3.25.2"
+    "zod": "^4.6.7"
   },
   "peerDependencies": {
     "@google-cloud/bigquery": "^8.3.1",
@@ -83,7 +82,7 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "typescript": "^5.7.2",
-    "vitest": "^3.2.7"
+    "vitest": "^4.1.12"
   },
   "repository": {
     "type": "git",

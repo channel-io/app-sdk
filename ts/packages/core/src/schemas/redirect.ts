@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const HTTPSRedirectOriginSchema = z
   .string()
-  .url()
   .regex(/^https:\/\/[^/?#@\\\s*]+$/)
+  .check(z.url())
   .refine((value) => {
     try {
       return new URL(value).origin === value;
@@ -14,5 +14,5 @@ export const HTTPSRedirectOriginSchema = z
 
 export const HTTPSRedirectURLSchema = z
   .string()
-  .url()
-  .regex(/^https:\/\/[^/?#@\\\s]+(?:[/?#][^\\\s]*)?$/);
+  .regex(/^https:\/\/[^/?#@\\\s]+(?:[/?#][^\\\s]*)?$/)
+  .check(z.url());

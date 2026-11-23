@@ -136,10 +136,10 @@ export const NativeOAuthFlowSchema = z
   .object({
     id: NativeNonEmptyStringSchema,
     phase: z.enum(["before", "oauth", "after", "completed", "canceled"]),
-    expiresAt: z.string().datetime({ offset: true }),
+    expiresAt: z.iso.datetime({ offset: true }),
     key: z.string().optional(),
     targetAuthScope: z.string().optional(),
-    authorizationURL: z.string().url().optional(),
+    authorizationURL: z.url().optional(),
     canResume: z.boolean().optional(),
     steps: z.array(OAuthFlowStepSchema).optional(),
   })

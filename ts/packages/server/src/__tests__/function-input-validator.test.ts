@@ -45,7 +45,7 @@ describe("parseFunctionInputParams", () => {
       parse: () => {
         throw crossModuleError;
       },
-    } as unknown as z.ZodSchema;
+    } as unknown as z.ZodType;
 
     expect(() => parseFunctionInputParams("extension.cafe.addCartItem", schema, {})).toThrowError(
       expect.objectContaining({
@@ -96,7 +96,7 @@ it.each([
   ["extension.issue.subscription.stop", IssueSubscriptionStopInputSchema],
 ] as const)("returns a typed input error for %s before invoking the app", (name, schema) => {
   expect(() =>
-    parseFunctionInputParams(name, schema as z.ZodSchema, { subscriptionId: "private token" })
+    parseFunctionInputParams(name, schema as z.ZodType, { subscriptionId: "private token" })
   ).toThrowError(
     expect.objectContaining({
       rpcCode: FunctionCallErrorCode.BadRequest,

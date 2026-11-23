@@ -37,10 +37,10 @@ export function isMessagingExtensionMethod(methodName: string): boolean {
   return methodName.startsWith(MESSAGING_EXTENSION_METHOD_PREFIX);
 }
 
-export function parseMessagingExtensionInputParams<T>(
-  inputSchema: z.ZodSchema<T>,
+export function parseMessagingExtensionInputParams<Schema extends z.ZodType>(
+  inputSchema: Schema,
   params: unknown
-): T {
+): z.output<Schema> {
   const camelizedResult = inputSchema.safeParse(camelizeObjectKeys(params));
   if (camelizedResult.success) {
     return camelizedResult.data;
