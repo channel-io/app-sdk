@@ -108,6 +108,7 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 			commerce.FunctionGetExchangeableItems,
 			commerce.FunctionChangeShippingAddress,
 			commerce.FunctionGetProducts,
+			commerce.FunctionSearchProduct,
 		},
 		build: func() appsdk.Extension {
 			return commerce.Extension().
@@ -119,7 +120,8 @@ var extensionSmokeSpecs = []extensionSmokeSpec{
 				RequestExchangeOrder(smokeZero[commerce.ExchangeOrderInput, commerce.ActionResult]()).
 				GetExchangeableItems(smokeZero[commerce.GetExchangeableItemsInput, commerce.GetExchangeableItemsOutput]()).
 				ChangeShippingAddress(smokeZero[commerce.ChangeShippingAddressInput, commerce.ActionResult]()).
-				GetProducts(smokeZero[commerce.GetProductsInput, commerce.GetProductsOutput]())
+				GetProducts(smokeZero[commerce.GetProductsInput, commerce.GetProductsOutput]()).
+				SearchProduct(smokeZero[commerce.SearchProductInput, commerce.SearchProductOutput]())
 		},
 	},
 	{

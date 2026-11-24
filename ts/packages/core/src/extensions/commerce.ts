@@ -1,5 +1,11 @@
 import { z } from "zod";
 import type {
+  CommerceSearchProductInput as ProtoCommerceSearchProductInput,
+  CommerceSearchProductOption as ProtoCommerceSearchProductOption,
+  CommerceSearchProductOutput as ProtoCommerceSearchProductOutput,
+  CommerceSearchProduct as ProtoCommerceSearchProduct,
+  CommerceSearchProductImage as ProtoCommerceSearchProductImage,
+  CommerceSearchProductVariant as ProtoCommerceSearchProductVariant,
   CommerceActionResult as ProtoCommerceActionResult,
   CommerceAppCapabilities as ProtoCommerceAppCapabilities,
   CommerceCancelOrderInput as ProtoCommerceCancelOrderInput,
@@ -441,6 +447,94 @@ export const CommerceProductSchema = z.object({
 export type CommerceProduct = ProtoBacked<
   z.infer<typeof CommerceProductSchema>,
   ProtoCommerceProduct
+>;
+
+// Existing Cafe24 searchProducts names and zero-value semantics are intentional.
+export const CommerceSearchProductImageSchema = z.object({
+  bucket: z.string(),
+  key: z.string(),
+  id: z.string(),
+  type: z.string(),
+  name: z.string(),
+  ext: z.string().optional(),
+  size: z.number().int(),
+  contentType: z.string().optional(),
+  width: z.number().int().optional(),
+  height: z.number().int().optional(),
+  animated: z.boolean().optional(),
+});
+export type CommerceSearchProductImage = ProtoBacked<
+  z.infer<typeof CommerceSearchProductImageSchema>,
+  ProtoCommerceSearchProductImage
+>;
+
+export const CommerceSearchProductOptionSchema = z.object({
+  name: z.string().optional(),
+  value: z.string().optional(),
+});
+export type CommerceSearchProductOption = ProtoBacked<
+  z.infer<typeof CommerceSearchProductOptionSchema>,
+  ProtoCommerceSearchProductOption
+>;
+
+export const CommerceSearchProductVariantSchema = z.object({
+  variantId: z.string().optional(),
+  amount: z.number().optional(),
+  quantity: z.number().optional(),
+  useInventory: z.boolean().optional(),
+  options: z.array(CommerceSearchProductOptionSchema).optional(),
+});
+export type CommerceSearchProductVariant = ProtoBacked<
+  z.infer<typeof CommerceSearchProductVariantSchema>,
+  ProtoCommerceSearchProductVariant
+>;
+
+export const CommerceSearchProductSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  appCommerceType: z.string().optional(),
+  defaultImage: CommerceSearchProductImageSchema.optional(),
+  images: z.array(z.string()).optional(),
+  amount: z.number().optional(),
+  retailAmount: z.number().optional(),
+  currency: z.string().optional(),
+  state: z.string().optional(),
+  vendor: z.string().optional(),
+  productType: z.string().optional(),
+  categories: z.array(z.string()).optional(),
+  summary: z.string().optional(),
+  description: z.string().optional(),
+  productUrl: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  createdAt: z.number().int().optional(),
+  updatedAt: z.number().int().optional(),
+  variants: z.array(CommerceSearchProductVariantSchema).optional(),
+});
+export type CommerceSearchProduct = ProtoBacked<
+  z.infer<typeof CommerceSearchProductSchema>,
+  ProtoCommerceSearchProduct
+>;
+
+export const CommerceSearchProductInputSchema = z.object({
+  query: z.string().optional(),
+  size: z.number().int().optional(),
+  // Expression validation belongs to the search core. Preserve unknown keys so
+  // invalid filters are rejected there rather than silently stripped by Zod.
+  searchFilter: z.record(z.string(), z.unknown()).nullable().optional(),
+  since: z.string().optional(),
+});
+export type CommerceSearchProductInput = ProtoBacked<
+  z.infer<typeof CommerceSearchProductInputSchema>,
+  ProtoCommerceSearchProductInput
+>;
+
+export const CommerceSearchProductOutputSchema = z.object({
+  products: z.array(CommerceSearchProductSchema),
+  next: z.string().optional(),
+});
+export type CommerceSearchProductOutput = ProtoBacked<
+  z.infer<typeof CommerceSearchProductOutputSchema>,
+  ProtoCommerceSearchProductOutput
 >;
 
 export const CommerceGetProductsInputSchema = z.object({

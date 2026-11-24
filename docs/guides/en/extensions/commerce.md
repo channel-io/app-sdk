@@ -30,6 +30,7 @@ Supported methods:
 - `extension.commerce.order.getExchangeableItems`
 - `extension.commerce.order.changeShippingAddress`
 - `extension.commerce.product.getProducts`
+- `extension.commerce.product.searchProduct`
 
 Reuse the SDK-exported value types for addresses, payments, fulfillment, and claims.
 
@@ -66,6 +67,26 @@ Use `@Extension({ name: "commerce", systemVersion: "v1" })` and the canonical sc
 `CommerceResultSchema`, and `CommerceGetProductsInputSchema`/`CommerceGetProductsOutputSchema` for
 the product catalog. Use the exact relative names listed above and add the class to the NestJS
 providers.
+
+## Product search
+
+`searchProduct` uses Cafe24's existing `searchProducts` wire contract. Inputs are optional
+`query`, `size`, `searchFilter`, and `since`. An empty query lists products; `size` defaults to
+20 and is capped at 100. The platform search path applies these limits in its search core;
+apps that implement the function directly must apply the same defaults, size cap, and search-depth
+limit in their handlers. Return `{ products: [...], next?: string }`, including
+`products: []` for an empty page. Pass `next` back as the opaque `since` cursor. Search is bounded
+to 200 results; list mode has no search-depth cap.
+
+Search products use `amount`, `retailAmount`, and `variants[].quantity`, rather than the catalog's
+`price` and `stockQuantity`. Exported types and schemas are `CommerceSearchProductInput`,
+`CommerceSearchProductOutput`, and their `Schema` counterparts. In Go, register a handler with
+`commerce.Extension().SearchProduct(handler)` and use `commerce.SearchProductInput` and
+`commerce.SearchProductOutput`.
+
+An app may implement this function directly. Platform Standard eligibility and a prepared product
+index are managed separately by App Store; adding the SDK types does not enable indexing or
+provide a fallback after an app handler fails.
 
 ## Authentication, reliability, and testing
 

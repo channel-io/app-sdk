@@ -67,7 +67,7 @@ describe("extension function schema parity fixture", () => {
     const names = extensionFunctionSchemaDefinitions.map((definition) => definition.name);
     const uniqueNames = new Set(names);
 
-    expect(names).toHaveLength(92);
+    expect(names).toHaveLength(93);
     expect(uniqueNames.size).toBe(names.length);
     expect([...names].sort()).toEqual(names);
   });
@@ -82,7 +82,7 @@ describe("extension function schema parity fixture", () => {
       alfTask: 1,
       apikey: 2,
       calendar: 6,
-      commerce: 9,
+      commerce: 10,
       command: 3,
       config: 2,
       customtab: 2,

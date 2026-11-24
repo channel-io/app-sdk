@@ -1873,6 +1873,74 @@ export interface CommerceChangeShippingAddressInput {
   newAddress?: OrderAddress | undefined;
 }
 
+/**
+ * Search keeps the established Cafe24 searchProducts JSON contract. It is not
+ * the catalog getProducts contract: size, amount and quantity retain their names.
+ */
+export interface CommerceSearchProductInput {
+  query?:
+    | string
+    | undefined;
+  /** JSON integer, intentionally not int32: oversized requests reach the core clamp. */
+  size?: number | undefined;
+  searchFilter?: any | undefined;
+  since?: string | undefined;
+}
+
+export interface CommerceSearchProductOutput {
+  products?: CommerceSearchProduct[] | undefined;
+  next?: string | undefined;
+}
+
+export interface CommerceSearchProduct {
+  id?: string | undefined;
+  name?: string | undefined;
+  appCommerceType?: string | undefined;
+  defaultImage?: CommerceSearchProductImage | undefined;
+  images?: string[] | undefined;
+  amount?: number | undefined;
+  retailAmount?: number | undefined;
+  currency?: string | undefined;
+  state?: string | undefined;
+  vendor?: string | undefined;
+  productType?: string | undefined;
+  categories?: string[] | undefined;
+  summary?: string | undefined;
+  description?: string | undefined;
+  productUrl?: string | undefined;
+  tags?: string[] | undefined;
+  createdAt?: number | undefined;
+  updatedAt?: number | undefined;
+  variants?: CommerceSearchProductVariant[] | undefined;
+}
+
+export interface CommerceSearchProductImage {
+  bucket?: string | undefined;
+  key?: string | undefined;
+  id?: string | undefined;
+  type?: string | undefined;
+  name?: string | undefined;
+  ext?: string | undefined;
+  size?: number | undefined;
+  contentType?: string | undefined;
+  width?: number | undefined;
+  height?: number | undefined;
+  animated?: boolean | undefined;
+}
+
+export interface CommerceSearchProductVariant {
+  variantId?: string | undefined;
+  amount?: number | undefined;
+  quantity?: number | undefined;
+  useInventory?: boolean | undefined;
+  options?: CommerceSearchProductOption[] | undefined;
+}
+
+export interface CommerceSearchProductOption {
+  name?: string | undefined;
+  value?: string | undefined;
+}
+
 export interface CommerceGetProductsInput {
   /**
    * getOrders 와 같은 필터 표현. 안쪽 키는 protojson 이 변환하지 않는 데이터라 camelCase 그대로다 —
