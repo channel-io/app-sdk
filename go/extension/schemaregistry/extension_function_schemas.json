@@ -3277,18 +3277,24 @@
   {
     "name": "extension.commerce.product.searchProduct",
     "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "query": {
           "type": "string"
         },
         "size": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
         },
         "searchFilter": {
           "anyOf": [
             {
               "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
               "additionalProperties": {}
             },
             {
@@ -3299,11 +3305,10 @@
         "since": {
           "type": "string"
         }
-      },
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
+      }
     },
     "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "products": {
@@ -3342,16 +3347,22 @@
                     "type": "string"
                   },
                   "size": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
                   },
                   "contentType": {
                     "type": "string"
                   },
                   "width": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
                   },
                   "height": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
                   },
                   "animated": {
                     "type": "boolean"
@@ -3364,8 +3375,7 @@
                   "type",
                   "name",
                   "size"
-                ],
-                "additionalProperties": false
+                ]
               },
               "images": {
                 "type": "array",
@@ -3413,10 +3423,14 @@
                 }
               },
               "createdAt": {
-                "type": "integer"
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
               },
               "updatedAt": {
-                "type": "integer"
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
               },
               "variants": {
                 "type": "array",
@@ -3446,20 +3460,17 @@
                           "value": {
                             "type": "string"
                           }
-                        },
-                        "additionalProperties": false
+                        }
                       }
                     }
-                  },
-                  "additionalProperties": false
+                  }
                 }
               }
             },
             "required": [
               "id",
               "name"
-            ],
-            "additionalProperties": false
+            ]
           }
         },
         "next": {
@@ -3468,9 +3479,7 @@
       },
       "required": [
         "products"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
+      ]
     }
   },
   {
