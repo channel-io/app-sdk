@@ -5,7 +5,6 @@ package channel.app.sdk.v1;
 import "channel/app/sdk/v1/context.proto";
 import "channel/app/sdk/v1/error.proto";
 import "google/protobuf/struct.proto";
-import "channel/app/sdk/v1/extension.proto";
 
 option go_package = "github.com/channel-io/app-sdk/go/internal/gen/channel/app/sdk/v1;sdkv1";
 
@@ -87,38 +86,4 @@ message GetAppNotebookVersionsResult {
   bool success = 1;
   string error_message = 2;
   repeated AppNotebookVersion notebooks = 3;
-}
-
-// Manager-authenticated OAuth onboarding state. Never contains provider credentials.
-message OAuthFlow {
-  string id = 1;
-  // before, oauth, after, completed, or canceled.
-  string phase = 2;
-  string expires_at = 3;
-  optional string key = 4;
-  optional string target_auth_scope = 5;
-  optional string authorization_url = 6 [json_name = "authorizationURL"];
-  // False for another manager's read-only view or a flow that must be restarted.
-  optional bool can_resume = 7;
-  repeated OAuthFlowStep steps = 8;
-}
-
-message GetOAuthFlowParams {
-  string flow_id = 1;
-  optional string language = 2;
-}
-
-message ResumeOAuthFlowParams {
-  string flow_id = 1;
-  optional string resume_nonce = 2;
-  optional string language = 3;
-}
-
-message CancelOAuthFlowParams {
-  string flow_id = 1;
-  optional string language = 2;
-}
-
-message OAuthFlowResult {
-  optional OAuthFlow flow = 1;
 }

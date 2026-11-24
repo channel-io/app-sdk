@@ -42,6 +42,21 @@ When documentation and examples disagree, trust the code in this order:
    - [ts/packages/wam/src/hooks](./ts/packages/wam/src/hooks)
    - [ts/packages/wam/src/components](./ts/packages/wam/src/components)
 
+## Public Native Function Boundary
+
+- Add typed native helpers, exports, schemas, catalog entries, examples and
+  documentation only for publicly available native functions.
+- Confirm the server's current public role registration and request/result
+  contract before changing `catalog/native-functions.json`. A server action
+  constant, a working internal call or a privileged token is not evidence that
+  a function is public.
+- Keep private and app-specific contracts outside this public repository.
+  Do not widen server permissions to accommodate an SDK export.
+- When removing an unsupported surface, remove its dedicated generated DTOs
+  and examples too. Preserve generic transport and independently public
+  extension contracts. Check internal consumers before release.
+- Keep the native catalog and its CI checks aligned with the public exports.
+
 ## Recommended Build Path
 
 - Server extensions:

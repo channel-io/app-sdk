@@ -7,7 +7,6 @@
 /* eslint-disable */
 import type { FunctionContext } from "./context.js";
 import type { FunctionError } from "./error.js";
-import type { OAuthFlowStep } from "./extension.js";
 
 export const protobufPackage = "channel.app.sdk.v1";
 
@@ -89,42 +88,4 @@ export interface GetAppNotebookVersionsResult {
   success?: boolean | undefined;
   errorMessage?: string | undefined;
   notebooks?: AppNotebookVersion[] | undefined;
-}
-
-/** Manager-authenticated OAuth onboarding state. Never contains provider credentials. */
-export interface OAuthFlow {
-  id?:
-    | string
-    | undefined;
-  /** before, oauth, after, completed, or canceled. */
-  phase?: string | undefined;
-  expiresAt?: string | undefined;
-  key?: string | undefined;
-  targetAuthScope?: string | undefined;
-  authorizationURL?:
-    | string
-    | undefined;
-  /** False for another manager's read-only view or a flow that must be restarted. */
-  canResume?: boolean | undefined;
-  steps?: OAuthFlowStep[] | undefined;
-}
-
-export interface GetOAuthFlowParams {
-  flowId?: string | undefined;
-  language?: string | undefined;
-}
-
-export interface ResumeOAuthFlowParams {
-  flowId?: string | undefined;
-  resumeNonce?: string | undefined;
-  language?: string | undefined;
-}
-
-export interface CancelOAuthFlowParams {
-  flowId?: string | undefined;
-  language?: string | undefined;
-}
-
-export interface OAuthFlowResult {
-  flow?: OAuthFlow | undefined;
 }

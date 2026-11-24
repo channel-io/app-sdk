@@ -1,4 +1,3 @@
-import { OAuthFlowStepSchema } from "../extensions/oauth.js";
 import { z } from "zod";
 import type { FunctionSchema } from "../types/function.js";
 import { zodToJsonSchema } from "../utils/zod-to-json-schema.js";
@@ -132,37 +131,6 @@ export const NativeGetWebhookBodyResultSchema = z
   })
   .strict();
 
-export const NativeOAuthFlowSchema = z
-  .object({
-    id: NativeNonEmptyStringSchema,
-    phase: z.enum(["before", "oauth", "after", "completed", "canceled"]),
-    expiresAt: z.iso.datetime({ offset: true }),
-    key: z.string().optional(),
-    targetAuthScope: z.string().optional(),
-    authorizationURL: z.url().optional(),
-    canResume: z.boolean().optional(),
-    steps: z.array(OAuthFlowStepSchema).optional(),
-  })
-  .strict();
-
-export const NativeGetOAuthFlowParamsSchema = z
-  .object({ flowId: NativeNonEmptyStringSchema, language: z.string().optional() })
-  .strict();
-
-export const NativeResumeOAuthFlowParamsSchema = z
-  .object({
-    flowId: NativeNonEmptyStringSchema,
-    resumeNonce: NativeNonEmptyStringSchema.optional(),
-    language: z.string().optional(),
-  })
-  .strict();
-
-export const NativeCancelOAuthFlowParamsSchema = NativeGetOAuthFlowParamsSchema;
-
-export const NativeOAuthFlowResultSchema = z
-  .object({ flow: NativeOAuthFlowSchema.optional() })
-  .strict();
-
 interface NativeFunctionSchemaDefinition {
   name: string;
   description: string;
@@ -171,26 +139,6 @@ interface NativeFunctionSchemaDefinition {
 }
 
 export const nativeFunctionSchemaDefinitions = [
-  {
-    name: "getOAuthFlow",
-    description:
-      "Read an OAuth flow as its initiating manager through the authenticated WAM session.",
-    input: NativeGetOAuthFlowParamsSchema,
-    output: NativeOAuthFlowResultSchema,
-  },
-  {
-    name: "resumeOAuthFlow",
-    description: "Resume an OAuth flow as its initiating manager and recheck the current app hook.",
-    input: NativeResumeOAuthFlowParamsSchema,
-    output: NativeOAuthFlowResultSchema,
-  },
-  {
-    name: "cancelOAuthFlow",
-    description:
-      "Cancel an OAuth flow as its initiating manager without revoking a saved credential.",
-    input: NativeCancelOAuthFlowParamsSchema,
-    output: NativeOAuthFlowResultSchema,
-  },
   {
     name: "createAppDataTable",
     description: "Create an app-owned logical data table.",
