@@ -5,7 +5,6 @@ import {
   OAuthStepDisplaySchema,
   OAuthStepIconSchema,
 } from "../../extensions/index.js";
-import { NativeOAuthFlowSchema } from "../../schemas/native.js";
 import { zodToJsonSchema } from "../../utils/zod-to-json-schema.js";
 
 describe("optional OAuth step presentation", () => {
@@ -72,17 +71,5 @@ describe("optional OAuth step presentation", () => {
       OAuthFlowHookResultSchema.safeParse({ type: "continue", url: "https://provider.example" })
         .success
     ).toBe(false);
-  });
-  it("accepts old flows and platform-owned progress", () => {
-    const flow = { id: "flow", phase: "after", expiresAt: "2030-01-01T00:00:00Z" };
-    expect(NativeOAuthFlowSchema.safeParse(flow).success).toBe(true);
-    expect(
-      NativeOAuthFlowSchema.safeParse({
-        ...flow,
-        steps: [
-          { id: "oauth", title: "Account", icon: "account", status: "completed", detail: "user" },
-        ],
-      }).success
-    ).toBe(true);
   });
 });

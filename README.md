@@ -108,6 +108,13 @@ make verify
 Language-specific targets include `make build-ts`, `make test-go`, `make lint-go`, and
 `make proto-lint`.
 
+### Public native contracts
+
+Typed native helpers, schemas, generated DTOs and the supported catalog contain
+only publicly available native functions. Before adding one, verify its server
+permission registration and wire contract. Internal availability is not public
+availability. See [the contributor boundary](AGENT.md#public-native-function-boundary).
+
 ### Pull requests and releases
 
 Before opening a pull request, run the relevant checks above. When changing protocol definitions or

@@ -361,4 +361,4 @@ return { type: "continue", detail: "example-organization" };
 
 `detail` is optional and limited to 200 characters. Never include credentials, URLs, or raw errors. Only the validated `continue` action completes the hook. A redirect result leaves it in progress.
 
-`OAuthFlowStepSchema` describes platform-owned progress in the optional `steps` response field. The fixed IDs are `before`, `oauth`, `after`; statuses are `pending`, `in_progress`, `completed`, `failed`, `unknown`. These are display records, not an app-declared execution plan. Native flow requests accept optional `language`. Cancel/expiry retain completed records. Old credentials without hook history do not require reauthorization. OAuth credentials remain usable if the after hook fails.
+`OAuthFlowStepSchema` describes platform-owned progress in the optional `steps` response field. The fixed IDs are `before`, `oauth`, `after`; statuses are `pending`, `in_progress`, `completed`, `failed`, `unknown`. These are display records, not an app-declared execution plan. Old credentials without hook history do not require reauthorization. OAuth credentials remain usable if the after hook fails.

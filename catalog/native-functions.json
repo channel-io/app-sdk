@@ -6,10 +6,6 @@
       "surfaces": ["server"]
     },
     {
-      "name": "cancelOAuthFlow",
-      "surfaces": ["wam"]
-    },
-    {
       "name": "createAppDataTable",
       "surfaces": ["server"]
     },
@@ -58,10 +54,6 @@
       "surfaces": ["server"]
     },
     {
-      "name": "getOAuthFlow",
-      "surfaces": ["wam"]
-    },
-    {
       "name": "getUser",
       "surfaces": ["server"]
     },
@@ -96,10 +88,6 @@
     {
       "name": "registerExtension",
       "surfaces": ["server"]
-    },
-    {
-      "name": "resumeOAuthFlow",
-      "surfaces": ["wam"]
     },
     {
       "name": "searchGroups",

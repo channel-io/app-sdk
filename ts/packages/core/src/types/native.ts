@@ -1,11 +1,3 @@
-import type {
-  CancelOAuthFlowParams,
-  GetOAuthFlowParams,
-  OAuthFlow,
-  OAuthFlowResult,
-  ResumeOAuthFlowParams,
-} from "../gen/channel/app/sdk/v1/native.js";
-
 export type NativeJsonObject = object;
 
 export type NativeSortOrder =
@@ -527,44 +519,10 @@ export interface NativeGetWebhookBodyResult {
   sha256: string;
 }
 
-/** Manager-authenticated flow state. No provider credentials are returned. */
-export interface NativeOAuthFlow extends OAuthFlow {
-  id: string;
-  phase: "before" | "oauth" | "after" | "completed" | "canceled";
-  expiresAt: string;
-}
-
-export interface NativeGetOAuthFlowParams extends GetOAuthFlowParams {
-  flowId: string;
-}
-
-export interface NativeResumeOAuthFlowParams extends ResumeOAuthFlowParams {
-  flowId: string;
-}
-
-export interface NativeCancelOAuthFlowParams extends CancelOAuthFlowParams {
-  flowId: string;
-}
-
-export interface NativeOAuthFlowResult extends OAuthFlowResult {
-  flow?: NativeOAuthFlow;
-}
 export interface NativeFunctionTypeMap {
   patchMessage: {
     params: NativePatchMessageParams;
     result: NativePatchMessageResult;
-  };
-  getOAuthFlow: {
-    params: NativeGetOAuthFlowParams;
-    result: NativeOAuthFlowResult;
-  };
-  resumeOAuthFlow: {
-    params: NativeResumeOAuthFlowParams;
-    result: NativeOAuthFlowResult;
-  };
-  cancelOAuthFlow: {
-    params: NativeCancelOAuthFlowParams;
-    result: NativeOAuthFlowResult;
   };
   writeGroupMessage: {
     params: NativeWriteGroupMessageParams;

@@ -1,28 +1,27 @@
 import { describe, expectTypeOf, it } from "vitest";
 import { useNativeFunction } from "./useNativeFunction.js";
-import type { NativeOAuthFlowResult } from "../index.js";
+import type { NativeGetUserResult } from "@channel.io/app-sdk-core";
 
 describe("useNativeFunction types", () => {
-  it("infers OAuth flow parameters and results while preserving explicit result types", () => {
-    // Typechecked as a component without invoking React hooks outside a renderer.
-    function FlowSettings() {
-      const resume = useNativeFunction({ name: "resumeOAuthFlow" });
-      expectTypeOf(resume.call).parameter(0).toEqualTypeOf<{
-        flowId: string;
-        resumeNonce?: string | undefined;
-        language?: string | undefined;
+  it("infers public native parameters and results while preserving explicit result types", () => {
+    // Typechecked without invoking React hooks outside a renderer.
+    function UserSettings() {
+      const user = useNativeFunction({ name: "getUser" });
+      expectTypeOf(user.call).parameter(0).toEqualTypeOf<{
+        channelId: string;
+        userId: string;
       }>();
-      expectTypeOf(resume.data).toEqualTypeOf<NativeOAuthFlowResult | null>();
-      void resume.call({ flowId: "flow-1", resumeNonce: "nonce" });
-      // @ts-expect-error The Native requires the opaque flow ID.
-      void resume.call({});
-      // @ts-expect-error Manager identity comes from the authenticated session.
-      void resume.call({ flowId: "flow-1", managerId: "manager-2" });
+      expectTypeOf(user.data).toEqualTypeOf<NativeGetUserResult | null>();
+      void user.call({ channelId: "channel-1", userId: "user-1" });
+      // @ts-expect-error The native function requires a channel and user.
+      void user.call({});
+      // @ts-expect-error The public lookup does not accept a caller identity.
+      void user.call({ channelId: "channel-1", userId: "user-1", managerId: "other" });
 
       const custom = useNativeFunction<{ ok: boolean }>({ name: "customNative" });
       expectTypeOf(custom.data).toEqualTypeOf<{ ok: boolean } | null>();
       return null;
     }
-    void FlowSettings;
+    void UserSettings;
   });
 });
