@@ -1,5 +1,23 @@
 # @channel.io/app-sdk
 
+## 0.46.0
+
+### Minor Changes
+
+- c66d4f0: Use Zod 4.6.7 for runtime validation and its native JSON Schema exporter. Update app-owned Zod dependencies and schema definitions together when upgrading the SDK; Zod 3 schemas are no longer supported.
+
+  Registration exports inline Draft 7 input schemas, including defaults and transforms. Unsupported non-JSON types and recursive schemas now fail registration explicitly. The shared Go registration fixture is regenerated from the same TypeScript schemas.
+
+  Preserve redirect URL validation before URL normalization and the Issue comment body's 16,000 UTF-16 unit limit. New TypeScript starters and bundled examples use Zod 4. See the Zod migration reference for other validation and metadata differences.
+
+### Patch Changes
+
+- Updated dependencies [07614a1]
+- Updated dependencies [c66d4f0]
+  - @channel.io/app-sdk-core@0.46.0
+  - @channel.io/app-sdk-server@0.46.0
+  - @channel.io/app-sdk-wam@0.46.0
+
 ## 0.45.0
 
 ### Patch Changes

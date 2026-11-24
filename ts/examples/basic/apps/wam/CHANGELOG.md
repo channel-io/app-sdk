@@ -1,5 +1,11 @@
 # @basic-example/wam
 
+## 0.0.43
+
+### Patch Changes
+
+- @channel.io/app-sdk-wam@0.46.0
+
 ## 0.0.42
 
 ### Patch Changes
