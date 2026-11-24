@@ -3,7 +3,10 @@
 Official TypeScript and Go SDKs, developer guides, and runnable examples for building Channel apps.
 
 > **Building your first Channel app?**
-> Start with the first-app Quickstart in [Korean](docs/guides/ko/quickstart.md),
+> Follow the [앱 튜토리얼](docs/guides/ko/app-tutorial.md) ([English](docs/guides/en/app-tutorial.md),
+> [日本語](docs/guides/ja/app-tutorial.md)) to build an app server step by step.
+>
+> For a runnable example, see the first-app Quickstart in [Korean](docs/guides/ko/quickstart.md),
 > [English](docs/guides/en/quickstart.md), or [Japanese](docs/guides/ja/quickstart.md).
 > It takes you from creating a private app through running a Command, React WAM, and bot/manager
 > message flows.
