@@ -1,21 +1,29 @@
-# Build a simple app server
+# Build your first Channel app
 
-As you build a sample order management system and connect it to Channel Talk, you’ll see how an app receives requests and calls Channel Talk features. Call `ping` in Developer tools to check your setup, then implement Functions that look up and cancel orders. Look up an order in Developer tools, then register `/cancel-order` with a Command Extension and confirm the cancellation in a WAM. When a manager cancels an order, the app server calls a Native Function to notify them.
+Build a sample order management system with the [Channel App SDK](https://github.com/channel-io/app-sdk) and connect it to Channel Talk. Channel Talk calls your app server over HTTP, and the app code runs on the server you host. The **App Store** in channel settings is where people install apps. Behind that screen, App Store tracks installs, registers Extensions, and relays function calls.
+
+```text
+Channel Talk → App Store → app server   Call an app function
+App server → App Store → Channel Talk   Call a Native Function
+Channel Talk client → WAM Endpoint      Load a web screen
+```
+
+- An **app function** is an operation your server provides, such as looking up an order. You can run it in **Developer tools** and reuse it from a Command, ALF, or CoS.
+- An **Extension** defines a contract for a Channel Talk capability such as a Command, including the functions and metadata it expects.
+- A **WAM (Web App Module)** is your app’s web screen inside Channel Talk. The Channel Talk client loads it directly from your WAM Endpoint.
+- A **Native Function** is an operation Channel Talk provides for your app to call, such as sending a notification.
+
+Check the connection with `ping` and add an order lookup. Then open a WAM with `/cancel-order`, cancel an order, and notify the manager through a Native Function. Finally, use the lookup in CoS and ALF. [App concepts](concepts.md)
 
 ## Requirements
 
 - Install the latest **Node.js 24 LTS** patch release. [Download Node.js](https://nodejs.org/en/download)
-- Install **pnpm 10.26 or later** to manage dependencies and build the server and WAM packages. [Install pnpm](https://pnpm.io/installation)
+- Install **pnpm 10.26 or later in the 10.x series** to manage dependencies and build the server and WAM packages. [Install pnpm](https://pnpm.io/installation)
 - Use a **code editor and terminal**. Keep the server running in one terminal and enter tutorial commands in another.
 - Set up the **ngrok CLI and an account**. Use it to give the local server an HTTPS address that App Store can reach. [Install and configure ngrok](https://ngrok.com/docs/getting-started/)
+- Prepare a **test channel** where you can install apps, and sign in to [Channel Developer Portal](https://channel.works/-/developers/apps).
 
-Run these commands one at a time in your terminal to check the installed versions.
-
-```sh
-node --version
-pnpm --version
-ngrok --version
-```
+Familiarity with HTTP requests and responses and TypeScript modules will help. The examples use [NestJS decorators and dependency injection](https://docs.nestjs.com/providers) to register functions and pass services from `providers` to constructors. [Zod](https://zod.dev/) describes function inputs and outputs, and [Vite](https://vite.dev/) builds the [React](https://react.dev/) screen.
 
 ## 1. Create your first app
 
@@ -50,6 +58,16 @@ In **Authentication and Permissions**, issue the **Secret** and paste it into `A
 
 In **Server settings** under **Server and Integrations**, issue the **Signing Key** and paste it into `SIGNING_KEY`. The server uses it to verify requests from App Store.
 
+| Value         | Purpose                                                                    |
+| ------------- | -------------------------------------------------------------------------- |
+| App ID        | Public identifier for the app                                              |
+| App Secret    | Secret the SDK uses to obtain app and channel tokens                       |
+| Signing Key   | Key your server uses to verify signatures on App Store requests            |
+| App token     | Authorizes app-level operations such as Extension registration             |
+| Channel token | Authorizes Native Function calls in the channel where the app is installed |
+
+**Why the Signing Key matters.** A third party could impersonate App Store if your server skips signature verification. App Store computes an HMAC-SHA256 signature from the Signing Key and the request body, encodes it in Base64, and sends it in `x-signature`. The SDK's `SignatureGuard` recalculates the signature using the original request bytes. **Only requests with a matching signature should reach the function.**
+
 ### Set up the project
 
 Create `pnpm-workspace.yaml` in the project root and add the `server` package as shown below.
@@ -81,7 +99,7 @@ Create `server/package.json` as shown below with the scripts to build and start 
 From the project root, run these commands to install the server dependencies. The `@channel.io/app-sdk-server` package runs on NestJS. This exercise uses `@nestjs/platform-express` as its HTTP adapter.
 
 ```sh
-pnpm --dir server add @channel.io/app-sdk-server @nestjs/common@11 @nestjs/core@11 @nestjs/platform-express@11 reflect-metadata zod@3
+pnpm --dir server add @channel.io/app-sdk-server@0.46.0 @nestjs/common@11 @nestjs/core@11 @nestjs/platform-express@11 reflect-metadata zod@^4.6.7
 pnpm --dir server add -D typescript@5 @types/node@24
 ```
 
@@ -105,7 +123,7 @@ Create `server/tsconfig.json` as shown below. Write the server code in `server/s
 
 ### Create the ping Function
 
-Create `server/src/ping.function.ts` with the code below. `ping` takes no input and returns `pong` in `message`. `@Func` declares the Function name. `@InputSchema` and `@OutputSchema` define its input and output.
+Create `server/src/ping.function.ts` with the code below. `ping` takes no input and returns `pong` in `message`. `@Func` declares the Function name. `@InputSchema` and `@OutputSchema` define its input and output. Use `description` to say when to call the function and what it returns. ALF and CoS use that description to choose a tool and the input schema to construct its arguments.
 
 ```ts
 import { Injectable } from "@nestjs/common";
@@ -136,6 +154,8 @@ export class PingFunctions {
 ```
 
 Create `server/src/index.ts` with the code below. This file configures the SDK module and registers `PingFunctions` in `providers`. Set the application type to `NestExpressApplication` to use methods from the Express adapter.
+
+With TypeScript’s `NodeNext` setting, imports use the filename that Node.js loads at runtime. Import `./ping.function.js`, which is what TypeScript emits from `ping.function.ts`.
 
 ```ts
 import "reflect-metadata";
@@ -171,6 +191,22 @@ await app.listen(3000);
 
 App Store sends Function requests to `PUT /functions/v1`. NestJS preserves the original request body with `rawBody: true`. The SDK's `SignatureGuard` uses that body and the Signing Key to verify the signature in `x-signature`.
 
+For a versioned `ping` call, App Store sends a request like this to `PUT /functions/v1`. The `systemVersion` field in the body is optional.
+
+```json
+{
+  "method": "ping",
+  "params": {},
+  "context": {
+    "caller": { "type": "manager", "id": "example-manager-id" },
+    "channel": { "id": "example-channel-id" }
+  },
+  "systemVersion": "v1"
+}
+```
+
+The SDK matches `method` to a registered `@Func`, passes `params` to `@Input()`, and passes `context` to `@Ctx()`. This request returns `{"result":{"message":"pong"}}`. A `FunctionCallError` from the function produces an `error` in the response body.
+
 ### Expose the server with ngrok
 
 Give App Store an HTTPS address for your local server. Run the first command if you still need to configure your ngrok auth token. Run `ngrok http 3000` in another terminal and leave it running.
@@ -180,13 +216,20 @@ ngrok config add-authtoken YOUR_NGROK_AUTHTOKEN
 ngrok http 3000
 ```
 
+If the HTTPS address changes when you restart ngrok, update the Function Endpoint in the Developer Portal. After you add a WAM Endpoint, update both endpoints when the address changes.
+
 ### Set the Function Endpoint
 
 Append `/functions` to the HTTPS URL under `Forwarding` and save it as the **Function Endpoint** in the Developer Portal. For example, use `https://YOUR-NGROK-DOMAIN/functions`. App Store appends `/v1` when making a versioned request.
 
 ### Register the app server
 
-Build and start the server from the project root. `pnpm --dir server start` loads `server/.env`. With `autoRegister: true`, the SDK uses the App Secret to obtain an app token and register `core:v1`. App Store sends a signed request to the Function Endpoint to discover `ping`.
+Build and start the server from the project root. `pnpm --dir server start` loads `server/.env`. With `autoRegister: true`, startup registers your app functions in this order.
+
+1. The SDK uses the App Secret to obtain an app token from App Store.
+2. It uses the app token to register `core:v1`, the versioned Extension contract for listing app functions.
+3. App Store sends a signed `extension.core.function.getFunctions` request to the Function Endpoint to list the functions.
+4. The SDK returns the names and input and output schemas from the `@Func` providers.
 
 ```sh
 pnpm --dir server build
@@ -210,6 +253,8 @@ ping function call {
   input: {}
 }
 ```
+
+`ctx.caller.type` identifies who made the call. It can be `manager` (a team member), `user` (a customer), `system` (a system process such as an automation), or `app` (an application). `ctx.channel.id` identifies the channel for the request.
 
 ## 2. Add an order lookup Function
 
@@ -251,9 +296,9 @@ export class OrderService {
 }
 ```
 
-> **Channel-level authorization**
->
-> An app can be installed in multiple channels. This example uses `ctx.channel.id` from the request context to keep each channel's orders separate. When looking up or canceling real orders, also check that the caller has permission to perform that action in the channel.
+**Channel-level authorization**
+
+An app can be installed in multiple channels. This example uses `ctx.channel.id` from the request context to keep each channel's orders separate. When looking up or canceling real orders, also check that the caller has permission to perform that action in the channel.
 
 Create `server/src/orders.function.ts` with the code below. `OrderFunctions` uses the channel ID in the request to look up orders in `OrderService`. When an order is missing, `OrderService` throws `NotFoundError` and `OrderFunctions` converts it to the SDK's `FunctionCallError`.
 
@@ -340,7 +385,10 @@ Commands let you run app features while chatting. Type `/` in the team chat mess
 
 To add a command to your app, use the Command Extension to specify the command's name and the app Function to call. In this step, register `command:v1` and use `/cancel-order` to open the order cancellation screen.
 
-App Store reads the `/cancel-order` definition from `metadata.getCommands`. When you run the command, it calls the `actionFunctionName`, `commands.orders.cancel`. Setting `systemVersion: "v1"` sends this request to the SDK at `PUT /functions/v1`. The Function returns a WAM name, and Channel loads the page from the app's WAM Endpoint.
+1. App Store calls `extension.command.metadata.getCommands` to read the definition of `/cancel-order`.
+2. When someone runs the command in team chat, App Store calls the `actionFunctionName`, `commands.orders.cancel`. With `systemVersion: "v1"`, the request goes to `PUT /functions/v1`.
+3. The action Function returns `type: "wam"`, the WAM's `name`, and `wamArgs` for the screen.
+4. The Channel Talk client appends `name` to the registered WAM Endpoint and loads the screen from that URL.
 
 ### Add the Command to the app server
 
@@ -409,6 +457,18 @@ export class CommandActions {
   }
 }
 ```
+
+The SDK prefixes functions inside `@Extension` with `extension.<name>.`, so `metadata.getCommands` registers as `extension.command.metadata.getCommands`. Standalone functions such as those in `CommandActions` keep the full name declared in `@Func`. Developer tools groups `orders.getStatus` under `orders` as `getStatus`.
+
+| Setting                  | What it does here                                                                                   |
+| ------------------------ | --------------------------------------------------------------------------------------------------- |
+| `scope: "desk"`          | Shows the command in the Desk. `front` targets the customer messenger.                              |
+| `alfMode: "disable"`     | Disables ALF recommendations for the command. Step 5 uses the separate `orders.getStatus` function. |
+| `enabledByDefault: true` | Enables the command by default when the app is installed.                                           |
+| `paramDefinitions`       | Defines the fields and their types in the command form. The order ID is required here.              |
+| `systemVersion: "v1"`    | Sends the action request to the `/v1` path under the Function Endpoint.                             |
+
+Command execution requests can also carry fields such as `chat` and `language`. App Store puts the values from the command form in the nested `input` object, so the action reads the order ID from `input.input.orderId`. [Command Extension guide](extensions/command.md)
 
 The `name` returned by `commands.orders.cancel` is the path segment added to the WAM Endpoint. Later, when you build the WAM in React, you'll use `useWamData("orderId")` to read the order ID from `wamArgs` and display it.
 
@@ -543,17 +603,30 @@ If the command is missing, check the `command` registration log and confirm that
 
 ### Decide which orders can be cancelled
 
-Declare the error below above the `OrderService` class in `server/src/orders.service.ts`.
+Replace `server/src/orders.service.ts` with the code below. Only `pending` orders can be cancelled. The method returns `false` for an already cancelled order.
 
 ```ts
-// server/src/orders.service.ts (before OrderService)
+// server/src/orders.service.ts (replace the file)
+import { Injectable } from "@nestjs/common";
+
+type OrderStatus = "pending" | "shipped" | "cancelled";
+
+export class NotFoundError extends Error {}
+
 export class OrderNotCancellableError extends Error {}
-```
 
-Add this method to `OrderService`. Only `pending` orders can be cancelled. The method returns `false` for an already cancelled order.
+@Injectable()
+export class OrderService {
+  private readonly ordersByChannel = new Map<string, Map<string, OrderStatus>>();
 
-```ts
-  // server/src/orders.service.ts (inside OrderService)
+  getStatus(channelId: string, orderId: string) {
+    const status = this.ordersFor(channelId).get(orderId);
+    if (!status) {
+      throw new NotFoundError("Order not found");
+    }
+    return { orderId, status };
+  }
+
   cancel(channelId: string, orderId: string) {
     const { status } = this.getStatus(channelId, orderId);
     if (status === "cancelled") return false;
@@ -564,9 +637,25 @@ Add this method to `OrderService`. Only `pending` orders can be cancelled. The m
     this.ordersFor(channelId).set(orderId, "cancelled");
     return true;
   }
+
+  private ordersFor(channelId: string) {
+    let orders = this.ordersByChannel.get(channelId);
+    if (!orders) {
+      orders = new Map<string, OrderStatus>([
+        ["order-1", "shipped"],
+        ["order-2", "pending"],
+        ["order-3", "pending"],
+      ]);
+      this.ordersByChannel.set(channelId, orders);
+    }
+    return orders;
+  }
+}
 ```
 
 ### Send the notification from the cancellation Function
+
+Earlier, Channel Talk called app functions through App Store. To send the notification, the app server calls Channel Talk’s `announce` Native Function through App Store. The request uses the token for the channel receiving the notification.
 
 In **Authentication and permissions** in the Developer Portal, add `announce` to the **Channel** role and save.
 
@@ -608,25 +697,29 @@ export class AlertService {
 
 By default, the SDK’s `getChannelToken()` caches tokens in memory by channel. It reuses the cached token and refreshes it on a call when it is close to expiring.
 
-Add the import below to `server/src/index.ts`, then register `AlertService` in `providers` in `@Module`.
+Replace `server/src/orders.function.ts` with the code below. It adds `orders.cancel` alongside the lookup function and injects `AlertService` through the constructor. The cancellation applies to the channel in `ctx.channel.id`. When a manager cancels an order for the first time, the function notifies that manager.
 
 ```ts
-// server/src/index.ts (add import)
-import { AlertService } from "./alert.service.js";
-```
-
-In `server/src/orders.function.ts`, import `AlertService` and update the import from `./orders.service.js` as shown below.
-
-```ts
-// server/src/orders.function.ts (update imports)
+// server/src/orders.function.ts (replace the file)
+import { Injectable } from "@nestjs/common";
+import {
+  type Context,
+  Ctx,
+  Func,
+  FunctionCallError,
+  FunctionCallErrorCode,
+  Input,
+  InputSchema,
+  OutputSchema,
+} from "@channel.io/app-sdk-server";
+import { z } from "zod";
 import { AlertService } from "./alert.service.js";
 import { NotFoundError, OrderNotCancellableError, OrderService } from "./orders.service.js";
-```
 
-Add the cancellation input schema, input type, and output schema after `GetStatusOutputSchema`.
+const GetStatusInputSchema = z.object({ orderId: z.string() });
+type GetStatusInput = z.infer<typeof GetStatusInputSchema>;
+const GetStatusOutputSchema = z.object({ orderId: z.string(), status: z.string() });
 
-```ts
-// server/src/orders.function.ts (after GetStatusOutputSchema)
 const CancelOrderInputSchema = z.object({ orderId: z.string() });
 type CancelOrderInput = z.infer<typeof CancelOrderInputSchema>;
 const CancelOrderOutputSchema = z.object({
@@ -634,22 +727,32 @@ const CancelOrderOutputSchema = z.object({
   status: z.literal("cancelled"),
   notification: z.enum(["sent", "failed", "skipped"]),
 });
-```
 
-Replace the `OrderFunctions` constructor with the following to inject `AlertService`.
-
-```ts
-  // server/src/orders.function.ts (replace the OrderFunctions constructor)
+@Injectable()
+export class OrderFunctions {
   constructor(
     private readonly orderService: OrderService,
     private readonly alertService: AlertService,
   ) {}
-```
 
-Add the cancellation Function to the same class. It uses `ctx.channel.id` to cancel the order in that channel through `OrderService`. The first time an order is cancelled, `AlertService` notifies the manager identified by `ctx.caller` if a manager ID is present.
+  @Func({
+    name: "orders.getStatus",
+    description: "Look up the shipping status of an order by its ID.",
+  })
+  @InputSchema(GetStatusInputSchema)
+  @OutputSchema(GetStatusOutputSchema)
+  getStatus(@Ctx() ctx: Context, @Input() input: GetStatusInput) {
+    console.log("orders.getStatus function call", { ctx, input });
+    try {
+      return this.orderService.getStatus(ctx.channel.id, input.orderId);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new FunctionCallError(error.message, FunctionCallErrorCode.NotFound);
+      }
+      throw error;
+    }
+  }
 
-```ts
-  // server/src/orders.function.ts (inside OrderFunctions)
   @Func({
     name: "orders.cancel",
     description: "Cancel a pending sample order and notify the calling manager.",
@@ -693,6 +796,7 @@ Add the cancellation Function to the same class. It uses `ctx.channel.id` to can
       return { ...result, notification: "failed" };
     }
   }
+}
 ```
 
 `notification` is `sent` when the announcement is sent and `failed` if sending fails. It is `skipped` when there is no manager ID or the order was already cancelled. The order stays cancelled if notification fails.
@@ -762,16 +866,62 @@ export default function App() {
 }
 ```
 
-The WAM SDK's `useCallFunction` omits the version, so App Store can send `PUT /functions`. Add this code before `app.listen(...)` in `server/src/index.ts` to route that request to the same SDK handler and signature check at `/functions/v1`.
+Finally, replace `server/src/index.ts` with the code below. It adds `AlertService` to `providers` and includes the signature guard and WAM static file mount from the earlier steps.
+
+The WAM hook `useCallFunction` has no version option. App Store can forward this call to `PUT /functions`, and the SDK controller listens at `PUT /functions/:version`. The middleware below runs before NestJS routing and guards and changes only the unversioned request path to `/functions/v1`. The SDK’s `SignatureGuard` verifies the original request body for both paths.
 
 ```ts
-// server/src/index.ts (before app.listen(...))
+// server/src/index.ts (replace the file)
+import { resolve } from "node:path";
+import "reflect-metadata";
+import { Module } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import type { NestExpressApplication } from "@nestjs/platform-express";
+import {
+  CHANNEL_APP_OPTIONS,
+  ChannelAppModule,
+  SignatureGuard,
+} from "@channel.io/app-sdk-server";
+import { AlertService } from "./alert.service.js";
+import { CommandActions, CommandExtension } from "./command.extension.js";
+import { OrderFunctions } from "./orders.function.js";
+import { OrderService } from "./orders.service.js";
+import { PingFunctions } from "./ping.function.js";
+
+@Module({
+  imports: [
+    ChannelAppModule.forRoot({
+      appId: process.env["APP_ID"] ?? "",
+      appSecret: process.env["APP_SECRET"] ?? "",
+      signingKey: process.env["SIGNING_KEY"] ?? "",
+      autoRegister: true,
+    }),
+  ],
+  providers: [
+    PingFunctions,
+    OrderService,
+    OrderFunctions,
+    CommandExtension,
+    CommandActions,
+    AlertService,
+  ],
+})
+class AppModule {}
+
+const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+  rawBody: true,
+});
+app.useGlobalGuards(new SignatureGuard(app.get(CHANNEL_APP_OPTIONS)));
 app.use((request: { method: string; url: string }, _response: unknown, next: () => void) => {
   if (request.method === "PUT" && request.url === "/functions") {
     request.url = "/functions/v1";
   }
   next();
 });
+app.useStaticAssets(resolve(import.meta.dirname, "static"), {
+  prefix: "/wam",
+});
+await app.listen(3000);
 ```
 
 ### Verify the Function and Command
@@ -790,10 +940,20 @@ pnpm --dir server start
 
 ## 5. Look up orders with CoS and ALF
 
-Keep the server and ngrok running and try `orders.getStatus` on other surfaces in the same test channel.
+Keep the server and ngrok running and try `orders.getStatus` from CoS and ALF in the same test channel.
 
-- **Call it from CoS.** CoS can call a Function exposed to it by an app installed in the channel. In the AI CoS tab, ask “Use my tutorial app to check the shipping status of order-1.” [Learn about CoS](https://docs.channel.io/help/en/articles/CoS-a8e86305)
-- **Use it in an ALF task.** In the AI Agent step of a test task, type `@` in the instructions and insert `orders.getStatus` from the installed app. Tell ALF to pass `order-1` as `orderId` and report the returned `status`. [ALF task guide](https://docs.channel.io/help/en/articles/Task--2a16be8b), [Insert an app Function in a task (Korean)](https://docs.channel.io/help/ko/articles/%ED%83%9C%EC%8A%A4%ED%81%AC-ALF-v2-2a16be8b)
-- **Use it in an ALF procedure.** In a channel with access to procedures, add `orders.getStatus` using the app tool in the instructions. Tell ALF to call it after confirming the order ID and use the returned status in its reply. [ALF procedure guide (Korean)](https://docs.channel.io/help/ko/articles/%ED%94%84%EB%A1%9C%EC%8B%9C%EC%A0%80Beta-6d520d9d)
+- **Call it from CoS.** When the installed app exposes the function to CoS, open **AI CoS** in the left sidebar and ask “Use the Order Management app to check the shipping status of order-1.” [Learn about CoS](https://docs.channel.io/help/en/articles/CoS-a8e86305)
+- **Use it in an ALF task.** Open a test task under **Customer → Support → Settings → Tasks**. In the **AI Agent** step, type `@` in the instructions and insert `orders.getStatus` from the installed app. Tell ALF to pass `order-1` as `orderId` and report the returned `status`, then try it in **Preview**. [ALF task guide](https://docs.channel.io/help/en/articles/Task--2a16be8b)
+- **Use it in an ALF procedure.** In a test channel with access to procedures, open the procedure editor under **Customer → Support → ALF → Settings → Procedures**. Add `orders.getStatus` with the **App** tool in the instructions and tell ALF to run it after confirming the order ID. Ask for `order-1` in the **Preview** panel. [ALF procedure guide (Korean)](https://docs.channel.io/help/ko/articles/%ED%94%84%EB%A1%9C%EC%8B%9C%EC%A0%80Beta-6d520d9d)
 
-Stop the server and ngrok when you finish. If the ngrok URL changes, update both the Function Endpoint and the WAM Endpoint.
+In each case, check that the order status is `shipped` and that the server logged `orders.getStatus function call`. A typical CoS app call uses `manager` when it has a team member ID. An ALF task can use `manager` in a team member's preview, `user` when it has customer context, or `system` when it has neither. Check `ctx.caller.type` in the server log for the call you ran.
+
+## Next steps
+
+You registered app functions, opened a WAM from a Command, and called a Native Function to send a cancellation notification. You also reused the order lookup in CoS and ALF. Stop the server and ngrok when you finish.
+
+- Review request directions and authentication in [App concepts](concepts.md).
+- Define names, schemas, requests, and responses with the [Function guide](functions.md).
+- Add screens and capabilities with the [WAM guide](wam.md) and [Extension guide](extensions.md).
+- Review what your production environment needs in [App development and operations](app-development.md).
+- Run the original TypeScript or Go example project with the [legacy Quickstart](quickstart-legacy.md).

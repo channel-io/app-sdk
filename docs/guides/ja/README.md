@@ -4,7 +4,7 @@
 
 ## 推奨ドキュメント順序
 
-1. [最初のアプリ Quickstart](quickstart.md): private app を作成し、Command、WAM、message flow を実行します。
+1. [アプリチュートリアル](app-tutorial.md)で注文管理システムを作り、チャネルトークと連携します。
 2. [基本概念](concepts.md): Function、Extension、WAM、authentication、token の境界を理解します。
 3. [Function 登録](functions.md): wire contract と standalone typed app Function を確認します。
 4. [Command ガイド](extensions/command.md): metadata、action、autocomplete を実装します。

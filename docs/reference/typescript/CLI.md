@@ -33,7 +33,7 @@ There is one maintained starter. The CLI does not accept a template option.
 `add`, `dev`, `build`, and `generate` remain convenience commands for existing CLI workflows. Before
 using generated Extension snippets, compare them with the selected
 [Extension family reference](./extensions/README.md). For a first app, prefer `create` plus the
-[Quickstart](../../guides/en/quickstart.md).
+[App tutorial](../../guides/en/app-tutorial.md).
 
 ## Complete example
 

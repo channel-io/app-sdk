@@ -6,7 +6,7 @@ If you are building or reviewing a Channel.io app, start from the files below in
 ## Start Here
 
 1. [README.md](./README.md)
-2. [docs/guides/en/quickstart.md](./docs/guides/en/quickstart.md) for a new app
+2. [docs/guides/en/app-tutorial.md](./docs/guides/en/app-tutorial.md) for a new app
 3. [docs/guides/en/concepts.md](./docs/guides/en/concepts.md)
 4. [docs/guides/en/functions.md](./docs/guides/en/functions.md)
 5. [docs/guides/en/extensions/command.md](./docs/guides/en/extensions/command.md)

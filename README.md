@@ -6,16 +6,15 @@ Official TypeScript and Go SDKs, developer guides, and runnable examples for bui
 > Follow the [앱 튜토리얼](docs/guides/ko/app-tutorial.md) ([English](docs/guides/en/app-tutorial.md),
 > [日本語](docs/guides/ja/app-tutorial.md)) to build an app server step by step.
 >
-> For a runnable example, see the first-app Quickstart in [Korean](docs/guides/ko/quickstart.md),
-> [English](docs/guides/en/quickstart.md), or [Japanese](docs/guides/ja/quickstart.md).
-> It takes you from creating a private app through running a Command, React WAM, and bot/manager
-> message flows.
+> The previous Quickstart covers the runnable TypeScript and Go examples.
+> Read it in [Korean](docs/guides/ko/quickstart-legacy.md),
+> [English](docs/guides/en/quickstart-legacy.md), or [Japanese](docs/guides/ja/quickstart-legacy.md).
 
 ## Choose Your Path
 
 | Goal                            | Start here                                                                                                                           |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Build and run a first app       | [First-app Quickstart](docs/guides/en/quickstart.md)                                                                                 |
+| Build and run a first app       | [App tutorial](docs/guides/en/app-tutorial.md)                                                                                       |
 | Understand Channel app concepts | [Guide index](docs/guides/en/README.md) and [Concepts](docs/guides/en/concepts.md)                                                   |
 | Build a Command or WAM          | [Command guide](docs/guides/en/extensions/command.md) and [WAM guide](docs/guides/en/wam.md)                                         |
 | Build with TypeScript           | [TypeScript reference](docs/reference/typescript/README.md) and [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) |
@@ -29,11 +28,11 @@ The localized guide indexes provide the same map in
 
 ## Recommended Documentation Order
 
-Start with the Quickstart before reading package references. Continue in this order when you need
+Start with the app tutorial before reading package references. Continue in this order when you need
 to customize or ship the app:
 
-1. **Build and run the first app:** [Korean](docs/guides/ko/quickstart.md),
-   [English](docs/guides/en/quickstart.md), or [Japanese](docs/guides/ja/quickstart.md)
+1. **Build and run the first app:** [Korean](docs/guides/ko/app-tutorial.md),
+   [English](docs/guides/en/app-tutorial.md), or [Japanese](docs/guides/ja/app-tutorial.md)
 2. **Learn Function, Extension, WAM, and authentication boundaries:**
    [Korean](docs/guides/ko/concepts.md), [English](docs/guides/en/concepts.md), or
    [Japanese](docs/guides/ja/concepts.md)
@@ -60,8 +59,7 @@ to customize or ship the app:
    [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) or
    [Go tutorial](https://github.com/channel-io/app-tutorial)
 
-The Quickstart ends with this same reading map. The guides and public SDK exports define the current
-contract; the tutorials show it as complete server-and-WAM apps.
+The guides and public SDK exports define the current contract. The runnable examples show it in complete server-and-WAM apps.
 
 ## SDKs and Runnable Examples
 
@@ -87,7 +85,7 @@ for its frontend.
 ## Contributing to the SDK
 
 The commands below are for developing this SDK repository. App projects should follow the
-[Quickstart](docs/guides/en/quickstart.md) and their selected tutorial instead.
+[app tutorial](docs/guides/en/app-tutorial.md) and their selected tutorial instead.
 
 ### Repository layout
 
