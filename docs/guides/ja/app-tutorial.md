@@ -1,29 +1,36 @@
 # はじめての Channel アプリを作る
 
-[Channel App SDK](https://github.com/channel-io/app-sdk) でサンプルの注文管理システムを作り、チャネルトークと連携します。チャネルトークは HTTP でアプリサーバーを呼び出し、アプリのコードは開発者が起動したサーバーで動きます。チャネル設定の **アプリストア** は、アプリをインストールする画面です。その裏側で App Store がインストールや Extension の登録を管理し、関数の呼び出しを中継します。
+[Channel App SDK](https://github.com/channel-io/app-sdk) でサンプルの注文管理システムを作り、チャネルトークと連携します。
 
-```text
-チャネルトーク → App Store → アプリサーバー   アプリ関数を呼び出す
-アプリサーバー → App Store → チャネルトーク   Native Function を呼び出す
-チャネルトークのクライアント → WAM Endpoint   Web 画面を読み込む
-```
+まず `ping` で接続を確認して、注文を照会する関数を追加します。次に `/cancel-order` コマンドを追加し、WAM で注文をキャンセルして、Native Function で担当者に通知します。最後に、照会関数を CoS と ALF でも使ってみます。
 
-- **アプリ関数**は、注文の照会など、アプリサーバーが提供する機能です。**開発者ツール**で試した関数を、コマンド、ALF、CoS からも呼び出せます。
-- **Extension** は、コマンドなど、チャネルトークで使える機能に必要な関数やメタデータの取り決めです。
-- **WAM（Web App Module）** は、チャネルトーク内で開くアプリの Web 画面です。クライアントが WAM Endpoint から直接画面を読み込みます。
-- **Native Function** は、通知の送信など、アプリが呼び出せるチャネルトークの機能です。
+## 基本知識
 
-まず `ping` で接続を確認して、注文を照会する関数を追加します。次に `/cancel-order` で WAM を開いて注文をキャンセルし、Native Function で担当者に通知します。最後に、照会関数を CoS と ALF でも使ってみます。 [アプリの基本概念](concepts.md)
+Channel Works では、アプリを使って外部サービスと連携し、機能を拡張できます。
+
+たとえば、アプリサーバーから App Store の **Native Function** を呼び出すと、チームチャットにメッセージを送信できます。App Store が定める **Extension** の仕様に沿って実装すると、Channel Works に機能を追加できます。この実習では、Command Extension を使ってチームチャットに `/cancel-order` コマンドを追加します。
+
+アプリサーバーは、注文の照会などの処理を**アプリ関数**として公開できます。Channel Works でアプリ関数を実行すると、App Store がアプリサーバーに HTTP リクエストを送ります。開発者が運用するアプリサーバーがリクエストを受け取り、関数を実行します。**開発者ツール**で直接試した関数は、コマンド、ALF、CoS でも使えます。
+
+チャネル設定の **アプリストア** でアプリをインストールできます。App Store のサーバーはチャネルごとのインストール状況と Extension の登録を管理します。
+
+**WAM（Web App Module）** は、Channel Works 内で開くアプリの Web 画面です。クライアントが WAM Endpoint から直接画面を読み込みます。
+
+- **アプリ関数を呼び出す** (Channel Works → App Store → アプリサーバー)
+- **Native Function を呼び出す** (アプリサーバー → App Store → Channel Works)
+- **Web 画面を読み込む** (Channel Works のクライアント → WAM Endpoint)
+
+HTTP のリクエストとレスポンス、TypeScript のモジュールを知っていると、コードを読み進めやすくなります。この実習では、[NestJS のデコレーターと依存性注入](https://docs.nestjs.com/providers)を使います。関数を登録し、`providers` に登録したサービスをコンストラクターで受け取ります。[Zod](https://zod.dev/) で関数の入出力を定義し、[React](https://react.dev/) で作った画面を [Vite](https://vite.dev/) でビルドします。
+
+アプリの仕組みを詳しく知りたい場合は、[アプリの基本概念](concepts.md)を参照してください。
 
 ## 事前準備
 
 - **Node.js 24 LTS** の最新パッチ版をインストールします。[Node.js をダウンロード](https://nodejs.org/en/download)
-- **pnpm 10.26 以降（10.x）**をインストールします。サーバーと WAM の依存パッケージの管理やビルドに使います。[pnpm のインストール](https://pnpm.io/installation)
+- **pnpm 10.26 以降**をインストールします。サーバーと WAM の依存パッケージの管理やビルドに使います。[pnpm のインストール](https://pnpm.io/installation)
 - **コードエディターとターミナル**を用意します。一方のターミナルでサーバーを起動し、もう一方でコマンドを実行します。
-- **ngrok CLI とアカウント**を準備します。App Store からローカルサーバーに接続するための HTTPS URL を割り当てます。[ngrok のインストールと設定](https://ngrok.com/docs/getting-started/)
+- **ngrok CLI とアカウント**を準備します。App Store からローカルサーバーに接続するための HTTPS URL を割り当てます。[ngrok のインストールと設定](https://ngrok.com/docs/start)
 - アプリをインストールできる**テスト用チャネル**を用意し、[Channel Developer Portal](https://channel.works/-/developers/apps) にログインします。
-
-HTTP のリクエストとレスポンス、TypeScript のモジュールを知っていると、コードを読み進めやすくなります。この実習では、[NestJS のデコレーターと依存性注入](https://docs.nestjs.com/providers)を使います。関数を登録し、`providers` に登録したサービスをコンストラクターで受け取ります。[Zod](https://zod.dev/) で関数の入出力を定義し、[React](https://react.dev/) で作った画面を [Vite](https://vite.dev/) でビルドします。
 
 ## 1. 最初のアプリを作成する
 
@@ -31,7 +38,7 @@ HTTP のリクエストとレスポンス、TypeScript のモジュールを知�
 
 ### Channel Developer Portal でアプリを作成する
 
-[Channel Developer Portal](https://channel.works/-/developers/apps) を開き、アプリの作成を選択します。アプリ名に **주문 관리 시스템** と入力し、**Legacy token** を選びます。利用規約に同意して確定すると、非公開アプリが作成されます。
+[Channel Developer Portal](https://channel.works/-/developers/apps) を開き、**アプリを作成する** を選びます。アプリ名に **注文管理システム** と入力し、利用規約に同意して確定します。
 
 ### アプリ ID とキーを保存する
 
@@ -56,17 +63,16 @@ SIGNING_KEY=
 
 **認証と権限**で **Secret** を発行し、値を `APP_SECRET` に設定します。SDK はこの値を使って App Store からアプリトークンを取得します。
 
-サーバー連携タブの **サーバー設定**で **Signing Key** を発行し、値を `SIGNING_KEY` に設定します。サーバーはこの値で App Store からのリクエストの署名を検証します。
+**サーバー設定**で **Signing Key** を発行し、値を `SIGNING_KEY` に設定します。サーバーはこの値で App Store からのリクエストの署名を検証します。
 
-| 値               | 用途                                                                  |
-| ---------------- | --------------------------------------------------------------------- |
-| App ID           | アプリを識別する公開 ID                                               |
-| App Secret       | SDK がアプリトークンとチャネルトークンを取得するための秘密情報        |
-| Signing Key      | App Store から届いたリクエストの署名を検証するキー                    |
-| アプリトークン   | Extension の登録など、アプリ単位の操作に使うトークン                  |
-| チャネルトークン | アプリをインストールしたチャネルで Native Function を呼び出すトークン |
+| 値          | 用途                                                  |
+| ----------- | ----------------------------------------------------- |
+| App ID      | アプリを識別する公開 ID                               |
+| App Secret  | SDK が App Store からトークンを取得するための秘密情報 |
+| Signing Key | App Store から届いたリクエストの署名を検証するキー    |
 
-**Signing Key が必要な理由。** 署名を検証しないと、第三者が App Store を装ってアプリ関数を呼び出せます。App Store は Signing Key とリクエスト本文から HMAC-SHA256 署名を計算し、Base64 でエンコードして `x-signature` ヘッダーに入れます。SDK の `SignatureGuard` は、受け取った本文の元のバイト列から署名を再計算します。**署名が一致したリクエストだけを関数に渡します。**
+> [!NOTE]
+> **Signing Key が必要な理由。** 署名を検証しないと、第三者が App Store を装ってアプリ関数を呼び出せます。App Store は Signing Key とリクエスト本文から HMAC-SHA256 署名を計算し、Base64 でエンコードして `x-signature` ヘッダーに入れます。SDK の `SignatureGuard` は、同じキーと受け取った本文の元のバイト列を使って署名を再計算します。**署名が一致したリクエストだけを関数に渡します。**
 
 ### プロジェクトを準備する
 
@@ -191,7 +197,7 @@ await app.listen(3000);
 
 App Store は `PUT /functions/v1` にリクエストを送ります。NestJS は `rawBody: true` でリクエスト本文の元のバイト列を保持します。SDK の `SignatureGuard` はその本文と Signing Key を使って `x-signature` の署名を検証します。
 
-`ping` をバージョン付きで呼び出すと、App Store は `PUT /functions/v1` に次のようなリクエストを送ります。本文の `systemVersion` は省略できます。
+`ping` をバージョン付きで呼び出すと、App Store は `PUT /functions/v1` に次のようなリクエストを送ります。
 
 ```json
 {
@@ -238,7 +244,7 @@ pnpm --dir server start
 
 ### 開発者ツールで実際のリクエストを確認する
 
-1. サーバーログに `Successfully registered extension: core` が表示されたら、テスト用チャネルの **App Store** で **주문 관리 시스템** を検索し、インストールします。
+1. サーバーログに `Successfully registered extension: core` が表示されたら、テスト用チャネルの **App Store** で **注文管理システム** を検索し、インストールします。
 2. アプリの詳細で **開発者ツール** を選びます。
 3. **関数** タブで `ping` を選び、**実行** を押します。**実行結果** に `{"message":"pong"}` が表示されます。
 
@@ -254,7 +260,7 @@ ping function call {
 }
 ```
 
-`ctx.caller.type` は呼び出し元を表します。`manager` は担当者、`user` は顧客、`system` は自動化などのシステム、`app` はアプリです。`ctx.channel.id` はリクエストの対象チャネルを表します。
+`ctx.caller.type` は呼び出し元を表します。`manager` は担当者、`user` は顧客、`system` は自動化などのシステム、`app` はアプリです。`ctx.channel.id` はリクエストの対象チャネルを表します。フィールドと型の詳細は、GitHub の [SDK の `Context` 型](https://github.com/channel-io/app-sdk/blob/main/ts/packages/core/src/types/context.ts)を参照してください。
 
 ## 2. 注文照会の関数を追加する
 
@@ -296,9 +302,10 @@ export class OrderService {
 }
 ```
 
-**チャネル単位の認可**
-
-アプリは複数のチャネルにインストールできます。この例では、リクエストのコンテキストにある `ctx.channel.id` でチャネルごとに注文を分けています。実際に注文を照会またはキャンセルする場合は、呼び出し元がそのチャネルで操作する権限を持っているかも確認してください。
+> [!NOTE]
+> **チャネル単位の認可**
+>
+> アプリは複数のチャネルにインストールできます。この例では、リクエストのコンテキストにある `ctx.channel.id` でチャネルごとに注文を分けています。実際に注文を照会またはキャンセルする場合は、呼び出し元がそのチャネルで操作する権限を持っているかも確認してください。
 
 `server/src/orders.function.ts` を作成し、以下のように記述します。`OrderFunctions` はリクエストのチャネル ID を使って、`OrderService` で注文を照会します。注文が見つからない場合、`OrderService` は `NotFoundError` をスローし、`OrderFunctions` が SDK の `FunctionCallError` に変換します。
 
@@ -365,7 +372,7 @@ pnpm --dir server build
 pnpm --dir server start
 ```
 
-App Store が関数一覧を更新したら、開発者ツールで `getStatus` を選びます。詳細には関数の正式名 `orders.getStatus` が表示されます。`orderId` に `order-1` を入力し、**実行** を押します。応答が `shipped` であることと、サーバーのターミナルに以下のログが出ることを確認します。
+App Store が関数一覧を更新したら、開発者ツールの **関数** タブで `getStatus` を選びます。詳細には関数の正式名 `orders.getStatus` が表示されます。`orderId` に `order-1` を入力し、**実行** を押します。応答が `shipped` であることと、サーバーのターミナルに以下のログが出ることを確認します。
 
 ```text
 orders.getStatus function call {
@@ -386,9 +393,9 @@ orders.getStatus function call {
 Command Extension でコマンド名と呼び出すアプリ関数を指定すると、アプリにコマンドを追加できます。このステップでは `command:v1` を登録し、`/cancel-order` で注文のキャンセル画面を開きます。
 
 1. App Store は `extension.command.metadata.getCommands` を呼び出して、`/cancel-order` の設定を取得します。
-2. チームチャットでコマンドを実行すると、App Store は `actionFunctionName` に指定した `commands.orders.cancel` を呼び出します。`systemVersion: "v1"` なので、リクエストは `PUT /functions/v1` に届きます。
+2. チームチャットでコマンドを実行すると、App Store は `actionFunctionName` に指定した `commands.orders.cancel` を呼び出します。
 3. アクション関数は `type: "wam"`、WAM を識別する `name`、画面に渡す `wamArgs` を返します。
-4. チャネルトークのクライアントは、登録した WAM Endpoint に `name` を付けた URL から画面を読み込みます。
+4. Channel Works のクライアントは、登録した WAM Endpoint に `name` を付けた URL から画面を読み込みます。
 
 ### アプリサーバーに Command を追加する
 
@@ -577,9 +584,9 @@ app.useStaticAssets(resolve(import.meta.dirname, "static"), {
 });
 ```
 
-ngrok の `Forwarding` に表示された HTTPS URL に `/wam` を付けます。開発者ポータルで **주문 관리 시스템** の **サーバー設定**を開き、**WAM Endpoint** にこの URL を入力して **保存** を選びます。例は `https://YOUR-NGROK-DOMAIN/wam` です。
+ngrok の `Forwarding` に表示された HTTPS URL に `/wam` を付けます。開発者ポータルで **注文管理システム** の **サーバー設定**を開き、**WAM Endpoint** にこの URL を入力して **保存** を選びます。例は `https://YOUR-NGROK-DOMAIN/wam` です。
 
-App Store はこの URL に `name` の値である `order-cancel` を追加し、アプリサーバーに `GET /wam/order-cancel/` を送信します。
+Channel Works のクライアントはこの URL に `name` の値である `order-cancel` を追加し、`/wam/order-cancel/` から画面を読み込みます。
 
 サーバーを停止します。プロジェクトルートでサーバーと WAM を個別にビルドし、サーバーを起動し直します。
 
@@ -591,7 +598,7 @@ pnpm --dir server start
 
 WAM のビルド結果は `server/dist/static/order-cancel/` に出力されます。
 
-サーバーログで `command` の登録を確認します。チャネル設定の **App Store** で **주문 관리 시스템** を開き、**コマンド** タブを選びます。**デスクコマンド** に `/cancel-order` が表示されたら、スイッチがオフの場合はオンにします。
+サーバーログで `command` の登録を確認します。チャネル設定の **App Store** で **注文管理システム** を開き、**コマンド** タブを選びます。**デスクコマンド** に `/cancel-order` が表示されたら、スイッチがオフの場合はオンにします。
 
 テスト用チャネルのチームチャットの入力欄に `/` を入力し、`/cancel-order` を選びます。注文 ID に `order-2` を入力して実行し、WAM に **Order order-2** が表示されることを確認します。
 
@@ -603,30 +610,17 @@ WAM のビルド結果は `server/dist/static/order-cancel/` に出力されま�
 
 ### キャンセルできる注文を決める
 
-`server/src/orders.service.ts` を以下のコードに置き換えます。`pending` の注文だけをキャンセルできます。キャンセル済みの注文には `false` を返します。
+`server/src/orders.service.ts` の `NotFoundError` の下に `OrderNotCancellableError` を追加します。
 
 ```ts
-// server/src/orders.service.ts (replace the file)
-import { Injectable } from "@nestjs/common";
-
-type OrderStatus = "pending" | "shipped" | "cancelled";
-
-export class NotFoundError extends Error {}
-
+// server/src/orders.service.ts (after NotFoundError)
 export class OrderNotCancellableError extends Error {}
+```
 
-@Injectable()
-export class OrderService {
-  private readonly ordersByChannel = new Map<string, Map<string, OrderStatus>>();
+`OrderService` の `getStatus` の下に `cancel` メソッドを追加します。`pending` の注文だけをキャンセルできます。キャンセル済みの注文には `false` を返します。
 
-  getStatus(channelId: string, orderId: string) {
-    const status = this.ordersFor(channelId).get(orderId);
-    if (!status) {
-      throw new NotFoundError("Order not found");
-    }
-    return { orderId, status };
-  }
-
+```ts
+  // server/src/orders.service.ts (in OrderService, after getStatus)
   cancel(channelId: string, orderId: string) {
     const { status } = this.getStatus(channelId, orderId);
     if (status === "cancelled") return false;
@@ -637,25 +631,11 @@ export class OrderService {
     this.ordersFor(channelId).set(orderId, "cancelled");
     return true;
   }
-
-  private ordersFor(channelId: string) {
-    let orders = this.ordersByChannel.get(channelId);
-    if (!orders) {
-      orders = new Map<string, OrderStatus>([
-        ["order-1", "shipped"],
-        ["order-2", "pending"],
-        ["order-3", "pending"],
-      ]);
-      this.ordersByChannel.set(channelId, orders);
-    }
-    return orders;
-  }
-}
 ```
 
 ### キャンセル関数から通知する
 
-ここまでは、チャネルトークが App Store を経由してアプリ関数を呼び出しました。通知を送るときは、アプリサーバーが App Store を経由してチャネルトークの Native Function `announce` を呼び出します。通知先のチャネルのトークンを使います。
+ここまでは、Channel Works が App Store を経由してアプリ関数を呼び出しました。通知を送るときは、アプリサーバーが App Store を経由して Channel Works の Native Function `announce` を呼び出します。通知先のチャネルのトークンを使います。
 
 開発者ポータルの **認証と権限** で **Channel** ロールに `announce` を追加し、保存します。
 
@@ -697,29 +677,18 @@ export class AlertService {
 
 SDK の `getChannelToken()` は、デフォルトでチャネルごとにトークンをメモリにキャッシュします。キャッシュしたトークンを再利用し、有効期限が近い場合は呼び出し時に更新します。
 
-`server/src/orders.function.ts` を以下のコードに置き換えます。照会関数に加えて `orders.cancel` を定義し、コンストラクターで `AlertService` を受け取ります。`ctx.channel.id` で特定したチャネルの注文をキャンセルします。担当者が初めてキャンセルした場合は、その担当者に通知します。
+`server/src/orders.function.ts` の `./orders.service.js` の import を、以下の 2 行に置き換えます。
 
 ```ts
-// server/src/orders.function.ts (replace the file)
-import { Injectable } from "@nestjs/common";
-import {
-  type Context,
-  Ctx,
-  Func,
-  FunctionCallError,
-  FunctionCallErrorCode,
-  Input,
-  InputSchema,
-  OutputSchema,
-} from "@channel.io/app-sdk-server";
-import { z } from "zod";
+// server/src/orders.function.ts (update imports)
 import { AlertService } from "./alert.service.js";
 import { NotFoundError, OrderNotCancellableError, OrderService } from "./orders.service.js";
+```
 
-const GetStatusInputSchema = z.object({ orderId: z.string() });
-type GetStatusInput = z.infer<typeof GetStatusInputSchema>;
-const GetStatusOutputSchema = z.object({ orderId: z.string(), status: z.string() });
+`GetStatusOutputSchema` の後に、キャンセル関数の入力スキーマ、入力型、出力スキーマを追加します。
 
+```ts
+// server/src/orders.function.ts (after GetStatusOutputSchema)
 const CancelOrderInputSchema = z.object({ orderId: z.string() });
 type CancelOrderInput = z.infer<typeof CancelOrderInputSchema>;
 const CancelOrderOutputSchema = z.object({
@@ -727,32 +696,22 @@ const CancelOrderOutputSchema = z.object({
   status: z.literal("cancelled"),
   notification: z.enum(["sent", "failed", "skipped"]),
 });
+```
 
-@Injectable()
-export class OrderFunctions {
+`OrderFunctions` のコンストラクターを以下のように変更し、`AlertService` を注入します。
+
+```ts
+  // server/src/orders.function.ts (replace the OrderFunctions constructor)
   constructor(
     private readonly orderService: OrderService,
     private readonly alertService: AlertService,
   ) {}
+```
 
-  @Func({
-    name: "orders.getStatus",
-    description: "Look up the shipping status of an order by its ID.",
-  })
-  @InputSchema(GetStatusInputSchema)
-  @OutputSchema(GetStatusOutputSchema)
-  getStatus(@Ctx() ctx: Context, @Input() input: GetStatusInput) {
-    console.log("orders.getStatus function call", { ctx, input });
-    try {
-      return this.orderService.getStatus(ctx.channel.id, input.orderId);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw new FunctionCallError(error.message, FunctionCallErrorCode.NotFound);
-      }
-      throw error;
-    }
-  }
+`OrderFunctions` の `getStatus` の下にキャンセル関数を追加します。リクエストの `ctx.channel.id` でチャネルを特定し、`OrderService` でそのチャネルの注文をキャンセルします。初めて注文をキャンセルしたときに、`ctx.caller` に担当者 ID があれば `AlertService` でその担当者に通知します。
 
+```ts
+  // server/src/orders.function.ts (in OrderFunctions, after getStatus)
   @Func({
     name: "orders.cancel",
     description: "Cancel a pending sample order and notify the calling manager.",
@@ -796,10 +755,9 @@ export class OrderFunctions {
       return { ...result, notification: "failed" };
     }
   }
-}
 ```
 
-`notification` は送信に成功したら `sent`、失敗したら `failed` を返します。担当者 ID がない場合やキャンセル済みの注文には `skipped` を返します。通知に失敗しても注文はキャンセル済みのままです。
+`notification` は送信に成功したら `sent`、失敗したら `failed` を返します。呼び出し元が担当者でない場合、担当者 ID がない場合、注文がキャンセル済みの場合は `skipped` を返します。通知に失敗しても注文はキャンセル済みのままです。
 
 ### WAM でキャンセルを確定する
 
@@ -942,8 +900,8 @@ pnpm --dir server start
 
 サーバーと ngrok を起動したまま、同じテスト用チャネルで CoS と ALF から `orders.getStatus` を試します。
 
-- **CoS から呼び出す。** インストールしたアプリが関数を CoS に公開している場合は、左側のメニューで **AI CoS** を開き、「注文管理アプリで order-1 の配送状況を確認して」と依頼します。 [CoS ガイド](https://docs.channel.io/help/ja/articles/CoS-a8e86305)
-- **ALF タスクで使う。** **AI → 設定 → タスク** からテスト用タスクを開きます。**AIエージェント** ステップの指示文に `@` を入力し、インストールしたアプリから `orders.getStatus` を追加します。`orderId` に `order-1` を渡して、返された `status` を案内するよう指示し、**プレビュー**で試します。 [ALF タスクガイド](https://docs.channel.io/help/ja/articles/%E3%82%BF%E3%82%B9%E3%82%AF-2a16be8b)
+- **CoS から呼び出す。** インストールしたアプリが関数を CoS に公開している場合は、左側のメニューで **AI CoS** を開き、「注文管理システムで order-1 の配送状況を確認して」と依頼します。 [CoS ガイド](https://docs.channel.io/help/ja/articles/CoS-a8e86305)
+- **ALF タスクで使う。** **顧客 → サポート → 設定 → タスク** からテスト用タスクを開きます。**AIエージェント** ステップの指示文に `@` を入力し、インストールしたアプリから `orders.getStatus` を追加します。`orderId` に `order-1` を渡して、返された `status` を案内するよう指示し、**プレビュー**で試します。 [ALF タスクガイド](https://docs.channel.io/help/ja/articles/%E3%82%BF%E3%82%B9%E3%82%AF-2a16be8b)
 - **ALF プロシージャで使う。** プロシージャを使えるテスト用チャネルで、**顧客 → サポート → ALF → 設定 → プロシージャ**から編集画面を開きます。指示文の **アプリ** ツールで `orders.getStatus` を追加し、注文 ID を確認したら関数を呼び出すよう指示します。**プレビュー**で `order-1` を照会します。 [ALF プロシージャガイド（韓国語）](https://docs.channel.io/help/ko/articles/%ED%94%84%EB%A1%9C%EC%8B%9C%EC%A0%80Beta-6d520d9d)
 
 どの方法でも、注文の状態が `shipped` になり、サーバーログに `orders.getStatus function call` が出ることを確認します。一般的な CoS のアプリ呼び出しは、チームメンバーの ID があると `manager` になります。ALF タスクでは、担当者のプレビューなら `manager`、顧客情報がある場合は `user`、どちらの情報もない場合は `system` になることがあります。実際の呼び出しはサーバーログの `ctx.caller.type` で確認できます。

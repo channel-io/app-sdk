@@ -1,29 +1,36 @@
 # 첫 Channel 앱 만들기
 
-[Channel App SDK](https://github.com/channel-io/app-sdk)로 가상의 주문 관리 시스템을 만들고 채널톡과 연동해봅니다. 채널톡은 HTTP로 앱 서버를 호출하고, 앱 코드는 개발자가 띄운 서버에서 실행됩니다. 채널 설정의 **앱스토어**는 앱을 설치하는 화면입니다. 그 뒤에서 앱스토어 서버가 앱의 설치 상태와 Extension 등록을 관리하고 함수 요청을 중계합니다.
+[Channel App SDK](https://github.com/channel-io/app-sdk)로 가상의 주문 관리 시스템을 만들고 채널톡과 연동해봅니다.
 
-```text
-채널톡 → 앱스토어 → 앱 서버        앱 함수 호출
-앱 서버 → 앱스토어 → 채널톡        Native Function 호출
-채널톡 클라이언트 → WAM Endpoint   웹 화면 로드
-```
+먼저 `ping`으로 앱 서버가 응답하는지 확인하고 주문 조회 함수를 추가해봅니다. 이어서 `/cancel-order` 커맨드를 만들고 WAM으로 주문을 취소한 뒤, Native Function으로 매니저에게 알려봅니다. 마지막으로 조회 함수를 CoS와 ALF에서 사용해봅니다.
 
-- **앱 함수**는 주문 조회처럼 앱 서버가 제공하는 기능입니다. **개발자 도구**에서 직접 호출해보고, 같은 함수를 Command, ALF, CoS에서도 쓸 수 있습니다.
-- **Extension**은 Command처럼 채널톡에서 제공할 기능과 그 기능을 실행할 함수의 형식을 정하는 계약입니다.
-- **WAM(Web App Module)**은 채널톡 안에 뜨는 앱의 웹 화면입니다. 채널톡 클라이언트가 앱의 WAM Endpoint에서 화면을 직접 불러옵니다.
-- **Native Function**은 알림 전송처럼 채널톡이 제공하고 앱이 호출하는 기능입니다.
+## 사전 지식
 
-먼저 `ping`으로 앱 서버가 응답하는지 확인하고 주문 조회 함수를 추가해봅니다. 이어서 `/cancel-order`로 WAM을 열고 주문을 취소한 뒤, Native Function으로 매니저에게 알려봅니다. 마지막으로 조회 함수를 CoS와 ALF에서 사용해봅니다. [앱 핵심 개념](concepts.md)
+채널웍스에서는 앱으로 외부 서비스를 연결하고, 채널웍스에서 제공하는 기능을 확장할 수 있습니다.
+
+예를 들어, 앱 서버에서 앱스토어의 **Native Function**을 호출하면 팀챗에 메시지를 보낼 수 있습니다. 앱스토어가 정한 **Extension** 계약을 구현하면 채널웍스에 새 기능을 추가할 수 있습니다. 이 실습에서는 Command Extension으로 팀챗에서 실행할 `/cancel-order` 커맨드를 추가해봅니다.
+
+앱 서버는 주문 조회 같은 기능을 **앱 함수**로 공개할 수 있습니다. 채널웍스에서 앱 함수를 실행하면 앱스토어가 앱 서버로 HTTP 요청을 보냅니다. 개발자가 운영하는 앱 서버가 요청을 받아 함수를 실행합니다. **개발자 도구**에서 직접 호출해보고, 같은 함수를 Command, ALF, CoS에서도 쓸 수 있습니다.
+
+채널 설정의 **앱스토어**에서 앱을 설치할 수 있고, 앱스토어 서버는 채널별 설치 상태와 Extension 등록을 관리합니다.
+
+WAM(Web App Module)은 채널웍스 안에 뜨는 앱의 웹 화면입니다. 채널웍스 클라이언트가 앱의 WAM Endpoint에서 화면을 직접 불러옵니다.
+
+- **앱 함수 호출** (채널웍스 → 앱스토어 → 앱 서버)
+- **Native Function 호출** (앱 서버 → 앱스토어 → 채널웍스)
+- **웹 화면 로드** (채널웍스 클라이언트 → WAM Endpoint)
+
+HTTP 요청과 응답, TypeScript 모듈을 알면 코드를 따라가기 좋습니다. 이 실습에서는 [NestJS 데코레이터](https://docs.nestjs.com/providers)로 함수를 등록하고, `providers`에 등록한 서비스를 생성자에서 주입받습니다. [Zod](https://zod.dev/)로 함수의 입출력 형식을 정의하고, [React](https://react.dev/)로 만든 화면은 [Vite](https://vite.dev/)로 빌드합니다.
+
+앱이 어떻게 동작하는지 더 알고 싶다면 [앱 핵심 개념](concepts.md) 문서를 참고하세요.
 
 ## 사전 준비
 
 - **Node.js 24 LTS** 최신 버전을 설치하세요. [Node.js 다운로드](https://nodejs.org/en/download)
-- **pnpm 10.26 이상(10.x)**을 설치하세요. 서버와 WAM의 패키지를 관리하고 각 프로젝트를 빌드할 때 사용합니다. [pnpm 설치](https://pnpm.io/installation)
+- **pnpm 10.26 이상**을 설치하세요. 서버와 WAM의 패키지를 관리하고 각 프로젝트를 빌드할 때 사용합니다. [pnpm 설치](https://pnpm.io/installation)
 - **코드 편집기와 터미널**을 준비하세요. 터미널 하나에서 서버를 실행하고, 다른 터미널에서 실습 명령을 입력합니다.
 - **ngrok CLI와 계정**을 준비하세요. 앱스토어가 로컬 서버에 요청을 보낼 수 있도록 HTTPS 주소를 만들 때 사용합니다. [ngrok 설치와 설정](https://ngrok.com/docs/start)
 - 앱을 설치할 **테스트 채널**을 준비하고 [Channel Developer Portal](https://channel.works/-/developers/apps)에 로그인하세요.
-
-HTTP 요청과 응답, TypeScript 모듈을 알면 코드를 따라가기 좋습니다. 이 실습에서는 [NestJS 데코레이터](https://docs.nestjs.com/providers)로 함수를 등록하고, `providers`에 등록한 서비스를 생성자에서 주입받습니다. [Zod](https://zod.dev/)로 함수의 입출력 형식을 정의하고, [React](https://react.dev/)로 만든 화면은 [Vite](https://vite.dev/)로 빌드합니다.
 
 ## 1. 첫 앱 만들기
 
@@ -64,15 +71,14 @@ SIGNING_KEY=
 
 **서버 설정**에서 **Signing Key**의 **발급하기**를 누르고 발급받은 값을 `SIGNING_KEY`에 넣으세요. 서버는 이 값으로 앱스토어가 보낸 요청의 서명을 검증합니다.
 
-| 값          | 용도                                                            |
-| ----------- | --------------------------------------------------------------- |
-| App ID      | 앱을 구분하는 공개 식별자                                       |
-| App Secret  | SDK가 앱 토큰과 채널 토큰을 발급받을 때 쓰는 비밀 값            |
-| Signing Key | 앱스토어가 보낸 요청의 서명을 검증하는 키                       |
-| 앱 토큰     | Extension 등록처럼 앱 단위 작업에 쓰는 토큰                     |
-| 채널 토큰   | 앱을 설치한 특정 채널에서 Native Function을 호출할 때 쓰는 토큰 |
+| 값          | 용도                                               |
+| ----------- | -------------------------------------------------- |
+| App ID      | 앱을 구분하는 공개 식별자                          |
+| App Secret  | SDK가 앱스토어에서 토큰을 발급받을 때 쓰는 비밀 값 |
+| Signing Key | 앱스토어가 보낸 요청의 서명을 검증하는 키          |
 
-**Signing Key가 필요한 이유.** 서명을 검증하지 않으면 제3자가 앱스토어를 사칭해 앱 함수를 호출할 수 있습니다. 앱스토어는 Signing Key와 요청 본문으로 HMAC-SHA256 서명을 계산하고, Base64로 인코딩한 값을 `x-signature` 헤더에 담아 보냅니다. 앱 서버는 같은 키와 수신한 본문의 원본 바이트로 서명을 다시 계산합니다. **서명이 헤더 값과 일치하는 요청만 함수 처리 단계로 넘겨야 합니다.** Channel App SDK는 이 검증을 `SignatureGuard`로 제공합니다.
+> [!NOTE]
+> **Signing Key가 필요한 이유.** 서명을 검증하지 않으면 제3자가 앱스토어를 사칭해 앱 함수를 호출할 수 있습니다. 앱스토어는 Signing Key와 요청 본문으로 HMAC-SHA256 서명을 계산하고, Base64로 인코딩한 값을 `x-signature` 헤더에 담아 보냅니다. 앱 서버는 같은 키와 수신한 본문의 원본 바이트로 서명을 다시 계산합니다. **서명이 헤더 값과 일치하는 요청만 함수 처리 단계로 넘겨야 합니다.** Channel App SDK는 이 검증을 `SignatureGuard`로 제공합니다.
 
 ### 프로젝트 준비하기
 
@@ -197,7 +203,7 @@ await app.listen(3000);
 
 앱스토어는 서버의 `PUT /functions/v1`으로 요청을 보냅니다. NestJS의 `rawBody: true`는 요청 본문의 원본을 보관합니다. SDK의 `SignatureGuard`는 그 원본과 Signing Key로 `x-signature` 헤더의 서명을 검증합니다.
 
-버전을 지정해 `ping`을 호출하면 앱스토어는 `PUT /functions/v1`로 아래와 같은 요청을 보냅니다. 본문의 `systemVersion`은 선택 사항입니다.
+버전을 지정해 `ping`을 호출하면 앱스토어는 `PUT /functions/v1`로 아래와 같은 요청을 보냅니다.
 
 ```json
 {
@@ -268,7 +274,7 @@ ping function call {
 }
 ```
 
-`ctx.caller.type`은 호출 주체를 나타냅니다. `manager`는 채널의 매니저, `user`는 고객, `system`은 자동화 등 시스템, `app`은 앱이 주체인 호출입니다. `ctx.channel.id`는 요청이 들어온 채널의 ID입니다.
+`ctx.caller.type`은 호출 주체를 나타냅니다. `manager`는 채널의 매니저, `user`는 고객, `system`은 자동화 등 시스템, `app`은 앱이 주체인 호출입니다. `ctx.channel.id`는 요청이 들어온 채널의 ID입니다. 자세한 필드와 타입은 GitHub에서 [SDK의 `Context` 타입](https://github.com/channel-io/app-sdk/blob/main/ts/packages/core/src/types/context.ts)을 확인하세요.
 
 ## 2. 주문 조회 함수 추가하기
 
@@ -310,9 +316,10 @@ export class OrderService {
 }
 ```
 
-**채널 단위 인가**
-
-앱은 여러 채널에 설치할 수 있습니다. 이 예제에서는 요청 컨텍스트의 `ctx.channel.id`로 채널별 주문을 구분합니다. 실제 주문을 조회하거나 취소할 때는 호출자가 해당 채널에서 그 작업을 할 권한이 있는지도 확인하세요.
+> [!NOTE]
+> **채널 단위 인가**
+>
+> 앱은 여러 채널에 설치할 수 있습니다. 이 예제에서는 요청 컨텍스트의 `ctx.channel.id`로 채널별 주문을 구분합니다. 실제 주문을 조회하거나 취소할 때는 호출자가 해당 채널에서 그 작업을 할 권한이 있는지도 확인하세요.
 
 `server/src/orders.function.ts`를 만들고 아래와 같이 작성하세요. `OrderFunctions`는 요청에 담긴 채널 ID로 `OrderService`에서 주문을 조회합니다. 주문을 찾지 못하면 `OrderService`가 `NotFoundError`를 던지고, `OrderFunctions`가 이 오류를 SDK의 `FunctionCallError`로 바꿉니다.
 
@@ -404,9 +411,9 @@ orders.getStatus function call {
 Command Extension에 커맨드 이름과 실행할 앱 함수를 지정하면 앱에 커맨드를 추가할 수 있습니다. 이번에는 `command:v1`을 등록해 `/cancel-order`로 주문 취소 화면을 열어봅니다.
 
 1. 앱스토어는 `extension.command.metadata.getCommands`를 호출해 `/cancel-order`의 설정을 읽습니다.
-2. 팀챗에서 커맨드를 실행하면 앱스토어가 `actionFunctionName`에 지정한 `commands.orders.cancel`을 호출합니다. `systemVersion: "v1"`이므로 요청은 `PUT /functions/v1`로 들어옵니다.
+2. 팀챗에서 커맨드를 실행하면 앱스토어가 `actionFunctionName`에 지정한 `commands.orders.cancel`을 호출합니다.
 3. 액션 함수는 `type: "wam"`과 WAM을 식별하는 `name`, 화면에 전달할 `wamArgs`를 반환합니다.
-4. 채널톡 클라이언트는 등록된 WAM Endpoint 뒤에 `name`을 붙인 주소에서 화면을 불러옵니다.
+4. 채널웍스 클라이언트는 등록된 WAM Endpoint 뒤에 `name`을 붙인 주소에서 화면을 불러옵니다.
 
 ### 앱 서버에 Command 추가하기
 
@@ -599,7 +606,7 @@ ngrok의 `Forwarding`에 나온 HTTPS 주소 뒤에 `/wam`을 붙이세요. 개�
 
 ![서버 설정의 WAM Endpoint 입력란과 저장 버튼](../../assets/app-tutorial/wam-endpoint.png)
 
-앱스토어는 이 주소에 `name` 값인 `order-cancel`을 붙여 앱 서버에 `GET /wam/order-cancel/` 요청을 보냅니다.
+채널웍스 클라이언트는 WAM을 열 때 이 주소에 `name` 값인 `order-cancel`을 붙여 `/wam/order-cancel/`에서 화면을 불러옵니다.
 
 서버를 종료하고, 프로젝트 루트에서 서버와 WAM을 각각 빌드한 뒤 서버를 다시 실행하세요.
 
@@ -627,30 +634,17 @@ WAM 빌드 결과물은 `server/dist/static/order-cancel/`에 저장됩니다.
 
 ### 취소할 수 있는 주문 정하기
 
-`server/src/orders.service.ts`를 아래 코드로 교체하세요. `pending` 상태의 주문만 취소할 수 있습니다. 이미 취소한 주문에는 `false`를 반환합니다.
+`server/src/orders.service.ts`에서 `NotFoundError` 아래에 `OrderNotCancellableError`를 추가하세요.
 
 ```ts
-// server/src/orders.service.ts (replace the file)
-import { Injectable } from "@nestjs/common";
-
-type OrderStatus = "pending" | "shipped" | "cancelled";
-
-export class NotFoundError extends Error {}
-
+// server/src/orders.service.ts (after NotFoundError)
 export class OrderNotCancellableError extends Error {}
+```
 
-@Injectable()
-export class OrderService {
-  private readonly ordersByChannel = new Map<string, Map<string, OrderStatus>>();
+`OrderService` 클래스의 `getStatus` 아래에 `cancel` 메서드를 추가하세요. `pending` 상태의 주문만 취소할 수 있습니다. 이미 취소한 주문에는 `false`를 반환합니다.
 
-  getStatus(channelId: string, orderId: string) {
-    const status = this.ordersFor(channelId).get(orderId);
-    if (!status) {
-      throw new NotFoundError("Order not found");
-    }
-    return { orderId, status };
-  }
-
+```ts
+  // server/src/orders.service.ts (in OrderService, after getStatus)
   cancel(channelId: string, orderId: string) {
     const { status } = this.getStatus(channelId, orderId);
     if (status === "cancelled") return false;
@@ -661,25 +655,11 @@ export class OrderService {
     this.ordersFor(channelId).set(orderId, "cancelled");
     return true;
   }
-
-  private ordersFor(channelId: string) {
-    let orders = this.ordersByChannel.get(channelId);
-    if (!orders) {
-      orders = new Map<string, OrderStatus>([
-        ["order-1", "shipped"],
-        ["order-2", "pending"],
-        ["order-3", "pending"],
-      ]);
-      this.ordersByChannel.set(channelId, orders);
-    }
-    return orders;
-  }
-}
 ```
 
 ### 취소 함수에서 알림 보내기
 
-앞에서 채널톡이 앱스토어를 거쳐 앱 함수를 호출했습니다. 알림을 보낼 때는 앱 서버가 앱스토어를 거쳐 채널톡의 Native Function `announce`를 호출합니다. 이 호출에는 알림을 보낼 채널의 토큰을 사용합니다.
+앞에서 채널웍스가 앱스토어를 거쳐 앱 함수를 호출했습니다. 알림을 보낼 때는 앱 서버가 앱스토어를 거쳐 채널웍스의 Native Function `announce`를 호출합니다. 이 호출에는 알림을 보낼 채널의 토큰을 사용합니다.
 
 개발자 포털의 **인증 및 권한**에서 **Channel** 역할의 `announce`를 체크하고 **저장**을 누르세요.
 
@@ -723,29 +703,18 @@ export class AlertService {
 
 SDK의 `getChannelToken()`은 기본적으로 채널별 토큰을 메모리에 캐싱합니다. 같은 채널의 토큰을 재사용하고, 만료가 가까우면 호출 시 갱신합니다.
 
-`server/src/orders.function.ts`를 아래 코드로 교체하세요. 조회 함수에 이어 `orders.cancel`을 추가하고, 생성자에서 `AlertService`를 주입받습니다. 취소는 `ctx.channel.id`로 구분한 채널의 주문에 적용합니다. 주문을 처음 취소하고 호출 주체가 매니저이면 해당 매니저에게 알립니다.
+`server/src/orders.function.ts`에서 기존 `./orders.service.js` import 한 줄을 아래 두 줄로 바꾸세요.
 
 ```ts
-// server/src/orders.function.ts (replace the file)
-import { Injectable } from "@nestjs/common";
-import {
-  type Context,
-  Ctx,
-  Func,
-  FunctionCallError,
-  FunctionCallErrorCode,
-  Input,
-  InputSchema,
-  OutputSchema,
-} from "@channel.io/app-sdk-server";
-import { z } from "zod";
+// server/src/orders.function.ts (update imports)
 import { AlertService } from "./alert.service.js";
 import { NotFoundError, OrderNotCancellableError, OrderService } from "./orders.service.js";
+```
 
-const GetStatusInputSchema = z.object({ orderId: z.string() });
-type GetStatusInput = z.infer<typeof GetStatusInputSchema>;
-const GetStatusOutputSchema = z.object({ orderId: z.string(), status: z.string() });
+`GetStatusOutputSchema` 바로 아래에 취소 함수의 입력 스키마, 입력 타입, 출력 스키마를 추가하세요.
 
+```ts
+// server/src/orders.function.ts (after GetStatusOutputSchema)
 const CancelOrderInputSchema = z.object({ orderId: z.string() });
 type CancelOrderInput = z.infer<typeof CancelOrderInputSchema>;
 const CancelOrderOutputSchema = z.object({
@@ -753,32 +722,22 @@ const CancelOrderOutputSchema = z.object({
   status: z.literal("cancelled"),
   notification: z.enum(["sent", "failed", "skipped"]),
 });
+```
 
-@Injectable()
-export class OrderFunctions {
+`OrderFunctions`의 생성자를 아래와 같이 바꿔 `AlertService`를 주입받으세요.
+
+```ts
+  // server/src/orders.function.ts (replace the OrderFunctions constructor)
   constructor(
     private readonly orderService: OrderService,
     private readonly alertService: AlertService,
   ) {}
+```
 
-  @Func({
-    name: "orders.getStatus",
-    description: "Look up the shipping status of an order by its ID.",
-  })
-  @InputSchema(GetStatusInputSchema)
-  @OutputSchema(GetStatusOutputSchema)
-  getStatus(@Ctx() ctx: Context, @Input() input: GetStatusInput) {
-    console.log("orders.getStatus function call", { ctx, input });
-    try {
-      return this.orderService.getStatus(ctx.channel.id, input.orderId);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw new FunctionCallError(error.message, FunctionCallErrorCode.NotFound);
-      }
-      throw error;
-    }
-  }
+`OrderFunctions`의 `getStatus` 아래에 취소 함수를 추가하세요. 함수는 요청의 `ctx.channel.id`로 채널을 구분하고, `OrderService`로 해당 채널의 주문을 취소합니다. 주문을 처음 취소하고 `ctx.caller`에 매니저 ID가 있으면 `AlertService`로 해당 매니저에게 알립니다.
 
+```ts
+  // server/src/orders.function.ts (in OrderFunctions, after getStatus)
   @Func({
     name: "orders.cancel",
     description: "Cancel a pending sample order and notify the calling manager.",
@@ -822,7 +781,6 @@ export class OrderFunctions {
       return { ...result, notification: "failed" };
     }
   }
-}
 ```
 
 알림을 보내면 `notification`에 `sent`를 반환합니다. 전송에 실패하면 `failed`, 호출자가 매니저가 아니거나 매니저 ID가 없거나 이미 취소한 주문이면 `skipped`를 반환합니다. 알림에 실패해도 주문은 취소 상태로 유지됩니다.
