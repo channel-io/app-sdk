@@ -35,9 +35,9 @@ assets=(
 
 failed=0
 for locale in "${locales[@]}"; do
-  guide="docs/guides/${locale}/quickstart.md"
+  guide="docs/guides/${locale}/quickstart-legacy.md"
   if [[ ! -f "$guide" ]]; then
-    printf 'Missing first-app guide: %s\n' "$guide" >&2
+    printf 'Missing legacy first-app guide: %s\n' "$guide" >&2
     failed=1
     continue
   fi
@@ -60,13 +60,13 @@ for locale in "${locales[@]}"; do
   fi
 
   index="docs/guides/${locale}/README.md"
-  if ! grep -Eq '^1\. .*\(quickstart\.md\)' "$index"; then
-    printf 'Quickstart must be the first document in %s\n' "$index" >&2
+  if ! grep -Eq '^1\. .*\(app-tutorial\.md\)' "$index"; then
+    printf 'The app tutorial must be the first document in %s\n' "$index" >&2
     failed=1
   fi
 
   ordered_guides=(
-    quickstart.md
+    app-tutorial.md
     concepts.md
     functions.md
     extensions/command.md
@@ -87,6 +87,14 @@ for locale in "${locales[@]}"; do
     path="docs/guides/${locale}/${target}"
     if [[ ! -s "$path" ]]; then
       printf 'Missing localized app guide: %s\n' "$path" >&2
+      failed=1
+    fi
+  done
+
+  tutorial="docs/guides/${locale}/app-tutorial.md"
+  for expected in core:v1 extension.core.function.getFunctions orders.getStatus orders.cancel useCallFunction announce quickstart-legacy.md; do
+    if ! grep -Fq "$expected" "$tutorial"; then
+      printf 'Missing app tutorial step in %s: %s\n' "$tutorial" "$expected" >&2
       failed=1
     fi
   done
@@ -146,9 +154,9 @@ fi
 
 root_required_text=(
   '> **Building your first Channel app?**'
-  '[Korean](docs/guides/ko/quickstart.md)'
-  '[English](docs/guides/en/quickstart.md)'
-  '[Japanese](docs/guides/ja/quickstart.md)'
+  '[Korean](docs/guides/ko/app-tutorial.md)'
+  '[English](docs/guides/en/app-tutorial.md)'
+  '[Japanese](docs/guides/ja/app-tutorial.md)'
 )
 
 for expected in "${root_required_text[@]}"; do
@@ -170,6 +178,14 @@ for asset in "${assets[@]}"; do
     failed=1
   fi
 done
+
+while IFS= read -r image; do
+  path="docs/assets/app-tutorial/${image##*/}"
+  if [[ ! -s "$path" ]]; then
+    printf 'Missing app tutorial image: %s\n' "$path" >&2
+    failed=1
+  fi
+done < <(rg -o --no-filename '\.\./\.\./assets/app-tutorial/[a-z0-9-]+\.png' docs/guides/*/app-tutorial.md)
 
 if grep -Riq 'developers\.channel\.io/.*/articles' docs/guides; then
   printf 'Localized SDK guides must not depend on retired developer articles\n' >&2

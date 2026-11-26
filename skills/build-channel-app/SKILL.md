@@ -14,9 +14,9 @@ registration APIs.
 1. Identify the target language, existing web framework, extension families, WAM surfaces, required native operations, and the actor for each operation (`app`, `channel`, `manager`, or `user`).
 2. Inspect package manifests and lockfiles. Resolve the latest published versions from npm or Go tags instead of trusting a copied version string.
 3. For a new app, start with the matching end-to-end guide:
-   - English: [../../docs/guides/en/quickstart.md](../../docs/guides/en/quickstart.md)
-   - Korean: [../../docs/guides/ko/quickstart.md](../../docs/guides/ko/quickstart.md)
-   - Japanese: [../../docs/guides/ja/quickstart.md](../../docs/guides/ja/quickstart.md)
+   - English: [../../docs/guides/en/app-tutorial.md](../../docs/guides/en/app-tutorial.md)
+   - Korean: [../../docs/guides/ko/app-tutorial.md](../../docs/guides/ko/app-tutorial.md)
+   - Japanese: [../../docs/guides/ja/app-tutorial.md](../../docs/guides/ja/app-tutorial.md)
      For architecture or an existing app, read that locale's `app-development.md`.
      Read that locale's `concepts.md` when the task introduces or changes Functions, Extensions, WAM, authentication, tokens, or endpoints.
      Read that locale's `extensions.md` before selecting an Extension family. Then use

@@ -4,7 +4,7 @@
 
 ## 권장 문서 순서
 
-1. [첫 앱 만들기 Quickstart](quickstart.md): private app을 만들고 Command, WAM, 메시지 전송까지 실행합니다.
+1. [앱 튜토리얼](app-tutorial.md)에서 주문 관리 시스템을 만들고 채널톡과 연동해봅니다.
 2. [핵심 개념](concepts.md): Function, Extension, WAM, 인증, token의 경계를 이해합니다.
 3. [Function 등록](functions.md): wire contract와 standalone typed app Function을 정의합니다.
 4. [Command 가이드](extensions/command.md): metadata, action, autocomplete를 구현합니다.

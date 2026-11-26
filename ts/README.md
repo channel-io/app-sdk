@@ -5,7 +5,7 @@ token/native clients, React WAM hooks, and WAM-specific UI infrastructure.
 
 ## Start here
 
-1. Build the first complete app with the [Quickstart](../docs/guides/en/quickstart.md).
+1. Build the first complete app with the [App tutorial](../docs/guides/en/app-tutorial.md).
 2. Keep the [TypeScript tutorial](https://github.com/channel-io/app-tutorial-ts) open as a runnable
    server, shared-contract, and React WAM example.
 3. Use the [TypeScript reference map](../docs/reference/typescript/README.md) for exact APIs.

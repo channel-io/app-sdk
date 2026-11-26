@@ -4,7 +4,7 @@ These guides give Channel app developers one shared model for the TypeScript and
 
 ## Recommended reading order
 
-1. [Quickstart](quickstart.md): create a private app and run the Command, WAM, and message flows.
+1. Build and connect an order management app with the [app tutorial](app-tutorial.md).
 2. [Concepts](concepts.md): learn the Function, Extension, WAM, authentication, and token boundaries.
 3. [Function registration](functions.md): read the wire contract and define standalone typed app Functions.
 4. [Command guide](extensions/command.md): implement metadata, actions, and autocomplete.
